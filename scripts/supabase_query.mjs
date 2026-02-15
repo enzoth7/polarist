@@ -88,6 +88,18 @@ async function run() {
              FROM information_schema.columns 
              WHERE table_schema = 'public' AND table_name = '${table}' 
              ORDER BY ordinal_position;`;
+        } else if (args[0] === '--file') {
+            const filePath = args[1];
+            if (!filePath) {
+                console.error('Specify a file: --file <path_to_sql_file>');
+                process.exit(1);
+            }
+            try {
+                sql = readFileSync(filePath, 'utf-8');
+            } catch (e) {
+                console.error('Error reading SQL file:', e.message);
+                process.exit(1);
+            }
         } else {
             sql = args.join(' ');
         }
@@ -95,12 +107,17 @@ async function run() {
         console.log(`📝 SQL: ${sql}\n`);
         const result = await client.query(sql);
 
-        if (result.rows.length === 0) {
-            console.log('(No rows returned)');
-        } else {
-            console.table(result.rows);
-            console.log(`\n${result.rows.length} row(s) returned.`);
-        }
+        const results = Array.isArray(result) ? result : [result];
+
+        results.forEach((res, index) => {
+            if (results.length > 1) console.log(`\n--- Result ${index + 1} ---`);
+            if (res.rows.length === 0) {
+                console.log('(No rows returned)');
+            } else {
+                console.table(res.rows);
+                console.log(`\n${res.rows.length} row(s) returned.`);
+            }
+        });
 
     } catch (err) {
         console.error('❌ Query error:', err.message);

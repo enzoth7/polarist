@@ -1,8 +1,27 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Upload, Loader2, Image as ImageIcon, Download } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Upload, Loader2, Image as ImageIcon, Download, FolderPlus, ArrowLeft, Folder } from 'lucide-react';
 import { useToast } from "@/components/ui/use-toast";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+
+interface Campaign {
+    id: string;
+    name: string;
+    created_at: string;
+    // user_images is an array of objects, picked via select query
+    user_images?: { image_url: string }[];
+}
 
 interface UserImage {
     id: string;
@@ -10,29 +29,63 @@ interface UserImage {
     type: 'upload' | 'enhanced';
     created_at: string;
     status: string;
-    parent_id: string | null;
-    metadata: Record<string, any>;
+    campaign_id: string;
 }
 
 const Gallery = () => {
     const { toast } = useToast();
+
+    // View State
+    const [view, setView] = useState<'list' | 'detail'>('list');
+    const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+
+    // Data State
+    const [campaigns, setCampaigns] = useState<Campaign[]>([]);
     const [images, setImages] = useState<UserImage[]>([]);
-    const [uploading, setUploading] = useState(false);
+
+    // UI State
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
+    const [creatingCampaign, setCreatingCampaign] = useState(false);
+    const [newCampaignName, setNewCampaignName] = useState("");
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     useEffect(() => {
-        fetchImages();
+        fetchCampaigns();
     }, []);
 
-    const fetchImages = async () => {
+    const fetchCampaigns = async () => {
         try {
+            setLoading(true);
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
+            // Fetch campaigns with the first image as preview
+            const { data, error } = await supabase
+                .from('campaigns')
+                .select('*, user_images(image_url)')
+                .eq('user_id', user.id)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            // Limit user_images to 1 per campaign (client-side filtering if Supabase limit logic is tricky in join)
+            // Or just take the first one in render logic.
+            setCampaigns(data || []);
+        } catch (error) {
+            console.error('Error fetching campaigns:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchImages = async (campaignId: string) => {
+        try {
+            setLoading(true);
             const { data, error } = await supabase
                 .from('user_images')
                 .select('*')
-                .eq('user_id', user.id)
+                .eq('campaign_id', campaignId)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
@@ -44,10 +97,55 @@ const Gallery = () => {
         }
     };
 
+    const handleCreateCampaign = async () => {
+        if (!newCampaignName.trim()) return;
+
+        try {
+            setCreatingCampaign(true);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error("No user found");
+
+            const { error } = await supabase
+                .from('campaigns')
+                .insert({
+                    user_id: user.id,
+                    name: newCampaignName.trim()
+                });
+
+            if (error) throw error;
+
+            toast({ title: "Campaña creada" });
+            setIsDialogOpen(false);
+            setNewCampaignName("");
+            fetchCampaigns();
+        } catch (error: any) {
+            toast({
+                title: "Error",
+                description: error.message,
+                variant: "destructive"
+            });
+        } finally {
+            setCreatingCampaign(false);
+        }
+    };
+
+    const handleEnterCampaign = (campaign: Campaign) => {
+        setSelectedCampaign(campaign);
+        fetchImages(campaign.id);
+        setView('detail');
+    };
+
+    const handleBack = () => {
+        setSelectedCampaign(null);
+        setImages([]);
+        fetchCampaigns(); // Refresh to update previews
+        setView('list');
+    };
+
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         try {
             const file = e.target.files?.[0];
-            if (!file) return;
+            if (!file || !selectedCampaign) return;
 
             setUploading(true);
             const { data: { user } } = await supabase.auth.getUser();
@@ -67,24 +165,25 @@ const Gallery = () => {
                 .from('product-images')
                 .getPublicUrl(fileName);
 
-            // 3. Save to Database
+            // 3. Save to Database with campaign_id
             const { error: dbError } = await supabase
                 .from('user_images')
                 .insert({
                     user_id: user.id,
                     image_url: publicUrl,
                     type: 'upload',
-                    status: 'ready'
+                    status: 'ready',
+                    campaign_id: selectedCampaign.id
                 });
 
             if (dbError) throw dbError;
 
             toast({
                 title: "Producto subido",
-                description: "Tu imagen se ha guardado correctamente.",
+                description: "Tu imagen se ha guardado en la campaña.",
             });
 
-            fetchImages(); // Refresh
+            fetchImages(selectedCampaign.id);
 
         } catch (error: any) {
             console.error('Upload error:', error);
@@ -102,16 +201,135 @@ const Gallery = () => {
     const enhanced = images.filter(img => img.type === 'enhanced');
     const hasNewImages = enhanced.length > 0;
 
+    // --- RENDER ---
+
+    if (view === 'list') {
+        return (
+            <div className="min-h-screen bg-background p-6">
+                <div className="max-w-6xl mx-auto space-y-8">
+                    {/* Header */}
+                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <h1 className="text-3xl font-bold">Galería de Contenido</h1>
+                            <p className="text-muted-foreground mt-1">
+                                Organiza tus productos en campañas.
+                            </p>
+                        </div>
+                        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="cursor-pointer">
+                                    <FolderPlus className="w-4 h-4 mr-2" />
+                                    Crear Campaña
+                                </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Nueva Campaña</DialogTitle>
+                                    <DialogDescription>
+                                        Crea una carpeta para organizar tus productos.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <div className="grid gap-4 py-4">
+                                    <div className="grid grid-cols-4 items-center gap-4">
+                                        <Label htmlFor="name" className="text-right">
+                                            Nombre
+                                        </Label>
+                                        <Input
+                                            id="name"
+                                            value={newCampaignName}
+                                            onChange={(e) => setNewCampaignName(e.target.value)}
+                                            className="col-span-3"
+                                            placeholder="Ej. Colección Verano"
+                                        />
+                                    </div>
+                                </div>
+                                <DialogFooter>
+                                    <Button onClick={handleCreateCampaign} disabled={creatingCampaign}>
+                                        {creatingCampaign && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                        Crear
+                                    </Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </div>
+
+                    {/* Campaigns Grid */}
+                    {loading ? (
+                        <div className="flex justify-center py-20">
+                            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                        </div>
+                    ) : campaigns.length === 0 ? (
+                        <div className="text-center py-20 border-2 border-dashed rounded-xl">
+                            <div className="bg-secondary/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <Folder className="w-8 h-8 text-muted-foreground" />
+                            </div>
+                            <h3 className="text-xl font-semibold">No tienes campañas</h3>
+                            <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
+                                Crea tu primera campaña para empezar a subir productos.
+                            </p>
+                            <Button variant="outline" className="mt-4" onClick={() => setIsDialogOpen(true)}>
+                                Crear Campaña
+                            </Button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {campaigns.map((campaign) => {
+                                // Get first image for preview
+                                const previewImage = campaign.user_images?.[0]?.image_url;
+
+                                return (
+                                    <div
+                                        key={campaign.id}
+                                        onClick={() => handleEnterCampaign(campaign)}
+                                        className="group cursor-pointer border rounded-xl overflow-hidden bg-card hover:shadow-lg transition-all"
+                                    >
+                                        {/* Preview Area */}
+                                        <div className="aspect-video bg-secondary/30 relative overflow-hidden flex items-center justify-center">
+                                            {previewImage ? (
+                                                <img
+                                                    src={previewImage}
+                                                    alt={campaign.name}
+                                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                                />
+                                            ) : (
+                                                <ImageIcon className="w-10 h-10 text-muted-foreground/30" />
+                                            )}
+                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                                        </div>
+
+                                        {/* Info Area */}
+                                        <div className="p-4">
+                                            <h3 className="font-semibold text-lg truncate">{campaign.name}</h3>
+                                            <p className="text-sm text-muted-foreground mt-1">
+                                                {new Date(campaign.created_at).toLocaleDateString()}
+                                            </p>
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // Detail View (Similar to previous Gallery, but filtered)
     return (
         <div className="min-h-screen bg-background p-6">
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <h1 className="text-3xl font-bold">Galería de Contenido</h1>
-                        <p className="text-muted-foreground mt-1">
-                            Sube tus productos y descarga contenido mejorado.
-                        </p>
+                    <div className="flex items-center gap-4">
+                        <Button variant="ghost" size="icon" onClick={handleBack}>
+                            <ArrowLeft className="w-6 h-6" />
+                        </Button>
+                        <div>
+                            <h1 className="text-3xl font-bold">{selectedCampaign?.name}</h1>
+                            <p className="text-muted-foreground mt-1">
+                                Gestiona las imágenes de esta campaña.
+                            </p>
+                        </div>
                     </div>
 
                     <div>
@@ -206,9 +424,9 @@ const Gallery = () => {
                             <div className="bg-secondary/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <ImageIcon className="w-8 h-8 text-muted-foreground" />
                             </div>
-                            <h3 className="text-xl font-semibold">Tu galería está vacía</h3>
+                            <h3 className="text-xl font-semibold">Campaña vacía</h3>
                             <p className="text-muted-foreground mt-2 max-w-sm mx-auto">
-                                Comienza subiendo fotos de tus productos para recibir contenido mejorado.
+                                Sube fotos de tus productos a esta campaña.
                             </p>
                         </div>
                     ) : (
