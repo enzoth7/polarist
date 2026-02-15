@@ -5,62 +5,95 @@ interface BeforeInstallPromptEvent extends Event {
     userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
 }
 
+const isIOS = () => {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+};
+
+const isStandalone = () => {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+        (window.navigator as any).standalone === true;
+};
+
 export const useInstallPrompt = () => {
     const [installPrompt, setInstallPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isInstallable, setIsInstallable] = useState(false);
+    const [isIOSDevice, setIsIOSDevice] = useState(false);
 
     useEffect(() => {
+        // Already running as installed app — hide everything
+        if (isStandalone()) {
+            setIsInstallable(false);
+            return;
+        }
+
+        // iOS: always show (manual instructions)
+        if (isIOS()) {
+            setIsIOSDevice(true);
+            setIsInstallable(true);
+            return;
+        }
+
+        // Android/Chrome: use beforeinstallprompt
         const handleBeforeInstallPrompt = (e: Event) => {
-            // Prevent the mini-infobar from appearing on mobile
             e.preventDefault();
-            // Save the event so it can be triggered later
             setInstallPrompt(e as BeforeInstallPromptEvent);
             setIsInstallable(true);
         };
 
         const handleAppInstalled = () => {
-            // Clear the install prompt
             setInstallPrompt(null);
             setIsInstallable(false);
-            console.log('PWA was installed');
         };
 
         window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
         window.addEventListener('appinstalled', handleAppInstalled);
 
-        // Check if app is already installed
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            setIsInstallable(false);
-        }
+        // Fallback: if no event fires within 3 seconds, show button anyway
+        // (user might be on a supported browser that already dismissed the prompt)
+        const fallbackTimer = setTimeout(() => {
+            setIsInstallable(true);
+        }, 3000);
 
         return () => {
             window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
             window.removeEventListener('appinstalled', handleAppInstalled);
+            clearTimeout(fallbackTimer);
         };
     }, []);
 
     const installApp = async () => {
-        if (!installPrompt) {
-            console.log('Install prompt not available');
+        // iOS: show manual instructions via alert
+        if (isIOSDevice || !installPrompt) {
+            if (isIOSDevice) {
+                alert(
+                    '📲 Para instalar en iOS:\n\n' +
+                    '1. Toca el ícono de Compartir (□↑)\n' +
+                    '2. Selecciona "Agregar a pantalla de inicio"\n' +
+                    '3. Toca "Agregar"'
+                );
+            } else {
+                // Desktop Chrome/Edge — prompt not available, give manual instructions
+                alert(
+                    '📲 Para instalar:\n\n' +
+                    'Busca el ícono de instalación (⊕) en la barra de direcciones de tu navegador,\n' +
+                    'o abre el menú (⋮) y selecciona "Instalar aplicación".'
+                );
+            }
             return;
         }
 
-        // Show the install prompt
+        // Native install prompt (Android Chrome, some desktop browsers)
         await installPrompt.prompt();
-
-        // Wait for the user to respond to the prompt
         const { outcome } = await installPrompt.userChoice;
 
         if (outcome === 'accepted') {
             console.log('User accepted the install prompt');
-        } else {
-            console.log('User dismissed the install prompt');
         }
 
-        // Clear the saved prompt since it can't be used again
         setInstallPrompt(null);
         setIsInstallable(false);
     };
 
-    return { isInstallable, installApp };
+    return { isInstallable, installApp, isIOSDevice };
 };
