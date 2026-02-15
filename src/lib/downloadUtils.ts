@@ -20,7 +20,17 @@ export const forceDownload = async (url: string, filename: string) => {
         window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
         console.error('Download failed:', error);
-        // Fallback to simple open if fetch fails (e.g. CORS)
-        window.open(url, '_blank');
+        // Fallback: If fetch fails (CORS), try to force download via header or new window
+        const downloadUrl = new URL(url);
+        downloadUrl.searchParams.set('download', filename); // Supabase specific: forces Content-Disposition: attachment
+
+        // Try creating a link with the modified URL
+        const link = document.createElement('a');
+        link.href = downloadUrl.toString();
+        link.download = filename;
+        link.target = '_blank'; // Required for some mobile browsers to trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 };

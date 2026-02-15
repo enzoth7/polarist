@@ -395,10 +395,11 @@ const Gallery = () => {
                                         <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
                                             <a
                                                 href={img.image_url}
-                                                download={`visual-growth-${img.id}.png`}
                                                 onClick={async (e) => {
                                                     e.preventDefault();
-                                                    await forceDownload(img.image_url, `visual-growth-${img.id}.png`);
+                                                    const dateStr = new Date().toISOString().split('T')[0];
+                                                    const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
+                                                    await forceDownload(img.image_url, filename);
                                                     const { error } = await supabase.from('user_images').update({ viewed: true }).eq('id', img.id);
                                                     if (!error) {
                                                         setImages(prev => prev.map(item => item.id === img.id ? { ...item, viewed: true } : item));
@@ -451,7 +452,10 @@ const Gallery = () => {
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                         <div className="text-white">
                                             <p className="text-xs font-medium uppercase tracking-wider mb-1">Generada</p>
-                                            <Button size="sm" variant="secondary" className="h-8 w-full" onClick={() => forceDownload(img.image_url, `visual-growth-${img.id}.png`)}>
+                                            <Button size="sm" variant="secondary" className="h-8 w-full" onClick={() => {
+                                                const dateStr = new Date().toISOString().split('T')[0];
+                                                forceDownload(img.image_url, `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`);
+                                            }}>
                                                 <Download className="w-3 h-3 mr-2" /> Descargar
                                             </Button>
                                         </div>
@@ -498,33 +502,34 @@ const Gallery = () => {
                                             </p>
                                             <div className="flex gap-2 mt-2">
                                                 <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
-                                                    <a
-                                                        href="#"
-                                                        onClick={(e) => {
-                                                            e.preventDefault();
-                                                            forceDownload(img.image_url, `visual-growth-prod-${img.id}.png`);
-                                                        }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        const dateStr = new Date().toISOString().split('T')[0];
+                                                        const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
+                                                        forceDownload(img.image_url, filename);
+                                                    }}
                                                     >
-                                                        <Download className="w-3 h-3 mr-2" />
-                                                        Descargar
-                                                    </a>
-                                                </Button>
-                                            </div>
+                                                    <Download className="w-3 h-3 mr-2" />
+                                                    Descargar
+                                                </a>
+                                            </Button>
                                         </div>
                                     </div>
-                                    {/* Badge */}
-                                    <div className="absolute top-2 left-2">
-                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
-                                            SUBIDA
-                                        </span>
+                                </div>
+                                    {/* Badge */ }
+                                < div className = "absolute top-2 left-2" >
+                                <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
+                                    SUBIDA
+                                </span>
                                     </div>
                                 </div>
                             ))}
-                        </div>
-                    )}
-                </section>
-            </div>
         </div>
+    )
+}
+                </section >
+            </div >
+        </div >
     );
 };
 
