@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
+let supabaseClient;
+
 if (!supabaseUrl || !supabaseAnonKey) {
     console.error('❌ Missing Supabase environment variables!');
     console.error('Please configure in Vercel:');
@@ -15,9 +17,10 @@ if (!supabaseUrl || !supabaseAnonKey) {
     const dummyKey = 'placeholder-key';
 
     console.warn('⚠️ Using placeholder Supabase client - features will not work!');
-    export const supabase = createClient(dummyUrl, dummyKey);
+    supabaseClient = createClient(dummyUrl, dummyKey);
 } else {
-    export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
     console.log('✅ Supabase client initialized successfully');
 }
 
+export const supabase = supabaseClient;
