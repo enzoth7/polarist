@@ -502,31 +502,34 @@ const Gallery = () => {
                                             </p>
                                             <div className="flex gap-2 mt-2">
                                                 <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
-                                                    onClick={(e) => {
-                                                        e.preventDefault();
-                                                        const dateStr = new Date().toISOString().split('T')[0];
-                                                        const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
-                                                        forceDownload(img.image_url, filename);
-                                                    }}
+                                                    <a
+                                                        href="#"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const dateStr = new Date().toISOString().split('T')[0];
+                                                            const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
+                                                            forceDownload(img.image_url, filename);
+                                                        }}
                                                     >
-                                                    <Download className="w-3 h-3 mr-2" />
-                                                    Descargar
-                                                </a>
-                                            </Button>
+                                                        <Download className="w-3 h-3 mr-2" />
+                                                        Descargar
+                                                    </a>
+                                                </Button>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                                    {/* Badge */ }
-                                < div className = "absolute top-2 left-2" >
-                                <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
-                                    SUBIDA
-                                </span>
+
+                                    {/* Badge */}
+                                    <div className="absolute top-2 left-2">
+                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
+                                            SUBIDA
+                                        </span>
                                     </div>
                                 </div>
                             ))}
-        </div>
-    )
-}
+                        </div>
+                    )
+                    }
                 </section >
             </div >
         </div >
