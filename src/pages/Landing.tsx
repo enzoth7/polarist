@@ -41,7 +41,7 @@ const Landing = () => {
                             className="w-full text-lg h-14 bg-primary hover:bg-primary/90 text-primary-foreground"
                         >
                             <Download className="w-5 h-5 mr-2" />
-                            Install App
+                            Instalar
                         </Button>
                     )}
 
@@ -53,7 +53,7 @@ const Landing = () => {
                         className="w-full text-lg h-14 border-2"
                     >
                         <UserPlus className="w-5 h-5 mr-2" />
-                        Create Account
+                        Crear Cuenta
                     </Button>
 
                     {/* Sign In */}
@@ -64,7 +64,7 @@ const Landing = () => {
                         className="w-full text-lg h-14"
                     >
                         <LogIn className="w-5 h-5 mr-2" />
-                        Sign In
+                        Iniciar Sesión
                     </Button>
                 </div>
 

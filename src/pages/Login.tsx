@@ -29,14 +29,14 @@ const Login = () => {
                     className="mb-4"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
+                    Volver
                 </Button>
 
                 {/* Header */}
                 <div className="text-center space-y-2">
-                    <h1 className="text-4xl font-bold">Welcome Back</h1>
+                    <h1 className="text-4xl font-bold">Bienvenido</h1>
                     <p className="text-muted-foreground">
-                        Sign in to your Visual Growth System account
+                        Inicia sesión en tu cuenta de Visual Growth System
                     </p>
                 </div>
 
@@ -45,11 +45,11 @@ const Login = () => {
                     <div className="space-y-4">
                         {/* Email */}
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Correo electrónico</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="you@example.com"
+                                placeholder="tu@ejemplo.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -59,7 +59,7 @@ const Login = () => {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Contraseña</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -75,19 +75,19 @@ const Login = () => {
                     {/* Submit Button */}
                     <Button type="submit" size="lg" className="w-full h-12">
                         <LogIn className="w-5 h-5 mr-2" />
-                        Sign In
+                        Iniciar Sesión
                     </Button>
                 </form>
 
                 {/* Footer */}
                 <div className="text-center space-y-2">
                     <p className="text-sm text-muted-foreground">
-                        Don't have an account?{' '}
+                        ¿No tienes una cuenta?{' '}
                         <button
                             onClick={() => navigate('/signup')}
                             className="text-primary hover:underline font-medium"
                         >
-                            Create one
+                            Crear una
                         </button>
                     </p>
                 </div>

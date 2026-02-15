@@ -30,14 +30,14 @@ const Signup = () => {
                     className="mb-4"
                 >
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Back
+                    Volver
                 </Button>
 
                 {/* Header */}
                 <div className="text-center space-y-2">
-                    <h1 className="text-4xl font-bold">Get Started</h1>
+                    <h1 className="text-4xl font-bold">Comienza</h1>
                     <p className="text-muted-foreground">
-                        Create your Visual Growth System account
+                        Crea tu cuenta de Visual Growth System
                     </p>
                 </div>
 
@@ -46,11 +46,11 @@ const Signup = () => {
                     <div className="space-y-4">
                         {/* Name */}
                         <div className="space-y-2">
-                            <Label htmlFor="name">Full Name</Label>
+                            <Label htmlFor="name">Nombre completo</Label>
                             <Input
                                 id="name"
                                 type="text"
-                                placeholder="John Doe"
+                                placeholder="Juan Pérez"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required
@@ -60,11 +60,11 @@ const Signup = () => {
 
                         {/* Email */}
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="email">Correo electrónico</Label>
                             <Input
                                 id="email"
                                 type="email"
-                                placeholder="you@example.com"
+                                placeholder="tu@ejemplo.com"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -74,7 +74,7 @@ const Signup = () => {
 
                         {/* Password */}
                         <div className="space-y-2">
-                            <Label htmlFor="password">Password</Label>
+                            <Label htmlFor="password">Contraseña</Label>
                             <Input
                                 id="password"
                                 type="password"
@@ -86,7 +86,7 @@ const Signup = () => {
                                 className="h-12"
                             />
                             <p className="text-xs text-muted-foreground">
-                                Must be at least 8 characters
+                                Debe tener al menos 8 caracteres
                             </p>
                         </div>
                     </div>
@@ -94,19 +94,19 @@ const Signup = () => {
                     {/* Submit Button */}
                     <Button type="submit" size="lg" className="w-full h-12">
                         <UserPlus className="w-5 h-5 mr-2" />
-                        Create Account
+                        Crear Cuenta
                     </Button>
                 </form>
 
                 {/* Footer */}
                 <div className="text-center space-y-2">
                     <p className="text-sm text-muted-foreground">
-                        Already have an account?{' '}
+                        ¿Ya tienes una cuenta?{' '}
                         <button
                             onClick={() => navigate('/login')}
                             className="text-primary hover:underline font-medium"
                         >
-                            Sign in
+                            Iniciar sesión
                         </button>
                     </p>
                 </div>
