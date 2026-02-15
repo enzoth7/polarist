@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { useBusinessProfile } from "@/hooks/useBusinessProfile";
-import { Settings, Image as ImageIcon, Sparkles, ArrowRight } from "lucide-react";
+import { useInstallPrompt } from "@/hooks/useInstallPrompt";
+import { Settings, Image as ImageIcon, Sparkles, ArrowRight, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   const { profile } = useBusinessProfile();
   const navigate = useNavigate();
+  const { isInstallable, installApp } = useInstallPrompt();
 
   const brandName = profile.businessName || "Mi Negocio";
   // Fallback to "N/A" if empty
@@ -27,13 +29,25 @@ const Dashboard = () => {
           <p className="text-sm text-muted-foreground">{greeting()} 👋</p>
           <h1 className="text-2xl font-bold text-foreground">{brandName}</h1>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate("/preferences")}
-        >
-          <Settings className="h-5 w-5" />
-        </Button>
+        <div className="flex items-center gap-1">
+          {isInstallable && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={installApp}
+              title="Instalar app"
+            >
+              <Download className="h-5 w-5" />
+            </Button>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/preferences")}
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+        </div>
       </div>
 
       {/* Identity Summary Card */}
@@ -60,9 +74,9 @@ const Dashboard = () => {
         <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
           <ImageIcon className="w-8 h-8" />
         </div>
-        <h3 className="text-xl font-bold mb-2">Galería de Estilo</h3>
+        <h3 className="text-xl font-bold mb-2">Galería de Contenido</h3>
         <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
-          Sube tus imágenes de referencia y revisa las propuestas generadas por la IA.
+          Sube tus productos y descarga contenido mejorado para tus redes.
         </p>
         <Button
           size="lg"
@@ -81,7 +95,7 @@ const Dashboard = () => {
         </h3>
         <div className="space-y-3">
           {[
-            { emoji: "📸", text: "Mejores referencias = Mejores resultados de IA." },
+            { emoji: "📸", text: "Fotos claras y con buena luz generan mejores resultados." },
             { emoji: "🎨", text: "Mantén coherencia con tu paleta de colores." },
           ].map((tip, i) => (
             <div key={i} className="flex items-center gap-3 p-4 bg-card rounded-xl border border-border/50">
