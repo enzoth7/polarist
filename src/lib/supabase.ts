@@ -19,7 +19,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
     console.warn('⚠️ Using placeholder Supabase client - features will not work!');
     supabaseClient = createClient(dummyUrl, dummyKey);
 } else {
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true
+        }
+    });
     console.log('✅ Supabase client initialized successfully');
 }
 
