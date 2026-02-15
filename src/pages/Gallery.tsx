@@ -450,7 +450,7 @@ const Gallery = () => {
                                     <img src={img.image_url} alt="Creada" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                         <div className="text-white">
-                                            <p className="text-xs font-medium uppercase tracking-wider mb-1">AI Generated</p>
+                                            <p className="text-xs font-medium uppercase tracking-wider mb-1">Generada</p>
                                             <Button size="sm" variant="secondary" className="h-8 w-full" onClick={() => forceDownload(img.image_url, `visual-growth-${img.id}.png`)}>
                                                 <Download className="w-3 h-3 mr-2" /> Descargar
                                             </Button>
@@ -494,7 +494,7 @@ const Gallery = () => {
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                         <div className="text-white">
                                             <p className="text-xs font-medium uppercase tracking-wider mb-1">
-                                                Upload
+                                                Subida
                                             </p>
                                             <div className="flex gap-2 mt-2">
                                                 <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
@@ -511,6 +511,12 @@ const Gallery = () => {
                                                 </Button>
                                             </div>
                                         </div>
+                                    </div>
+                                    {/* Badge */}
+                                    <div className="absolute top-2 left-2">
+                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
+                                            SUBIDA
+                                        </span>
                                     </div>
                                 </div>
                             ))}
