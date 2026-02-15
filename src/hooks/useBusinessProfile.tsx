@@ -40,7 +40,9 @@ interface BusinessProfileContextType {
   loading: boolean;
   updateProfile: (updates: Partial<BusinessProfile>) => void;
   resetProfile: () => void;
+
   fetchProfile: () => Promise<void>;
+  completeMission: (date: string) => void;
 }
 
 const BusinessProfileContext = createContext<BusinessProfileContextType | null>(null);
@@ -95,6 +97,13 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
     setProfile((prev) => ({ ...prev, ...updates }));
   };
 
+
+
+  const completeMission = (date: string) => {
+    console.log("Mission completed on", date);
+    // TODO: Implement streak logic or DB update
+  };
+
   const resetProfile = () => setProfile(defaultProfile);
 
   // Fetch on mount
@@ -118,7 +127,7 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   return (
-    <BusinessProfileContext.Provider value={{ profile, loading, updateProfile, resetProfile, fetchProfile }}>
+    <BusinessProfileContext.Provider value={{ profile, loading, updateProfile, resetProfile, fetchProfile, completeMission }}>
       {children}
     </BusinessProfileContext.Provider>
   );

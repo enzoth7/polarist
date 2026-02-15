@@ -11,7 +11,9 @@ interface MissionFlowProps {
 const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/webhook-image"; // Updated with new flow if needed
 
 const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
-  const { completeMission } = useBusinessProfile();
+  const { } = useBusinessProfile();
+  const { forceDownload } = { forceDownload: (url: string, name: string) => import('@/lib/downloadUtils').then(m => m.forceDownload(url, name)) };
+
   const [step, setStep] = useState<"upload" | "processing" | "result">("upload");
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -29,6 +31,23 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [missionId, setMissionId] = useState<string | null>(null);
+
+  // Campaigns
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>("");
+
+  useEffect(() => {
+    const fetchCampaigns = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('campaigns').select('id, name').eq('user_id', user.id).order('created_at', { ascending: false });
+      if (data) {
+        setCampaigns(data);
+        if (data.length > 0) setSelectedCampaignId(data[0].id);
+      }
+    };
+    fetchCampaigns();
+  }, []);
 
   useEffect(() => {
     if (!missionId) return;
@@ -52,7 +71,7 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
             setGeneratedCopy(
               `¡Increíble foto para "${missionTitle}"! 🌟\n\nAquí tienes un copy sugerido:\n\n"${promoText || "Descubre la magia"}. ✨ Hecho con pasión para ti."`
             );
-            completeMission(new Date().toISOString().split('T')[0]);
+            // completeMission(new Date().toISOString().split('T')[0]);
           }
         }
       )
@@ -61,7 +80,7 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [missionId, missionTitle, promoText, completeMission]);
+  }, [missionId, missionTitle, promoText]);
 
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -100,6 +119,7 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
           mission_title: missionTitle,
           promo_text: promoText,
           intent: intent,
+          campaign_id: selectedCampaignId || null
         })
         .select()
         .single();
@@ -118,7 +138,8 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
           mission_title: missionTitle,
           mission_id: newMissionId, // CRITICAL: n8n needs this to update DB
           promo_text: promoText,
-          intent: intent
+          intent: intent,
+          campaign_id: selectedCampaignId || null
         })
       });
 
@@ -217,87 +238,106 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
                   />
                 </div>
               </div>
-            </div>
-          )}
 
-          {step === "processing" && (
-            <div className="h-64 flex flex-col items-center justify-center gap-4">
-              <Loader2 className="h-12 w-12 text-primary animate-spin" />
-              <p className="text-sm text-muted-foreground animate-pulse">
-                La IA está generando variaciones de diseño...
-                <br />
-                <span className="text-xs opacity-50 block mt-2">(Esto puede tardar unos 20-40 segundos)</span>
-              </p>
-            </div>
-          )}
-
-          {step === "result" && (
-            <div className="space-y-6">
-              {/* Grid of Results */}
-              <div className="grid grid-cols-2 gap-4">
-                {generatedImages.map((imgUrl, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setSelectedResult(imgUrl)}
-                    className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${selectedResult === imgUrl ? 'border-primary ring-2 ring-primary/50 scale-[1.02]' : 'border-transparent hover:border-white/20'}`}
-                  >
-                    <img src={imgUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
-                    {selectedResult === imgUrl && (
-                      <div className="absolute top-2 right-2 bg-primary text-black rounded-full p-1">
-                        <Check className="h-3 w-3" />
-                      </div>
-                    )}
-                  </button>
-                ))}
+              <div>
+                <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Campaña Destino</label>
+                <select
+                  value={selectedCampaignId}
+                  onChange={(e) => setSelectedCampaignId(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                >
+                  <option value="" disabled>Seleccionar Campaña</option>
+                  {campaigns.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
-
-              {/* Action for selected result */}
-              {selectedResult && (
-                <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col md:flex-row gap-4 items-center justify-between">
-                  <div className="text-sm">
-                    <p className="font-bold text-foreground">Opción Seleccionada</p>
-                    <p className="text-muted-foreground text-xs">Lista para descargar y publicar.</p>
-                  </div>
-                  <a
-                    href={selectedResult}
-                    download={`marketing-maestro-${Date.now()}.png`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:bg-white/90 transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    Descargar Imagen
-                  </a>
-                </div>
-              )}
             </div>
-          )}
-        </div>
+            </div>
+        )}
 
-        {/* Footer Actions */}
-        <div className="mt-8 pt-4 border-t border-white/10">
-          {step === "upload" && (
-            <button
-              onClick={handleUploadAndProcess}
-              disabled={!selectedImage}
-              className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
-            >
-              Generar 4 Diseños
-            </button>
-          )}
+        {step === "processing" && (
+          <div className="h-64 flex flex-col items-center justify-center gap-4">
+            <Loader2 className="h-12 w-12 text-primary animate-spin" />
+            <p className="text-sm text-muted-foreground animate-pulse">
+              La IA está generando variaciones de diseño...
+              <br />
+              <span className="text-xs opacity-50 block mt-2">(Esto puede tardar unos 20-40 segundos)</span>
+            </p>
+          </div>
+        )}
 
-          {step === "result" && (
-            <button
-              onClick={onClose}
-              className="w-full py-4 rounded-2xl bg-white/10 text-foreground font-bold text-lg hover:bg-white/20 transition-all"
-            >
-              Volver al Calendario
-            </button>
-          )}
-        </div>
+        {step === "result" && (
+          <div className="space-y-6">
+            {/* Grid of Results */}
+            <div className="grid grid-cols-2 gap-4">
+              {generatedImages.map((imgUrl, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setSelectedResult(imgUrl)}
+                  className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${selectedResult === imgUrl ? 'border-primary ring-2 ring-primary/50 scale-[1.02]' : 'border-transparent hover:border-white/20'}`}
+                >
+                  <img src={imgUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
+                  {selectedResult === imgUrl && (
+                    <div className="absolute top-2 right-2 bg-primary text-black rounded-full p-1">
+                      <Check className="h-3 w-3" />
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
 
+            {/* Action for selected result */}
+            {selectedResult && (
+              <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div className="text-sm">
+                  <p className="font-bold text-foreground">Opción Seleccionada</p>
+                  <p className="text-muted-foreground text-xs">Lista para descargar y publicar.</p>
+                </div>
+                <a
+                  href={selectedResult}
+                  download={`marketing-maestro-${Date.now()}.png`}
+                  target="_blank"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    forceDownload(selectedResult, `marketing-maestro-${Date.now()}.png`);
+                  }}
+                  className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:bg-white/90 transition-colors cursor-pointer"
+                >
+                  <Download className="h-4 w-4" />
+                  Descargar Imagen
+                </a>
+              </div>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Footer Actions */}
+      <div className="mt-8 pt-4 border-t border-white/10">
+        {step === "upload" && (
+          <button
+            onClick={handleUploadAndProcess}
+            disabled={!selectedImage}
+            className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
+          >
+            Generar 4 Diseños
+          </button>
+        )}
+
+        {step === "result" && (
+          <button
+            onClick={onClose}
+            className="w-full py-4 rounded-2xl bg-white/10 text-foreground font-bold text-lg hover:bg-white/20 transition-all"
+          >
+            Volver al Calendario
+          </button>
+        )}
+      </div>
+
     </div>
+    </div >
+    </div >
   );
 };
 

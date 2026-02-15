@@ -20,7 +20,7 @@ interface Campaign {
     name: string;
     created_at: string;
     // user_images is an array of objects, picked via select query
-    user_images?: { image_url: string }[];
+    user_images?: { image_url: string; type: string }[];
 }
 
 interface UserImage {
@@ -30,10 +30,13 @@ interface UserImage {
     created_at: string;
     status: string;
     campaign_id: string;
+    viewed?: boolean;
 }
 
 const Gallery = () => {
     const { toast } = useToast();
+    const { forceDownload } = { forceDownload: (url: string, name: string) => import('@/lib/downloadUtils').then(m => m.forceDownload(url, name)) };
+
 
     // View State
     const [view, setView] = useState<'list' | 'detail'>('list');
@@ -60,10 +63,10 @@ const Gallery = () => {
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
-            // Fetch campaigns with the first image as preview
+            // Fetch campaigns with image preview and type for notification
             const { data, error } = await supabase
                 .from('campaigns')
-                .select('*, user_images(image_url)')
+                .select('*, user_images(image_url, type, viewed)')
                 .eq('user_id', user.id)
                 .order('created_at', { ascending: false });
 
@@ -197,8 +200,8 @@ const Gallery = () => {
         }
     };
 
-    const uploads = images.filter(img => img.type === 'upload');
-    const enhanced = images.filter(img => img.type === 'enhanced');
+    const uploads = images.filter(img => img.type === 'upload' || !img.type || (img.type?.toLowerCase() !== 'enhanced' && img.viewed));
+    const enhanced = images.filter(img => img.type?.toLowerCase().trim() === 'enhanced' && !img.viewed);
     const hasNewImages = enhanced.length > 0;
 
     // --- RENDER ---
@@ -276,12 +279,14 @@ const Gallery = () => {
                             {campaigns.map((campaign) => {
                                 // Get first image for preview
                                 const previewImage = campaign.user_images?.[0]?.image_url;
+                                // Check for new/enhanced content (case insensitive) and NOT VIEWED
+                                const hasNewContent = campaign.user_images?.some(img => img.type?.toLowerCase().trim() === 'enhanced' && !img.viewed);
 
                                 return (
                                     <div
                                         key={campaign.id}
                                         onClick={() => handleEnterCampaign(campaign)}
-                                        className="group cursor-pointer border rounded-xl overflow-hidden bg-card hover:shadow-lg transition-all"
+                                        className="group cursor-pointer border rounded-xl overflow-hidden bg-card hover:shadow-lg transition-all relative"
                                     >
                                         {/* Preview Area */}
                                         <div className="aspect-video bg-secondary/30 relative overflow-hidden flex items-center justify-center">
@@ -299,7 +304,12 @@ const Gallery = () => {
 
                                         {/* Info Area */}
                                         <div className="p-4">
-                                            <h3 className="font-semibold text-lg truncate">{campaign.name}</h3>
+                                            <div className="flex items-center gap-2">
+                                                <h3 className="font-semibold text-lg truncate">{campaign.name}</h3>
+                                                {hasNewContent && (
+                                                    <span className="flex h-3 w-3 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]" title="Nuevas imágenes" />
+                                                )}
+                                            </div>
                                             <p className="text-sm text-muted-foreground mt-1">
                                                 {new Date(campaign.created_at).toLocaleDateString()}
                                             </p>
@@ -384,7 +394,13 @@ const Gallery = () => {
                                     {/* Overlay with Download */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                                         <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
-                                            <a href={img.image_url} download target="_blank" rel="noopener noreferrer">
+                                            <a
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    forceDownload(img.image_url, `visual-growth-${img.id}.png`);
+                                                }}
+                                            >
                                                 <Download className="w-3 h-3 mr-2" />
                                                 Descargar
                                             </a>
@@ -402,6 +418,25 @@ const Gallery = () => {
                             ))}
                         </div>
                     </section>
+                )}
+
+                {/* Mark as Seen Action */}
+                {hasNewImages && (
+                    <div className="flex justify-end">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={async () => {
+                                const ids = enhanced.map(img => img.id);
+                                await supabase.from('user_images').update({ viewed: true }).in('id', ids);
+                                // Optimistic update
+                                setImages(prev => prev.map(img => ids.includes(img.id) ? { ...img, viewed: true } : img));
+                                toast({ title: "Imágenes marcadas como vistas" });
+                            }}
+                        >
+                            Marcar todo como visto
+                        </Button>
+                    </div>
                 )}
 
                 {/* Separator */}
@@ -447,9 +482,15 @@ const Gallery = () => {
                                             </p>
                                             <div className="flex gap-2 mt-2">
                                                 <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
-                                                    <a href={img.image_url} target="_blank" rel="noopener noreferrer">
+                                                    <a
+                                                        href="#"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            forceDownload(img.image_url, `visual-growth-prod-${img.id}.png`);
+                                                        }}
+                                                    >
                                                         <Download className="w-3 h-3 mr-2" />
-                                                        Ver
+                                                        Descargar
                                                     </a>
                                                 </Button>
                                             </div>
