@@ -19,9 +19,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
       manifest: {
-        name: "MarketingFacil - Asistente de Marketing",
-        short_name: "MarketingFacil",
-        description: "Tu asistente de marketing inteligente para hacer crecer tu negocio",
+        name: "Visual Growth System",
+        short_name: "VGS",
+        description: "Transform your business with AI-powered visual marketing automation",
         theme_color: "#4F46E5",
         background_color: "#0F172A",
         display: "standalone",

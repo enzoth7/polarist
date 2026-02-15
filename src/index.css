@@ -5,7 +5,7 @@
 @layer base {
   :root {
     /* Dark Premium Theme as Default */
-    --background: 0 0% 0%; /* #000000 */
+    --background: 222 47% 11%; /* #0F172A - Slate 900 instead of pure black */
     --foreground: 0 0% 98%; /* #FAFAFA */
 
     --card: 0 0% 8%; /* #141414 approx */
