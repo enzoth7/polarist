@@ -9,7 +9,7 @@ export const forceDownload = async (url: string, filename: string) => {
         link.href = downloadUrl.toString();
         // explicit download attribute for browsers that support it
         link.setAttribute('download', filename);
-        link.setAttribute('target', '_blank');
+        link.setAttribute('target', '_self'); // Fix for PWA: _blank causes white screen hang on iOS/Android WebViews
         link.style.display = 'none';
 
         document.body.appendChild(link);
