@@ -26,7 +26,7 @@ const Landing = () => {
                             Visual Growth System
                         </h1>
                         <p className="text-xl md:text-2xl text-muted-foreground font-light">
-                            Transform your business with AI-powered visual marketing
+                            Contenido visual profesional para tu negocio
                         </p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@ const Landing = () => {
 
                 {/* Footer */}
                 <p className="text-sm text-muted-foreground">
-                    Start growing your business with AI-powered visual content
+                    Crea contenido visual que destaque
                 </p>
             </div>
         </div>
