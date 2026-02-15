@@ -10,8 +10,12 @@ export const forceDownload = async (url: string, filename: string) => {
         try {
             const response = await fetch(url);
             const blob = await response.blob();
-            // Force PNG type explicitly to avoid .png.jpeg issues on some mobile browsers
-            const file = new File([blob], filename, { type: 'image/png' });
+            // Force PNG type explicitly to avoid .png.jpeg issues
+            // Explicitly set lastModified to NOW to ensure it appears as recent in Gallery
+            const file = new File([blob], filename, {
+                type: 'image/png',
+                lastModified: Date.now()
+            });
 
             if (navigator.share && navigator.canShare({ files: [file] })) {
                 await navigator.share({
