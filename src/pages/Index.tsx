@@ -1,14 +1,7 @@
-import { useBusinessProfile } from "@/hooks/useBusinessProfile";
-import { Navigate } from "react-router-dom";
+import Landing from './Landing';
 
 const Index = () => {
-  const { profile } = useBusinessProfile();
-  
-  if (profile.onboardingComplete) {
-    return <Navigate to="/dashboard" replace />;
-  }
-  
-  return <Navigate to="/onboarding" replace />;
+  return <Landing />;
 };
 
 export default Index;
