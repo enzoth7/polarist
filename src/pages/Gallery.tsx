@@ -53,20 +53,9 @@ const Gallery = () => {
     const [newCampaignName, setNewCampaignName] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-    // DEBUG STATE
-    const [debugInfo, setDebugInfo] = useState<{ userId: string | null, email: string | null }>({ userId: null, email: null });
-
     useEffect(() => {
         fetchCampaigns();
-        checkUser();
     }, []);
-
-    const checkUser = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            setDebugInfo({ userId: user.id, email: user.email || 'no-email' });
-        }
-    };
 
     const fetchCampaigns = async () => {
         try {
@@ -211,7 +200,7 @@ const Gallery = () => {
         }
     };
 
-    const uploads = images.filter(img => img.type === 'upload' || !img.type || (img.type?.toLowerCase() !== 'enhanced' && img.viewed));
+    const uploads = images.filter(img => img.type === 'upload' || !img.type || (img.type?.toLowerCase()?.trim() === 'enhanced' && img.viewed));
     const enhanced = images.filter(img => img.type?.toLowerCase().trim() === 'enhanced' && !img.viewed);
     const hasNewImages = enhanced.length > 0;
 
@@ -472,7 +461,7 @@ const Gallery = () => {
                 {/* Products Grid */}
                 <section className="space-y-4">
                     {uploads.length > 0 && (
-                        <h2 className="text-lg font-semibold text-muted-foreground">Mis Productos</h2>
+                        <h2 className="text-lg font-semibold text-muted-foreground">Mis Productos y Diseños</h2>
                     )}
 
                     {loading ? (
@@ -533,18 +522,6 @@ const Gallery = () => {
                         </div>
                     )}
                 </section>
-                {/* DEBUG FOOTER - REMOVE BEFORE PRODUCTION */}
-                <div className="fixed bottom-0 left-0 right-0 bg-black/90 text-white p-2 text-[10px] font-mono z-50 flex justify-between items-center opacity-70 hover:opacity-100 transition-opacity">
-                    <div>
-                        User: {debugInfo.userId || 'Not Logged In'} <br />
-                        Email: {debugInfo.email}
-                    </div>
-                    <div className="text-right">
-                        <span>v1.2.0 (PERSIST CHECK)</span> <br />
-                        Campaigns Found: {campaigns.length} <br />
-                        Loading: {loading ? 'Yes' : 'No'}
-                    </div>
-                </div>
             </div>
         </div>
     );
