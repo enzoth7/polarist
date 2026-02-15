@@ -200,14 +200,14 @@ const Gallery = () => {
         }
     };
 
-    const uploads = images.filter(img => img.type === 'upload' || !img.type || (img.type?.toLowerCase()?.trim() === 'enhanced' && img.viewed));
-    const enhanced = images.filter(img => img.type?.toLowerCase().trim() === 'enhanced' && !img.viewed);
-    const hasNewImages = enhanced.length > 0;
+    const newImages = images.filter(img => img.type?.toLowerCase().trim() === 'enhanced' && !img.viewed);
+    const createdImages = images.filter(img => img.type?.toLowerCase().trim() === 'enhanced' && img.viewed);
+    const uploadedImages = images.filter(img => img.type === 'upload' || !img.type);
 
     // --- RENDER ---
 
     if (view === 'list') {
-        return (
+        return ( // ... existing list view code ...
             <div className="min-h-screen bg-background p-6">
                 <div className="max-w-6xl mx-auto space-y-8">
                     {/* Header */}
@@ -324,7 +324,7 @@ const Gallery = () => {
         );
     }
 
-    // Detail View (Similar to previous Gallery, but filtered)
+    // Detail View
     return (
         <div className="min-h-screen bg-background p-6">
             <div className="max-w-6xl mx-auto space-y-8">
@@ -370,8 +370,8 @@ const Gallery = () => {
                     </div>
                 </div>
 
-                {/* New Enhanced Images Section */}
-                {hasNewImages && (
+                {/* 1. NEW IMAGES (Enhanced & Not Viewed) */}
+                {newImages.length > 0 && (
                     <section className="space-y-4">
                         <div className="flex items-center gap-3">
                             <div className="relative">
@@ -379,19 +379,18 @@ const Gallery = () => {
                                 <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
                             </div>
                             <h2 className="text-xl font-bold">Imágenes Nuevas</h2>
-                            <span className="text-sm text-muted-foreground">({enhanced.length})</span>
+                            <span className="text-sm text-muted-foreground">({newImages.length})</span>
                         </div>
 
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            {enhanced.map((img) => (
+                            {newImages.map((img) => (
                                 <div key={img.id} className="group relative aspect-square rounded-xl overflow-hidden border-2 border-green-500/30 bg-card shadow-lg shadow-green-500/5">
                                     <img
                                         src={img.image_url}
                                         alt="Contenido mejorado"
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
-
-                                    {/* Overlay with Download */}
+                                    {/* Overlay */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                                         <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
                                             <a
@@ -399,17 +398,9 @@ const Gallery = () => {
                                                 download={`visual-growth-${img.id}.png`}
                                                 onClick={async (e) => {
                                                     e.preventDefault();
-                                                    // 1. Force Download
                                                     await forceDownload(img.image_url, `visual-growth-${img.id}.png`);
-
-                                                    // 2. Mark as Viewed (Database)
-                                                    const { error } = await supabase
-                                                        .from('user_images')
-                                                        .update({ viewed: true })
-                                                        .eq('id', img.id);
-
+                                                    const { error } = await supabase.from('user_images').update({ viewed: true }).eq('id', img.id);
                                                     if (!error) {
-                                                        // 3. Mark as Viewed (Local State)
                                                         setImages(prev => prev.map(item => item.id === img.id ? { ...item, viewed: true } : item));
                                                         toast({ title: "Imagen descargada y marcada como vista" });
                                                     }
@@ -420,8 +411,7 @@ const Gallery = () => {
                                             </a>
                                         </Button>
                                     </div>
-
-                                    {/* Green Badge */}
+                                    {/* New Badge */}
                                     <div className="absolute top-2 left-2">
                                         <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-green-500 text-white border border-green-600 flex items-center gap-1">
                                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-white" />
@@ -431,44 +421,57 @@ const Gallery = () => {
                                 </div>
                             ))}
                         </div>
+                        {/* Mark All Seen */}
+                        <div className="flex justify-end">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={async () => {
+                                    const ids = newImages.map(img => img.id);
+                                    await supabase.from('user_images').update({ viewed: true }).in('id', ids);
+                                    setImages(prev => prev.map(img => ids.includes(img.id) ? { ...img, viewed: true } : img));
+                                    toast({ title: "Imágenes marcadas como vistas" });
+                                }}
+                            >
+                                Marcar todo como visto
+                            </Button>
+                        </div>
+                        <div className="border-t border-border" />
                     </section>
                 )}
 
-                {/* Mark as Seen Action */}
-                {hasNewImages && (
-                    <div className="flex justify-end">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={async () => {
-                                const ids = enhanced.map(img => img.id);
-                                await supabase.from('user_images').update({ viewed: true }).in('id', ids);
-                                // Optimistic update
-                                setImages(prev => prev.map(img => ids.includes(img.id) ? { ...img, viewed: true } : img));
-                                toast({ title: "Imágenes marcadas como vistas" });
-                            }}
-                        >
-                            Marcar todo como visto
-                        </Button>
-                    </div>
+                {/* 2. CREATED IMAGES (Enhanced & Viewed) */}
+                {createdImages.length > 0 && (
+                    <section className="space-y-4">
+                        <h2 className="text-lg font-semibold text-muted-foreground">Imágenes Creadas</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {createdImages.map((img) => (
+                                <div key={img.id} className="group relative aspect-square rounded-xl overflow-hidden border bg-card">
+                                    <img src={img.image_url} alt="Creada" className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
+                                        <div className="text-white">
+                                            <p className="text-xs font-medium uppercase tracking-wider mb-1">AI Generated</p>
+                                            <Button size="sm" variant="secondary" className="h-8 w-full" onClick={() => forceDownload(img.image_url, `visual-growth-${img.id}.png`)}>
+                                                <Download className="w-3 h-3 mr-2" /> Descargar
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <div className="border-t border-border" />
+                    </section>
                 )}
 
-                {/* Separator */}
-                {hasNewImages && uploads.length > 0 && (
-                    <div className="border-t border-border" />
-                )}
-
-                {/* Products Grid */}
+                {/* 3. UPLOADED IMAGES (Originals) */}
                 <section className="space-y-4">
-                    {uploads.length > 0 && (
-                        <h2 className="text-lg font-semibold text-muted-foreground">Mis Productos y Diseños</h2>
-                    )}
+                    <h2 className="text-lg font-semibold text-muted-foreground">Imágenes Subidas</h2>
 
                     {loading ? (
                         <div className="flex justify-center py-20">
                             <Loader2 className="w-8 h-8 animate-spin text-primary" />
                         </div>
-                    ) : uploads.length === 0 && !hasNewImages ? (
+                    ) : uploadedImages.length === 0 && createdImages.length === 0 && newImages.length === 0 ? (
                         <div className="text-center py-20 border-2 border-dashed rounded-xl">
                             <div className="bg-secondary/50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <ImageIcon className="w-8 h-8 text-muted-foreground" />
@@ -480,19 +483,18 @@ const Gallery = () => {
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                            {uploads.map((img) => (
+                            {uploadedImages.map((img) => (
                                 <div key={img.id} className="group relative aspect-square rounded-xl overflow-hidden border bg-card">
                                     <img
                                         src={img.image_url}
                                         alt="Producto"
                                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                     />
-
                                     {/* Overlay */}
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
                                         <div className="text-white">
                                             <p className="text-xs font-medium uppercase tracking-wider mb-1">
-                                                Original
+                                                Upload
                                             </p>
                                             <div className="flex gap-2 mt-2">
                                                 <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
@@ -509,13 +511,6 @@ const Gallery = () => {
                                                 </Button>
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* Badge */}
-                                    <div className="absolute top-2 left-2">
-                                        <span className="text-[10px] font-bold px-2 py-1 rounded-full bg-background/80 text-foreground border border-border">
-                                            PROD
-                                        </span>
                                     </div>
                                 </div>
                             ))}
