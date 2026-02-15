@@ -20,7 +20,7 @@ interface Campaign {
     name: string;
     created_at: string;
     // user_images is an array of objects, picked via select query
-    user_images?: { image_url: string; type: string }[];
+    user_images?: { image_url: string; type: string; viewed: boolean }[];
 }
 
 interface UserImage {
@@ -275,7 +275,7 @@ const Gallery = () => {
                             </Button>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             {campaigns.map((campaign) => {
                                 // Get first image for preview
                                 const previewImage = campaign.user_images?.[0]?.image_url;
@@ -395,10 +395,24 @@ const Gallery = () => {
                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                                         <Button size="sm" variant="secondary" className="h-8 w-full" asChild>
                                             <a
-                                                href="#"
-                                                onClick={(e) => {
+                                                href={img.image_url}
+                                                download={`visual-growth-${img.id}.png`}
+                                                onClick={async (e) => {
                                                     e.preventDefault();
-                                                    forceDownload(img.image_url, `visual-growth-${img.id}.png`);
+                                                    // 1. Force Download
+                                                    await forceDownload(img.image_url, `visual-growth-${img.id}.png`);
+
+                                                    // 2. Mark as Viewed (Database)
+                                                    const { error } = await supabase
+                                                        .from('user_images')
+                                                        .update({ viewed: true })
+                                                        .eq('id', img.id);
+
+                                                    if (!error) {
+                                                        // 3. Mark as Viewed (Local State)
+                                                        setImages(prev => prev.map(item => item.id === img.id ? { ...item, viewed: true } : item));
+                                                        toast({ title: "Imagen descargada y marcada como vista" });
+                                                    }
                                                 }}
                                             >
                                                 <Download className="w-3 h-3 mr-2" />
