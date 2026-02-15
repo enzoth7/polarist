@@ -4,81 +4,53 @@
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
-    --foreground: 224 71% 8%;
+    /* Dark Premium Theme as Default */
+    --background: 0 0% 0%; /* #000000 */
+    --foreground: 0 0% 98%; /* #FAFAFA */
 
-    --card: 0 0% 100%;
-    --card-foreground: 224 71% 8%;
+    --card: 0 0% 8%; /* #141414 approx */
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71% 8%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 243 75% 59%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 0 0% 98%; /* White buttons */
+    --primary-foreground: 0 0% 0%; /* Black text on buttons */
 
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 224 71% 8%;
+    --secondary: 0 0% 15%; /* Dark Gray for secondary actions */
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 0 0% 15%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 0 0% 15%;
+    --accent-foreground: 0 0% 98%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
 
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 243 75% 59%;
+    --border: 0 0% 20%; /* #333 */
+    --input: 0 0% 20%;
+    --ring: 0 0% 83.1%;
 
-    --radius: 0.75rem;
+    --radius: 1rem; /* Slightly less rounded than "toy", more elegant */
 
-    /* Custom tokens */
-    --success: 160 84% 39%;
-    --success-foreground: 0 0% 100%;
+    /* Custom tokens - Dark Versions */
+    --success: 142 70% 50%; /* Green */
+    --success-foreground: 144 100% 5%;
 
-    --pastel-yellow: 45 93% 90%;
-    --pastel-pink: 330 80% 92%;
-    --pastel-blue: 210 80% 92%;
-    --pastel-green: 160 60% 90%;
-    --pastel-purple: 260 70% 92%;
+    /* Pastels adapted to dark mode (Darker backgrounds, lighter text) */
+    --pastel-yellow: 45 100% 10%; /* Dark Yellow Bg */
+    --pastel-pink: 330 80% 10%;
+    --pastel-blue: 210 80% 10%;
+    --pastel-green: 150 80% 10%;
+    --pastel-purple: 260 80% 10%;
 
-    --shadow-soft: 0 1px 3px 0 hsl(0 0% 0% / 0.04), 0 1px 2px -1px hsl(0 0% 0% / 0.04);
-    --shadow-card: 0 4px 16px -2px hsl(243 75% 59% / 0.06), 0 2px 6px -2px hsl(0 0% 0% / 0.04);
-    --shadow-elevated: 0 10px 30px -5px hsl(243 75% 59% / 0.1), 0 4px 10px -4px hsl(0 0% 0% / 0.04);
+    --shadow-soft: 0 0 0 0 transparent; /* Minimalist flat */
+    --shadow-card: 0 0 0 1px hsl(0 0% 20%); /* Subtle border instead of shadow */
+    --shadow-elevated: 0 10px 30px -10px rgba(0,0,0,0.5);
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  .dark {
-    --background: 224 71% 4%;
-    --foreground: 210 40% 98%;
-    --card: 224 71% 8%;
-    --card-foreground: 210 40% 98%;
-    --popover: 224 71% 8%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 243 75% 65%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 160 84% 39%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 243 75% 65%;
-    --sidebar-background: 240 5.9% 10%;
+    --sidebar-background: 0 0% 5%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
@@ -86,6 +58,15 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+     /* Same as root since we are enforcing dark */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 0 0% 98%;
+    /* ... keep explicit dark variables just in case */
   }
 }
 
@@ -107,8 +88,5 @@
   }
   .shadow-card {
     box-shadow: var(--shadow-card);
-  }
-  .shadow-elevated {
-    box-shadow: var(--shadow-elevated);
   }
 }

@@ -28,6 +28,12 @@ const Onboarding = () => {
   const [brandName, setBrandName] = useState("");
   const [industry, setIndustry] = useState("");
   const [socialNetworks, setSocialNetworks] = useState<string[]>([]);
+
+  // New Psychological State
+  const [archetype, setArchetype] = useState("");
+  const [emotionalGoal, setEmotionalGoal] = useState("");
+  const [story, setStory] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
 
@@ -41,6 +47,9 @@ const Onboarding = () => {
     if (step === 0) return brandName.trim().length > 0;
     if (step === 1) return industry.length > 0;
     if (step === 2) return socialNetworks.length > 0;
+    if (step === 3) return archetype.length > 0; // Archetype
+    if (step === 4) return emotionalGoal.length > 0; // Emotion
+    if (step === 5) return story.length > 0; // Story
     return false;
   };
 
@@ -52,6 +61,9 @@ const Onboarding = () => {
         brandName: brandName.trim(),
         industry,
         socialNetworks,
+        archetype,
+        emotionalGoal,
+        story,
         onboardingComplete: true,
       });
       setTimeout(() => navigate("/dashboard"), 1200);
@@ -70,8 +82,8 @@ const Onboarding = () => {
                 </div>
               </div>
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-foreground">Configurando tu asistente...</h2>
-                <p className="mt-2 text-muted-foreground">Preparando todo para <span className="font-semibold text-primary">{brandName}</span></p>
+                <h2 className="text-2xl font-bold text-foreground">Creando tu identidad única...</h2>
+                <p className="mt-2 text-muted-foreground">Analizando tu arquetipo <span className="font-semibold text-primary">{archetype}</span></p>
               </div>
               <div className="flex gap-1.5 mt-4">
                 <div className="h-2 w-2 rounded-full bg-primary animate-pulse-soft" style={{ animationDelay: "0s" }} />
@@ -84,7 +96,7 @@ const Onboarding = () => {
               <div className="h-16 w-16 rounded-full bg-success/10 flex items-center justify-center animate-check-bounce">
                 <Check className="h-8 w-8 text-success" />
               </div>
-              <h2 className="text-2xl font-bold text-foreground">¡Todo listo! 🎉</h2>
+              <h2 className="text-2xl font-bold text-foreground">¡Agente Listo! 🚀</h2>
             </>
           )}
         </div>
@@ -97,16 +109,15 @@ const Onboarding = () => {
       {/* Progress */}
       <div className="px-6 pt-6 pb-2">
         <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
+          {[0, 1, 2, 3, 4, 5].map((i) => (
             <div
               key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-primary" : "bg-border"
-              }`}
+              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${i <= step ? "bg-primary" : "bg-border"
+                }`}
             />
           ))}
         </div>
-        <p className="mt-3 text-sm text-muted-foreground">Paso {step + 1} de 3</p>
+        <p className="mt-3 text-sm text-muted-foreground">Paso {step + 1} de 6</p>
       </div>
 
       {/* Content */}
@@ -141,11 +152,10 @@ const Onboarding = () => {
                 <button
                   key={ind}
                   onClick={() => setIndustry(ind)}
-                  className={`rounded-2xl border-2 px-4 py-4 text-left text-sm font-medium transition-all ${
-                    industry === ind
+                  className={`rounded-2xl border-2 px-4 py-4 text-left text-sm font-medium transition-all ${industry === ind
                       ? "border-primary bg-primary/5 text-primary shadow-card"
                       : "border-border bg-card text-foreground hover:border-primary/30"
-                  }`}
+                    }`}
                 >
                   {ind}
                 </button>
@@ -166,11 +176,10 @@ const Onboarding = () => {
                 <button
                   key={net.id}
                   onClick={() => toggleNetwork(net.id)}
-                  className={`flex items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left transition-all ${
-                    socialNetworks.includes(net.id)
+                  className={`flex items-center gap-4 rounded-2xl border-2 px-5 py-4 text-left transition-all ${socialNetworks.includes(net.id)
                       ? "border-primary bg-primary/5 shadow-card"
                       : "border-border bg-card hover:border-primary/30"
-                  }`}
+                    }`}
                 >
                   <span className="text-2xl">{net.emoji}</span>
                   <span className="text-base font-medium text-foreground">{net.label}</span>
@@ -180,6 +189,80 @@ const Onboarding = () => {
                 </button>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* STEP 3: ARCHETYPE */}
+        {step === 3 && (
+          <div className="animate-fade-in">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-pastel-blue">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">Tu Personalidad</h1>
+            <p className="mt-2 text-lg text-muted-foreground">¿Cuál te representa mejor?</p>
+            <div className="mt-8 flex flex-col gap-3">
+              {[
+                { id: "Sabio", label: "El Sabio", desc: "Experto, educativo, confiable." },
+                { id: "Rebelde", label: "El Rebelde", desc: "Disruptivo, audaz, diferente." },
+                { id: "Cuidador", label: "El Cuidador", desc: "Servicial, empático, cálido." },
+                { id: "Amigo", label: "El Amigo", desc: "Cercano, realista, honesto." },
+              ].map((arch) => (
+                <button
+                  key={arch.id}
+                  onClick={() => setArchetype(arch.id)}
+                  className={`rounded-2xl border-2 px-5 py-4 text-left transition-all ${archetype === arch.id
+                      ? "border-primary bg-primary/5 shadow-card"
+                      : "border-border bg-card hover:border-primary/30"
+                    }`}
+                >
+                  <div className="font-semibold text-foreground">{arch.label}</div>
+                  <div className="text-sm text-muted-foreground">{arch.desc}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 4: EMOTION */}
+        {step === 4 && (
+          <div className="animate-fade-in">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-pastel-green">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">¿Qué deben sentir?</h1>
+            <p className="mt-2 text-lg text-muted-foreground">Cuando ven tu marca, sienten:</p>
+            <div className="mt-8 grid grid-cols-2 gap-3">
+              {["Confianza", "Alegría", "Calma", "Inspiración", "Pertenencia", "Adrenalina"].map((em) => (
+                <button
+                  key={em}
+                  onClick={() => setEmotionalGoal(em)}
+                  className={`rounded-2xl border-2 px-4 py-4 text-center font-medium transition-all ${emotionalGoal === em
+                      ? "border-primary bg-primary/5 text-primary shadow-card"
+                      : "border-border bg-card hover:border-primary/30"
+                    }`}
+                >
+                  {em}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* STEP 5: STORY */}
+        {step === 5 && (
+          <div className="animate-fade-in">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-pastel-purple">
+              <Sparkles className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="text-3xl font-bold text-foreground">Tu Historia</h1>
+            <p className="mt-2 text-lg text-muted-foreground">¿Por qué empezaste este negocio?</p>
+            <textarea
+              value={story}
+              onChange={(e) => setStory(e.target.value)}
+              placeholder="Ej: Empecé cocinando para mis amigos y me di cuenta que..."
+              className="mt-8 h-40 w-full rounded-2xl border-2 border-border bg-card px-5 py-4 text-lg text-foreground placeholder:text-muted-foreground/50 outline-none transition-all focus:border-primary focus:shadow-card resize-none"
+              autoFocus
+            />
           </div>
         )}
       </div>
@@ -196,18 +279,18 @@ const Onboarding = () => {
             </button>
           )}
           <button
-            onClick={() => (step < 2 ? setStep((s) => s + 1) : handleFinish())}
+            onClick={() => (step < 5 ? setStep((s) => s + 1) : handleFinish())}
             disabled={!canContinue()}
             className="flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary text-lg font-semibold text-primary-foreground transition-all hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {step < 2 ? (
+            {step < 5 ? (
               <>
                 Continuar
                 <ArrowRight className="h-5 w-5" />
               </>
             ) : (
               <>
-                ¡Empezar!
+                ¡Finalizar!
                 <Sparkles className="h-5 w-5" />
               </>
             )}

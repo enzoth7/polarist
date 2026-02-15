@@ -1,173 +1,301 @@
-import { useState } from "react";
-import { Camera, Loader2, Check, Copy, Download, X, Sparkles, Image as ImageIcon } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { X, Copy, Check, Download, ImageIcon, Loader2 } from "lucide-react";
 import { useBusinessProfile } from "@/hooks/useBusinessProfile";
-import { format } from "date-fns";
+import { supabase } from "@/lib/supabase";
 
 interface MissionFlowProps {
   onClose: () => void;
   missionTitle: string;
 }
 
-const SAMPLE_COPY = `✨ ¡Descubre nuestro producto estrella! ✨
-
-Lo que hace especial a nuestro negocio es la dedicación y el amor que ponemos en cada detalle.
-
-¿Ya lo probaste? ¡Cuéntanos en los comentarios! 👇
-
-#emprendimiento #negociolocal #calidad`;
+const N8N_WEBHOOK_URL = "http://localhost:5678/webhook/webhook-image"; // Updated with new flow if needed
 
 const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
   const { completeMission } = useBusinessProfile();
-  const [step, setStep] = useState(0);
-  const [copied, setCopied] = useState(false);
+  const [step, setStep] = useState<"upload" | "processing" | "result">("upload");
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleUpload = () => {
-    // Simulate upload
-    setStep(1);
-    // Simulate AI processing
-    setTimeout(() => setStep(2), 3000);
+  // New Inputs
+  const [promoText, setPromoText] = useState("");
+  const [intent, setIntent] = useState("promotion"); // default
+
+  // Result state
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [selectedResult, setSelectedResult] = useState<string | null>(null);
+  const [generatedCopy, setGeneratedCopy] = useState(""); // Still useful
+  const [copyCopied, setCopyCopied] = useState(false);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [missionId, setMissionId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!missionId) return;
+
+    // Realtime subscription to the specific mission
+    const channel = supabase
+      .channel(`mission-${missionId}`)
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'missions', filter: `id=eq.${missionId}` },
+        (payload) => {
+          console.log('Update received!', payload);
+          const newData = payload.new as any;
+          if (newData.generated_images && newData.generated_images.length > 0) {
+            setGeneratedImages(newData.generated_images);
+            setSelectedResult(newData.generated_images[0]); // Default to first
+            setStep("result");
+            setIsUploading(false);
+
+            // Mock copy for now as n8n might not sending it yet
+            setGeneratedCopy(
+              `¡Increíble foto para "${missionTitle}"! 🌟\n\nAquí tienes un copy sugerido:\n\n"${promoText || "Descubre la magia"}. ✨ Hecho con pasión para ti."`
+            );
+            completeMission(new Date().toISOString().split('T')[0]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [missionId, missionTitle, promoText, completeMission]);
+
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(SAMPLE_COPY);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleUploadAndProcess = async () => {
+    if (!selectedImage) return;
+    setIsUploading(true);
+    setStep("processing");
+
+    try {
+      // 1. Upload to Supabase Storage
+      const filename = `${Date.now()}_${selectedImage.name.replace(/\s/g, '_')}`;
+      const { error: uploadError } = await supabase.storage
+        .from('mission-uploads')
+        .upload(filename, selectedImage);
+
+      if (uploadError) throw uploadError;
+
+      // 2. Get Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('mission-uploads')
+        .getPublicUrl(filename);
+
+      // 3. Create Mission Record in Supabase (to track status)
+      const { data: missionData, error: missionError } = await supabase
+        .from('missions')
+        .insert({
+          status: 'processing',
+          product_image_url: publicUrl,
+          mission_title: missionTitle,
+          promo_text: promoText,
+          intent: intent,
+        })
+        .select()
+        .single();
+
+      if (missionError) throw missionError;
+
+      const newMissionId = missionData.id;
+      setMissionId(newMissionId);
+
+      // 4. Send to n8n (including mission_id so n8n connects back)
+      await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          image_url: publicUrl,
+          mission_title: missionTitle,
+          mission_id: newMissionId, // CRITICAL: n8n needs this to update DB
+          promo_text: promoText,
+          intent: intent
+        })
+      });
+
+      // No setTimeout here! We wait for Realtime update in useEffect.
+      // Fallback timeout in case n8n fails or realtime issues?
+      // Optional: keep a timeout to warn user if it takes too long.
+
+    } catch (error: any) {
+      console.error("Upload failed:", error);
+      setIsUploading(false);
+      setStep("upload");
+      alert(`Error: ${error.message || JSON.stringify(error)}`);
+    }
   };
 
-  const handleComplete = () => {
-    completeMission(format(new Date(), "yyyy-MM-dd"));
-    onClose();
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(generatedCopy);
+    setCopyCopied(true);
+    setTimeout(() => setCopyCopied(false), 2000);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between px-5 py-4">
-        <h3 className="text-lg font-semibold text-foreground">Tu Misión</h3>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-fade-in">
+      <div className="w-full max-w-2xl bg-card rounded-3xl p-6 shadow-2xl border border-white/10 relative overflow-hidden flex flex-col max-h-[90vh]">
+
+        {/* Close Button */}
         <button
           onClick={onClose}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-border"
+          className="absolute top-4 right-4 p-2 rounded-full bg-black/20 text-muted-foreground hover:text-foreground transition-colors z-10"
         >
           <X className="h-5 w-5" />
         </button>
-      </div>
 
-      {/* Progress */}
-      <div className="px-5 pb-4">
-        <div className="flex gap-2">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className={`h-1.5 flex-1 rounded-full transition-all duration-500 ${
-                i <= step ? "bg-primary" : "bg-border"
-              }`}
-            />
-          ))}
+        {/* Header */}
+        <div className="text-center mb-6">
+          <h2 className="text-xl font-bold text-foreground">{missionTitle}</h2>
+          <p className="text-sm text-muted-foreground mt-1">
+            {step === "upload" && "Configura tu anuncio"}
+            {step === "processing" && "Diseñando 4 opciones para ti..."}
+            {step === "result" && "¡Elige tu diseño favorito!"}
+          </p>
         </div>
-      </div>
 
-      {/* Content */}
-      <div className="flex-1 overflow-auto px-5 pb-8">
-        {step === 0 && (
-          <div className="animate-fade-in flex flex-col items-center pt-8">
-            <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-pastel-pink">
-              <Camera className="h-10 w-10 text-primary" />
-            </div>
-            <h2 className="text-2xl font-bold text-foreground text-center">{missionTitle}</h2>
-            <p className="mt-3 text-center text-muted-foreground max-w-xs">
-              Busca un lugar con buena luz natural. ¡No necesitas ser fotógrafo profesional!
-            </p>
-            <div className="mt-8 flex w-full flex-col gap-3">
-              <button
-                onClick={handleUpload}
-                className="flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-lg font-semibold text-primary-foreground transition-all hover:opacity-90"
+        {/* Content Scrollable */}
+        <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+          {step === "upload" && (
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Left: Image Upload */}
+              <div
+                onClick={() => fileInputRef.current?.click()}
+                className="border-2 border-dashed border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center gap-4 cursor-pointer hover:bg-white/5 transition-colors aspect-square relative overflow-hidden"
               >
-                <Camera className="h-5 w-5" />
-                Tomar Foto
-              </button>
-              <button
-                onClick={handleUpload}
-                className="flex items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card py-4 text-lg font-semibold text-foreground transition-all hover:border-primary/30"
-              >
-                <ImageIcon className="h-5 w-5" />
-                Subir desde Galería
-              </button>
-            </div>
-          </div>
-        )}
+                {previewUrl ? (
+                  <img src={previewUrl} alt="Preview" className="absolute inset-0 w-full h-full object-cover" />
+                ) : (
+                  <>
+                    <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                      <ImageIcon className="h-6 w-6" />
+                    </div>
+                    <p className="text-sm text-muted-foreground text-center">Toca para subir producto</p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                />
+              </div>
 
-        {step === 1 && (
-          <div className="animate-fade-in flex flex-col items-center justify-center pt-16">
-            <div className="relative mb-8">
-              <div className="h-24 w-24 rounded-3xl bg-primary/10 flex items-center justify-center">
-                <Sparkles className="h-12 w-12 text-primary animate-pulse-soft" />
+              {/* Right: Form inputs */}
+              <div className="flex flex-col gap-4 justify-center">
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Intención</label>
+                  <select
+                    value={intent}
+                    onChange={(e) => setIntent(e.target.value)}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="promotion">Promoción / Descuento</option>
+                    <option value="new_arrival">Nuevo Ingreso</option>
+                    <option value="lifestyle">Lifestyle / Branding</option>
+                    <option value="informational">Informativo</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-muted-foreground uppercase mb-1 block">Texto Promocional</label>
+                  <input
+                    type="text"
+                    value={promoText}
+                    onChange={(e) => setPromoText(e.target.value)}
+                    placeholder='Ej: "25% OFF Hoy"'
+                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
               </div>
             </div>
-            <h2 className="text-2xl font-bold text-foreground text-center">Mejorando con IA...</h2>
-            <p className="mt-3 text-center text-muted-foreground">Ajustando colores y redactando el copy perfecto</p>
-            <div className="mt-8 w-full max-w-xs space-y-4">
-              <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-primary animate-spin" />
-                <span className="text-sm text-muted-foreground">Optimizando imagen...</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-primary animate-spin" style={{ animationDelay: "0.5s" }} />
-                <span className="text-sm text-muted-foreground">Redactando copy...</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <Loader2 className="h-5 w-5 text-primary animate-spin" style={{ animationDelay: "1s" }} />
-                <span className="text-sm text-muted-foreground">Añadiendo hashtags...</span>
-              </div>
-            </div>
-          </div>
-        )}
+          )}
 
-        {step === 2 && (
-          <div className="animate-fade-in">
-            <div className="mb-6 text-center">
-              <div className="inline-flex items-center gap-2 rounded-full bg-success/10 px-4 py-2 text-sm font-semibold text-success">
-                <Check className="h-4 w-4" />
-                ¡Listo para publicar!
+          {step === "processing" && (
+            <div className="h-64 flex flex-col items-center justify-center gap-4">
+              <Loader2 className="h-12 w-12 text-primary animate-spin" />
+              <p className="text-sm text-muted-foreground animate-pulse">
+                La IA está generando variaciones de diseño...
+                <br />
+                <span className="text-xs opacity-50 block mt-2">(Esto puede tardar unos 20-40 segundos)</span>
+              </p>
+            </div>
+          )}
+
+          {step === "result" && (
+            <div className="space-y-6">
+              {/* Grid of Results */}
+              <div className="grid grid-cols-2 gap-4">
+                {generatedImages.map((imgUrl, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedResult(imgUrl)}
+                    className={`relative aspect-square rounded-xl overflow-hidden border-2 transition-all ${selectedResult === imgUrl ? 'border-primary ring-2 ring-primary/50 scale-[1.02]' : 'border-transparent hover:border-white/20'}`}
+                  >
+                    <img src={imgUrl} alt={`Option ${idx + 1}`} className="w-full h-full object-cover" />
+                    {selectedResult === imgUrl && (
+                      <div className="absolute top-2 right-2 bg-primary text-black rounded-full p-1">
+                        <Check className="h-3 w-3" />
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
-            </div>
 
-            {/* Image placeholder */}
-            <div className="mb-5 aspect-square w-full rounded-3xl bg-gradient-to-br from-pastel-blue via-pastel-purple to-pastel-pink flex items-center justify-center">
-              <div className="text-center">
-                <ImageIcon className="mx-auto h-12 w-12 text-primary/40" />
-                <p className="mt-2 text-sm text-primary/40">Vista previa de imagen</p>
-              </div>
+              {/* Action for selected result */}
+              {selectedResult && (
+                <div className="bg-white/5 rounded-xl p-4 border border-white/10 flex flex-col md:flex-row gap-4 items-center justify-between">
+                  <div className="text-sm">
+                    <p className="font-bold text-foreground">Opción Seleccionada</p>
+                    <p className="text-muted-foreground text-xs">Lista para descargar y publicar.</p>
+                  </div>
+                  <a
+                    href={selectedResult}
+                    download={`marketing-maestro-${Date.now()}.png`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:bg-white/90 transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    Descargar Imagen
+                  </a>
+                </div>
+              )}
             </div>
+          )}
+        </div>
 
-            {/* Copy text */}
-            <div className="rounded-2xl border-2 border-border bg-card p-4">
-              <p className="whitespace-pre-line text-sm text-foreground leading-relaxed">{SAMPLE_COPY}</p>
-            </div>
-
-            {/* Actions */}
-            <div className="mt-5 flex gap-3">
-              <button
-                onClick={handleCopy}
-                className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card py-3.5 text-base font-semibold text-foreground transition-all hover:border-primary/30"
-              >
-                {copied ? <Check className="h-5 w-5 text-success" /> : <Copy className="h-5 w-5" />}
-                {copied ? "¡Copiado!" : "Copiar Texto"}
-              </button>
-              <button className="flex flex-1 items-center justify-center gap-2 rounded-2xl border-2 border-border bg-card py-3.5 text-base font-semibold text-foreground transition-all hover:border-primary/30">
-                <Download className="h-5 w-5" />
-                Descargar
-              </button>
-            </div>
-
+        {/* Footer Actions */}
+        <div className="mt-8 pt-4 border-t border-white/10">
+          {step === "upload" && (
             <button
-              onClick={handleComplete}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-success py-4 text-lg font-semibold text-success-foreground transition-all hover:opacity-90"
+              onClick={handleUploadAndProcess}
+              disabled={!selectedImage}
+              className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-95"
             >
-              <Check className="h-5 w-5" />
-              ¡Misión Completada!
+              Generar 4 Diseños
             </button>
-          </div>
-        )}
+          )}
+
+          {step === "result" && (
+            <button
+              onClick={onClose}
+              className="w-full py-4 rounded-2xl bg-white/10 text-foreground font-bold text-lg hover:bg-white/20 transition-all"
+            >
+              Volver al Calendario
+            </button>
+          )}
+        </div>
+
       </div>
     </div>
   );

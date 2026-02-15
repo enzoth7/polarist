@@ -6,6 +6,12 @@ export interface BusinessProfile {
   socialNetworks: string[];
   onboardingComplete: boolean;
   completedMissions: string[]; // dates as ISO strings
+  // Psychological Profile
+  archetype: string;
+  tone: string;
+  values: string[];
+  emotionalGoal: string;
+  story: string;
 }
 
 const defaultProfile: BusinessProfile = {
@@ -14,6 +20,11 @@ const defaultProfile: BusinessProfile = {
   socialNetworks: [],
   onboardingComplete: false,
   completedMissions: [],
+  archetype: "",
+  tone: "",
+  values: [],
+  emotionalGoal: "",
+  story: "",
 };
 
 interface BusinessProfileContextType {
