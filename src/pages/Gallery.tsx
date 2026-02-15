@@ -57,14 +57,14 @@ const Gallery = () => {
             const fileExt = file.name.split('.').pop();
             const fileName = `${user.id}/${Math.random()}.${fileExt}`;
             const { error: uploadError } = await supabase.storage
-                .from('user-uploads') // Make sure this bucket exists!
+                .from('product-images')
                 .upload(fileName, file);
 
             if (uploadError) throw uploadError;
 
             // 2. Get Public URL
             const { data: { publicUrl } } = supabase.storage
-                .from('user-uploads')
+                .from('product-images')
                 .getPublicUrl(fileName);
 
             // 3. Save to Database
