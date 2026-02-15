@@ -1,42 +1,33 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
+export interface QuestionnaireItem {
+  id: number;
+  question: string;
+  answer: string;
+  category: string;
+}
+
 export interface BusinessProfile {
   brandName: string;
-  industry: string;
-  socialNetworks: string[];
   onboardingComplete: boolean;
-  completedMissions: string[]; // dates as ISO strings
-  // Psychological Profile
-  archetype: string;
-  tone: string;
-  values: string[];
-  emotionalGoal: string;
-  story: string;
+  questionnaire: QuestionnaireItem[];
 }
 
 const defaultProfile: BusinessProfile = {
   brandName: "",
-  industry: "",
-  socialNetworks: [],
   onboardingComplete: false,
-  completedMissions: [],
-  archetype: "",
-  tone: "",
-  values: [],
-  emotionalGoal: "",
-  story: "",
+  questionnaire: [],
 };
 
 interface BusinessProfileContextType {
   profile: BusinessProfile;
   updateProfile: (updates: Partial<BusinessProfile>) => void;
-  completeMission: (date: string) => void;
   resetProfile: () => void;
 }
 
 const BusinessProfileContext = createContext<BusinessProfileContextType | null>(null);
 
-const STORAGE_KEY = "marketingfacil_profile";
+const STORAGE_KEY = "visual_growth_system_profile";
 
 export function BusinessProfileProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<BusinessProfile>(() => {
@@ -56,17 +47,10 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
     setProfile((prev) => ({ ...prev, ...updates }));
   };
 
-  const completeMission = (date: string) => {
-    setProfile((prev) => ({
-      ...prev,
-      completedMissions: [...new Set([...prev.completedMissions, date])],
-    }));
-  };
-
   const resetProfile = () => setProfile(defaultProfile);
 
   return (
-    <BusinessProfileContext.Provider value={{ profile, updateProfile, completeMission, resetProfile }}>
+    <BusinessProfileContext.Provider value={{ profile, updateProfile, resetProfile }}>
       {children}
     </BusinessProfileContext.Provider>
   );

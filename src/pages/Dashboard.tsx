@@ -1,19 +1,20 @@
-import { useState } from "react";
-import { useBusinessProfile } from "@/hooks/useBusinessProfile";
-import MonthlyCalendar from "@/components/MonthlyCalendar";
-import { TrendingUp, Lightbulb, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useBusinessProfile } from "@/hooks/useBusinessProfile";
+import { Settings, Image as ImageIcon, Sparkles, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   const { profile } = useBusinessProfile();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (!profile.onboardingComplete) {
-      navigate("/");
-    }
-  }, [profile.onboardingComplete, navigate]);
+  // Helper to find answer by category or id
+  const getAnswer = (categoryPart: string) => {
+    return profile.questionnaire?.find(q => q.category.includes(categoryPart))?.answer || "N/A";
+  };
+
+  const brandName = profile.brandName || "Mi Negocio";
+  const archetype = profile.questionnaire?.find(q => q.id === 2)?.answer || ""; // Personalidad (ID 2)
+  const goal = profile.questionnaire?.find(q => q.id === 1)?.answer || ""; // Meta (ID 1)
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -23,67 +24,73 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-8">
+    <div className="min-h-screen bg-background pb-8 p-6">
       {/* Header */}
-      <div className="px-5 pt-6 pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-muted-foreground">{greeting()} 👋</p>
-            <h1 className="text-2xl font-bold text-foreground">{profile.brandName}</h1>
-          </div>
-          <button
-            onClick={() => navigate("/preferences")}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-border"
-          >
-            <Settings className="h-5 w-5" />
-          </button>
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <p className="text-sm text-muted-foreground">{greeting()} 👋</p>
+          <h1 className="text-2xl font-bold text-foreground">{brandName}</h1>
         </div>
-        <p className="mt-3 text-base text-muted-foreground">
-          Hoy es un gran día para hacer crecer tu negocio 🚀
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => navigate("/preferences")}
+        >
+          <Settings className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Identity Summary Card */}
+      <div className="bg-card rounded-xl p-6 border shadow-sm mb-8 animate-fade-in text-card-foreground">
+        <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-primary" />
+          Tu Identidad de Marca
+        </h2>
+
+        <div className="grid grid-cols-1 gap-4">
+          <div className="p-3 bg-secondary/50 rounded-lg">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-1">Arquetipo</span>
+            <span className="font-medium capitalize">{archetype.replace('_', ' ')}</span>
+          </div>
+          <div className="p-3 bg-secondary/50 rounded-lg">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider block mb-1">Meta Principal</span>
+            <span className="font-medium capitalize">{goal.replace('_', ' ')}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Action: Gallery */}
+      <div className="rounded-xl border border-dashed border-primary/30 bg-primary/5 p-8 text-center mb-8">
+        <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 text-primary">
+          <ImageIcon className="w-8 h-8" />
+        </div>
+        <h3 className="text-xl font-bold mb-2">Galería de Estilo</h3>
+        <p className="text-muted-foreground mb-6 max-w-sm mx-auto">
+          Sube tus imágenes de referencia y revisa las propuestas generadas por la IA.
         </p>
-      </div>
-
-      {/* Stats bar */}
-      <div className="mx-5 mt-8 flex gap-4">
-        <div className="flex flex-1 items-center gap-3 rounded-3xl bg-card p-5 shadow-card transition-transform hover:scale-[1.02] border border-white/5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-green-500/10 text-green-400">
-            <TrendingUp className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-foreground">{profile.completedMissions.length}</p>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Misiones</p>
-          </div>
-        </div>
-        <div className="flex flex-1 items-center gap-3 rounded-3xl bg-card p-5 shadow-card transition-transform hover:scale-[1.02] border border-white/5">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-yellow-500/10 text-yellow-400">
-            <Lightbulb className="h-6 w-6" />
-          </div>
-          <div>
-            <p className="text-2xl font-bold text-foreground">{Math.min(profile.completedMissions.length, 7)}</p>
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Racha 🔥</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Monthly Calendar */}
-      <div className="mx-5 mt-8">
-        <MonthlyCalendar completedDates={profile.completedMissions} />
+        <Button
+          size="lg"
+          className="w-full sm:w-auto px-8"
+          onClick={() => navigate("/gallery")}
+        >
+          Ir a la Galería
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
       </div>
 
       {/* Tips */}
-      <div className="mx-5 mt-10">
-        <h3 className="mb-4 text-sm font-bold text-muted-foreground uppercase tracking-wider ml-1">Tips Rápidos</h3>
-        <div className="space-y-4">
+      <div>
+        <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4">
+          Tips para hoy
+        </h3>
+        <div className="space-y-3">
           {[
-            { emoji: "📸", text: "Usa luz natural para mejores fotos", color: "bg-pink-500/10 border-pink-500/20 text-pink-300" },
-            { emoji: "⏰", text: "Publica entre 10am y 2pm para más alcance", color: "bg-blue-500/10 border-blue-500/20 text-blue-300" },
-            { emoji: "💬", text: "Responde comentarios en los primeros 30 min", color: "bg-yellow-500/10 border-yellow-500/20 text-yellow-300" },
+            { emoji: "📸", text: "Mejores referencias = Mejores resultados de IA." },
+            { emoji: "🎨", text: "Mantén coherencia con tu paleta de colores." },
           ].map((tip, i) => (
-            <div key={i} className="flex items-center gap-4 rounded-3xl bg-card p-5 shadow-card transition-transform hover:translate-x-1 border border-white/5">
-              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${tip.color} shrink-0`}>
-                <span className="text-xl">{tip.emoji}</span>
-              </div>
-              <p className="text-base font-medium text-foreground leading-snug">{tip.text}</p>
+            <div key={i} className="flex items-center gap-3 p-4 bg-card rounded-xl border border-border/50">
+              <span className="text-xl">{tip.emoji}</span>
+              <p className="text-sm font-medium">{tip.text}</p>
             </div>
           ))}
         </div>

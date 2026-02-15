@@ -9,6 +9,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
+import Gallery from "./pages/Gallery";
 import Preferences from "./pages/Preferences";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/onboarding" element={<Onboarding />} />
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/gallery" element={<Gallery />} />
             <Route path="/preferences" element={<Preferences />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

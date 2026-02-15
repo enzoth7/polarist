@@ -1,23 +1,58 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase'; // Import supabase client
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, UserPlus } from 'lucide-react';
+import { ArrowLeft, UserPlus, Loader2 } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 const Signup = () => {
     const navigate = useNavigate();
+    const { toast } = useToast();
+
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement Supabase authentication
-        console.log('Signup attempt:', { name, email, password });
+        setLoading(true);
 
-        // For MVP, redirect to onboarding
-        navigate('/onboarding');
+        try {
+            // 1. Sign up user
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        full_name: name,
+                    },
+                },
+            });
+
+            if (error) throw error;
+
+            if (data.user) {
+                toast({
+                    title: "¡Cuenta creada!",
+                    description: "Bienvenido a Visual Growth System.",
+                });
+                // Redirect to onboarding to complete profile
+                navigate('/onboarding');
+            }
+
+        } catch (error: any) {
+            console.error('Signup error:', error);
+            toast({
+                title: "Error al registrarse",
+                description: error.message || "Inténtalo de nuevo.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -46,7 +81,7 @@ const Signup = () => {
                     <div className="space-y-4">
                         {/* Name */}
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nombre completo</Label>
+                            <Label htmlFor="name">Marca</Label>
                             <Input
                                 id="name"
                                 type="text"
@@ -55,6 +90,7 @@ const Signup = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 required
                                 className="h-12"
+                                disabled={loading}
                             />
                         </div>
 
@@ -69,6 +105,7 @@ const Signup = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="h-12"
+                                disabled={loading}
                             />
                         </div>
 
@@ -82,19 +119,24 @@ const Signup = () => {
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
-                                minLength={8}
+                                minLength={6}
                                 className="h-12"
+                                disabled={loading}
                             />
                             <p className="text-xs text-muted-foreground">
-                                Debe tener al menos 8 caracteres
+                                Debe tener al menos 6 caracteres
                             </p>
                         </div>
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" size="lg" className="w-full h-12">
-                        <UserPlus className="w-5 h-5 mr-2" />
-                        Crear Cuenta
+                    <Button type="submit" size="lg" className="w-full h-12" disabled={loading}>
+                        {loading ? (
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        ) : (
+                            <UserPlus className="w-5 h-5 mr-2" />
+                        )}
+                        {loading ? "Creando cuenta..." : "Crear Cuenta"}
                     </Button>
                 </form>
 

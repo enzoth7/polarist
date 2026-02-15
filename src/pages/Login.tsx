@@ -1,22 +1,54 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, LogIn } from 'lucide-react';
+import { ArrowLeft, LogIn, Loader2 } from 'lucide-react';
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
     const navigate = useNavigate();
+    const { toast } = useToast();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement Supabase authentication
-        console.log('Login attempt:', { email, password });
+        setLoading(true);
 
-        // For MVP, redirect to onboarding
-        navigate('/onboarding');
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            if (error) throw error;
+
+            if (data.session) {
+                toast({
+                    title: "Sesión iniciada",
+                    description: "¡Hola de nuevo!",
+                });
+
+                // Check if onboarding is complete (optional optimization: fetch profile here)
+                // For now, let the dashboard handle redirection or just go to dashboard
+                navigate('/dashboard');
+            }
+        } catch (error: any) {
+            console.error('Login error:', error);
+            toast({
+                title: "Error al iniciar sesión",
+                description: error.message === "Invalid login credentials"
+                    ? "Credenciales incorrectas."
+                    : "Ocurrió un error. Inténtalo de nuevo.",
+                variant: "destructive",
+            });
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
@@ -54,6 +86,7 @@ const Login = () => {
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
                                 className="h-12"
+                                disabled={loading}
                             />
                         </div>
 
@@ -68,14 +101,19 @@ const Login = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                                 className="h-12"
+                                disabled={loading}
                             />
                         </div>
                     </div>
 
                     {/* Submit Button */}
-                    <Button type="submit" size="lg" className="w-full h-12">
-                        <LogIn className="w-5 h-5 mr-2" />
-                        Iniciar Sesión
+                    <Button type="submit" size="lg" className="w-full h-12" disabled={loading}>
+                        {loading ? (
+                            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        ) : (
+                            <LogIn className="w-5 h-5 mr-2" />
+                        )}
+                        {loading ? "Iniciando..." : "Iniciar Sesión"}
                     </Button>
                 </form>
 

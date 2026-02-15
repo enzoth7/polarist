@@ -1,116 +1,142 @@
 import { useState } from "react";
-import { useBusinessProfile } from "@/hooks/useBusinessProfile";
-import { ArrowLeft, Save, Sparkles } from "lucide-react";
+import { useBusinessProfile, QuestionnaireItem } from "@/hooks/useBusinessProfile";
+import { ArrowLeft, Save, RefreshCw, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/use-toast";
 
 const Preferences = () => {
-    const { profile, updateProfile } = useBusinessProfile();
+    const { profile, updateProfile, resetProfile } = useBusinessProfile();
     const navigate = useNavigate();
-    const [formData, setFormData] = useState(profile);
-    const [saved, setSaved] = useState(false);
+    const { toast } = useToast();
 
-    const handleChange = (field: string, value: any) => {
-        setFormData((prev) => ({ ...prev, [field]: value }));
-        setSaved(false);
+    // We only allow editing the brand name directly here. 
+    // To change strategy, they should retake the questionnaire.
+    const [brandName, setBrandName] = useState(profile.brandName);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+
+            if (user) {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        full_name: brandName,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', user.id);
+
+                if (error) throw error;
+            }
+
+            updateProfile({ brandName });
+            toast({ title: "Cambios guardados" });
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: "Error al guardar",
+                variant: "destructive"
+            });
+        } finally {
+            setIsSaving(false);
+        }
     };
 
-    const handleSave = () => {
-        updateProfile(formData);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+    const handleSignOut = async () => {
+        await supabase.auth.signOut();
+        resetProfile();
+        navigate("/");
+    };
+
+    const handleRetakeOnboarding = () => {
+        if (confirm("¿Estás seguro? Esto sobrescribirá tu estrategia actual.")) {
+            navigate("/onboarding");
+        }
     };
 
     return (
-        <div className="min-h-screen bg-background pb-8 animate-fade-in">
+        <div className="min-h-screen bg-background pb-8 animate-fade-in p-6">
             {/* Header */}
-            <div className="px-5 pt-6 pb-2 flex items-center justify-between">
-                <button
-                    onClick={() => navigate("/dashboard")}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-card text-muted-foreground transition-all hover:bg-border border border-white/5"
-                >
+            <div className="flex items-center justify-between mb-8">
+                <Button variant="ghost" size="icon" onClick={() => navigate("/dashboard")}>
                     <ArrowLeft className="h-5 w-5" />
-                </button>
-                <h1 className="text-xl font-bold text-foreground">Ajustes</h1>
-                <div className="w-10" /> {/* Spacer */}
+                </Button>
+                <h1 className="text-xl font-bold">Ajustes de Marca</h1>
+                <div className="w-10" />
             </div>
 
-            <div className="px-5 mt-6 space-y-6">
-                {/* Section: Identity */}
+            <div className="max-w-xl mx-auto space-y-8">
+                {/* Brand Name Section */}
                 <section className="space-y-4">
-                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider ml-1">Identidad</h2>
-
-                    <div className="rounded-3xl bg-card p-5 border border-white/5 space-y-4">
-                        <div>
-                            <label className="text-xs font-medium text-muted-foreground block mb-2">Nombre del Negocio</label>
-                            <input
-                                type="text"
-                                value={formData.brandName}
-                                onChange={(e) => handleChange("brandName", e.target.value)}
-                                className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:border-primary/50 outline-none transition-colors"
-                            />
-                        </div>
-                        <div>
-                            <label className="text-xs font-medium text-muted-foreground block mb-2">Industria</label>
-                            <input
-                                type="text"
-                                value={formData.industry}
-                                onChange={(e) => handleChange("industry", e.target.value)}
-                                className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:border-primary/50 outline-none transition-colors"
-                            />
-                        </div>
+                    <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
+                        Información General
+                    </h2>
+                    <div className="bg-card rounded-xl p-6 border border-border">
+                        <label className="text-sm font-medium mb-2 block">Nombre de la Marca</label>
+                        <Input
+                            value={brandName}
+                            onChange={(e) => setBrandName(e.target.value)}
+                            className="bg-background"
+                        />
+                        <Button
+                            className="w-full mt-4"
+                            onClick={handleSave}
+                            disabled={isSaving}
+                        >
+                            {isSaving ? "Guardando..." : "Guardar Nombre"}
+                            <Save className="w-4 h-4 ml-2" />
+                        </Button>
                     </div>
                 </section>
 
-                {/* Section: Psychology */}
+                {/* Strategy Summary Section */}
                 <section className="space-y-4">
-                    <div className="flex items-center gap-2 ml-1">
-                        <Sparkles className="h-4 w-4 text-purple-400" />
-                        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">Psicología de Marca</h2>
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
+                            Estrategia Actual
+                        </h2>
+                        <Button variant="outline" size="sm" onClick={handleRetakeOnboarding}>
+                            <RefreshCw className="w-3 h-3 mr-2" />
+                            Refacer Cuestionario
+                        </Button>
                     </div>
 
-                    <div className="rounded-3xl bg-card p-5 border border-white/5 space-y-4">
-                        <div>
-                            <label className="text-xs font-medium text-muted-foreground block mb-2">Arquetipo</label>
-                            <select
-                                value={formData.archetype}
-                                onChange={(e) => handleChange("archetype", e.target.value)}
-                                className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:border-primary/50 outline-none transition-colors appearance-none"
-                            >
-                                <option value="Sabio">El Sabio</option>
-                                <option value="Rebelde">El Rebelde</option>
-                                <option value="Cuidador">El Cuidador</option>
-                                <option value="Amigo">El Amigo</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-medium text-muted-foreground block mb-2">Objetivo Emocional</label>
-                            <input
-                                type="text"
-                                value={formData.emotionalGoal}
-                                onChange={(e) => handleChange("emotionalGoal", e.target.value)}
-                                className="w-full bg-background/50 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:border-primary/50 outline-none transition-colors"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="text-xs font-medium text-muted-foreground block mb-2">Tu Historia</label>
-                            <textarea
-                                value={formData.story}
-                                onChange={(e) => handleChange("story", e.target.value)}
-                                className="w-full h-32 bg-background/50 border border-white/10 rounded-xl px-4 py-3 text-foreground focus:border-primary/50 outline-none transition-colors resize-none"
-                            />
-                        </div>
+                    <div className="bg-card rounded-xl border border-border divide-y divide-border">
+                        {profile.questionnaire && profile.questionnaire.length > 0 ? (
+                            profile.questionnaire.map((item: QuestionnaireItem) => (
+                                <div key={item.id} className="p-4 flex flex-col gap-1">
+                                    <span className="text-xs text-muted-foreground uppercase">
+                                        {item.category}
+                                    </span>
+                                    <span className="font-medium text-foreground">
+                                        {item.answer || "—"}
+                                    </span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="p-6 text-center text-muted-foreground">
+                                No hay estrategia definida aún.
+                            </div>
+                        )}
                     </div>
                 </section>
 
-                <button
-                    onClick={handleSave}
-                    className="w-full flex items-center justify-center gap-2 rounded-2xl bg-primary py-4 text-lg font-semibold text-primary-foreground transform transition-all active:scale-95"
-                >
-                    {saved ? "¡Guardado!" : "Guardar Cambios"}
-                    <Save className="h-5 w-5" />
-                </button>
+                {/* Danger Zone / Logout */}
+                <section className="pt-8">
+                    <Button
+                        variant="destructive"
+                        className="w-full"
+                        onClick={handleSignOut}
+                    >
+                        <LogOut className="w-4 h-4 mr-2" />
+                        Cerrar Sesión
+                    </Button>
+                </section>
             </div>
         </div>
     );
