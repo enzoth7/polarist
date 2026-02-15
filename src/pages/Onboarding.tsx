@@ -200,13 +200,8 @@ const Onboarding = () => {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        console.warn("No authenticated user found. Saving to local state only.");
-        updateProfile({
-          ...profileData, // This matches the Partial<BusinessProfile>
-          onboardingComplete: true,
-          // businessName is already in profile, don't overwrite it unless we ask for it again
-        });
-        navigate("/dashboard");
+        console.error("No authenticated user found. Redirecting to login.");
+        navigate("/login");
         return;
       }
 

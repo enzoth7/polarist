@@ -1,11 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useBusinessProfile } from "@/hooks/useBusinessProfile";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
-import { Settings, Image as ImageIcon, Sparkles, ArrowRight, Download } from "lucide-react";
+import { Settings, Image as ImageIcon, Sparkles, ArrowRight, Download, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
-  const { profile } = useBusinessProfile();
+  const { profile, loading } = useBusinessProfile();
   const navigate = useNavigate();
   const { isInstallable, installApp } = useInstallPrompt();
 
@@ -20,6 +20,14 @@ const Dashboard = () => {
     if (hour < 18) return "Buenas tardes";
     return "Buenas noches";
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-8 p-6">

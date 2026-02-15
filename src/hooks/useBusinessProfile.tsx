@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 
 export interface BusinessProfile {
@@ -37,6 +37,7 @@ const defaultProfile: BusinessProfile = {
 
 interface BusinessProfileContextType {
   profile: BusinessProfile;
+  loading: boolean;
   updateProfile: (updates: Partial<BusinessProfile>) => void;
   resetProfile: () => void;
   fetchProfile: () => Promise<void>;
@@ -44,32 +45,19 @@ interface BusinessProfileContextType {
 
 const BusinessProfileContext = createContext<BusinessProfileContextType | null>(null);
 
-const STORAGE_KEY = "visual_growth_system_profile";
-
+// NO localStorage. Pure Supabase.
 export function BusinessProfileProvider({ children }: { children: ReactNode }) {
-  const [profile, setProfile] = useState<BusinessProfile>(() => {
+  const [profile, setProfile] = useState<BusinessProfile>(defaultProfile);
+  const [loading, setLoading] = useState(true);
+
+  const fetchProfile = useCallback(async () => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : defaultProfile;
-    } catch {
-      return defaultProfile;
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(profile));
-  }, [profile]);
-
-  const updateProfile = (updates: Partial<BusinessProfile>) => {
-    setProfile((prev) => ({ ...prev, ...updates }));
-  };
-
-  const resetProfile = () => setProfile(defaultProfile);
-
-  const fetchProfile = async () => {
-    try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setProfile(defaultProfile);
+        return;
+      }
 
       const { data, error } = await supabase
         .from('profiles')
@@ -96,17 +84,41 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
         });
       }
     } catch (e) {
-      console.error("Error fetching profile", e);
+      console.error("Error fetching profile from Supabase:", e);
+    } finally {
+      setLoading(false);
     }
-  };
-
-  // Fetch on mount if user is logged in
-  useEffect(() => {
-    fetchProfile();
   }, []);
 
+  // Update local state immediately, then sync to Supabase
+  const updateProfile = (updates: Partial<BusinessProfile>) => {
+    setProfile((prev) => ({ ...prev, ...updates }));
+  };
+
+  const resetProfile = () => setProfile(defaultProfile);
+
+  // Fetch on mount
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
+
+  // Re-fetch when auth state changes (login/logout)
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (session?.user) {
+          fetchProfile();
+        } else {
+          setProfile(defaultProfile);
+        }
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [fetchProfile]);
+
   return (
-    <BusinessProfileContext.Provider value={{ profile, updateProfile, resetProfile, fetchProfile }}>
+    <BusinessProfileContext.Provider value={{ profile, loading, updateProfile, resetProfile, fetchProfile }}>
       {children}
     </BusinessProfileContext.Provider>
   );
