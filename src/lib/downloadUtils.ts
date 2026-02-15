@@ -21,16 +21,19 @@ export const forceDownload = async (url: string, filename: string) => {
                     text: '',
                 });
                 return; // Shared successfully
+            } else {
+                throw new Error('Share API not supported');
             }
         } catch (e) {
             console.warn('Share API failed, falling back to direct download:', e);
-        }
 
-        // Fallback: Direct Navigation triggers native download manager
-        const downloadUrl = new URL(url);
-        // Ensure we request strict attachment content-disposition
-        downloadUrl.searchParams.set('download', filename);
-        window.location.href = downloadUrl.toString();
+            // Fallback: Direct Navigation triggers native download manager
+            // This is the safety net if Share API fails or is not supported
+            const downloadUrl = new URL(url);
+            // Ensure we request strict attachment content-disposition
+            downloadUrl.searchParams.set('download', filename);
+            window.location.href = downloadUrl.toString();
+        }
 
     } else {
         // Strategy for Desktop (PC):
