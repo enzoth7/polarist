@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useBusinessProfile, QuestionnaireItem } from "@/hooks/useBusinessProfile";
+import { useBusinessProfile } from "@/hooks/useBusinessProfile";
 import { ArrowLeft, Save, RefreshCw, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const Preferences = () => {
 
     // We only allow editing the brand name directly here. 
     // To change strategy, they should retake the questionnaire.
-    const [brandName, setBrandName] = useState(profile.brandName);
+    const [businessName, setBusinessName] = useState(profile.businessName || "");
     const [isSaving, setIsSaving] = useState(false);
 
     const handleSave = async () => {
@@ -26,7 +26,7 @@ const Preferences = () => {
                 const { error } = await supabase
                     .from('profiles')
                     .update({
-                        full_name: brandName,
+                        business_name: businessName,
                         updated_at: new Date().toISOString()
                     })
                     .eq('id', user.id);
@@ -34,7 +34,7 @@ const Preferences = () => {
                 if (error) throw error;
             }
 
-            updateProfile({ brandName });
+            updateProfile({ businessName });
             toast({ title: "Cambios guardados" });
         } catch (error) {
             console.error(error);
@@ -79,8 +79,8 @@ const Preferences = () => {
                     <div className="bg-card rounded-xl p-6 border border-border">
                         <label className="text-sm font-medium mb-2 block">Nombre de la Marca</label>
                         <Input
-                            value={brandName}
-                            onChange={(e) => setBrandName(e.target.value)}
+                            value={businessName}
+                            onChange={(e) => setBusinessName(e.target.value)}
                             className="bg-background"
                         />
                         <Button

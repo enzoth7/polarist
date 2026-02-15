@@ -23,6 +23,18 @@ interface Question {
 // 10-Question Survey Data
 const QUESTIONS: Question[] = [
   {
+    id: 11, // Using 11 to avoiding renumbering conflict logic, will act as step 0 effectively
+    category: "Industria",
+    text: "¿Cuál es la categoría de tu negocio?",
+    description: "Para adaptar las recomendaciones a tu nicho.",
+    options: [
+      { label: "Restaurante / Cafetería", value: "gastronomia", description: "Comida, bebida y servicio." },
+      { label: "Moda / Retail", value: "moda", description: "Ropa, accesorios y productos físicos." },
+      { label: "Servicios Profesionales", value: "servicios", description: "Consultoría, salud, legal, etc." },
+      { label: "Otro", value: "otro", description: "Cualquier otro tipo de negocio." },
+    ],
+  },
+  {
     id: 1,
     category: "Meta Principal",
     text: "¿Cuál es tu meta principal para los próximos meses?",
@@ -165,50 +177,54 @@ const Onboarding = () => {
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
-    // Format answers for storage
-    const formattedAnswers = QUESTIONS.map(q => ({
-      id: q.id,
-      category: q.category,
-      question: q.text,
-      answer: answers[q.id] || ""
-    }));
+    // Map answers to database columns
+    // IDs correspond to the QUESTIONS array order. 
+    // Note: Question with ID 11 is 'business_category'
+    const profileData = {
+      business_category: answers[11] || "",
+      goal: answers[1] || "",
+      personality: answers[2] || "",
+      target_audience: answers[3] || "",
+      colors: answers[4] || "",
+      visual_style: answers[5] || "",
+      lighting: answers[6] || "",
+      image_focus: answers[7] || "",
+      tone_of_voice: answers[8] || "",
+      content_type: answers[9] || "",
+      wow_factor: answers[10] || "",
+      onboarding_completed: true,
+      updated_at: new Date().toISOString()
+    };
 
     try {
-      // 1. Get current user
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        // If no user (dev mode without auth), just save locally and redirect
         console.warn("No authenticated user found. Saving to local state only.");
         updateProfile({
+          ...profileData, // This matches the Partial<BusinessProfile>
           onboardingComplete: true,
-          questionnaire: formattedAnswers
+          // businessName is already in profile, don't overwrite it unless we ask for it again
         });
         navigate("/dashboard");
         return;
       }
 
-      // 2. Save to Supabase
       const { error } = await supabase
         .from('profiles')
-        .update({
-          brand_questionnaire: formattedAnswers,
-          onboarding_completed: true,
-          updated_at: new Date().toISOString()
-        })
+        .update(profileData)
         .eq('id', user.id);
 
       if (error) throw error;
 
-      // 3. Update local state
       updateProfile({
-        onboardingComplete: true,
-        questionnaire: formattedAnswers
+        ...profileData,
+        onboardingComplete: true
       });
 
       toast({
         title: "¡Perfil Creado!",
-        description: "Tu estrategia de marca ha sido generada con éxito.",
+        description: "Tu estrategia de marca ha sido guardada.",
       });
 
       navigate("/dashboard");

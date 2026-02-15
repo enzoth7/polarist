@@ -7,14 +7,10 @@ const Dashboard = () => {
   const { profile } = useBusinessProfile();
   const navigate = useNavigate();
 
-  // Helper to find answer by category or id
-  const getAnswer = (categoryPart: string) => {
-    return profile.questionnaire?.find(q => q.category.includes(categoryPart))?.answer || "N/A";
-  };
-
-  const brandName = profile.brandName || "Mi Negocio";
-  const archetype = profile.questionnaire?.find(q => q.id === 2)?.answer || ""; // Personalidad (ID 2)
-  const goal = profile.questionnaire?.find(q => q.id === 1)?.answer || ""; // Meta (ID 1)
+  const brandName = profile.businessName || "Mi Negocio";
+  // Fallback to "N/A" if empty
+  const archetype = profile.personality || "—";
+  const goal = profile.goal || "—";
 
   const greeting = () => {
     const hour = new Date().getHours();

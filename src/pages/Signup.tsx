@@ -27,7 +27,7 @@ const Signup = () => {
                 password,
                 options: {
                     data: {
-                        full_name: name,
+                        business_name: name, // Save as business_name in metadata
                     },
                 },
             });
@@ -35,6 +35,13 @@ const Signup = () => {
             if (error) throw error;
 
             if (data.user) {
+                // Manually update profile to ensure business_name is set in the table
+                // (In case trigger doesn't map it correctly)
+                await supabase
+                    .from('profiles')
+                    .update({ business_name: name })
+                    .eq('id', data.user.id);
+
                 toast({
                     title: "¡Cuenta creada!",
                     description: "Bienvenido a Visual Growth System.",
