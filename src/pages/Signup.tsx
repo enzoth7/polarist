@@ -92,7 +92,7 @@ const Signup = () => {
                             <Input
                                 id="name"
                                 type="text"
-                                placeholder="Juan Pérez"
+                                placeholder="Nombre de tu marca o negocio"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 required

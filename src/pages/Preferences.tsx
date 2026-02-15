@@ -106,23 +106,18 @@ const Preferences = () => {
                         </Button>
                     </div>
 
-                    <div className="bg-card rounded-xl border border-border divide-y divide-border">
-                        {profile.questionnaire && profile.questionnaire.length > 0 ? (
-                            profile.questionnaire.map((item: QuestionnaireItem) => (
-                                <div key={item.id} className="p-4 flex flex-col gap-1">
-                                    <span className="text-xs text-muted-foreground uppercase">
-                                        {item.category}
-                                    </span>
-                                    <span className="font-medium text-foreground">
-                                        {item.answer || "—"}
-                                    </span>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="p-6 text-center text-muted-foreground">
-                                No hay estrategia definida aún.
-                            </div>
-                        )}
+                    <div className="bg-card rounded-xl border border-border divide-y divide-border text-sm">
+                        <StrategyItem label="Categoría" value={profile.businessCategory} />
+                        <StrategyItem label="Meta Principal" value={profile.goal} />
+                        <StrategyItem label="Personalidad" value={profile.personality} />
+                        <StrategyItem label="Cliente Objetivo" value={profile.target_audience} />
+                        <StrategyItem label="Colores" value={profile.colors} />
+                        <StrategyItem label="Estilo Visual" value={profile.visual_style} />
+                        <StrategyItem label="Iluminación" value={profile.lighting} />
+                        <StrategyItem label="Enfoque" value={profile.image_focus} />
+                        <StrategyItem label="Tono de Voz" value={profile.tone_of_voice} />
+                        <StrategyItem label="Contenido" value={profile.content_type} />
+                        <StrategyItem label="Factor Wow" value={profile.wow_factor} />
                     </div>
                 </section>
 
@@ -141,5 +136,16 @@ const Preferences = () => {
         </div>
     );
 };
+
+const StrategyItem = ({ label, value }: { label: string; value: string }) => (
+    <div className="p-4 flex flex-col gap-1">
+        <span className="text-xs text-muted-foreground uppercase tracking-wide">
+            {label}
+        </span>
+        <span className="font-medium text-foreground capitalize">
+            {value ? value.replace(/_/g, " ") : "—"}
+        </span>
+    </div>
+);
 
 export default Preferences;
