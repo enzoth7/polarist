@@ -540,6 +540,7 @@ const Gallery = () => {
                         Email: {debugInfo.email}
                     </div>
                     <div className="text-right">
+                        <span>v1.2.0 (PERSIST CHECK)</span> <br />
                         Campaigns Found: {campaigns.length} <br />
                         Loading: {loading ? 'Yes' : 'No'}
                     </div>
