@@ -53,9 +53,20 @@ const Gallery = () => {
     const [newCampaignName, setNewCampaignName] = useState("");
     const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+    // DEBUG STATE
+    const [debugInfo, setDebugInfo] = useState<{ userId: string | null, email: string | null }>({ userId: null, email: null });
+
     useEffect(() => {
         fetchCampaigns();
+        checkUser();
     }, []);
+
+    const checkUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+            setDebugInfo({ userId: user.id, email: user.email || 'no-email' });
+        }
+    };
 
     const fetchCampaigns = async () => {
         try {
@@ -522,6 +533,17 @@ const Gallery = () => {
                         </div>
                     )}
                 </section>
+                {/* DEBUG FOOTER - REMOVE BEFORE PRODUCTION */}
+                <div className="fixed bottom-0 left-0 right-0 bg-black/90 text-white p-2 text-[10px] font-mono z-50 flex justify-between items-center opacity-70 hover:opacity-100 transition-opacity">
+                    <div>
+                        User: {debugInfo.userId || 'Not Logged In'} <br />
+                        Email: {debugInfo.email}
+                    </div>
+                    <div className="text-right">
+                        Campaigns Found: {campaigns.length} <br />
+                        Loading: {loading ? 'Yes' : 'No'}
+                    </div>
+                </div>
             </div>
         </div>
     );
