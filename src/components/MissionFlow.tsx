@@ -296,11 +296,11 @@ const MissionFlow = ({ onClose, missionTitle }: MissionFlowProps) => {
                 </div>
                 <a
                   href={selectedResult}
-                  download={`marketing-maestro-${Date.now()}.png`}
+                  download={`polarist-${Date.now()}.png`}
                   target="_blank"
                   onClick={(e) => {
                     e.preventDefault();
-                    forceDownload(selectedResult, `marketing-maestro-${Date.now()}.png`);
+                    forceDownload(selectedResult, `polarist-${Date.now()}.png`);
                   }}
                   className="flex items-center gap-2 bg-white text-black px-6 py-2 rounded-full text-sm font-bold hover:bg-white/90 transition-colors cursor-pointer"
                 >

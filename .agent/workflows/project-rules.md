@@ -1,7 +1,7 @@
 ---
-description: Project-wide rules for Visual Growth System
+description: Project-wide rules for Polarist
 ---
-# Visual Growth System - Project Rules
+# Polarist - Project Rules
 
 ## ⛔ PROHIBIDO: localStorage
 **NUNCA usar `localStorage`** en ningún archivo del proyecto. Todos los datos del usuario deben venir y guardarse exclusivamente en **Supabase**.
