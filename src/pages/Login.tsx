@@ -68,7 +68,7 @@ const Login = () => {
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-bold">Bienvenido</h1>
                     <p className="text-muted-foreground">
-                        Inicia sesión en tu cuenta de Visual Growth System
+                        Inicia sesión en tu cuenta de Polarist
                     </p>
                 </div>
 

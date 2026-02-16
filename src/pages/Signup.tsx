@@ -44,7 +44,7 @@ const Signup = () => {
 
                 toast({
                     title: "¡Cuenta creada!",
-                    description: "Bienvenido a Visual Growth System.",
+                    description: "Bienvenido a Polarist.",
                 });
                 // Redirect to onboarding to complete profile
                 navigate('/onboarding');
@@ -79,7 +79,7 @@ const Signup = () => {
                 <div className="text-center space-y-2">
                     <h1 className="text-4xl font-bold">Comienza</h1>
                     <p className="text-muted-foreground">
-                        Crea tu cuenta de Visual Growth System
+                        Crea tu cuenta de Polarist
                     </p>
                 </div>
 
