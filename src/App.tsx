@@ -13,6 +13,10 @@ import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Gallery from "./pages/Gallery";
 import Preferences from "./pages/Preferences";
+import Contact from "./pages/Contact";
+import About from "./pages/About";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import DebugDownload from "./pages/DebugDownload";
 
@@ -31,6 +35,10 @@ const App = () => (
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/debug" element={<DebugDownload />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
 
             <Route element={<ProtectedRoute />}>
               <Route path="/onboarding" element={<Onboarding />} />
