@@ -4,11 +4,15 @@ import { Instagram } from "lucide-react";
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t border-border bg-background/95 px-4 py-4">
-      <div className="mx-auto flex w-full max-w-6xl flex-col items-center justify-between gap-4 md:flex-row">
+    <footer className="w-full border-t border-border bg-background/95 px-4 py-8">
+      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-center gap-6 md:grid-cols-3">
+        {/* Left spacer - hidden on mobile, helps center nav on desktop */}
+        <div className="hidden md:block" />
+
+        {/* Center Navigation */}
         <nav
           aria-label="Footer links"
-          className="flex flex-wrap items-center justify-center gap-2 text-muted-foreground"
+          className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-muted-foreground"
         >
           <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
             <Link to="/contact">Contacto</Link>
@@ -24,7 +28,8 @@ const Footer = () => {
           </Button>
         </nav>
 
-        <div className="flex items-center gap-4">
+        {/* Right Social Icons */}
+        <div className="flex items-center justify-center gap-4 md:justify-end">
           <a
             href="https://www.instagram.com/jaquematefilms/"
             target="_blank"
