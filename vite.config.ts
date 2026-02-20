@@ -17,7 +17,31 @@ export default defineConfig(({ mode }) => ({
     // mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "apple-touch-icon.png", "icon-192.png", "icon-512.png"],
+      includeAssets: ["favicon-32x32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "Polarist_logo.jpeg"],
+      manifest: {
+        name: "Polarist",
+        short_name: "Polarist",
+        description: "Transform your business with AI-powered visual marketing automation",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#FAFAFA",
+        theme_color: "#FAFAFA",
+        orientation: "portrait-primary",
+        icons: [
+          {
+            src: "/icon-192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+          {
+            src: "/icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+      },
       workbox: {
         cleanupOutdatedCaches: true,
         skipWaiting: true,

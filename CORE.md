@@ -13,7 +13,6 @@
 
 **Filosofía de Diseño:**
 *   **"Simplicidad Radical"**: La interfaz debe ser tan intuitiva que un niño podría usarla.
-*   **"Dark Premium Minimalist"**: Estética inmersiva, fondos negros/grises profundos (`#000000`, `#141414`), texto blanco y tipografía limpia (*Inter/Outfit*).
 
 ---
 

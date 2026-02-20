@@ -33,7 +33,7 @@ const About = () => {
             </div>
           ) : (
             <img
-              src="/Logonuevo.png"
+              src="/Polarist_logo.jpeg"
               alt="Logo de Polarist"
               className="h-72 w-full rounded-xl border border-border object-contain p-6"
               onError={() => setImageError(true)}

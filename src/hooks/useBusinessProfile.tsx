@@ -6,33 +6,58 @@ export interface BusinessProfile {
   businessCategory: string; // db: business_category
   onboardingComplete: boolean; // db: onboarding_completed
 
-  // 10 Questionnaire Fields
-  goal: string;
-  personality: string;
-  target_audience: string;
-  colors: string;
-  visual_style: string;
-  lighting: string;
-  image_focus: string;
-  tone_of_voice: string;
-  content_type: string;
-  wow_factor: string;
+  brandHistory: string;
+  brandDifferential: string;
+  targetAudience: string;
+  targetAudienceExtra: string;
+  promotions: string;
+  promotionsExtra: string;
+  productsToHighlight: string;
+  operationType: string;
+  shippingScope: string;
+  contentTypePreferred: string;
+  contentResources: string;
+  cameraQuality: string;
+  salesChannels: string;
+  prioritySalesChannel: string;
+  typographyStatus: string;
+  socialPriorityGoal: string;
+  humanizationLevel: string;
+  productVisualStyle: string;
+  postingFrequency: string;
+  brandFeeling: string;
+  colorPaletteStatus: string;
+  brandColorsExtra: string;
+  brandPerception: string;
 }
 
 const defaultProfile: BusinessProfile = {
   businessName: "",
   businessCategory: "",
   onboardingComplete: false,
-  goal: "",
-  personality: "",
-  target_audience: "",
-  colors: "",
-  visual_style: "",
-  lighting: "",
-  image_focus: "",
-  tone_of_voice: "",
-  content_type: "",
-  wow_factor: "",
+  brandHistory: "",
+  brandDifferential: "",
+  targetAudience: "",
+  targetAudienceExtra: "",
+  promotions: "",
+  promotionsExtra: "",
+  productsToHighlight: "",
+  operationType: "",
+  shippingScope: "",
+  contentTypePreferred: "",
+  contentResources: "",
+  cameraQuality: "",
+  salesChannels: "",
+  prioritySalesChannel: "",
+  typographyStatus: "",
+  socialPriorityGoal: "",
+  humanizationLevel: "",
+  productVisualStyle: "",
+  postingFrequency: "",
+  brandFeeling: "",
+  colorPaletteStatus: "",
+  brandColorsExtra: "",
+  brandPerception: "",
 };
 
 interface BusinessProfileContextType {
@@ -73,16 +98,29 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
           businessName: data.business_name || "",
           businessCategory: data.business_category || "",
           onboardingComplete: data.onboarding_completed || false,
-          goal: data.goal || "",
-          personality: data.personality || "",
-          target_audience: data.target_audience || "",
-          colors: data.colors || "",
-          visual_style: data.visual_style || "",
-          lighting: data.lighting || "",
-          image_focus: data.image_focus || "",
-          tone_of_voice: data.tone_of_voice || "",
-          content_type: data.content_type || "",
-          wow_factor: data.wow_factor || "",
+          brandHistory: data.brand_history || "",
+          brandDifferential: data.brand_differential || "",
+          targetAudience: data.target_audience || "",
+          targetAudienceExtra: data.target_audience_extra || "",
+          promotions: data.promotions || "",
+          promotionsExtra: data.promotions_extra || "",
+          productsToHighlight: data.products_to_highlight || "",
+          operationType: data.operation_type || "",
+          shippingScope: data.shipping_scope || "",
+          contentTypePreferred: data.content_type_preferred || "",
+          contentResources: data.content_resources || "",
+          cameraQuality: data.camera_quality || "",
+          salesChannels: data.sales_channels || "",
+          prioritySalesChannel: data.priority_sales_channel || "",
+          typographyStatus: data.typography_status || "",
+          socialPriorityGoal: data.social_priority_goal || "",
+          humanizationLevel: data.humanization_level || "",
+          productVisualStyle: data.product_visual_style || "",
+          postingFrequency: data.posting_frequency || "",
+          brandFeeling: data.brand_feeling || "",
+          colorPaletteStatus: data.color_palette_status || "",
+          brandColorsExtra: data.brand_colors_extra || "",
+          brandPerception: data.brand_perception || "",
         });
       }
     } catch (e) {

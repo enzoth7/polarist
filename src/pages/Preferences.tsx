@@ -108,16 +108,18 @@ const Preferences = () => {
 
                     <div className="bg-card rounded-xl border border-border divide-y divide-border text-sm">
                         <StrategyItem label="Categoría" value={profile.businessCategory} />
-                        <StrategyItem label="Meta Principal" value={profile.goal} />
-                        <StrategyItem label="Personalidad" value={profile.personality} />
-                        <StrategyItem label="Cliente Objetivo" value={profile.target_audience} />
-                        <StrategyItem label="Colores" value={profile.colors} />
-                        <StrategyItem label="Estilo Visual" value={profile.visual_style} />
-                        <StrategyItem label="Iluminación" value={profile.lighting} />
-                        <StrategyItem label="Enfoque" value={profile.image_focus} />
-                        <StrategyItem label="Tono de Voz" value={profile.tone_of_voice} />
-                        <StrategyItem label="Contenido" value={profile.content_type} />
-                        <StrategyItem label="Factor Wow" value={profile.wow_factor} />
+                        <StrategyItem label="Historia" value={profile.brandHistory} />
+                        <StrategyItem label="Diferencial" value={profile.brandDifferential} />
+                        <StrategyItem label="Cliente Objetivo" value={profile.targetAudience} />
+                        <StrategyItem label="Promociones" value={profile.promotions} />
+                        <StrategyItem label="Tipo de Operación" value={profile.operationType} />
+                        <StrategyItem label="Recursos" value={profile.contentResources} />
+                        <StrategyItem label="Cámara" value={profile.cameraQuality} />
+                        <StrategyItem label="Canales de Venta" value={profile.salesChannels} />
+                        <StrategyItem label="Meta Social" value={profile.socialPriorityGoal} />
+                        <StrategyItem label="Estilo Visual" value={profile.productVisualStyle} />
+                        <StrategyItem label="Frecuencia" value={profile.postingFrequency} />
+                        <StrategyItem label="Percepción" value={profile.brandPerception} />
                     </div>
                 </section>
 
