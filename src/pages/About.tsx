@@ -12,7 +12,7 @@ const About = () => {
         <div className="space-y-5">
           <h1 className="font-heading text-3xl tracking-tight">Quiénes Somos</h1>
           <p className="font-body text-base leading-relaxed text-muted-foreground">
-            En Polarist impulsamos marcas con inteligencia artificial para crear contenido visual con estrategia,
+            En Polarist impulsamos marcas para crear contenido visual con estrategia,
             calidad y consistencia. Nuestra misión es simplificar la comunicación de negocios y emprendedores con
             herramientas que convierten ideas en imágenes listas para publicar.
           </p>
@@ -33,9 +33,9 @@ const About = () => {
             </div>
           ) : (
             <img
-              src="/Polarist_logo.jpeg"
+              src="/Logo1080x720.jpg.jpeg"
               alt="Logo de Polarist"
-              className="h-72 w-full rounded-xl border border-border object-contain p-6"
+              className="h-100 w-full rounded-xl border object-contain p-0"
               onError={() => setImageError(true)}
             />
           )}
