@@ -1,0 +1,946 @@
+{
+  "brand": {
+    "name": "Polarist",
+    "logoAlt": "Logo de Polarist"
+  },
+  "common": {
+    "returnHome": "Volver al inicio",
+    "back": "Volver",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "saving": "Guardando...",
+    "error": "Error",
+    "download": "Descargar",
+    "close": "Cerrar",
+    "notDefined": "Definir",
+    "notAvailable": "-",
+    "unknownError": "Error desconocido"
+  },
+  "landing": {
+    "navbar": {
+      "installApp": "Instalar App",
+      "continueWithGoogle": "Continuar con Google",
+      "googleLogoAlt": "Google"
+    },
+    "hero": {
+      "title": "Imágenes de producto con acabado de estudio.",
+      "description": "Llevamos tu marca al estándar visual que exigen los mercados globales."
+    },
+    "showcase": {
+      "title": "Algo de nuestro trabajo",
+      "comparatorAriaLabel": "Comparador antes y después {{index}}",
+      "previousExample": "Mostrar ejemplo anterior",
+      "nextExample": "Mostrar siguiente ejemplo",
+      "examples": {
+        "cakeBeforeAlt": "Producto torta antes",
+        "cakeAfterAlt": "Producto torta después",
+        "tacoBeforeAlt": "Producto taco antes",
+        "tacoAfterAlt": "Producto taco después"
+      }
+    }
+  },
+  "footer": {
+    "links": {
+      "contact": "Contacto",
+      "about": "Quiénes Somos",
+      "privacy": "Privacidad",
+      "terms": "Términos"
+    },
+    "social": {
+      "instagramAriaLabel": "Instagram"
+    },
+    "languageSwitcher": {
+      "label": "Seleccionar idioma",
+      "spanish": "Español",
+      "english": "English"
+    }
+  },
+  "auth": {
+    "common": {
+      "continueWithGoogle": "Continuar con Google",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "password": "Contraseña",
+      "googleErrorTitle": "Error con Google Auth"
+    },
+    "login": {
+      "title": "Bienvenido",
+      "subtitle": "Inicia sesión en tu cuenta de Polarist",
+      "orWithEmail": "O continuar con email",
+      "loading": "Iniciando...",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes una cuenta?",
+      "createOne": "Crear una",
+      "toastSuccessTitle": "Sesión iniciada",
+      "toastSuccessDescription": "¡Hola de nuevo!",
+      "toastErrorTitle": "Error al iniciar sesión",
+      "invalidCredentials": "Credenciales incorrectas.",
+      "genericError": "Ocurrió un error. Inténtalo de nuevo."
+    },
+    "signup": {
+      "title": "Comienza",
+      "subtitle": "Crea tu cuenta de Polarist",
+      "orWithEmail": "O crear cuenta con email",
+      "brandName": "Marca",
+      "brandNamePlaceholder": "Nombre de tu marca o negocio",
+      "passwordHint": "Debe tener al menos 6 caracteres",
+      "loading": "Creando cuenta...",
+      "submit": "Crear cuenta",
+      "alreadyAccount": "¿Ya tienes una cuenta?",
+      "loginAction": "Iniciar sesión",
+      "toastSuccessTitle": "¡Cuenta creada!",
+      "toastSuccessDescription": "Bienvenido a Polarist.",
+      "toastErrorTitle": "Error al registrarse",
+      "genericError": "Inténtalo de nuevo."
+    }
+  },
+  "dashboard": {
+    "brandFallback": "Tu marca",
+    "greetings": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "night": "Buenas noches"
+    },
+    "goToSettings": "Ir a configuración",
+    "visualStyle": {
+      "title": "Mi Estilo Visual",
+      "personality": "Personalidad",
+      "goal": "Mi objetivo"
+    },
+    "catalog": {
+      "badge": "Catálogo",
+      "title": "Galerías de productos",
+      "description": "Revisa tus imágenes y organiza tus productos.",
+      "cta": "Ir a mis galerías"
+    },
+    "tips": {
+      "title": "Tips para una buena foto",
+      "items": {
+        "light": {
+          "title": "Luz es todo",
+          "description": "Busca una ventana con luz natural."
+        },
+        "background": {
+          "title": "Fondo simple",
+          "description": "Usa fondo limpio para resaltar el producto."
+        },
+        "center": {
+          "title": "Producto al centro",
+          "description": "Manténlo centrado para un mejor acabado."
+        }
+      }
+    }
+  },
+  "gallery": {
+    "errors": {
+      "noUser": "No se encontró usuario"
+    },
+    "toasts": {
+      "campaignCreated": "Campaña creada",
+      "productUploaded": "Producto subido",
+      "productUploadedDescription": "Tu imagen se guardó en la campaña.",
+      "uploadErrorTitle": "Error al subir",
+      "uploadErrorDescription": "No se pudo subir la imagen.",
+      "imageDownloaded": "Imagen descargada",
+      "imageMarkedViewed": "Se marcó como vista.",
+      "markedAllSeen": "Imágenes marcadas como vistas"
+    },
+    "list": {
+      "title": "Galería de contenido",
+      "subtitle": "Organiza tus productos en campañas.",
+      "createCampaign": "Crear campaña",
+      "emptyTitle": "No tienes campañas",
+      "emptyDescription": "Crea tu primera campaña para empezar.",
+      "newImagesTitle": "Nuevas imágenes"
+    },
+    "dialog": {
+      "title": "Nueva campaña",
+      "description": "Crea una carpeta para organizar tus productos.",
+      "name": "Nombre",
+      "placeholder": "Ej: Colección Verano",
+      "create": "Crear"
+    },
+    "detail": {
+      "subtitle": "Gestiona las imágenes de esta campaña.",
+      "uploadProduct": "Subir producto",
+      "newImages": "Imágenes nuevas",
+      "enhancedImageAlt": "Contenido mejorado",
+      "newBadge": "NUEVA",
+      "markAllSeen": "Marcar todo como visto",
+      "createdImages": "Imágenes creadas",
+      "createdImageAlt": "Imagen creada",
+      "generatedTag": "Generada",
+      "uploadedImages": "Imágenes subidas",
+      "emptyCampaignTitle": "Campaña vacía",
+      "emptyCampaignDescription": "Sube fotos de tus productos a esta campaña.",
+      "uploadedImageAlt": "Producto",
+      "uploadedTag": "Subida",
+      "uploadedBadge": "SUBIDA"
+    }
+  },
+  "preferences": {
+    "title": "Ajustes de marca",
+    "generalInfo": "Información general",
+    "brandName": "Nombre de la marca",
+    "saving": "Guardando...",
+    "saveName": "Guardar nombre",
+    "currentStrategy": "Estrategia actual",
+    "retakeQuestionnaire": "Rehacer cuestionario",
+    "logout": "Cerrar sesión",
+    "confirmRetake": "¿Estás seguro? Esto sobrescribirá tu estrategia actual.",
+    "toasts": {
+      "saved": "Cambios guardados",
+      "saveError": "Error al guardar"
+    },
+    "strategy": {
+      "category": "Categoría",
+      "history": "Historia",
+      "differential": "Diferencial",
+      "targetAudience": "Cliente objetivo",
+      "promotions": "Promociones",
+      "operationType": "Tipo de operación",
+      "resources": "Recursos",
+      "camera": "Cámara",
+      "salesChannels": "Canales de venta",
+      "socialGoal": "Meta social",
+      "visualStyle": "Estilo visual",
+      "frequency": "Frecuencia",
+      "perception": "Percepción"
+    }
+  },
+  "contact": {
+    "title": "Contacto",
+    "description": "Si tienes dudas o necesitas soporte, escríbenos.",
+    "copy": "Copiar mail",
+    "copyDone": "Mail copiado"
+  },
+  "about": {
+    "title": "Quiénes somos",
+    "paragraph1": "En Polarist impulsamos marcas para crear contenido visual con estrategia y consistencia.",
+    "paragraph2": "Combinamos automatización, diseño y claridad para que cada marca crezca.",
+    "logoFallback": "Logo no disponible. Mostrando placeholder."
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "lastUpdate": "Última actualización: 18 de febrero de 2026",
+    "sections": {
+      "1": {
+        "title": "1. Información que recopilamos",
+        "body": "Recopilamos datos de cuenta, acceso y metadatos técnicos."
+      },
+      "2": {
+        "title": "2. Uso de la información",
+        "body": "Usamos tus datos para autenticar, generar imágenes y dar soporte."
+      },
+      "3": {
+        "title": "3. Proveedores y terceros",
+        "body": "Podemos usar proveedores para autenticación, almacenamiento y procesamiento."
+      },
+      "4": {
+        "title": "4. Conservación y seguridad",
+        "body": "Conservamos la información según necesidad y ley."
+      },
+      "5": {
+        "title": "5. Tus derechos",
+        "bodyBefore": "Puedes solicitar acceso, corrección o eliminación de datos. Contacto:"
+      },
+      "6": {
+        "title": "6. Cambios de política",
+        "body": "Podemos actualizar esta política periódicamente."
+      }
+    }
+  },
+  "terms": {
+    "title": "Términos y condiciones",
+    "lastUpdate": "Última actualización: 18 de febrero de 2026",
+    "sections": {
+      "1": {
+        "title": "1. Aceptación de uso",
+        "body": "Al usar Polarist aceptas estos términos."
+      },
+      "2": {
+        "title": "2. Cuenta y acceso",
+        "body": "Eres responsable de la seguridad de tu cuenta."
+      },
+      "3": {
+        "title": "3. Uso permitido",
+        "body": "No uses Polarist para contenido ilegal o abusivo."
+      },
+      "4": {
+        "title": "4. Contenido generado",
+        "body": "El usuario es responsable del uso final del contenido."
+      },
+      "5": {
+        "title": "5. Disponibilidad",
+        "body": "El servicio puede cambiar o interrumpirse sin aviso."
+      },
+      "6": {
+        "title": "6. Limitación de responsabilidad",
+        "body": "No respondemos por daños indirectos permitidos por ley."
+      },
+      "7": {
+        "title": "7. Contacto",
+        "bodyBefore": "Para dudas legales o de uso, escríbenos a"
+      }
+    }
+  },
+  "notFound": {
+    "message": "Oops! Página no encontrada"
+  },
+  "debugDownload": {
+    "title": "Herramienta debug de descarga",
+    "shareTitle": "Descargar imagen",
+    "shareText": "Aquí está tu imagen generada.",
+    "loadTestImage": "1. Cargar imagen de prueba",
+    "test1": "Test 1: Fetch + Blob (PC)",
+    "test2": "Test 2: Link directo (misma pestaña)",
+    "test3": "Test 3: Link directo (nueva pestaña)",
+    "test4": "Test 4: Share API (móvil)",
+    "logs": {
+      "fetchError": "Error al obtener imagen: {{message}}",
+      "ready": "Listo para probar con: {{url}}",
+      "method1Start": "Probando método 1...",
+      "blobCreated": "Blob creado: {{type}}, tamaño: {{size}}",
+      "linkClicked": "Link ejecutado.",
+      "methodFailed": "Falló método {{method}}: {{message}}",
+      "method2Start": "Probando método 2...",
+      "method3Start": "Probando método 3...",
+      "method4Start": "Probando método 4...",
+      "navigated": "Navegando a URL.",
+      "openedWindow": "Nueva ventana abierta.",
+      "shareSuccess": "Share API exitoso.",
+      "shareNotSupported": "Share API no soportado."
+    }
+  },
+  "missionCard": {
+    "badge": "🎯 Misión del día",
+    "start": "Empezar misión"
+  },
+  "missions": {
+    "items": {
+      "1": {
+        "title": "Sube una foto de tu producto estrella",
+        "description": "Muestra lo mejor de tu producto."
+      },
+      "2": {
+        "title": "Cuenta tu historia",
+        "description": "Comparte cómo comenzó tu marca."
+      },
+      "3": {
+        "title": "Crea una oferta especial",
+        "description": "Prepara una promoción para esta semana."
+      },
+      "4": {
+        "title": "Comparte un tip de tu industria",
+        "description": "Enséñale algo útil a tus clientes."
+      },
+      "5": {
+        "title": "Muestra tu espacio de trabajo",
+        "description": "Comparte el detrás de escena."
+      }
+    }
+  },
+  "calendar": {
+    "weekDays": [
+      "L",
+      "M",
+      "M",
+      "J",
+      "V",
+      "S",
+      "D"
+    ],
+    "backToMonth": "Volver al mes",
+    "viewCalendar": "Ver calendario",
+    "missionCompletedTitle": "¡Misión cumplida!",
+    "missionCompletedDescription": "Has completado la tarea del {{date}}."
+  },
+  "missionFlow": {
+    "steps": {
+      "upload": "Configura tu anuncio",
+      "processing": "Diseñando opciones para ti...",
+      "result": "Elige tu diseño favorito"
+    },
+    "uploadFailed": "Error: {{message}}",
+    "imagePreview": "Vista previa",
+    "tapToUpload": "Toca para subir producto",
+    "intentLabel": "Intención",
+    "promoTextLabel": "Texto promocional",
+    "promoTextPlaceholder": "Ej: 25% OFF hoy",
+    "campaignLabel": "Campaña destino",
+    "selectCampaign": "Seleccionar campaña",
+    "intents": {
+      "promotion": "Promoción / Descuento",
+      "newArrival": "Nuevo ingreso",
+      "lifestyle": "Lifestyle / Branding",
+      "informational": "Informativo"
+    },
+    "processingLine1": "La IA está generando variaciones de diseño...",
+    "processingLine2": "(Esto puede tardar 20 a 40 segundos)",
+    "optionAlt": "Opción {{index}}",
+    "selectedOptionTitle": "Opción seleccionada",
+    "selectedOptionDescription": "Lista para descargar y publicar.",
+    "downloadImage": "Descargar imagen",
+    "generateDesigns": "Generar 4 diseños",
+    "backToCalendar": "Volver al calendario"
+  },
+  "onboarding": {
+    "intro": {
+      "title": "✨ Elevemos tu marca",
+      "line1": "Configuraremos un motor visual para tus productos.",
+      "line2": "Solo te llevará 5 minutos.",
+      "cta": "Empezar cuestionario"
+    },
+    "questionProgress": "Pregunta {{current}} de {{total}}",
+    "answerPlaceholder": "Escribe tu respuesta...",
+    "optional": "Opcional",
+    "finish": "Finalizar",
+    "processing": {
+      "title": "Procesando estilo",
+      "messages": [
+        "✨ Interpretando el ADN de tu marca...",
+        "🧠 Definiendo tus arquetipos visuales...",
+        "🎨 Configurando tu paleta...",
+        "🚀 Tu universo visual está casi listo.",
+        "¡Bienvenidos a Polarist!"
+      ]
+    },
+    "toasts": {
+      "profileCreatedTitle": "Perfil creado",
+      "profileCreatedDescription": "Tu cuestionario quedó guardado correctamente.",
+      "saveErrorDescription": "No se pudo guardar tu perfil. Intenta nuevamente."
+    },
+    "questions": [
+      {
+        "id": 1,
+        "category": "🍔 Categoría",
+        "type": "single",
+        "text": "¿Qué categoría define más a tu marca?",
+        "options": [
+          {
+            "label": "A) Comida rápida",
+            "value": "comida_rapida",
+            "icon": "🍟"
+          },
+          {
+            "label": "B) Marca artesanal",
+            "value": "marca_artesanal",
+            "icon": "🧵"
+          },
+          {
+            "label": "C) Marca premium",
+            "value": "marca_premium_gourmet",
+            "icon": "🍽️"
+          },
+          {
+            "label": "D) Marca saludable",
+            "value": "marca_bienestar_saludable",
+            "icon": "🥗"
+          },
+          {
+            "label": "E) Marca disruptiva",
+            "value": "marca_moderna_disruptiva",
+            "icon": "⚡"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "category": "📖 Historia",
+        "type": "single",
+        "text": "¿Cuál es la historia de tu marca?",
+        "options": [
+          {
+            "label": "A) Proyecto personal o familiar",
+            "value": "historia_personal_familiar",
+            "icon": "👨‍👩‍👧"
+          },
+          {
+            "label": "B) Oportunidad de mercado",
+            "value": "historia_oportunidad_mercado",
+            "icon": "📈"
+          },
+          {
+            "label": "C) Pasión o sueño",
+            "value": "historia_pasion_sueno",
+            "icon": "💭"
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "category": "✨ Diferencial",
+        "type": "single",
+        "text": "¿Cuál es tu mayor diferencial?",
+        "options": [
+          {
+            "label": "A) Calidad y detalle",
+            "value": "diferencial_calidad_detalles",
+            "icon": "💎"
+          },
+          {
+            "label": "B) Experiencia con cliente",
+            "value": "diferencial_experiencia_vinculo",
+            "icon": "🤝"
+          },
+          {
+            "label": "C) Concepto y estilo",
+            "value": "diferencial_concepto_estilo",
+            "icon": "🎨"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "category": "🎯 Cliente ideal",
+        "type": "single",
+        "text": "¿Quién es tu cliente ideal?",
+        "options": [
+          {
+            "label": "A) Jóvenes",
+            "value": "cliente_ideal_jovenes",
+            "icon": "🧑‍🎓"
+          },
+          {
+            "label": "B) Adultos que valoran calidad",
+            "value": "cliente_ideal_adultos",
+            "icon": "🧑‍💼"
+          },
+          {
+            "label": "C) Público variado",
+            "value": "cliente_ideal_publico_variado",
+            "icon": "👥"
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "category": "📝 Cliente ideal",
+        "type": "text",
+        "optional": true,
+        "text": "Si no aparece tu cliente ideal, descríbelo aquí.",
+        "placeholder": "Contanos cómo es tu cliente ideal..."
+      },
+      {
+        "id": 7,
+        "category": "🎉 Promociones",
+        "type": "single",
+        "text": "¿Tienen promociones o fechas especiales?",
+        "options": [
+          {
+            "label": "A) Fechas tradicionales",
+            "value": "promociones_fechas_tradicionales",
+            "icon": "📅"
+          },
+          {
+            "label": "B) Promociones propias",
+            "value": "promociones_propias",
+            "icon": "🎁"
+          },
+          {
+            "label": "C) No",
+            "value": "sin_promociones",
+            "icon": "🚫"
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "category": "📝 Promociones",
+        "type": "text",
+        "optional": true,
+        "showIf": {
+          "questionId": 7,
+          "values": [
+            "promociones_propias"
+          ]
+        },
+        "text": "Detalla tus promociones o fechas importantes.",
+        "placeholder": "Ejemplo: 2x1 los miércoles"
+      },
+      {
+        "id": 9,
+        "category": "📸 Producto",
+        "type": "text",
+        "text": "Contanos sobre tus productos.",
+        "description": "¿Qué productos quieres destacar en redes?",
+        "placeholder": "Escribí los productos a destacar..."
+      },
+      {
+        "id": 10,
+        "category": "🏪 Operación",
+        "type": "single",
+        "text": "¿Cómo operan hoy?",
+        "options": [
+          {
+            "label": "A) Local físico",
+            "value": "operacion_local_fisico",
+            "icon": "🏬"
+          },
+          {
+            "label": "B) Delivery/envíos",
+            "value": "operacion_delivery_envios",
+            "icon": "🛵"
+          },
+          {
+            "label": "C) Solo por pedido",
+            "value": "operacion_solo_pedido",
+            "icon": "📦"
+          }
+        ]
+      },
+      {
+        "id": 11,
+        "category": "🚚 Envíos",
+        "type": "single",
+        "text": "¿Realizan envíos?",
+        "options": [
+          {
+            "label": "A) Sí, a todo el país",
+            "value": "envios_todo_el_pais",
+            "icon": "🗺️"
+          },
+          {
+            "label": "B) Solo en la ciudad",
+            "value": "envios_ciudad",
+            "icon": "🏙️"
+          },
+          {
+            "label": "C) No",
+            "value": "sin_envios",
+            "icon": "🙅"
+          }
+        ]
+      },
+      {
+        "id": 12,
+        "category": "🎬 Contenido",
+        "type": "single",
+        "text": "¿Qué contenido quieren crear?",
+        "options": [
+          {
+            "label": "A) Informativo",
+            "value": "contenido_informativo",
+            "icon": "🧠"
+          },
+          {
+            "label": "B) Entretenimiento",
+            "value": "contenido_entretenimiento",
+            "icon": "🎉"
+          },
+          {
+            "label": "C) Visual de producto",
+            "value": "contenido_visual_producto",
+            "icon": "📷"
+          }
+        ]
+      },
+      {
+        "id": 13,
+        "category": "🧰 Recursos",
+        "type": "single",
+        "text": "¿Qué recursos tienen para crear contenido?",
+        "options": [
+          {
+            "label": "A) Espacio e iluminación",
+            "value": "recursos_completos",
+            "icon": "💡"
+          },
+          {
+            "label": "B) Recursos limitados",
+            "value": "recursos_limitados",
+            "icon": "🛠️"
+          },
+          {
+            "label": "C) Sin espacio preparado",
+            "value": "sin_espacio_preparado",
+            "icon": "📭"
+          }
+        ]
+      },
+      {
+        "id": 14,
+        "category": "📱 Cámara",
+        "type": "single",
+        "text": "Calidad de cámara disponible:",
+        "options": [
+          {
+            "label": "A) Buena",
+            "value": "camara_buena",
+            "icon": "📸"
+          },
+          {
+            "label": "B) Media",
+            "value": "camara_media",
+            "icon": "📲"
+          },
+          {
+            "label": "C) Básica",
+            "value": "camara_basica",
+            "icon": "☎️"
+          }
+        ]
+      },
+      {
+        "id": 15,
+        "category": "🛒 Canales",
+        "type": "single",
+        "text": "¿Qué canales de venta usan?",
+        "options": [
+          {
+            "label": "A) Instagram/redes",
+            "value": "canales_instagram_redes",
+            "icon": "📱"
+          },
+          {
+            "label": "B) WhatsApp",
+            "value": "canales_whatsapp",
+            "icon": "💬"
+          },
+          {
+            "label": "C) Local o web",
+            "value": "canales_local_o_web",
+            "icon": "🏬"
+          },
+          {
+            "label": "D) Todos",
+            "value": "canales_todos",
+            "icon": "🌐"
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "category": "📈 Canal",
+        "type": "single",
+        "text": "¿Qué canal quieren potenciar?",
+        "options": [
+          {
+            "label": "A) Instagram",
+            "value": "potenciar_instagram",
+            "icon": "📸"
+          },
+          {
+            "label": "B) WhatsApp",
+            "value": "potenciar_whatsapp",
+            "icon": "💬"
+          },
+          {
+            "label": "C) Página web",
+            "value": "potenciar_web",
+            "icon": "🌍"
+          },
+          {
+            "label": "D) Todos",
+            "value": "potenciar_todos",
+            "icon": "🧭"
+          }
+        ]
+      },
+      {
+        "id": 17,
+        "category": "🔤 Tipografía",
+        "type": "single",
+        "text": "¿Tienen tipografía definida?",
+        "options": [
+          {
+            "label": "A) Sí, definida",
+            "value": "tipografia_definida",
+            "icon": "✒️"
+          },
+          {
+            "label": "B) Parcial",
+            "value": "tipografia_parcial",
+            "icon": "✍️"
+          },
+          {
+            "label": "C) No",
+            "value": "tipografia_no_definida",
+            "icon": "📄"
+          }
+        ]
+      },
+      {
+        "id": 18,
+        "category": "📣 Prioridad",
+        "type": "single",
+        "text": "¿Cuál es su prioridad en redes?",
+        "options": [
+          {
+            "label": "A) Atraer clientes",
+            "value": "atraer_nuevos_clientes",
+            "icon": "🧲"
+          },
+          {
+            "label": "B) Generar confianza",
+            "value": "generar_confianza",
+            "icon": "🛡️"
+          },
+          {
+            "label": "C) Fidelizar",
+            "value": "fidelizar_clientes",
+            "icon": "🔁"
+          }
+        ]
+      },
+      {
+        "id": 19,
+        "category": "🤝 Humanización",
+        "type": "single",
+        "text": "¿Qué importancia tiene humanizar la marca?",
+        "options": [
+          {
+            "label": "A) Alta",
+            "value": "humanizacion_alta",
+            "icon": "🎥"
+          },
+          {
+            "label": "B) Media",
+            "value": "humanizacion_media",
+            "icon": "🙂"
+          },
+          {
+            "label": "C) Baja",
+            "value": "humanizacion_baja",
+            "icon": "📦"
+          }
+        ]
+      },
+      {
+        "id": 20,
+        "category": "📸 Look del producto",
+        "type": "single",
+        "text": "¿Cómo quieres que se vea tu producto?",
+        "options": [
+          {
+            "label": "A) Provocativo",
+            "value": "look_provocativo",
+            "icon": "🔥"
+          },
+          {
+            "label": "B) Real y cercano",
+            "value": "look_real_cercano",
+            "icon": "😍"
+          },
+          {
+            "label": "C) Elegante y premium",
+            "value": "look_elegante_premium",
+            "icon": "✨"
+          }
+        ]
+      },
+      {
+        "id": 21,
+        "category": "⏱️ Frecuencia",
+        "type": "single",
+        "text": "¿Con qué frecuencia aparecerán en redes?",
+        "options": [
+          {
+            "label": "A) 1 vez por semana",
+            "value": "frecuencia_1_por_semana",
+            "icon": "🗓️"
+          },
+          {
+            "label": "B) 2 a 4 veces",
+            "value": "frecuencia_2_4_por_semana",
+            "icon": "⏰"
+          },
+          {
+            "label": "C) Todos los días",
+            "value": "frecuencia_todos_los_dias",
+            "icon": "🚀"
+          }
+        ]
+      },
+      {
+        "id": 22,
+        "category": "💫 Sensación",
+        "type": "single",
+        "text": "¿Qué sensación quieres generar?",
+        "options": [
+          {
+            "label": "A) Transformación",
+            "value": "sensacion_transformacion",
+            "icon": "🦋"
+          },
+          {
+            "label": "B) Reconocimiento",
+            "value": "sensacion_reconocimiento",
+            "icon": "🏅"
+          },
+          {
+            "label": "C) Pertenencia",
+            "value": "sensacion_pertenencia",
+            "icon": "🏡"
+          },
+          {
+            "label": "D) Innovación",
+            "value": "sensacion_innovacion",
+            "icon": "💡"
+          }
+        ]
+      },
+      {
+        "id": 23,
+        "category": "🎨 Paleta",
+        "type": "single",
+        "text": "¿Tienen paleta de color definida?",
+        "options": [
+          {
+            "label": "A) Sí, definida",
+            "value": "si_paleta_definida",
+            "icon": "✅"
+          },
+          {
+            "label": "B) Sí, pero quiero cambiar",
+            "value": "si_pero_quiero_cambiar",
+            "icon": "🔄"
+          },
+          {
+            "label": "C) No tengo",
+            "value": "no_tengo_paleta",
+            "icon": "🌱"
+          }
+        ]
+      },
+      {
+        "id": 24,
+        "category": "🖌️ Colores",
+        "type": "text",
+        "showIf": {
+          "questionId": 23,
+          "values": [
+            "si_pero_quiero_cambiar",
+            "no_tengo_paleta"
+          ]
+        },
+        "text": "¿Con cuáles colores identificas tu marca?",
+        "description": "Escribe hasta 3 colores.",
+        "placeholder": "Ejemplo: negro, crema, índigo"
+      },
+      {
+        "id": 25,
+        "category": "🪞 Percepción",
+        "type": "single",
+        "text": "¿Cómo quieres que perciban tu marca?",
+        "options": [
+          {
+            "label": "A) Cercana y humana",
+            "value": "cercana_y_humana",
+            "icon": "🤲"
+          },
+          {
+            "label": "B) Profesional y confiable",
+            "value": "profesional_y_confiable",
+            "icon": "🧠"
+          },
+          {
+            "label": "C) Creativa y diferente",
+            "value": "creativa_y_diferente",
+            "icon": "🎭"
+          }
+        ]
+      }
+    ]
+  }
+}

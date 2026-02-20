@@ -46,6 +46,7 @@ coverage/
 !tsconfig*.json
 !components.json
 !vitest.config.json
+!src/locales/**/translation.json
 
 # SQL files (may contain sensitive schema)
 *.sql
