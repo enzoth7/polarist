@@ -10,14 +10,14 @@ type ShowcaseExample = {
 
 const showcaseExamples: ShowcaseExample[] = [
   {
-    beforeSrc: "/cake_before.jpeg",
-    afterSrc: "/cake_after.jpeg",
+    beforeSrc: "/products/cake_before.jpeg",
+    afterSrc: "/products/cake_after.jpeg",
     beforeAlt: "Producto torta antes",
     afterAlt: "Producto torta después",
   },
   {
-    beforeSrc: "/taco_before.jpeg",
-    afterSrc: "/taco_after.jpeg",
+    beforeSrc: "/products/taco_before.jpeg",
+    afterSrc: "/products/taco_after.jpeg",
     beforeAlt: "Producto taco antes",
     afterAlt: "Producto taco después",
   },
