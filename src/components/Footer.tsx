@@ -1,32 +1,39 @@
-﻿import { Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Instagram } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
+  const { t } = useTranslation();
+
   return (
-    <footer className="w-full border-t border-border bg-[#F0F0F0]/95 px-4 py-5">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-1 gap-y-1 sm:gap-x-2">
+    <footer className="relative w-full border-t border-border bg-[#F0F0F0]/95 px-4 py-5">
+      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-x-1 gap-y-1 pr-20 sm:gap-x-2">
         <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
-          <Link to="/contact">Contacto</Link>
+          <Link to="/contact">{t("footer.links.contact")}</Link>
         </Button>
         <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
-          <Link to="/about">Quiénes Somos</Link>
+          <Link to="/about">{t("footer.links.about")}</Link>
         </Button>
         <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
-          <Link to="/privacy">Privacidad</Link>
+          <Link to="/privacy">{t("footer.links.privacy")}</Link>
         </Button>
         <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
-          <Link to="/terms">Términos</Link>
+          <Link to="/terms">{t("footer.links.terms")}</Link>
         </Button>
         <a
-          href="https://www.instagram.com/jaquematefilms/"
+          href="https://www.instagram.com/polarist.uy/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-muted-foreground transition-colors hover:text-foreground"
-          aria-label="Instagram"
+          aria-label={t("footer.social.instagramAriaLabel")}
         >
           <Instagram className="h-5 w-5" />
         </a>
+      </div>
+      <div className="absolute bottom-4 right-4">
+        <LanguageSwitcher />
       </div>
     </footer>
   );

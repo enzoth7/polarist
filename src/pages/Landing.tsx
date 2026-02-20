@@ -4,9 +4,24 @@ import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { supabase } from "@/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 const Landing = () => {
   const { isInstallable, installApp } = useInstallPrompt();
+  const { t } = useTranslation();
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      console.error("OAuth error:", error.message);
+    }
+  };
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-clip bg-background text-foreground">
@@ -22,28 +37,17 @@ const Landing = () => {
           <div className="flex items-center gap-2">
             {isInstallable && (
               <Button onClick={installApp} variant="secondary" size="sm" className="h-9 px-4 text-xs shadow-soft">
-                Instalar App
+                {t("landing.navbar.installApp")}
               </Button>
             )}
 
             <Button
               size="sm"
               className="hidden h-9 bg-accent px-4 text-xs tracking-[0.04em] text-accent-foreground shadow-soft hover:bg-accent/90 md:inline-flex"
-              onClick={async () => {
-                const { error } = await supabase.auth.signInWithOAuth({
-                  provider: "google",
-                  options: {
-                    redirectTo: `${window.location.origin}/dashboard`,
-                  },
-                });
-
-                if (error) {
-                  console.error("OAuth error:", error.message);
-                }
-              }}
+              onClick={signInWithGoogle}
             >
-              <img src="/google-logo.png" alt="Google" className="mr-2 h-4 w-4 object-contain" />
-              Continuar con Google
+              <img src="/google-logo.png" alt={t("landing.navbar.googleLogoAlt")} className="mr-2 h-4 w-4 object-contain" />
+              {t("landing.navbar.continueWithGoogle")}
             </Button>
           </div>
         </div>
@@ -53,10 +57,10 @@ const Landing = () => {
         <section className="flex w-full max-w-6xl flex-col items-center gap-14 text-center md:gap-20">
           <div className="max-w-4xl space-y-6">
             <h1 className="font-heading text-5xl leading-[1.02] tracking-[0.045em] md:text-7xl">
-              Imágenes de producto con acabado de estudio.
+              {t("landing.hero.title")}
             </h1>
             <p className="font-body mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
-              Llevamos tu marca al estándar visual que exigen los mercados globales, de forma sencilla y directa.
+              {t("landing.hero.description")}
             </p>
           </div>
 
@@ -72,21 +76,10 @@ const Landing = () => {
             <Button
               size="lg"
               className="h-11 w-full bg-accent text-sm tracking-[0.04em] text-accent-foreground shadow-soft hover:bg-accent/90"
-              onClick={async () => {
-                const { error } = await supabase.auth.signInWithOAuth({
-                  provider: "google",
-                  options: {
-                    redirectTo: `${window.location.origin}/dashboard`,
-                  },
-                });
-
-                if (error) {
-                  console.error("OAuth error:", error.message);
-                }
-              }}
+              onClick={signInWithGoogle}
             >
-              <img src="/google-logo.png" alt="Google" className="mr-2 h-4 w-4 object-contain" />
-              Continuar con Google
+              <img src="/google-logo.png" alt={t("landing.navbar.googleLogoAlt")} className="mr-2 h-4 w-4 object-contain" />
+              {t("landing.navbar.continueWithGoogle")}
             </Button>
           </div>
         </section>

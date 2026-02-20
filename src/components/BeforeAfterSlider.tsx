@@ -1,29 +1,31 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type ShowcaseExample = {
   beforeSrc: string;
   afterSrc: string;
-  beforeAlt: string;
-  afterAlt: string;
+  beforeAltKey: string;
+  afterAltKey: string;
 };
 
 const showcaseExamples: ShowcaseExample[] = [
   {
     beforeSrc: "/products/cake_before.jpeg",
     afterSrc: "/products/cake_after.jpeg",
-    beforeAlt: "Producto torta antes",
-    afterAlt: "Producto torta después",
+    beforeAltKey: "landing.showcase.examples.cakeBeforeAlt",
+    afterAltKey: "landing.showcase.examples.cakeAfterAlt",
   },
   {
     beforeSrc: "/products/taco_before.jpeg",
     afterSrc: "/products/taco_after.jpeg",
-    beforeAlt: "Producto taco antes",
-    afterAlt: "Producto taco después",
+    beforeAltKey: "landing.showcase.examples.tacoBeforeAlt",
+    afterAltKey: "landing.showcase.examples.tacoAfterAlt",
   },
 ];
 
 const BeforeAfterSlider = () => {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [splitPosition, setSplitPosition] = useState(50);
 
@@ -45,7 +47,7 @@ const BeforeAfterSlider = () => {
     <section className="mx-auto w-full max-w-[58rem]">
       <div className="mb-6 flex flex-col items-center gap-2 md:mb-7">
         <p className="font-heading text-sm uppercase tracking-[0.22em] text-foreground/85 md:text-base">
-          Algo de nuestro trabajo
+          {t("landing.showcase.title")}
         </p>
         <span className="h-px w-20 bg-border/80" />
       </div>
@@ -53,7 +55,7 @@ const BeforeAfterSlider = () => {
       <div className="relative mx-auto aspect-[16/9] w-full overflow-hidden rounded-[1.6rem]">
         <img
           src={activeExample.beforeSrc}
-          alt={activeExample.beforeAlt}
+          alt={t(activeExample.beforeAltKey)}
           className="absolute inset-0 h-full w-full select-none object-cover"
           draggable={false}
         />
@@ -61,7 +63,7 @@ const BeforeAfterSlider = () => {
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${splitPosition}%)` }}>
           <img
             src={activeExample.afterSrc}
-            alt={activeExample.afterAlt}
+            alt={t(activeExample.afterAltKey)}
             className="h-full w-full select-none object-cover"
             draggable={false}
           />
@@ -80,7 +82,7 @@ const BeforeAfterSlider = () => {
           max={95}
           value={splitPosition}
           onChange={(event) => setSplitPosition(Number(event.target.value))}
-          aria-label={`Comparador antes y después ${activeIndex + 1}`}
+          aria-label={t("landing.showcase.comparatorAriaLabel", { index: activeIndex + 1 })}
           className="absolute inset-0 z-30 h-full w-full cursor-ew-resize appearance-none bg-transparent opacity-0"
         />
       </div>
@@ -89,7 +91,7 @@ const BeforeAfterSlider = () => {
         <button
           type="button"
           onClick={showPreviousExample}
-          aria-label="Mostrar ejemplo anterior"
+          aria-label={t("landing.showcase.previousExample")}
           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/70 transition-colors hover:border-foreground/35 hover:text-foreground"
         >
           <ChevronLeft className="h-4 w-4 stroke-[1.5]" />
@@ -97,7 +99,7 @@ const BeforeAfterSlider = () => {
         <button
           type="button"
           onClick={showNextExample}
-          aria-label="Mostrar siguiente ejemplo"
+          aria-label={t("landing.showcase.nextExample")}
           className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/70 bg-background/70 text-foreground/70 transition-colors hover:border-foreground/35 hover:text-foreground"
         >
           <ChevronRight className="h-4 w-4 stroke-[1.5]" />
