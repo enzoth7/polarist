@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Decoracion despues">
+  <rect width="1600" height="900" fill="#030303" />
+  <rect x="250" y="140" width="1100" height="620" rx="28" fill="#0f2b24" />
+  <rect x="760" y="320" width="80" height="290" rx="12" fill="#34d399" opacity="0.85" />
+  <circle cx="800" cy="255" r="135" fill="#6ee7b7" opacity="0.92" />
+  <text x="800" y="300" fill="#ecfeff" font-family="Joyride, sans-serif" font-size="48" text-anchor="middle">Decor After</text>
+</svg>

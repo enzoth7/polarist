@@ -1,91 +1,104 @@
-import { useNavigate } from "react-router-dom";
-import { Download, LogIn, Sparkles, UserPlus } from "lucide-react";
+﻿import { useNavigate } from "react-router-dom";
+import { LogIn, UserPlus } from "lucide-react";
+import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+import BrandLogo from "@/components/BrandLogo";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useInstallPrompt } from "@/hooks/useInstallPrompt";
 import { supabase } from "@/lib/supabase";
+import { useTranslation } from "react-i18next";
 
 const Landing = () => {
   const navigate = useNavigate();
   const { isInstallable, installApp } = useInstallPrompt();
+  const { t } = useTranslation();
+
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+      },
+    });
+
+    if (error) {
+      console.error("OAuth error:", error.message);
+    }
+  };
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <main className="flex flex-1 items-center justify-center p-4">
-        <div className="w-full max-w-2xl space-y-12 text-center">
-          {/* Hero Section */}
-          <div className="space-y-6">
-            <div className="flex justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 rounded-full bg-primary/20 blur-3xl" />
-                <Sparkles className="relative h-20 w-20 text-primary" strokeWidth={1.5} />
-              </div>
-            </div>
+    <div className="relative flex min-h-screen flex-col overflow-x-clip bg-background text-foreground">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[38rem] bg-[radial-gradient(circle_at_top,rgba(0,0,0,0.05),transparent_58%)]"
+      />
 
-            <div className="space-y-3">
-              <h1 className="text-5xl md:text-6xl font-bold tracking-tight">Polarist</h1>
-              <p className="text-xl md:text-2xl text-muted-foreground font-light">
-                Contenido visual profesional para tu negocio
-              </p>
-            </div>
-          </div>
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border/50 bg-background/72 backdrop-blur-[6px]">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-6 py-4 md:px-8">
+          <BrandLogo labelClassName="text-[11px] uppercase tracking-[0.12em] text-foreground/75" />
 
-          {/* CTA Section */}
-          <div className="mx-auto max-w-md space-y-4">
-            {/* Google Login */}
-            <Button
-              size="lg"
-              className="flex h-14 w-full items-center justify-center gap-3 border-2 border-slate-200 bg-white text-lg text-black hover:bg-white/90"
-              onClick={async () => {
-                const { error } = await supabase.auth.signInWithOAuth({
-                  provider: "google",
-                  options: {
-                    redirectTo: `${window.location.origin}/dashboard`,
-                  },
-                });
-                if (error) {
-                  console.error("OAuth error:", error.message);
-                }
-              }}
-            >
-              <img src="/google-logo.png" alt="Google" className="h-6 w-6 object-contain" />
-              Continuar con Google
-            </Button>
-
-            {/* Separator */}
-            <div className="relative py-2">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">O usar otros métodos</span>
-              </div>
-            </div>
-
-            {/* Install Button */}
+          <div className="flex items-center gap-2">
             {isInstallable && (
-              <Button onClick={installApp} size="lg" variant="secondary" className="h-14 w-full text-lg">
-                <Download className="mr-2 h-5 w-5" />
-                Instalar App
+              <Button onClick={installApp} variant="secondary" size="sm" className="h-9 px-4 text-xs shadow-soft">
+                {t("landing.navbar.installApp")}
               </Button>
             )}
+            <Button
+              size="sm"
+              className="hidden h-9 bg-primary px-4 text-xs tracking-[0.04em] text-primary-foreground shadow-soft hover:bg-primary/90 md:inline-flex"
+              onClick={signInWithGoogle}
+            >
+              <img src="/google-logo.png" alt={t("landing.navbar.googleLogoAlt")} className="mr-2 h-4 w-4 object-contain" />
+              {t("landing.navbar.continueWithGoogle")}
+            </Button>
+          </div>
+        </div>
+      </header>
 
-            {/* Standard Auth Buttons */}
+      <main className="relative flex flex-1 items-center justify-center px-6 pb-24 pt-36 md:px-10 md:pb-28 md:pt-44">
+        <section className="flex w-full max-w-6xl flex-col items-center gap-14 text-center md:gap-20">
+          <div className="max-w-4xl space-y-6">
+            <h1 className="font-heading text-5xl leading-[1.02] tracking-[0.045em] md:text-7xl">
+              {t("landing.hero.title")}
+            </h1>
+            <p className="font-body mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground md:text-lg">
+              {t("landing.hero.description")}
+            </p>
+          </div>
+
+          <div className="relative mx-auto w-full max-w-[58rem]">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 top-8 h-24 w-[68%] -translate-x-1/2 rounded-full bg-primary/12 blur-3xl"
+            />
+            <BeforeAfterSlider />
+          </div>
+
+          <div className="w-full max-w-sm space-y-4">
+            <Button
+              size="lg"
+              className="h-14 w-full bg-primary text-lg tracking-[0.04em] text-primary-foreground shadow-soft hover:bg-primary/90"
+              onClick={signInWithGoogle}
+            >
+              <img src="/google-logo.png" alt={t("landing.navbar.googleLogoAlt")} className="mr-2 h-4 w-4 object-contain" />
+              {t("landing.navbar.continueWithGoogle")}
+            </Button>
+
             <div className="grid grid-cols-2 gap-4">
               <Button onClick={() => navigate("/signup")} variant="outline" className="h-12 border-2">
                 <UserPlus className="mr-2 h-4 w-4" />
-                Crear Cuenta
+                {t("auth.signup.title") || "Crear Cuenta"}
               </Button>
               <Button onClick={() => navigate("/login")} variant="ghost" className="h-12">
                 <LogIn className="mr-2 h-4 w-4" />
-                Iniciar Sesión
+                {t("auth.login.title") || "Iniciar Sesión"}
               </Button>
             </div>
           </div>
-
           <p className="pt-2 text-sm text-muted-foreground">Crea contenido visual que destaque</p>
-        </div>
+        </section>
       </main>
+
       <Footer />
     </div>
   );

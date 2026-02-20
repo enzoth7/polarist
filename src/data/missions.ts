@@ -1,12 +1,38 @@
-export const MISSIONS = [
-    { title: "Sube una foto de tu producto estrella", description: "Muestra lo mejor que tienes. Una buena foto vale más que mil palabras.", category: "foto" },
-    { title: "Cuenta tu historia", description: "¿Por qué empezaste tu negocio? A la gente le encanta conocer la historia detrás.", category: "historia" },
-    { title: "Crea una oferta especial", description: "Un descuento o promoción para esta semana. ¡Haz que la gente se emocione!", category: "promo" },
-    { title: "Comparte un tip de tu industria", description: "Comparte algo que tus clientes no sepan. ¡Conviértete en experto!", category: "idea" },
-    { title: "Muestra tu espacio de trabajo", description: "Lleva a tus seguidores detrás de escenas. ¡La autenticidad conecta!", category: "foto" },
+export interface MissionDefinition {
+  titleKey: string;
+  descriptionKey: string;
+  category: string;
+}
+
+export const MISSIONS: MissionDefinition[] = [
+  {
+    titleKey: "missions.items.1.title",
+    descriptionKey: "missions.items.1.description",
+    category: "foto",
+  },
+  {
+    titleKey: "missions.items.2.title",
+    descriptionKey: "missions.items.2.description",
+    category: "historia",
+  },
+  {
+    titleKey: "missions.items.3.title",
+    descriptionKey: "missions.items.3.description",
+    category: "promo",
+  },
+  {
+    titleKey: "missions.items.4.title",
+    descriptionKey: "missions.items.4.description",
+    category: "idea",
+  },
+  {
+    titleKey: "missions.items.5.title",
+    descriptionKey: "missions.items.5.description",
+    category: "foto",
+  },
 ];
 
 export const getMissionForDate = (date: Date) => {
-    const dayIndex = date.getDay(); // 0-6
-    return MISSIONS[dayIndex % MISSIONS.length];
+  const dayIndex = date.getDay();
+  return MISSIONS[dayIndex % MISSIONS.length];
 };

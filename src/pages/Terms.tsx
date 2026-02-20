@@ -1,65 +1,52 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 
 const Terms = () => {
+  const { t } = useTranslation();
+
   return (
     <main className="min-h-screen bg-background px-4 py-12 text-foreground">
       <div className="mx-auto max-w-3xl space-y-8">
         <header className="space-y-2">
-          <h1 className="font-heading text-3xl tracking-tight">Términos y Condiciones</h1>
-          <p className="font-body text-sm text-muted-foreground">Última actualización: 18 de febrero de 2026</p>
+          <h1 className="font-heading text-3xl tracking-tight">{t("terms.title")}</h1>
+          <p className="font-body text-sm text-muted-foreground">{t("terms.lastUpdate")}</p>
         </header>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">1. Aceptación de uso</h2>
-          <p className="font-body text-muted-foreground">
-            Al usar Polarist aceptas estos términos. Si no estás de acuerdo, no utilices la plataforma.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.1.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.1.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">2. Cuenta y acceso</h2>
-          <p className="font-body text-muted-foreground">
-            Eres responsable de la actividad de tu cuenta y de mantener la seguridad de tus credenciales.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.2.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.2.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">3. Uso permitido</h2>
-          <p className="font-body text-muted-foreground">
-            No puedes usar Polarist para generar contenido ilegal, engañoso, difamatorio o que infrinja derechos de
-            terceros. Nos reservamos el derecho de limitar o suspender cuentas por abuso.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.3.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.3.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">4. Contenido generado</h2>
-          <p className="font-body text-muted-foreground">
-            El usuario conserva la responsabilidad sobre el uso final del contenido generado. Polarist puede mantener
-            registros técnicos para mejorar el servicio y cumplir obligaciones legales.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.4.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.4.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">5. Disponibilidad del servicio</h2>
-          <p className="font-body text-muted-foreground">
-            El servicio puede cambiar, interrumpirse o actualizarse sin previo aviso. No garantizamos disponibilidad
-            continua ni ausencia total de errores.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.5.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.5.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">6. Limitación de responsabilidad</h2>
-          <p className="font-body text-muted-foreground">
-            Polarist no será responsable por daños indirectos, pérdida de beneficios o interrupciones derivadas del uso
-            de la plataforma, en la medida permitida por la ley.
-          </p>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.6.title")}</h2>
+          <p className="font-body text-muted-foreground">{t("terms.sections.6.body")}</p>
         </section>
 
         <section className="space-y-3">
-          <h2 className="font-heading text-xl font-medium">7. Contacto</h2>
+          <h2 className="font-heading text-xl font-medium">{t("terms.sections.7.title")}</h2>
           <p className="font-body text-muted-foreground">
-            Para dudas legales o de uso, escríbenos a{" "}
+            {t("terms.sections.7.bodyBefore")}{" "}
             <a className="underline underline-offset-4" href="mailto:polarist@gmail.com">
               polarist@gmail.com
             </a>
@@ -68,7 +55,7 @@ const Terms = () => {
         </section>
 
         <Button asChild variant="outline">
-          <Link to="/">Volver al inicio</Link>
+          <Link to="/">{t("common.returnHome")}</Link>
         </Button>
       </div>
     </main>
