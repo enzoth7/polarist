@@ -4,69 +4,67 @@
 
 @layer base {
   :root {
-    /* Dark Premium Theme as Default */
-    --background: 222 47% 11%; /* #0F172A - Slate 900 instead of pure black */
-    --foreground: 0 0% 98%; /* #FAFAFA */
+    /* Light Theme (White Background / Black Text) */
+    --background: 0 0% 100%; /* Pure White */
+    --foreground: 0 0% 0%; /* Pure Black */
 
-    --card: 0 0% 8%; /* #141414 approx */
-    --card-foreground: 0 0% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
 
-    --popover: 0 0% 8%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 0%;
 
-    --primary: 0 0% 98%; /* White buttons */
-    --primary-foreground: 0 0% 0%; /* Black text on buttons */
+    --primary: 0 0% 0%; /* Black buttons */
+    --primary-foreground: 0 0% 100%; /* White text on buttons */
 
-    --secondary: 0 0% 15%; /* Dark Gray for secondary actions */
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 0 0% 96%; /* Very light gray for secondary actions */
+    --secondary-foreground: 0 0% 0%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 40%;
 
-    --accent: 0 0% 15%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 0 0% 96%;
+    --accent-foreground: 0 0% 0%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 0 0% 20%; /* #333 */
-    --input: 0 0% 20%;
-    --ring: 0 0% 83.1%;
+    --border: 0 0% 80%; /* Light border */
+    --input: 0 0% 80%;
+    --ring: 0 0% 0%;
 
-    --radius: 1rem; /* Slightly less rounded than "toy", more elegant */
+    --radius: 0.5rem; /* More professional radius for a clean theme */
 
-    /* Custom tokens - Dark Versions */
-    --success: 142 70% 50%; /* Green */
-    --success-foreground: 144 100% 5%;
+    /* Custom tokens - Light Versions */
+    --success: 142 70% 45%;
+    --success-foreground: 0 0% 100%;
 
-    /* Pastels adapted to dark mode (Darker backgrounds, lighter text) */
-    --pastel-yellow: 45 100% 10%; /* Dark Yellow Bg */
-    --pastel-pink: 330 80% 10%;
-    --pastel-blue: 210 80% 10%;
-    --pastel-green: 150 80% 10%;
-    --pastel-purple: 260 80% 10%;
+    --pastel-yellow: 50 100% 95%; /* Light Yellow Bg */
+    --pastel-pink: 330 100% 95%;
+    --pastel-blue: 210 100% 95%;
+    --pastel-green: 150 100% 95%;
+    --pastel-purple: 260 100% 95%;
 
-    --shadow-soft: 0 0 0 0 transparent; /* Minimalist flat */
-    --shadow-card: 0 0 0 1px hsl(0 0% 20%); /* Subtle border instead of shadow */
-    --shadow-elevated: 0 10px 30px -10px rgba(0,0,0,0.5);
+    --shadow-soft: 0 2px 10px rgba(0,0,0,0.05);
+    --shadow-card: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+    --shadow-elevated: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
 
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 0 0% 0%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 0 0% 0%;
   }
 
   .dark {
-     /* Same as root since we are enforcing dark */
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
-    --card: 0 0% 8%;
-    --card-foreground: 0 0% 98%;
-    /* ... keep explicit dark variables just in case */
+    /* Even in dark mode we force light for now as per user request to change "everything" */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 0%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 0%;
   }
 }
 

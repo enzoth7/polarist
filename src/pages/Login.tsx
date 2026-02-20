@@ -52,17 +52,19 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background flex items-center justify-center p-4">
-            <div className="max-w-md w-full space-y-8">
-                {/* Back Button */}
-                <Button
-                    variant="ghost"
-                    onClick={() => navigate('/')}
-                    className="mb-4"
-                >
-                    <ArrowLeft className="w-4 h-4 mr-2" />
-                    Volver
-                </Button>
+        <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+            <div className="max-w-md w-full space-y-12">
+                {/* Back Button aligned with Form */}
+                <div className="flex justify-start">
+                    <Button
+                        variant="ghost"
+                        onClick={() => navigate('/')}
+                        className="-ml-3 hover:bg-transparent"
+                    >
+                        <ArrowLeft className="w-4 h-4 mr-2" />
+                        Volver
+                    </Button>
+                </div>
 
                 {/* Header */}
                 <div className="text-center space-y-2">
