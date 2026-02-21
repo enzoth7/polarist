@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowRight, Crosshair, Layers3, Loader2, Settings, Sun } from "lucide-react";
+import { ArrowRight, Crosshair, Layers3, Loader2, Moon, Settings, Sun } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import AvatarUpload from "@/components/AvatarUpload";
 import BrandLogo from "@/components/BrandLogo";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { useBusinessProfile } from "@/hooks/useBusinessProfile";
+import { useTheme } from "@/hooks/useTheme";
 
 type PhotoTip = {
   icon: LucideIcon;
@@ -32,7 +34,8 @@ const photoTips: PhotoTip[] = [
 ];
 
 const Dashboard = () => {
-  const { profile, loading } = useBusinessProfile();
+  const { profile, loading, updateProfile, fetchProfile } = useBusinessProfile();
+  const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
@@ -50,21 +53,33 @@ const Dashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-[#F0F0F0]">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#F0F0F0] text-foreground">
-      <header className="fixed inset-x-0 top-0 z-40 border-b border-black/5 bg-[#F0F0F0]/88 backdrop-blur-md">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/88 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-3 md:px-6 md:py-4">
           <BrandLogo />
           <div className="flex items-center gap-1.5">
-            <p className="font-body text-right text-xs text-foreground/75 md:text-sm">
-              {greeting()}, {brandName}
-            </p>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="h-8 w-8 text-foreground/65 hover:text-foreground"
+              title={theme === "light" ? "Modo oscuro" : "Modo claro"}
+              aria-label={theme === "light" ? "Modo oscuro" : "Modo claro"}
+            >
+              {theme === "light" ? (
+                <Moon className="h-4 w-4" />
+              ) : (
+                <Sun className="h-4 w-4" />
+              )}
+            </Button>
             <Button
               type="button"
               variant="ghost"
@@ -81,6 +96,21 @@ const Dashboard = () => {
       </header>
 
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 pb-10 pt-24 md:gap-8 md:px-6 md:pt-28">
+        <section className="w-fit rounded-2xl border border-black/5 bg-card p-5 shadow-soft md:p-6">
+          <div className="flex items-center gap-4">
+            <AvatarUpload
+              avatarUrl={profile.avatarUrl || null}
+              onUpload={(url) => {
+                updateProfile({ avatarUrl: url });
+              }}
+              size={48}
+            />
+            <p className="whitespace-nowrap font-body text-base tracking-[0.02em] text-foreground">
+              {greeting()}, {brandName}
+            </p>
+          </div>
+        </section>
+
         <section className="rounded-2xl border border-black/5 bg-card p-5 shadow-soft md:p-6">
           <h2 className="font-heading text-xl tracking-[0.02em] text-foreground">{t("dashboard.visualStyle.title")}</h2>
 

@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 export interface BusinessProfile {
   businessName: string; // db: business_name
   businessCategory: string; // db: business_category
+  avatarUrl: string; // db: avatar_url
   onboardingComplete: boolean; // db: onboarding_completed
 
   brandHistory: string;
@@ -34,6 +35,7 @@ export interface BusinessProfile {
 const defaultProfile: BusinessProfile = {
   businessName: "",
   businessCategory: "",
+  avatarUrl: "",
   onboardingComplete: false,
   brandHistory: "",
   brandDifferential: "",
@@ -97,6 +99,7 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
         setProfile({
           businessName: data.business_name || "",
           businessCategory: data.business_category || "",
+          avatarUrl: data.avatar_url || "",
           onboardingComplete: data.onboarding_completed || false,
           brandHistory: data.brand_history || "",
           brandDifferential: data.brand_differential || "",
