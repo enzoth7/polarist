@@ -8,6 +8,7 @@
     "back": "Back",
     "previous": "Previous",
     "next": "Next",
+    "continue": "Continue",
     "saving": "Saving...",
     "error": "Error",
     "download": "Download",
@@ -143,58 +144,65 @@
       "noUser": "No user found"
     },
     "toasts": {
-      "campaignCreated": "Campaign created",
       "productUploaded": "Product uploaded",
-      "productUploadedDescription": "Your image was saved in the campaign.",
+      "productUploadedDescription": "Your image was saved in your folder.",
       "uploadErrorTitle": "Upload error",
       "uploadErrorDescription": "Could not upload image.",
       "imageDownloaded": "Image downloaded",
-      "imageMarkedViewed": "Marked as viewed.",
-      "markedAllSeen": "Images marked as viewed"
+      "imageMarkedViewed": "Marked as viewed."
     },
-    "list": {
-      "title": "Content gallery",
-      "subtitle": "Organize your products in campaigns.",
-      "createCampaign": "Create campaign",
-      "emptyTitle": "You have no campaigns",
-      "emptyDescription": "Create your first campaign to get started.",
-      "newImagesTitle": "New images"
+    "tips": {
+      "title": "Tips for taking a great photo",
+      "items": {
+        "light": {
+          "title": "Light is everything",
+          "description": "Use a window with natural light"
+        },
+        "background": {
+          "title": "Simple background",
+          "description": "Use a clean background to highlight the product"
+        },
+        "center": {
+          "title": "Product centered",
+          "description": "Keep it centered for a better finish"
+        }
+      },
+      "cta": "Let's go"
     },
-    "dialog": {
-      "title": "New campaign",
-      "description": "Create a folder to organize your products.",
-      "name": "Name",
-      "placeholder": "Ex: Summer Collection",
-      "create": "Create"
+    "upload": {
+      "title": "Let's begin",
+      "subtitle": "Upload a photo of your product to get started"
     },
-    "detail": {
-      "subtitle": "Manage images in this campaign.",
-      "uploadProduct": "Upload product",
-      "newImages": "New images",
-      "enhancedImageAlt": "Enhanced content",
-      "newBadge": "NEW",
-      "markAllSeen": "Mark all as seen",
-      "createdImages": "Created images",
-      "createdImageAlt": "Created image",
-      "generatedTag": "Generated",
-      "uploadedImages": "Uploaded images",
-      "emptyCampaignTitle": "Empty campaign",
-      "emptyCampaignDescription": "Upload product photos to this campaign.",
-      "uploadedImageAlt": "Product",
-      "uploadedTag": "Uploaded",
-      "uploadedBadge": "UPLOADED"
+    "folders": {
+      "title": "My content folder",
+      "uploadBtn": "Upload photo",
+      "photoCount": "({{count}} photos)"
+    },
+    "dayDetail": {
+      "ownPhoto": "Own photo",
+      "finalPhoto": "Final photo",
+      "processing": "Processing...",
+      "newBadge": "NEW"
     }
   },
   "preferences": {
     "title": "Brand settings",
     "generalInfo": "General information",
     "brandName": "Brand name",
+    "edit": "Edit",
     "saving": "Saving...",
     "saveName": "Save name",
+    "saveChanges": "Save changes",
     "currentStrategy": "Current strategy",
+    "myBrand": "My brand",
     "retakeQuestionnaire": "Retake questionnaire",
     "logout": "Log out",
     "confirmRetake": "Are you sure? This will overwrite your current strategy.",
+    "fields": {
+      "brandName": "Brand name",
+      "email": "Email",
+      "website": "Website"
+    },
     "toasts": {
       "saved": "Changes saved",
       "saveError": "Error while saving"
@@ -397,6 +405,11 @@
       "line1": "We'll configure a visual engine for your products.",
       "line2": "It only takes 5 minutes.",
       "cta": "Start questionnaire"
+    },
+    "brandName": {
+      "title": "What's your brand name?",
+      "description": "This will be the name shown on your profile",
+      "placeholder": "Your brand name"
     },
     "contact": {
       "kicker": "Contact",

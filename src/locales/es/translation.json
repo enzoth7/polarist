@@ -8,6 +8,7 @@
     "back": "Volver",
     "previous": "Anterior",
     "next": "Siguiente",
+    "continue": "Continuar",
     "saving": "Guardando...",
     "error": "Error",
     "download": "Descargar",
@@ -110,7 +111,7 @@
     },
     "notifications": "Notificaciones",
     "visualStyle": {
-      "title": "Mi Estilo Visual",
+      "title": "Mi perfil de marca",
       "targetAudience": "Público objetivo",
       "goal": "Mi objetivo"
     },
@@ -143,58 +144,65 @@
       "noUser": "No se encontró usuario"
     },
     "toasts": {
-      "campaignCreated": "Campaña creada",
       "productUploaded": "Producto subido",
-      "productUploadedDescription": "Tu imagen se guardó en la campaña.",
+      "productUploadedDescription": "Tu imagen se guardó en tu carpeta.",
       "uploadErrorTitle": "Error al subir",
       "uploadErrorDescription": "No se pudo subir la imagen.",
       "imageDownloaded": "Imagen descargada",
-      "imageMarkedViewed": "Se marcó como vista.",
-      "markedAllSeen": "Imágenes marcadas como vistas"
+      "imageMarkedViewed": "Se marcó como vista."
     },
-    "list": {
-      "title": "Galería de contenido",
-      "subtitle": "Organiza tus productos en campañas.",
-      "createCampaign": "Crear campaña",
-      "emptyTitle": "No tienes campañas",
-      "emptyDescription": "Crea tu primera campaña para empezar.",
-      "newImagesTitle": "Nuevas imágenes"
+    "tips": {
+      "title": "Tips para sacar una buena foto",
+      "items": {
+        "light": {
+          "title": "Luz es todo",
+          "description": "Busca una ventana con luz natural"
+        },
+        "background": {
+          "title": "Fondo simple",
+          "description": "Usa fondo limpio para resaltar el producto"
+        },
+        "center": {
+          "title": "Producto al centro",
+          "description": "Mantenlo centrado para un mejor acabado"
+        }
+      },
+      "cta": "Vamos"
     },
-    "dialog": {
-      "title": "Nueva campaña",
-      "description": "Crea una carpeta para organizar tus productos.",
-      "name": "Nombre",
-      "placeholder": "Ej: Colección Verano",
-      "create": "Crear"
+    "upload": {
+      "title": "Comencemos",
+      "subtitle": "Subí una foto de tu producto para empezar"
     },
-    "detail": {
-      "subtitle": "Gestiona las imágenes de esta campaña.",
-      "uploadProduct": "Subir producto",
-      "newImages": "Imágenes nuevas",
-      "enhancedImageAlt": "Contenido mejorado",
-      "newBadge": "NUEVA",
-      "markAllSeen": "Marcar todo como visto",
-      "createdImages": "Imágenes creadas",
-      "createdImageAlt": "Imagen creada",
-      "generatedTag": "Generada",
-      "uploadedImages": "Imágenes subidas",
-      "emptyCampaignTitle": "Campaña vacía",
-      "emptyCampaignDescription": "Sube fotos de tus productos a esta campaña.",
-      "uploadedImageAlt": "Producto",
-      "uploadedTag": "Subida",
-      "uploadedBadge": "SUBIDA"
+    "folders": {
+      "title": "Mi carpeta de contenido",
+      "uploadBtn": "Subir foto",
+      "photoCount": "({{count}} fotos)"
+    },
+    "dayDetail": {
+      "ownPhoto": "Foto propia",
+      "finalPhoto": "Foto final",
+      "processing": "Procesando...",
+      "newBadge": "NUEVA"
     }
   },
   "preferences": {
     "title": "Ajustes de marca",
     "generalInfo": "Información general",
     "brandName": "Nombre de la marca",
+    "edit": "Editar",
     "saving": "Guardando...",
     "saveName": "Guardar nombre",
+    "saveChanges": "Guardar cambios",
     "currentStrategy": "Estrategia actual",
+    "myBrand": "Mi marca",
     "retakeQuestionnaire": "Rehacer cuestionario",
     "logout": "Cerrar sesión",
     "confirmRetake": "¿Estás seguro? Esto sobrescribirá tu estrategia actual.",
+    "fields": {
+      "brandName": "Nombre de la marca",
+      "email": "Correo electrónico",
+      "website": "Página web"
+    },
     "toasts": {
       "saved": "Cambios guardados",
       "saveError": "Error al guardar"
@@ -396,6 +404,11 @@
       "title": "Conozcamos tu marca",
       "line2": "Solo te llevará 5 minutos.",
       "cta": "Empezar cuestionario"
+    },
+    "brandName": {
+      "title": "¿Cómo se llama tu marca?",
+      "description": "Este será el nombre que aparecerá en tu perfil",
+      "placeholder": "Nombre de tu marca"
     },
     "contact": {
       "kicker": "Contacto",

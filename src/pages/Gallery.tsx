@@ -1,27 +1,10 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { ArrowLeft, Download, Folder, FolderPlus, Image as ImageIcon, Loader2, Upload } from "lucide-react";
+﻿import { ChangeEvent, useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Download, Folder, HelpCircle, Image as ImageIcon, Loader2, Plus } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-
-interface Campaign {
-  id: string;
-  name: string;
-  created_at: string;
-  user_images?: { image_url: string; type: string; viewed: boolean }[];
-}
 
 interface UserImage {
   id: string;
@@ -33,60 +16,183 @@ interface UserImage {
   viewed?: boolean;
 }
 
+interface Campaign {
+  id: string;
+  name: string;
+  created_at: string;
+  user_images?: UserImage[];
+}
+
+type GalleryView = "tips" | "upload" | "folders" | "calendar" | "dayDetail";
+
 const Gallery = () => {
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const { forceDownload } = {
     forceDownload: (url: string, name: string) => import("@/lib/downloadUtils").then((module) => module.forceDownload(url, name)),
   };
 
-  const [view, setView] = useState<"list" | "detail">("list");
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [view, setView] = useState<GalleryView>("tips");
+  const [previousView, setPreviousView] = useState<GalleryView | null>(null);
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [allImages, setAllImages] = useState<UserImage[]>([]);
   const [images, setImages] = useState<UserImage[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [creatingCampaign, setCreatingCampaign] = useState(false);
-  const [newCampaignName, setNewCampaignName] = useState("");
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [initializing, setInitializing] = useState(true);
+  const [hasSetInitialView, setHasSetInitialView] = useState(false);
+
+  const isSpanish = i18n.resolvedLanguage?.startsWith("es") ?? false;
+  const hasImages = allImages.length > 0;
 
   useEffect(() => {
-    void fetchCampaigns();
+    void initializeGallery();
   }, []);
 
-  const formatDate = (date: string) =>
-    new Date(date).toLocaleDateString(i18n.resolvedLanguage?.startsWith("es") ? "es-ES" : "en-US");
+  useEffect(() => {
+    if (initializing || loading || hasSetInitialView) return;
+    // Don't override view — always start on tips
+    setHasSetInitialView(true);
+  }, [allImages.length, hasSetInitialView, initializing, loading]);
 
-  const fetchCampaigns = async () => {
+  const getMonthKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+
+  const getDateKey = (date: Date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+  const formatMonthLabel = (monthKey: string) => {
+    const [year, month] = monthKey.split("-").map(Number);
+    const date = new Date(year, month - 1, 1);
+    const formatted = new Intl.DateTimeFormat(isSpanish ? "es-ES" : "en-US", {
+      month: "long",
+      year: "numeric",
+    }).format(date);
+
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  };
+
+  const formatDayLabel = (dateKey: string) => {
+    const [year, month, day] = dateKey.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    const monthName = new Intl.DateTimeFormat(isSpanish ? "es-ES" : "en-US", { month: "long" }).format(date);
+    const capitalizedMonth = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+    if (isSpanish) {
+      return `${day} de ${capitalizedMonth}`;
+    }
+
+    return `${capitalizedMonth} ${day}`;
+  };
+
+  const isEnhancedImage = (image: UserImage) => (image.type || "").toLowerCase().trim() === "enhanced";
+
+  const getUserId = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    return user?.id ?? null;
+  };
+
+  const initializeGallery = async () => {
+    setInitializing(true);
+    await refreshAllImages();
+    setInitializing(false);
+  };
+
+  const fetchCampaigns = async (userId?: string, withLoading = true) => {
     try {
-      setLoading(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) return;
+      if (withLoading) setLoading(true);
+      const resolvedUserId = userId ?? (await getUserId());
+      if (!resolvedUserId) {
+        setCampaigns([]);
+        return [];
+      }
 
       const { data, error } = await supabase
         .from("campaigns")
-        .select("*, user_images(image_url, type, viewed)")
-        .eq("user_id", user.id)
+        .select("*")
+        .eq("user_id", resolvedUserId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
       setCampaigns(data || []);
+      return data || [];
     } catch (error) {
       console.error("Error fetching campaigns:", error);
+      return [];
+    } finally {
+      if (withLoading) setLoading(false);
+    }
+  };
+
+  const fetchAllImages = async (userId?: string, withLoading = true) => {
+    try {
+      if (withLoading) setLoading(true);
+      const resolvedUserId = userId ?? (await getUserId());
+      if (!resolvedUserId) {
+        setAllImages([]);
+        return [];
+      }
+
+      const { data, error } = await supabase
+        .from("user_images")
+        .select("*")
+        .eq("user_id", resolvedUserId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setAllImages(data || []);
+      return data || [];
+    } catch (error) {
+      console.error("Error fetching images:", error);
+      return [];
+    } finally {
+      if (withLoading) setLoading(false);
+    }
+  };
+
+  const refreshAllImages = async () => {
+    const resolvedUserId = await getUserId();
+    if (!resolvedUserId) {
+      setCampaigns([]);
+      setAllImages([]);
+      setLoading(false);
+      return [];
+    }
+
+    setLoading(true);
+    try {
+      const [, imagesData] = await Promise.all([
+        fetchCampaigns(resolvedUserId, false),
+        fetchAllImages(resolvedUserId, false),
+      ]);
+      return imagesData ?? [];
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchImages = async (campaignId: string) => {
+  const fetchImages = async (monthKey: string) => {
     try {
       setLoading(true);
+      const resolvedUserId = await getUserId();
+      if (!resolvedUserId) {
+        setImages([]);
+        return;
+      }
+      const [year, month] = monthKey.split("-").map(Number);
+      const monthStart = new Date(year, month - 1, 1);
+      const monthEnd = new Date(year, month, 1);
+
       const { data, error } = await supabase
         .from("user_images")
         .select("*")
-        .eq("campaign_id", campaignId)
+        .eq("user_id", resolvedUserId)
+        .gte("created_at", monthStart.toISOString())
+        .lt("created_at", monthEnd.toISOString())
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -98,61 +204,36 @@ const Gallery = () => {
     }
   };
 
-  const handleCreateCampaign = async () => {
-    if (!newCampaignName.trim()) return;
-
-    try {
-      setCreatingCampaign(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) throw new Error(t("gallery.errors.noUser"));
-
-      const { error } = await supabase.from("campaigns").insert({
-        user_id: user.id,
-        name: newCampaignName.trim(),
-      });
-
-      if (error) throw error;
-
-      toast({ title: t("gallery.toasts.campaignCreated") });
-      setIsDialogOpen(false);
-      setNewCampaignName("");
-      void fetchCampaigns();
-    } catch (error: any) {
-      toast({
-        title: t("common.error"),
-        description: error.message,
-        variant: "destructive",
-      });
-    } finally {
-      setCreatingCampaign(false);
-    }
-  };
-
-  const handleEnterCampaign = (campaign: Campaign) => {
-    setSelectedCampaign(campaign);
-    void fetchImages(campaign.id);
-    setView("detail");
-  };
-
-  const handleBack = () => {
-    setSelectedCampaign(null);
-    setImages([]);
-    void fetchCampaigns();
-    setView("list");
-  };
-
   const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
-      if (!file || !selectedCampaign) return;
+      if (!file) return;
 
       setUploading(true);
       const {
         data: { user },
       } = await supabase.auth.getUser();
       if (!user) throw new Error(t("gallery.errors.noUser"));
+
+      const monthKey = getMonthKey(new Date());
+      let campaign = campaigns.find((item) => item.name === monthKey) ?? null;
+
+      if (!campaign) {
+        const { data: createdCampaign, error: createError } = await supabase
+          .from("campaigns")
+          .insert({
+            user_id: user.id,
+            name: monthKey,
+          })
+          .select("*")
+          .single();
+
+        if (createError) throw createError;
+        campaign = createdCampaign;
+        setCampaigns((prev) => [createdCampaign, ...prev]);
+      }
+
+      if (!campaign) throw new Error(t("gallery.errors.noUser"));
 
       const fileExt = file.name.split(".").pop();
       const fileName = `${user.id}/${Math.random()}.${fileExt}`;
@@ -169,7 +250,7 @@ const Gallery = () => {
         image_url: publicUrl,
         type: "upload",
         status: "ready",
-        campaign_id: selectedCampaign.id,
+        campaign_id: campaign.id,
       });
 
       if (dbError) throw dbError;
@@ -179,7 +260,12 @@ const Gallery = () => {
         description: t("gallery.toasts.productUploadedDescription"),
       });
 
-      void fetchImages(selectedCampaign.id);
+      await fetchCampaigns();
+      await fetchAllImages();
+      if (selectedMonth === monthKey) {
+        void fetchImages(monthKey);
+      }
+      setView("folders");
     } catch (error: any) {
       console.error("Upload error:", error);
       toast({
@@ -189,113 +275,354 @@ const Gallery = () => {
       });
     } finally {
       setUploading(false);
+      event.target.value = "";
     }
   };
 
-  const newImages = images.filter((img) => img.type?.toLowerCase().trim() === "enhanced" && !img.viewed);
-  const createdImages = images.filter((img) => img.type?.toLowerCase().trim() === "enhanced" && img.viewed);
-  const uploadedImages = images.filter((img) => img.type === "upload" || !img.type);
+  const handleEnhancedDownload = async (image: UserImage) => {
+    const dateStr = new Date().toISOString().split("T")[0];
+    const filename = `visual-growth-${dateStr}-${image.id.slice(0, 8)}.png`;
+    forceDownload(image.image_url, filename);
 
-  if (view === "list") {
+    if (!image.viewed) {
+      const resolvedUserId = await getUserId();
+      if (!resolvedUserId) return;
+      const { error } = await supabase
+        .from("user_images")
+        .update({ viewed: true })
+        .eq("id", image.id)
+        .eq("user_id", resolvedUserId);
+      if (!error) {
+        setImages((prev) => prev.map((item) => (item.id === image.id ? { ...item, viewed: true } : item)));
+        setAllImages((prev) => prev.map((item) => (item.id === image.id ? { ...item, viewed: true } : item)));
+        toast({
+          title: t("gallery.toasts.imageDownloaded"),
+          description: t("gallery.toasts.imageMarkedViewed"),
+        });
+      }
+    }
+  };
+
+  const monthGroups = useMemo(() => {
+    const grouped = new Map<string, UserImage[]>();
+
+    allImages.forEach((image) => {
+      const key = getMonthKey(new Date(image.created_at));
+      const existing = grouped.get(key) || [];
+      grouped.set(key, [...existing, image]);
+    });
+
+    return Array.from(grouped.entries())
+      .map(([key, groupImages]) => ({
+        key,
+        images: [...groupImages].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()),
+      }))
+      .sort((a, b) => b.key.localeCompare(a.key));
+  }, [allImages]);
+
+  const daysWithPhotos = useMemo(() => new Set(images.map((image) => new Date(image.created_at).getDate())), [images]);
+
+  const dayImages = useMemo(() => {
+    if (!selectedDate) return [];
+    return images.filter((image) => getDateKey(new Date(image.created_at)) === selectedDate);
+  }, [images, selectedDate]);
+
+  const uploadedDayImages = dayImages.filter((image) => !isEnhancedImage(image));
+  const enhancedDayImages = dayImages.filter(isEnhancedImage);
+
+  if (initializing) {
     return (
       <div className="min-h-screen bg-background p-6">
-        <div className="mx-auto max-w-6xl space-y-8">
-          <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-            <div>
-              <h1 className="text-3xl font-bold">{t("gallery.list.title")}</h1>
-              <p className="mt-1 text-muted-foreground">{t("gallery.list.subtitle")}</p>
-            </div>
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="cursor-pointer">
-                  <FolderPlus className="mr-2 h-4 w-4" />
-                  {t("gallery.list.createCampaign")}
+        <div className="flex h-full items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "tips") {
+    const tips = [
+      {
+        icon: "💡",
+        title: t("gallery.tips.items.light.title"),
+        description: t("gallery.tips.items.light.description"),
+      },
+      {
+        icon: "🎯",
+        title: t("gallery.tips.items.background.title"),
+        description: t("gallery.tips.items.background.description"),
+      },
+      {
+        icon: "📸",
+        title: t("gallery.tips.items.center.title"),
+        description: t("gallery.tips.items.center.description"),
+      },
+    ];
+
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto flex min-h-[calc(100vh-48px)] max-w-lg flex-col">
+          <div className="flex flex-1 items-center justify-center">
+            <div className="w-full rounded-2xl border border-border bg-card p-6 shadow-soft">
+              <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    if (previousView) {
+                      setView(previousView);
+                      setPreviousView(null);
+                    } else {
+                      setView(hasImages ? "folders" : "upload");
+                    }
+                  }}
+                  aria-label={t("common.back")}
+                >
+                  <ArrowLeft className="h-6 w-6" />
                 </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>{t("gallery.dialog.title")}</DialogTitle>
-                  <DialogDescription>{t("gallery.dialog.description")}</DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="name" className="text-right">
-                      {t("gallery.dialog.name")}
-                    </Label>
-                    <Input
-                      id="name"
-                      value={newCampaignName}
-                      onChange={(event) => setNewCampaignName(event.target.value)}
-                      className="col-span-3"
-                      placeholder={t("gallery.dialog.placeholder")}
-                    />
+                <h1 className="text-2xl font-heading font-bold text-foreground">{t("gallery.tips.title")}</h1>
+              </div>
+              <div className="mt-6 space-y-4">
+                {tips.map((tip) => (
+                  <div key={tip.title} className="flex items-start gap-4 rounded-2xl border border-border bg-background/60 p-4">
+                    <div className="text-2xl">{tip.icon}</div>
+                    <div>
+                      <p className="text-base font-semibold text-foreground">{tip.title}</p>
+                      <p className="text-sm text-muted-foreground">{tip.description}</p>
+                    </div>
                   </div>
-                </div>
-                <DialogFooter>
-                  <Button onClick={handleCreateCampaign} disabled={creatingCampaign}>
-                    {creatingCampaign && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    {t("gallery.dialog.create")}
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
+                ))}
+              </div>
+              <Button
+                className="mt-8 w-full"
+                onClick={() => {
+                  setPreviousView(null);
+                  setView("upload");
+                }}
+              >
+                {t("gallery.tips.cta")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "upload") {
+    return (
+      <div className="flex min-h-screen flex-col bg-background">
+        <div className="px-6 pt-6">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                if (hasImages) {
+                  setView("folders");
+                } else {
+                  navigate("/dashboard");
+                }
+              }}
+              aria-label={t("common.back")}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <h1 className="text-3xl font-heading font-bold text-foreground">{t("gallery.upload.title")}</h1>
+          </div>
+          <p className="mt-2 mb-12 text-base text-muted-foreground">{t("gallery.upload.subtitle")}</p>
+        </div>
+
+        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-6">
+          <input
+            type="file"
+            id="upload-image"
+            className="hidden"
+            accept="image/*"
+            onChange={handleFileUpload}
+            disabled={uploading}
+          />
+          <label htmlFor="upload-image" className={uploading ? "cursor-not-allowed" : "cursor-pointer"}>
+            <div
+              className={`flex h-28 w-28 items-center justify-center rounded-full border-2 border-dashed border-primary/40 bg-primary/5 transition-all hover:border-primary hover:bg-primary/10 md:h-32 md:w-32 ${uploading ? "opacity-60" : ""
+                }`}
+            >
+              {uploading ? (
+                <Loader2 className="h-12 w-12 animate-spin text-primary/70" />
+              ) : (
+                <Plus className="h-14 w-14 text-primary/60 md:h-16 md:w-16" />
+              )}
+            </div>
+          </label>
+        </div>
+      </div>
+    );
+  }
+
+  if (view === "folders") {
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-5xl space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/dashboard")}
+                aria-label={t("common.back")}
+              >
+                <ArrowLeft className="h-6 w-6" />
+              </Button>
+              <h1 className="text-2xl font-heading font-bold">{t("gallery.folders.title")}</h1>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setPreviousView("folders");
+                setView("tips");
+              }}
+              aria-label={t("gallery.tips.title")}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-border text-muted-foreground transition hover:text-foreground"
+            >
+              <HelpCircle className="h-6 w-6" />
+            </button>
           </div>
 
           {loading ? (
-            <div className="flex justify-center py-20">
+            <div className="flex justify-center py-16">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
-          ) : campaigns.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed py-20 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/50">
-                <Folder className="h-8 w-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold">{t("gallery.list.emptyTitle")}</h3>
-              <p className="mx-auto mt-2 max-w-sm text-muted-foreground">{t("gallery.list.emptyDescription")}</p>
-              <Button variant="outline" className="mt-4" onClick={() => setIsDialogOpen(true)}>
-                {t("gallery.list.createCampaign")}
-              </Button>
-            </div>
           ) : (
-            <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {campaigns.map((campaign) => {
-                const previewImage = campaign.user_images?.[0]?.image_url;
-                const hasNewContent = campaign.user_images?.some((img) => img.type?.toLowerCase().trim() === "enhanced" && !img.viewed);
+            <div className="space-y-4">
+              {monthGroups.map((group) => {
+                const previewImage = group.images[0]?.image_url;
+                const uploadCount = group.images.filter((image) => !isEnhancedImage(image)).length;
+                const hasNewEnhanced = group.images.some((image) => isEnhancedImage(image) && !image.viewed);
 
                 return (
-                  <div
-                    key={campaign.id}
-                    onClick={() => handleEnterCampaign(campaign)}
-                    className="group relative cursor-pointer overflow-hidden rounded-xl border bg-card transition-all hover:shadow-lg"
+                  <button
+                    key={group.key}
+                    type="button"
+                    onClick={() => {
+                      setSelectedMonth(group.key);
+                      setSelectedDate(null);
+                      setView("calendar");
+                      void fetchImages(group.key);
+                    }}
+                    className="flex w-full items-center justify-between rounded-2xl border bg-card p-4 text-left transition hover:shadow-md"
                   >
-                    <div className="relative flex aspect-video items-center justify-center overflow-hidden bg-secondary/30">
-                      {previewImage ? (
-                        <img
-                          src={previewImage}
-                          alt={campaign.name}
-                          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                      ) : (
-                        <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
-                      )}
-                      <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
-                    </div>
-
-                    <div className="p-4">
-                      <div className="flex items-center gap-2">
-                        <h3 className="truncate text-lg font-semibold">{campaign.name}</h3>
-                        {hasNewContent && (
-                          <span
-                            className="flex h-3 w-3 animate-pulse rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
-                            title={t("gallery.list.newImagesTitle")}
-                          />
+                    <div className="flex items-center gap-4">
+                      <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-secondary/50">
+                        {previewImage ? (
+                          <img src={previewImage} alt={group.key} className="h-full w-full object-cover" />
+                        ) : (
+                          <Folder className="h-6 w-6 text-muted-foreground" />
                         )}
                       </div>
-                      <p className="mt-1 text-sm text-muted-foreground">{formatDate(campaign.created_at)}</p>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold">{formatMonthLabel(group.key)}</h3>
+                          {hasNewEnhanced && (
+                            <span
+                              className="flex h-2.5 w-2.5 rounded-full bg-green-500"
+                              title={t("gallery.toasts.imageMarkedViewed")}
+                            />
+                          )}
+                        </div>
+                        <p className="text-sm text-muted-foreground">{t("gallery.folders.photoCount", { count: uploadCount })}</p>
+                      </div>
                     </div>
-                  </div>
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  </button>
                 );
               })}
+            </div>
+          )}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setView("upload")}
+          className="fixed bottom-24 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lg transition hover:bg-primary/90"
+          aria-label={t("gallery.folders.uploadBtn")}
+        >
+          <Plus className="h-7 w-7" />
+        </button>
+      </div>
+    );
+  }
+
+  if (view === "calendar" && selectedMonth) {
+    const [year, month] = selectedMonth.split("-").map(Number);
+    const monthLabel = formatMonthLabel(selectedMonth);
+    const firstDay = new Date(year, month - 1, 1);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const startOffset = (firstDay.getDay() + 6) % 7;
+    const totalCells = 42;
+    const weekDays = isSpanish ? ["L", "M", "M", "J", "V", "S", "D"] : ["M", "T", "W", "T", "F", "S", "S"];
+
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setSelectedDate(null);
+                setView("folders");
+              }}
+              aria-label={t("common.back")}
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </Button>
+            <h1 className="text-2xl font-heading font-bold">{monthLabel}</h1>
+          </div>
+
+          {loading ? (
+            <div className="flex justify-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+              <div className="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-muted-foreground">
+                {weekDays.map((day) => (
+                  <div key={day}>{day}</div>
+                ))}
+              </div>
+              <div className="mt-3 grid grid-cols-7 gap-2 text-center">
+                {Array.from({ length: totalCells }).map((_, index) => {
+                  const dayNumber = index - startOffset + 1;
+                  if (dayNumber < 1 || dayNumber > daysInMonth) {
+                    return <div key={`empty-${index}`} className="h-9 w-9" />;
+                  }
+
+                  const hasPhotos = daysWithPhotos.has(dayNumber);
+
+                  if (hasPhotos) {
+                    const dateKey = `${selectedMonth}-${String(dayNumber).padStart(2, "0")}`;
+                    return (
+                      <button
+                        key={dateKey}
+                        type="button"
+                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF5729] text-sm font-semibold text-white"
+                        onClick={() => {
+                          setSelectedDate(dateKey);
+                          setView("dayDetail");
+                        }}
+                      >
+                        {dayNumber}
+                      </button>
+                    );
+                  }
+
+                  return (
+                    <div key={dayNumber} className="flex h-9 w-9 items-center justify-center text-sm text-foreground/70">
+                      {dayNumber}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
@@ -303,206 +630,87 @@ const Gallery = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={handleBack} aria-label={t("common.back")}>
+  if (view === "dayDetail" && selectedDate) {
+    const dayTitle = formatDayLabel(selectedDate);
+
+    return (
+      <div className="min-h-screen bg-background p-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setSelectedDate(null);
+                setView("calendar");
+              }}
+              aria-label={t("common.back")}
+            >
               <ArrowLeft className="h-6 w-6" />
             </Button>
-            <div>
-              <h1 className="text-3xl font-bold">{selectedCampaign?.name}</h1>
-              <p className="mt-1 text-muted-foreground">{t("gallery.detail.subtitle")}</p>
-            </div>
+            <h1 className="text-xl font-heading font-bold">{dayTitle}</h1>
           </div>
 
-          <div>
-            <input
-              type="file"
-              id="upload-image"
-              className="hidden"
-              accept="image/*"
-              onChange={handleFileUpload}
-              disabled={uploading}
-            />
-            <label htmlFor="upload-image">
-              <Button className="cursor-pointer" asChild disabled={uploading}>
-                <span>
-                  {uploading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Upload className="mr-2 h-4 w-4" />}
-                  {t("gallery.detail.uploadProduct")}
-                </span>
-              </Button>
-            </label>
-          </div>
-        </div>
-
-        {newImages.length > 0 && (
           <section className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-green-500" />
+            <h2 className="text-lg font-heading font-semibold">{t("gallery.dayDetail.ownPhoto")}</h2>
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
-              <h2 className="text-xl font-bold">{t("gallery.detail.newImages")}</h2>
-              <span className="text-sm text-muted-foreground">({newImages.length})</span>
-            </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {uploadedDayImages.map((image) => (
+                  <div key={image.id} className="relative aspect-video overflow-hidden rounded-2xl border bg-card">
+                    <img src={image.image_url} alt={t("gallery.dayDetail.ownPhoto")} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
 
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {newImages.map((img) => (
-                <div
-                  key={img.id}
-                  className="group relative aspect-square overflow-hidden rounded-xl border-2 border-green-500/30 bg-card shadow-lg shadow-green-500/5"
-                >
-                  <img
-                    src={img.image_url}
-                    alt={t("gallery.detail.enhancedImageAlt")}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-black/60 p-3 opacity-0 transition-opacity group-hover:opacity-100">
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      className="h-8 w-full"
-                      onClick={async () => {
-                        const dateStr = new Date().toISOString().split("T")[0];
-                        const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
-                        forceDownload(img.image_url, filename);
+          <div className="border-t border-border" />
 
-                        const { error } = await supabase.from("user_images").update({ viewed: true }).eq("id", img.id);
-                        if (!error) {
-                          setImages((prev) => prev.map((item) => (item.id === img.id ? { ...item, viewed: true } : item)));
-                          toast({
-                            title: t("gallery.toasts.imageDownloaded"),
-                            description: t("gallery.toasts.imageMarkedViewed"),
-                          });
-                        }
-                      }}
-                    >
-                      <Download className="mr-2 h-3 w-3" />
+          <section className="space-y-4">
+            <h2 className="text-lg font-heading font-semibold">{t("gallery.dayDetail.finalPhoto")}</h2>
+            {loading ? (
+              <div className="flex justify-center py-10">
+                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              </div>
+            ) : enhancedDayImages.length === 0 ? (
+              <div className="rounded-2xl border-2 border-dashed p-10 text-center text-muted-foreground">
+                {t("gallery.dayDetail.processing")}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {enhancedDayImages.map((image) => (
+                  <div key={image.id} className="space-y-3 rounded-2xl border bg-card p-4">
+                    <div className="relative aspect-video overflow-hidden rounded-xl">
+                      <img
+                        src={image.image_url}
+                        alt={t("gallery.dayDetail.finalPhoto")}
+                        className="h-full w-full object-cover"
+                      />
+                      {!image.viewed && (
+                        <span className="absolute left-3 top-3 rounded-full bg-green-500 px-2 py-1 text-xs font-bold text-white">
+                          {t("gallery.dayDetail.newBadge")}
+                        </span>
+                      )}
+                    </div>
+                    <Button variant="secondary" onClick={() => handleEnhancedDownload(image)}>
+                      <Download className="mr-2 h-4 w-4" />
                       {t("common.download")}
                     </Button>
                   </div>
-                  <div className="absolute left-2 top-2">
-                    <span className="flex items-center gap-1 rounded-full border border-green-600 bg-green-500 px-2 py-1 text-[10px] font-bold text-white">
-                      <span className="inline-block h-1.5 w-1.5 rounded-full bg-white" />
-                      {t("gallery.detail.newBadge")}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="flex justify-end">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={async () => {
-                  const ids = newImages.map((img) => img.id);
-                  await supabase.from("user_images").update({ viewed: true }).in("id", ids);
-                  setImages((prev) => prev.map((img) => (ids.includes(img.id) ? { ...img, viewed: true } : img)));
-                  toast({ title: t("gallery.toasts.markedAllSeen") });
-                }}
-              >
-                {t("gallery.detail.markAllSeen")}
-              </Button>
-            </div>
-            <div className="border-t border-border" />
-          </section>
-        )}
-
-        {createdImages.length > 0 && (
-          <section className="space-y-4">
-            <h2 className="text-lg font-semibold text-muted-foreground">{t("gallery.detail.createdImages")}</h2>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {createdImages.map((img) => (
-                <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl border bg-card">
-                  <img
-                    src={img.image_url}
-                    alt={t("gallery.detail.createdImageAlt")}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-black/60 p-4 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="text-white">
-                      <p className="mb-1 text-xs font-medium uppercase tracking-wider">{t("gallery.detail.generatedTag")}</p>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        className="h-8 w-full"
-                        onClick={() => {
-                          const dateStr = new Date().toISOString().split("T")[0];
-                          forceDownload(img.image_url, `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`);
-                        }}
-                      >
-                        <Download className="mr-2 h-3 w-3" />
-                        {t("common.download")}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="border-t border-border" />
-          </section>
-        )}
-
-        <section className="space-y-4">
-          <h2 className="text-lg font-semibold text-muted-foreground">{t("gallery.detail.uploadedImages")}</h2>
-
-          {loading ? (
-            <div className="flex justify-center py-20">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            </div>
-          ) : uploadedImages.length === 0 && createdImages.length === 0 && newImages.length === 0 ? (
-            <div className="rounded-xl border-2 border-dashed py-20 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-secondary/50">
-                <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                ))}
               </div>
-              <h3 className="text-xl font-semibold">{t("gallery.detail.emptyCampaignTitle")}</h3>
-              <p className="mx-auto mt-2 max-w-sm text-muted-foreground">{t("gallery.detail.emptyCampaignDescription")}</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-6 md:grid-cols-3 lg:grid-cols-4">
-              {uploadedImages.map((img) => (
-                <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl border bg-card">
-                  <img
-                    src={img.image_url}
-                    alt={t("gallery.detail.uploadedImageAlt")}
-                    className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 flex flex-col justify-end bg-black/60 p-4 opacity-0 transition-opacity group-hover:opacity-100">
-                    <div className="text-white">
-                      <p className="mb-1 text-xs font-medium uppercase tracking-wider">{t("gallery.detail.uploadedTag")}</p>
-                      <div className="mt-2 flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          className="h-8 w-full"
-                          onClick={() => {
-                            const dateStr = new Date().toISOString().split("T")[0];
-                            const filename = `visual-growth-${dateStr}-${img.id.slice(0, 8)}.png`;
-                            forceDownload(img.image_url, filename);
-                          }}
-                        >
-                          <Download className="mr-2 h-3 w-3" />
-                          {t("common.download")}
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="absolute left-2 top-2">
-                    <span className="rounded-full border border-border bg-background/80 px-2 py-1 text-[10px] font-bold text-foreground">
-                      {t("gallery.detail.uploadedBadge")}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+            )}
+          </section>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return null;
 };
 
 export default Gallery;

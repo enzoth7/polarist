@@ -23,12 +23,24 @@ const Dashboard = () => {
   const targetAudience = profile.targetAudience ? stripPrefix(profile.targetAudience).replace(/_/g, " ") : t("common.notDefined");
   const goal = profile.socialPriorityGoal ? stripPrefix(profile.socialPriorityGoal).replace(/_/g, " ") : t("common.notDefined");
 
-  const greeting = () => {
+  const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return t("dashboard.greetings.morning");
-    if (hour < 19) return t("dashboard.greetings.afternoon");
+    if (hour >= 6 && hour < 12) return t("dashboard.greetings.morning");
+    if (hour >= 12 && hour < 19) return t("dashboard.greetings.afternoon");
     return t("dashboard.greetings.night");
   };
+
+  const [greetingText, setGreetingText] = useState(getGreeting);
+
+  useEffect(() => {
+    const handleVisibility = () => {
+      if (document.visibilityState === "visible") {
+        setGreetingText(getGreeting());
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => document.removeEventListener("visibilitychange", handleVisibility);
+  }, [t]);
 
   const checkForNewEnhanced = async () => {
     try {
@@ -115,7 +127,7 @@ const Dashboard = () => {
           />
           <div className="flex w-full items-center">
             <div className="flex flex-col rounded-xl border border-border bg-card px-5 py-3">
-              <span className="text-sm text-muted-foreground">{greeting()}</span>
+              <span className="text-sm text-muted-foreground">{greetingText}</span>
               <span className="text-xl md:text-3xl font-heading font-bold text-foreground">{brandName}</span>
             </div>
             <button

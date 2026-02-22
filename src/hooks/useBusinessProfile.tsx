@@ -6,6 +6,10 @@ export interface BusinessProfile {
   businessCategory: string; // db: business_category
   avatarUrl: string; // db: avatar_url
   onboardingComplete: boolean; // db: onboarding_completed
+  contactInstagram: string;
+  contactWebsite: string;
+  contactWhatsapp: string;
+  contactEmail: string;
 
   brandHistory: string;
   brandDifferential: string;
@@ -37,6 +41,10 @@ const defaultProfile: BusinessProfile = {
   businessCategory: "",
   avatarUrl: "",
   onboardingComplete: false,
+  contactInstagram: "",
+  contactWebsite: "",
+  contactWhatsapp: "",
+  contactEmail: "",
   brandHistory: "",
   brandDifferential: "",
   targetAudience: "",
@@ -101,6 +109,10 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
           businessCategory: data.business_category || "",
           avatarUrl: data.avatar_url || "",
           onboardingComplete: data.onboarding_completed || false,
+          contactInstagram: data.contact_instagram || "",
+          contactWebsite: data.contact_website || "",
+          contactWhatsapp: data.contact_whatsapp || "",
+          contactEmail: user.email || "",
           brandHistory: data.brand_history || "",
           brandDifferential: data.brand_differential || "",
           targetAudience: data.target_audience || "",

@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { useBusinessProfile } from "@/hooks/useBusinessProfile";
 import { supabase } from "@/lib/supabase";
@@ -84,6 +85,8 @@ const Onboarding = () => {
     localizedSections && typeof localizedSections === "object" ? (localizedSections as Record<string, { name: string }>) : {};
 
   const [hasStarted, setHasStarted] = useState(false);
+  const [brandNameStepComplete, setBrandNameStepComplete] = useState(false);
+  const [brandNameInput, setBrandNameInput] = useState("");
   const [contactStepComplete, setContactStepComplete] = useState(false);
   const [contactInfo, setContactInfo] = useState({
     instagram: "",
@@ -258,7 +261,8 @@ const Onboarding = () => {
     setShowCompletion(false);
     const processingSequence = playProcessingSequence(runId);
 
-    const profileData = {
+  const profileData = {
+      business_name: brandNameInput.trim(),
       contact_instagram: contactInfo.instagram.trim() || null,
       contact_website: contactInfo.website.trim() || null,
       contact_whatsapp: contactInfo.whatsapp.trim() || null,
@@ -305,6 +309,7 @@ const Onboarding = () => {
       if (processingRunIdRef.current !== runId) return;
 
       updateProfile({
+        businessName: brandNameInput.trim(),
         businessCategory: profileData.business_category,
         brandHistory: profileData.brand_history,
         brandDifferential: profileData.brand_differential,
@@ -450,7 +455,7 @@ const Onboarding = () => {
         ? "text-xl md:text-2xl"
         : "text-lg md:text-xl";
 
-  const stage = !hasStarted ? "intro" : !contactStepComplete ? "contact" : "questions";
+  const stage = !hasStarted ? "intro" : !brandNameStepComplete ? "brandName" : !contactStepComplete ? "contact" : "questions";
 
   return (
     <div className="min-h-[100dvh] w-full bg-[#FAFAFA] dark:bg-background">
@@ -476,6 +481,50 @@ const Onboarding = () => {
               >
                 {t("onboarding.intro.cta")}
               </Button>
+            </div>
+          </motion.div>
+        ) : stage === "brandName" ? (
+          <motion.div
+            key="brandName"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.35 }}
+            className="animate-fade-in min-h-[100dvh] w-full bg-background"
+          >
+            <div className="flex min-h-[100dvh] flex-col items-center justify-center px-6">
+              <div className="w-full max-w-md space-y-6">
+                <div className="flex items-center">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setHasStarted(false)}
+                    aria-label={t("common.back")}
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                  </Button>
+                </div>
+                <div className="text-center">
+                  <h2 className="text-2xl font-heading font-bold text-foreground">{t("onboarding.brandName.title")}</h2>
+                  <p className="mt-2 text-sm text-muted-foreground">{t("onboarding.brandName.description")}</p>
+                </div>
+                <Input
+                  value={brandNameInput}
+                  onChange={(event) => setBrandNameInput(event.target.value)}
+                  placeholder={t("onboarding.brandName.placeholder")}
+                  className="bg-card text-center text-lg"
+                  autoFocus
+                />
+                <Button
+                  className="w-full"
+                  onClick={() => setBrandNameStepComplete(true)}
+                  disabled={!brandNameInput.trim()}
+                >
+                  {t("common.continue")}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </motion.div>
         ) : stage === "contact" ? (
@@ -537,7 +586,7 @@ const Onboarding = () => {
               </div>
 
               <div className="mt-6 flex items-center justify-between gap-2">
-                <Button type="button" variant="ghost" onClick={() => setHasStarted(false)} className="h-10 px-3">
+                <Button type="button" variant="ghost" onClick={() => setBrandNameStepComplete(false)} className="h-10 px-3">
                   <ArrowLeft className="mr-1.5 h-4 w-4" />
                   {t("common.previous")}
                 </Button>
