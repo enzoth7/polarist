@@ -8,22 +8,22 @@ const Footer = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="relative w-full border-t border-border bg-[#F0F0F0]/95 px-4 py-5">
-      <div className="mx-auto flex w-full max-w-6xl flex-nowrap items-center justify-center gap-x-1 sm:gap-x-2">
-        <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
+    <footer className="relative w-full border-t border-border/40 bg-background/95 px-4 py-3">
+      <div className="mx-auto flex w-full max-w-6xl flex-nowrap items-center justify-center gap-x-0 sm:gap-x-0.5">
+        <Button asChild variant="ghost" size="sm" className="font-body !px-1.5 text-muted-foreground hover:text-foreground sm:!px-2">
           <Link to="/contact">{t("footer.links.contact")}</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
+        <Button asChild variant="ghost" size="sm" className="font-body !px-1.5 text-muted-foreground hover:text-foreground sm:!px-2">
           <Link to="/about">{t("footer.links.about")}</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
+        <Button asChild variant="ghost" size="sm" className="font-body !px-1.5 text-muted-foreground hover:text-foreground sm:!px-2">
           <Link to="/privacy">{t("footer.links.privacy")}</Link>
         </Button>
-        <Button asChild variant="ghost" size="sm" className="font-body text-muted-foreground hover:text-foreground">
+        <Button asChild variant="ghost" size="sm" className="font-body !px-1.5 text-muted-foreground hover:text-foreground sm:!px-2">
           <Link to="/terms">{t("footer.links.terms")}</Link>
         </Button>
       </div>
-      <div className="mx-auto mt-3 flex w-full max-w-6xl items-center justify-center">
+      <div className="mx-auto mt-3 flex w-full max-w-6xl items-center justify-start">
         <div className="flex items-center">
           <LanguageSwitcher />
         </div>
