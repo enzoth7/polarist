@@ -8,7 +8,7 @@ const Footer = () => {
   const { t } = useTranslation();
 
   return (
-    <footer className="relative w-full border-t border-border/40 bg-background/95 px-4 py-3">
+    <footer className="relative w-full border-t border-border/40 bg-background/95 px-4 pt-1 pb-[calc(0.75rem+env(safe-area-inset-bottom))]">
       <div className="mx-auto flex w-full max-w-6xl flex-nowrap items-center justify-center gap-x-0 sm:gap-x-0.5">
         <Button asChild variant="ghost" size="sm" className="font-body !px-1.5 text-muted-foreground hover:text-foreground sm:!px-2">
           <Link to="/contact">{t("footer.links.contact")}</Link>

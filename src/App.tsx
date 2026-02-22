@@ -13,6 +13,8 @@ import Signup from "./pages/Signup";
 import Onboarding from "./pages/Onboarding";
 import Dashboard from "./pages/Dashboard";
 import Gallery from "./pages/Gallery";
+import Design from "./pages/Design";
+import Creations from "./pages/Creations";
 import Preferences from "./pages/Preferences";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
@@ -46,6 +48,8 @@ const App = () => (
                 <Route path="/onboarding" element={<Onboarding />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/gallery" element={<Gallery />} />
+                <Route path="/design" element={<Design />} />
+                <Route path="/creations" element={<Creations />} />
                 <Route path="/preferences" element={<Preferences />} />
               </Route>
 

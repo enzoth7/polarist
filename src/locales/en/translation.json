@@ -102,9 +102,16 @@
       "night": "Good evening"
     },
     "goToSettings": "Go to settings",
+    "heroQuestion": "What do you want to create today?",
+    "actions": {
+      "photo": "Photo",
+      "design": "Design",
+      "creations": "My creations"
+    },
+    "notifications": "Notifications",
     "visualStyle": {
       "title": "My Visual Style",
-      "personality": "Personality",
+      "targetAudience": "Target audience",
       "goal": "My goal"
     },
     "catalog": {

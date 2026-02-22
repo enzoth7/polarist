@@ -102,9 +102,16 @@
       "night": "Buenas noches"
     },
     "goToSettings": "Ir a configuración",
+    "heroQuestion": "¿Qué querés crear hoy?",
+    "actions": {
+      "photo": "Foto",
+      "design": "Diseño",
+      "creations": "Mis creaciones"
+    },
+    "notifications": "Notificaciones",
     "visualStyle": {
       "title": "Mi Estilo Visual",
-      "personality": "Personalidad",
+      "targetAudience": "Público objetivo",
       "goal": "Mi objetivo"
     },
     "catalog": {
