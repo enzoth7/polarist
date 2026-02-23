@@ -1,6 +1,4 @@
-﻿import { useNavigate } from "react-router-dom";
-import { LogIn, UserPlus } from "lucide-react";
-import BeforeAfterSlider from "@/components/BeforeAfterSlider";
+﻿import BeforeAfterSlider from "@/components/BeforeAfterSlider";
 import BrandLogo from "@/components/BrandLogo";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -9,7 +7,6 @@ import { supabase } from "@/lib/supabase";
 import { useTranslation } from "react-i18next";
 
 const Landing = () => {
-  const navigate = useNavigate();
   const { isInstallable, installApp } = useInstallPrompt();
   const { t } = useTranslation();
 
@@ -83,17 +80,6 @@ const Landing = () => {
               <img src="/google-logo.png" alt={t("landing.navbar.googleLogoAlt")} className="mr-2 h-4 w-4 object-contain" />
               {t("landing.navbar.continueWithGoogle")}
             </Button>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Button onClick={() => navigate("/signup")} variant="outline" className="h-12 border-2">
-                <UserPlus className="mr-2 h-4 w-4" />
-                {t("auth.signup.title") || "Crear Cuenta"}
-              </Button>
-              <Button onClick={() => navigate("/login")} variant="ghost" className="h-12">
-                <LogIn className="mr-2 h-4 w-4" />
-                {t("auth.login.title") || "Iniciar Sesión"}
-              </Button>
-            </div>
           </div>
           <p className="pt-2 text-sm text-muted-foreground">Crea contenido visual que destaque</p>
         </section>
