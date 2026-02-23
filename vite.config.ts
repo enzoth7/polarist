@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: "Polarist",
         short_name: "Polarist",
-        description: "Transform your business with AI-powered visual marketing automation",
+        description: "Potencia la imagen de tu negocio con contenido visual que enamora a tus clientes",
         start_url: "/",
         display: "standalone",
         background_color: "#FAFAFA",
