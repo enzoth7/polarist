@@ -541,7 +541,9 @@ const Onboarding = () => {
               <h1 className="mt-3 text-3xl leading-tight tracking-[0.01em] text-foreground md:text-4xl">
                 {t("onboarding.contact.title")}
               </h1>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground md:text-base">{t("onboarding.contact.description")}</p>
+              <p className="mt-3 text-lg font-medium leading-relaxed text-primary md:text-xl">
+                {t("onboarding.contact.description")}
+              </p>
 
               <div className="mt-6 flex flex-col gap-4">
                 <label className="flex flex-col gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-[#1A1A1A]/55">

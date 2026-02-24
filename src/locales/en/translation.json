@@ -19,13 +19,15 @@
   },
   "landing": {
     "navbar": {
-      "installApp": "Install App",
+      "installApp": "Install Web App (iOS/Android)",
       "continueWithGoogle": "Continue with Google",
       "googleLogoAlt": "Google"
     },
     "hero": {
-      "title": "Studio-grade product images.",
-      "description": "We bring your brand to the visual standard required by global markets."
+      "title": "Turn your phone photos into studio-grade product images.",
+      "description": "Upgrade your product visuals instantly without renting costly studios or hiring agencies. Built exclusively for brands and entrepreneurs who want to look premium on social media and sales channels.",
+      "googleDisclaimer": "Improve your first product photo totally free",
+      "salesSubtitle": "We will only use your email address for your profile."
     },
     "showcase": {
       "title": "A glimpse of our work",
@@ -113,7 +115,12 @@
     "visualStyle": {
       "title": "My Visual Style",
       "targetAudience": "Target audience",
-      "goal": "My goal"
+      "goal": "My goal",
+      "email": "Email",
+      "addTargetAudience": "Tap to add target audience",
+      "addGoal": "Tap to add your goal",
+      "addEmail": "Tap to add email",
+      "helper": "These details define your brand visual style and strategy."
     },
     "catalog": {
       "badge": "Catalog",
@@ -137,19 +144,30 @@
           "description": "Keep it centered so we can give it the best finish."
         }
       }
-    }
+    },
+    "heroHelper": "Choose what you want to create now: photo, design, or your creations."
   },
   "gallery": {
     "errors": {
       "noUser": "No user found"
     },
     "toasts": {
-      "productUploaded": "Product uploaded",
-      "productUploadedDescription": "Your image was saved in your folder.",
+      "productUploaded": "Photo uploaded!",
+      "productUploadedDescription": "We'll notify you when your photo is ready.",
+      "notificationsEnabledTitle": "Notifications enabled",
+      "notificationsEnabledDescription": "We'll let you know when your photo is ready.",
+      "notificationsErrorTitle": "Couldn't enable notifications",
+      "notificationsErrorDescription": "Please try again.",
       "uploadErrorTitle": "Upload error",
       "uploadErrorDescription": "Could not upload image.",
       "imageDownloaded": "Image downloaded",
-      "imageMarkedViewed": "Marked as viewed."
+      "imageMarkedViewed": "Marked as viewed.",
+      "imageDeletedTitle": "Photo deleted",
+      "imageDeletedDescription": "The photo was deleted successfully.",
+      "folderDeletedTitle": "Folder deleted",
+      "folderDeletedDescription": "The folder and its photos were deleted successfully.",
+      "deleteErrorTitle": "Delete error",
+      "deleteErrorDescription": "We could not delete the content. Please try again."
     },
     "tips": {
       "title": "Tips for taking a great photo",
@@ -171,7 +189,14 @@
     },
     "upload": {
       "title": "Let's begin",
-      "subtitle": "Upload a photo of your product to get started"
+      "subtitle": "Upload a photo of your product to get started",
+      "helper": "Upload a photo of your product exactly as you take it with your phone."
+    },
+    "notifications": {
+      "title": "Get notified when your photos are ready",
+      "description": "Enable notifications to know even if you close the app.",
+      "cta": "Enable notifications",
+      "ctaLoading": "Enabling..."
     },
     "folders": {
       "title": "My content folder",
@@ -181,8 +206,14 @@
     "dayDetail": {
       "ownPhoto": "Own photo",
       "finalPhoto": "Final photo",
-      "processing": "Processing...",
+      "processing": "Your photo is being processed. We'll notify you when it's ready to download here.",
       "newBadge": "NEW"
+    },
+    "delete": {
+      "confirmImage": "Delete this photo? This action cannot be undone.",
+      "confirmFolder": "Delete the {{month}} folder and all its photos? This action cannot be undone.",
+      "imageButton": "Delete photo",
+      "folderButton": "Delete folder"
     }
   },
   "preferences": {
@@ -403,7 +434,7 @@
     "intro": {
       "title": "✨ Let's elevate your brand",
       "line1": "We'll configure a visual engine for your products.",
-      "line2": "It only takes 5 minutes.",
+      "line2": "It only takes 5 minutes. Our AI is learning your brand style to improve your photos.",
       "cta": "Start questionnaire"
     },
     "brandName": {
@@ -809,9 +840,9 @@
       {
         "id": 17,
         "section": 3,
-        "category": "🔤 Typography",
+        "category": "🔤 Type of font (Typography)",
         "type": "single",
-        "text": "Do you have defined typography?",
+        "text": "Do you have a defined type of font?",
         "options": [
           {
             "label": "A) Yes, defined",

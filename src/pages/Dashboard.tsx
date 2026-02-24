@@ -20,8 +20,75 @@ const Dashboard = () => {
 
   const brandName = profile.businessName?.trim() || t("dashboard.brandFallback");
   const stripPrefix = (value: string) => value.replace(/^[A-Z]\)\s*/i, "");
-  const targetAudience = profile.targetAudience ? stripPrefix(profile.targetAudience).replace(/_/g, " ") : t("common.notDefined");
-  const goal = profile.socialPriorityGoal ? stripPrefix(profile.socialPriorityGoal).replace(/_/g, " ") : t("common.notDefined");
+  const normalizeAnswer = (value: string) => stripPrefix(value).replace(/_/g, " ").trim();
+  const targetAudience = profile.targetAudience
+    ? normalizeAnswer(profile.targetAudience)
+    : t("dashboard.visualStyle.addTargetAudience");
+  const goal = profile.socialPriorityGoal
+    ? normalizeAnswer(profile.socialPriorityGoal)
+    : t("dashboard.visualStyle.addGoal");
+  const contentVisualStyle = profile.productVisualStyle
+    ? normalizeAnswer(profile.productVisualStyle)
+    : t("dashboard.visualStyle.addContentStyle", { defaultValue: "Toca para agregar estilo visual" });
+  const typography = profile.typographyStatus
+    ? normalizeAnswer(profile.typographyStatus)
+    : t("dashboard.visualStyle.addTypography", { defaultValue: "Toca para definir tipografía" });
+
+  const extractHexColors = (value: string) => {
+    if (!value) return [];
+    const sources: string[] = [];
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        parsed.forEach((item) => {
+          if (typeof item === "string") sources.push(item);
+        });
+      }
+    } catch {
+      // Ignore JSON parse errors and treat as plain string
+    }
+    if (sources.length === 0) sources.push(value);
+
+    const matches = sources.flatMap((item) => item.match(/#(?:[0-9a-fA-F]{3}){1,2}\b/g) ?? []);
+    return Array.from(new Set(matches));
+  };
+
+  const brandPalette = extractHexColors(profile.brandColorsExtra);
+  const paletteFallback = t("dashboard.visualStyle.addPalette", { defaultValue: "Toca para agregar colores" });
+
+  const profileItems = [
+    {
+      key: "targetAudience",
+      label: t("dashboard.visualStyle.targetAudience"),
+      value: targetAudience,
+      type: "text",
+    },
+    {
+      key: "goal",
+      label: t("dashboard.visualStyle.goal"),
+      value: goal,
+      type: "text",
+    },
+    {
+      key: "contentStyle",
+      label: t("dashboard.visualStyle.contentStyle", { defaultValue: "Estilo visual del contenido" }),
+      value: contentVisualStyle,
+      type: "text",
+    },
+    {
+      key: "palette",
+      label: t("dashboard.visualStyle.palette", { defaultValue: "Paleta de colores" }),
+      colors: brandPalette,
+      fallback: paletteFallback,
+      type: "palette",
+    },
+    {
+      key: "typography",
+      label: t("dashboard.visualStyle.typography", { defaultValue: "Tipografía" }),
+      value: typography,
+      type: "text",
+    },
+  ] as const;
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -123,7 +190,7 @@ const Dashboard = () => {
             onUpload={(url) => {
               updateProfile({ avatarUrl: url });
             }}
-            size={48}
+            size={64}
           />
           <div className="flex w-full items-center">
             <div className="flex flex-col rounded-xl border border-border bg-card px-5 py-3">
@@ -152,6 +219,7 @@ const Dashboard = () => {
           <h2 className="text-2xl md:text-2xl font-heading text-foreground whitespace-nowrap">
             {t("dashboard.heroQuestion")}
           </h2>
+          <p className="text-sm text-muted-foreground">{t("dashboard.heroHelper")}</p>
           <section className="grid grid-cols-2 gap-4">
             <button
               type="button"
@@ -189,20 +257,40 @@ const Dashboard = () => {
 
         <section className="mt-6 rounded-2xl border border-black/5 bg-card p-5 shadow-soft md:p-6">
           <h2 className="font-heading text-xl tracking-[0.02em] text-foreground">{t("dashboard.visualStyle.title")}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{t("dashboard.visualStyle.helper")}</p>
 
           <div className="mt-4 grid gap-4 sm:grid-cols-2">
-            <article className="rounded-xl border border-border/80 bg-background/70 p-4">
-              <span className="font-body mb-1 block text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                {t("dashboard.visualStyle.targetAudience")}
-              </span>
-              <p className="font-body text-base capitalize text-foreground">{targetAudience}</p>
-            </article>
-            <article className="rounded-xl border border-border/80 bg-background/70 p-4">
-              <span className="font-body mb-1 block text-xs uppercase tracking-[0.12em] text-muted-foreground">
-                {t("dashboard.visualStyle.goal")}
-              </span>
-              <p className="font-body text-base capitalize text-foreground">{goal}</p>
-            </article>
+            {profileItems.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                onClick={() => navigate("/preferences")}
+                className="rounded-xl border border-border/80 bg-background/70 p-4 text-left cursor-pointer"
+              >
+                <span className="font-body mb-1 block text-xs uppercase tracking-[0.12em] text-muted-foreground">
+                  {item.label}
+                </span>
+                {item.type === "palette" ? (
+                  item.colors.length > 0 ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      {item.colors.map((color) => (
+                        <span
+                          key={color}
+                          className="h-4 w-4 rounded-full"
+                          style={{ backgroundColor: color }}
+                          title={color}
+                          aria-label={color}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="font-body text-base text-foreground">{item.fallback}</p>
+                  )
+                ) : (
+                  <p className="font-body text-base capitalize text-foreground">{item.value}</p>
+                )}
+              </button>
+            ))}
           </div>
         </section>
       </main>

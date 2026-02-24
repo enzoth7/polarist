@@ -19,13 +19,15 @@
   },
   "landing": {
     "navbar": {
-      "installApp": "Instalar App",
+      "installApp": "Instalar Web App (iOS/Android)",
       "continueWithGoogle": "Continuar con Google",
       "googleLogoAlt": "Google"
     },
     "hero": {
-      "title": "Imágenes de producto con acabado de estudio.",
-      "description": "Llevamos tu marca al estándar visual que exigen los mercados globales."
+      "title": "Convierte las fotos de tu celular en imágenes de estudio.",
+      "description": "Eleva la calidad visual de tus productos al instante. Sin alquilar estudios costosos ni contratar agencias. Diseñado específicamente para marcas y emprendedores que quieren diferenciarse en sus redes sociales y canales de venta.",
+      "googleDisclaimer": "Usaremos tu correo solo para el perfil.",
+      "salesSubtitle": "Creá una identidad única para tu marca."
     },
     "showcase": {
       "title": "Algo de nuestro trabajo",
@@ -103,7 +105,7 @@
       "night": "Buenas noches"
     },
     "goToSettings": "Ir a configuración",
-    "heroQuestion": "¿Qué querés crear hoy?",
+    "heroQuestion": "¿Qué querés hacer hoy?",
     "actions": {
       "photo": "Foto",
       "design": "Diseño",
@@ -111,9 +113,14 @@
     },
     "notifications": "Notificaciones",
     "visualStyle": {
-      "title": "Mi perfil de marca",
+      "title": "Datos de tu marca",
       "targetAudience": "Público objetivo",
-      "goal": "Mi objetivo"
+      "goal": "Mi objetivo",
+      "email": "Correo electrónico",
+      "addTargetAudience": "Toca para agregar público objetivo",
+      "addGoal": "Toca para agregar tu objetivo",
+      "addEmail": "Toca para agregar correo electrónico",
+      "helper": "Estos datos definen el estilo visual y la estrategia que con la que Polarist mejorará tus imágenes."
     },
     "catalog": {
       "badge": "Catálogo",
@@ -137,19 +144,30 @@
           "description": "Manténlo centrado para un mejor acabado."
         }
       }
-    }
+    },
+    "heroHelper": "Elegí si queres mejorar una foto, crear un diseño para una foto o ver todas tus creaciones."
   },
   "gallery": {
     "errors": {
       "noUser": "No se encontró usuario"
     },
     "toasts": {
-      "productUploaded": "Producto subido",
-      "productUploadedDescription": "Tu imagen se guardó en tu carpeta.",
+      "productUploaded": "¡Foto subida!",
+      "productUploadedDescription": "Te notificaremos cuando tu foto esté lista.",
+      "notificationsEnabledTitle": "Notificaciones activadas",
+      "notificationsEnabledDescription": "Te avisaremos cuando tu foto esté lista.",
+      "notificationsErrorTitle": "No pudimos activar notificaciones",
+      "notificationsErrorDescription": "Intenta nuevamente.",
       "uploadErrorTitle": "Error al subir",
       "uploadErrorDescription": "No se pudo subir la imagen.",
       "imageDownloaded": "Imagen descargada",
-      "imageMarkedViewed": "Se marcó como vista."
+      "imageMarkedViewed": "Se marcó como vista.",
+      "imageDeletedTitle": "Foto eliminada",
+      "imageDeletedDescription": "La foto se eliminó correctamente.",
+      "folderDeletedTitle": "Carpeta eliminada",
+      "folderDeletedDescription": "La carpeta y sus fotos se eliminaron correctamente.",
+      "deleteErrorTitle": "Error al eliminar",
+      "deleteErrorDescription": "No pudimos eliminar el contenido. Intenta nuevamente."
     },
     "tips": {
       "title": "Tips para sacar una buena foto",
@@ -171,7 +189,14 @@
     },
     "upload": {
       "title": "Comencemos",
-      "subtitle": "Subí una foto de tu producto para empezar"
+      "subtitle": "Sube una foto de tu producto para empezar",
+      "helper": "Sacá una foto de tu producto con el celular o elegilo de la galería."
+    },
+    "notifications": {
+      "title": "Recibe alertas cuando tus fotos estén listas",
+      "description": "Activá las notificaciones para enterarte aunque cierres la app.",
+      "cta": "Activar notificaciones",
+      "ctaLoading": "Activando..."
     },
     "folders": {
       "title": "Mi carpeta de contenido",
@@ -181,20 +206,26 @@
     "dayDetail": {
       "ownPhoto": "Foto propia",
       "finalPhoto": "Foto final",
-      "processing": "Procesando...",
+      "processing": "Tu foto se está procesando. Te notificaremos cuando esté lista para descargar aquí.",
       "newBadge": "NUEVA"
+    },
+    "delete": {
+      "confirmImage": "¿Eliminar esta foto? Esta acción no se puede deshacer.",
+      "confirmFolder": "¿Eliminar la carpeta de {{month}} y todas sus fotos? Esta acción no se puede deshacer.",
+      "imageButton": "Eliminar foto",
+      "folderButton": "Eliminar carpeta"
     }
   },
   "preferences": {
     "title": "Ajustes de marca",
     "generalInfo": "Información general",
-    "brandName": "Nombre de la marca",
+    "brandName": "Nombre de tu marca",
     "edit": "Editar",
     "saving": "Guardando...",
     "saveName": "Guardar nombre",
     "saveChanges": "Guardar cambios",
     "currentStrategy": "Estrategia actual",
-    "myBrand": "Mi marca",
+    "myBrand": "Datos de tu marca",
     "retakeQuestionnaire": "Rehacer cuestionario",
     "logout": "Cerrar sesión",
     "confirmRetake": "¿Estás seguro? Esto sobrescribirá tu estrategia actual.",
@@ -402,7 +433,7 @@
   "onboarding": {
     "intro": {
       "title": "Conozcamos tu marca",
-      "line2": "Solo te llevará 5 minutos.",
+      "line2": "Solo te llevará 5 minutos. La IA está aprendiendo el estilo de tu marca para mejorar tus fotos.",
       "cta": "Empezar cuestionario"
     },
     "brandName": {
@@ -827,9 +858,9 @@
       {
         "id": 17,
         "section": 3,
-        "category": "🔤 Tipografía",
+        "category": "🔤 Tipo de letra (Tipografía)",
         "type": "single",
-        "text": "¿Tenes una tipografía definida?",
+        "text": "¿Tenes un tipo de letra definido?",
         "options": [
           {
             "label": "Ya cuento con una",

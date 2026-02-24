@@ -1,10 +1,11 @@
-﻿import { ChangeEvent, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, Download, Folder, HelpCircle, Image as ImageIcon, Loader2, Plus } from "lucide-react";
+﻿import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowLeft, Download, Folder, HelpCircle, Image as ImageIcon, Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useBusinessProfile } from "@/hooks/useBusinessProfile";
 
 interface UserImage {
   id: string;
@@ -28,6 +29,7 @@ type GalleryView = "tips" | "upload" | "folders" | "calendar" | "dayDetail";
 const Gallery = () => {
   const { toast } = useToast();
   const { t, i18n } = useTranslation();
+  const { profile, savePushSubscription } = useBusinessProfile();
   const navigate = useNavigate();
   const { forceDownload } = {
     forceDownload: (url: string, name: string) => import("@/lib/downloadUtils").then((module) => module.forceDownload(url, name)),
@@ -44,6 +46,9 @@ const Gallery = () => {
   const [uploading, setUploading] = useState(false);
   const [initializing, setInitializing] = useState(true);
   const [hasSetInitialView, setHasSetInitialView] = useState(false);
+  const [showPushBanner, setShowPushBanner] = useState(false);
+  const [isRequestingPush, setIsRequestingPush] = useState(false);
+  const hasPromptedPushRef = useRef(false);
 
   const isSpanish = i18n.resolvedLanguage?.startsWith("es") ?? false;
   const hasImages = allImages.length > 0;
@@ -57,6 +62,24 @@ const Gallery = () => {
     // Don't override view — always start on tips
     setHasSetInitialView(true);
   }, [allImages.length, hasSetInitialView, initializing, loading]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const supported = "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+    if (!supported) {
+      setShowPushBanner(false);
+      return;
+    }
+    if (Notification.permission === "denied") {
+      setShowPushBanner(false);
+      return;
+    }
+    if (profile.pushSubscription) {
+      setShowPushBanner(false);
+      return;
+    }
+    setShowPushBanner(true);
+  }, [profile.pushSubscription]);
 
   const getMonthKey = (date: Date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
@@ -204,6 +227,65 @@ const Gallery = () => {
     }
   };
 
+  const isPushSupported = () =>
+    typeof window !== "undefined" && "Notification" in window && "serviceWorker" in navigator && "PushManager" in window;
+
+  const urlBase64ToUint8Array = (base64String: string) => {
+    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+    const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+    for (let index = 0; index < rawData.length; index += 1) {
+      outputArray[index] = rawData.charCodeAt(index);
+    }
+    return outputArray;
+  };
+
+  const requestNotificationPermission = async () => {
+    if (isRequestingPush) return;
+    if (!isPushSupported()) return;
+
+    setIsRequestingPush(true);
+    try {
+      const vapidKey = import.meta.env.VITE_VAPID_PUBLIC_KEY;
+      if (!vapidKey) throw new Error("Missing VAPID public key");
+
+      const permission = await Notification.requestPermission();
+      if (permission !== "granted") {
+        if (permission === "denied") {
+          setShowPushBanner(false);
+        }
+        return;
+      }
+
+      const registration =
+        (await navigator.serviceWorker.getRegistration()) ?? (await navigator.serviceWorker.register("/sw.js"));
+      const existingSubscription = await registration.pushManager.getSubscription();
+      const subscription =
+        existingSubscription ??
+        (await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        }));
+
+      await savePushSubscription(subscription);
+      setShowPushBanner(false);
+      toast({
+        title: t("gallery.toasts.notificationsEnabledTitle"),
+        description: t("gallery.toasts.notificationsEnabledDescription"),
+      });
+    } catch (error) {
+      console.error("Push subscription error:", error);
+      toast({
+        title: t("gallery.toasts.notificationsErrorTitle"),
+        description: t("gallery.toasts.notificationsErrorDescription"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsRequestingPush(false);
+    }
+  };
+
   const handleFileUpload = async (event: ChangeEvent<HTMLInputElement>) => {
     try {
       const file = event.target.files?.[0];
@@ -256,9 +338,22 @@ const Gallery = () => {
       if (dbError) throw dbError;
 
       toast({
-        title: t("gallery.toasts.productUploaded"),
+        title: (
+          <span className="inline-flex items-center gap-2">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-500/60" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            </span>
+            {t("gallery.toasts.productUploaded")}
+          </span>
+        ),
         description: t("gallery.toasts.productUploadedDescription"),
       });
+
+      if (!hasPromptedPushRef.current && isPushSupported() && Notification.permission === "default" && !profile.pushSubscription) {
+        hasPromptedPushRef.current = true;
+        void requestNotificationPermission();
+      }
 
       await fetchCampaigns();
       await fetchAllImages();
@@ -300,6 +395,127 @@ const Gallery = () => {
           description: t("gallery.toasts.imageMarkedViewed"),
         });
       }
+    }
+  };
+
+  const getStoragePathFromUrl = (url: string) => {
+    const marker = "/product-images/";
+    const index = url.indexOf(marker);
+    if (index === -1) return null;
+    return url.slice(index + marker.length).split("?")[0];
+  };
+
+  const removeStorageObjects = async (urls: string[]) => {
+    const paths = urls
+      .map((url) => getStoragePathFromUrl(url))
+      .filter((path): path is string => Boolean(path));
+
+    if (paths.length === 0) return;
+    const { error } = await supabase.storage.from("product-images").remove(paths);
+    if (error) {
+      console.warn("Storage delete error:", error);
+    }
+  };
+
+  const handleDeleteImage = async (image: UserImage) => {
+    const confirmed = window.confirm(t("gallery.delete.confirmImage"));
+    if (!confirmed) return;
+
+    try {
+      const resolvedUserId = await getUserId();
+      if (!resolvedUserId) throw new Error(t("gallery.errors.noUser"));
+
+      await removeStorageObjects([image.image_url]);
+
+      const { error } = await supabase
+        .from("user_images")
+        .delete()
+        .eq("id", image.id)
+        .eq("user_id", resolvedUserId);
+
+      if (error) throw error;
+
+      setImages((prev) => prev.filter((item) => item.id !== image.id));
+      setAllImages((prev) => prev.filter((item) => item.id !== image.id));
+
+      toast({
+        title: t("gallery.toasts.imageDeletedTitle"),
+        description: t("gallery.toasts.imageDeletedDescription"),
+      });
+    } catch (error: any) {
+      console.error("Delete image error:", error);
+      toast({
+        title: t("gallery.toasts.deleteErrorTitle"),
+        description: error.message || t("gallery.toasts.deleteErrorDescription"),
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleDeleteFolder = async (group: { key: string; images: UserImage[] }) => {
+    const confirmed = window.confirm(
+      t("gallery.delete.confirmFolder", { month: formatMonthLabel(group.key) }),
+    );
+    if (!confirmed) return;
+
+    try {
+      const resolvedUserId = await getUserId();
+      if (!resolvedUserId) throw new Error(t("gallery.errors.noUser"));
+
+      const campaign = campaigns.find((item) => item.name === group.key);
+
+      await removeStorageObjects(group.images.map((image) => image.image_url));
+
+      if (campaign) {
+        const { error: imagesError } = await supabase
+          .from("user_images")
+          .delete()
+          .eq("campaign_id", campaign.id)
+          .eq("user_id", resolvedUserId);
+        if (imagesError) throw imagesError;
+
+        const { error: campaignError } = await supabase
+          .from("campaigns")
+          .delete()
+          .eq("id", campaign.id)
+          .eq("user_id", resolvedUserId);
+        if (campaignError) throw campaignError;
+      } else {
+        const [year, month] = group.key.split("-").map(Number);
+        const monthStart = new Date(year, month - 1, 1);
+        const monthEnd = new Date(year, month, 1);
+        const { error: imagesError } = await supabase
+          .from("user_images")
+          .delete()
+          .eq("user_id", resolvedUserId)
+          .gte("created_at", monthStart.toISOString())
+          .lt("created_at", monthEnd.toISOString());
+        if (imagesError) throw imagesError;
+      }
+
+      setAllImages((prev) => prev.filter((item) => !group.images.some((image) => image.id === item.id)));
+      setImages((prev) => prev.filter((item) => !group.images.some((image) => image.id === item.id)));
+      if (campaign) {
+        setCampaigns((prev) => prev.filter((item) => item.id !== campaign.id));
+      }
+
+      if (selectedMonth === group.key) {
+        setSelectedMonth(null);
+        setSelectedDate(null);
+        setView("folders");
+      }
+
+      toast({
+        title: t("gallery.toasts.folderDeletedTitle"),
+        description: t("gallery.toasts.folderDeletedDescription"),
+      });
+    } catch (error: any) {
+      console.error("Delete folder error:", error);
+      toast({
+        title: t("gallery.toasts.deleteErrorTitle"),
+        description: error.message || t("gallery.toasts.deleteErrorDescription"),
+        variant: "destructive",
+      });
     }
   };
 
@@ -413,7 +629,7 @@ const Gallery = () => {
     return (
       <div className="flex min-h-screen flex-col bg-background">
         <div className="px-6 pt-6">
-          <div className="flex items-center gap-3">
+          <div className="relative flex flex-col items-center justify-center gap-2 text-center">
             <Button
               variant="ghost"
               size="icon"
@@ -425,15 +641,16 @@ const Gallery = () => {
                 }
               }}
               aria-label={t("common.back")}
+              className="absolute left-0 top-0"
             >
               <ArrowLeft className="h-6 w-6" />
             </Button>
             <h1 className="text-3xl font-heading font-bold text-foreground">{t("gallery.upload.title")}</h1>
+            <p className="text-base text-muted-foreground">{t("gallery.upload.subtitle")}</p>
           </div>
-          <p className="mt-2 mb-12 text-base text-muted-foreground">{t("gallery.upload.subtitle")}</p>
         </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-6">
+        <div className="flex flex-1 flex-col items-center justify-center px-6 pb-6 -mt-6 md:-mt-8">
           <input
             type="file"
             id="upload-image"
@@ -454,6 +671,9 @@ const Gallery = () => {
               )}
             </div>
           </label>
+          <p className="mt-4 max-w-xs text-center text-sm text-muted-foreground">
+            {t("gallery.upload.helper")}
+          </p>
         </div>
       </div>
     );
@@ -487,6 +707,10 @@ const Gallery = () => {
               <HelpCircle className="h-6 w-6" />
             </button>
           </div>
+          <p className="text-sm text-muted-foreground">
+            Archivos organizados por mes. Aquí encontrarás los originales y sus versiones transformadas listas para descargar,
+            diseñadas para mantener ordenado tu feed y catálogo.
+          </p>
 
           {loading ? (
             <div className="flex justify-center py-16">
@@ -494,46 +718,73 @@ const Gallery = () => {
             </div>
           ) : (
             <div className="space-y-4">
+              {showPushBanner && (
+                <div className="rounded-2xl border border-border/70 bg-card/60 p-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold text-foreground">{t("gallery.notifications.title")}</p>
+                      <p className="text-xs text-muted-foreground">{t("gallery.notifications.description")}</p>
+                    </div>
+                    <Button size="sm" onClick={requestNotificationPermission} disabled={isRequestingPush}>
+                      {isRequestingPush ? t("gallery.notifications.ctaLoading") : t("gallery.notifications.cta")}
+                    </Button>
+                  </div>
+                </div>
+              )}
               {monthGroups.map((group) => {
                 const previewImage = group.images[0]?.image_url;
                 const uploadCount = group.images.filter((image) => !isEnhancedImage(image)).length;
                 const hasNewEnhanced = group.images.some((image) => isEnhancedImage(image) && !image.viewed);
 
                 return (
-                  <button
+                  <div
                     key={group.key}
-                    type="button"
-                    onClick={() => {
-                      setSelectedMonth(group.key);
-                      setSelectedDate(null);
-                      setView("calendar");
-                      void fetchImages(group.key);
-                    }}
-                    className="flex w-full items-center justify-between rounded-2xl border bg-card p-4 text-left transition hover:shadow-md"
+                    className="flex w-full items-center gap-2 rounded-2xl border bg-card p-3 text-left transition hover:shadow-md sm:p-4"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden rounded-xl bg-secondary/50">
-                        {previewImage ? (
-                          <img src={previewImage} alt={group.key} className="h-full w-full object-cover" />
-                        ) : (
-                          <Folder className="h-6 w-6 text-muted-foreground" />
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <h3 className="text-lg font-semibold">{formatMonthLabel(group.key)}</h3>
-                          {hasNewEnhanced && (
-                            <span
-                              className="flex h-2.5 w-2.5 rounded-full bg-green-500"
-                              title={t("gallery.toasts.imageMarkedViewed")}
-                            />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedMonth(group.key);
+                        setSelectedDate(null);
+                        setView("calendar");
+                        void fetchImages(group.key);
+                      }}
+                      className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left"
+                    >
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary/50 sm:h-14 sm:w-14">
+                          {previewImage ? (
+                            <img src={previewImage} alt={group.key} className="h-full w-full object-cover" />
+                          ) : (
+                            <Folder className="h-6 w-6 text-muted-foreground" />
                           )}
                         </div>
-                        <p className="text-sm text-muted-foreground">{t("gallery.folders.photoCount", { count: uploadCount })}</p>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2">
+                            <h3 className="truncate text-base font-semibold sm:text-lg">{formatMonthLabel(group.key)}</h3>
+                            {hasNewEnhanced && (
+                              <span
+                                className="flex h-2.5 w-2.5 flex-shrink-0 rounded-full bg-green-500"
+                                title={t("gallery.toasts.imageMarkedViewed")}
+                              />
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground sm:text-sm">
+                            {t("gallery.folders.photoCount", { count: uploadCount })}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
-                  </button>
+                      <ImageIcon className="h-5 w-5 flex-shrink-0 text-muted-foreground" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteFolder(group)}
+                      className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-border/70 text-muted-foreground transition hover:text-foreground"
+                      aria-label={t("gallery.delete.folderButton")}
+                    >
+                      <Trash2 className="h-5 w-5" />
+                    </button>
+                  </div>
                 );
               })}
             </div>
@@ -584,44 +835,53 @@ const Gallery = () => {
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </div>
           ) : (
-            <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
-              <div className="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-muted-foreground">
-                {weekDays.map((day) => (
-                  <div key={day}>{day}</div>
-                ))}
-              </div>
-              <div className="mt-3 grid grid-cols-7 gap-2 text-center">
-                {Array.from({ length: totalCells }).map((_, index) => {
-                  const dayNumber = index - startOffset + 1;
-                  if (dayNumber < 1 || dayNumber > daysInMonth) {
-                    return <div key={`empty-${index}`} className="h-9 w-9" />;
-                  }
+            <div className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Historial de transformaciones: Revisa las fotos generadas por mes.
+              </p>
+              <div className="rounded-2xl border border-border bg-card p-5 shadow-soft">
+                <div className="grid grid-cols-7 gap-2 text-center text-sm font-semibold text-muted-foreground">
+                  {weekDays.map((day) => (
+                    <div key={day}>{day}</div>
+                  ))}
+                </div>
+                <div className="mt-3 grid grid-cols-7 gap-2 text-center">
+                  {Array.from({ length: totalCells }).map((_, index) => {
+                    const dayNumber = index - startOffset + 1;
+                    if (dayNumber < 1 || dayNumber > daysInMonth) {
+                      return <div key={`empty-${index}`} className="h-9 w-9" />;
+                    }
 
-                  const hasPhotos = daysWithPhotos.has(dayNumber);
+                    const hasPhotos = daysWithPhotos.has(dayNumber);
 
-                  if (hasPhotos) {
-                    const dateKey = `${selectedMonth}-${String(dayNumber).padStart(2, "0")}`;
+                    if (hasPhotos) {
+                      const dateKey = `${selectedMonth}-${String(dayNumber).padStart(2, "0")}`;
+                      return (
+                        <button
+                          key={dateKey}
+                          type="button"
+                          className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF5729] text-sm font-semibold text-white"
+                          onClick={() => {
+                            setSelectedDate(dateKey);
+                            setView("dayDetail");
+                          }}
+                        >
+                          {dayNumber}
+                        </button>
+                      );
+                    }
+
                     return (
-                      <button
-                        key={dateKey}
-                        type="button"
-                        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#FF5729] text-sm font-semibold text-white"
-                        onClick={() => {
-                          setSelectedDate(dateKey);
-                          setView("dayDetail");
-                        }}
-                      >
+                      <div key={dayNumber} className="flex h-9 w-9 items-center justify-center text-sm text-foreground/70">
                         {dayNumber}
-                      </button>
+                      </div>
                     );
-                  }
-
-                  return (
-                    <div key={dayNumber} className="flex h-9 w-9 items-center justify-center text-sm text-foreground/70">
-                      {dayNumber}
-                    </div>
-                  );
-                })}
+                  })}
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <div className="h-2 w-2 rounded-full bg-[#FF5729]" />
+                <span>Días con actividad fotográfica</span>
               </div>
             </div>
           )}
@@ -662,6 +922,14 @@ const Gallery = () => {
                 {uploadedDayImages.map((image) => (
                   <div key={image.id} className="relative aspect-video overflow-hidden rounded-2xl border bg-card">
                     <img src={image.image_url} alt={t("gallery.dayDetail.ownPhoto")} className="h-full w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteImage(image)}
+                      className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm ring-1 ring-border/70"
+                      aria-label={t("gallery.delete.imageButton")}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -677,8 +945,11 @@ const Gallery = () => {
                 <Loader2 className="h-6 w-6 animate-spin text-primary" />
               </div>
             ) : enhancedDayImages.length === 0 ? (
-              <div className="rounded-2xl border-2 border-dashed p-10 text-center text-muted-foreground">
-                {t("gallery.dayDetail.processing")}
+              <div className="rounded-2xl border-2 border-dashed p-10">
+                <div className="flex flex-col items-center gap-3 text-center">
+                  <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground">{t("gallery.dayDetail.processing")}</p>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -695,6 +966,14 @@ const Gallery = () => {
                           {t("gallery.dayDetail.newBadge")}
                         </span>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteImage(image)}
+                        className="absolute right-2 top-2 flex h-9 w-9 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm ring-1 ring-border/70"
+                        aria-label={t("gallery.delete.imageButton")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
                     </div>
                     <Button variant="secondary" onClick={() => handleEnhancedDownload(image)}>
                       <Download className="mr-2 h-4 w-4" />

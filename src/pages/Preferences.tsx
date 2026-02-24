@@ -1,18 +1,45 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, LogOut, Pencil, RefreshCw, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useBusinessProfile } from "@/hooks/useBusinessProfile";
+import { type BusinessProfile, useBusinessProfile } from "@/hooks/useBusinessProfile";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/components/ui/use-toast";
+
+const normalizeDisplayValue = (value: string) => value.replace(/^[A-Z]\)\s*/i, "").replace(/_/g, " ").trim();
+
+type EditableFieldKey =
+  | "businessCategory"
+  | "brandHistory"
+  | "brandDifferential"
+  | "targetAudience"
+  | "promotions"
+  | "operationType"
+  | "contentResources"
+  | "cameraQuality"
+  | "salesChannels"
+  | "socialPriorityGoal"
+  | "productVisualStyle"
+  | "postingFrequency"
+  | "brandPerception";
+
+type StrategyFieldConfig = {
+  key: EditableFieldKey;
+  labelKey: string;
+  profileKey: keyof BusinessProfile;
+  dbKey: string;
+  questionId: number;
+};
 
 const Preferences = () => {
   const { profile, updateProfile, resetProfile } = useBusinessProfile();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [businessName, setBusinessName] = useState(profile.businessName || "");
   const [contactInstagram, setContactInstagram] = useState(profile.contactInstagram || "");
@@ -20,6 +47,8 @@ const Preferences = () => {
   const [contactWebsite, setContactWebsite] = useState(profile.contactWebsite || "");
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [activeField, setActiveField] = useState<EditableFieldKey | null>(null);
+  const [isUpdatingField, setIsUpdatingField] = useState(false);
 
   useEffect(() => {
     if (isEditing) return;
@@ -82,21 +111,160 @@ const Preferences = () => {
     }
   };
 
-  const strategyItems = [
-    { labelKey: "preferences.strategy.category", value: profile.businessCategory },
-    { labelKey: "preferences.strategy.history", value: profile.brandHistory },
-    { labelKey: "preferences.strategy.differential", value: profile.brandDifferential },
-    { labelKey: "preferences.strategy.targetAudience", value: profile.targetAudience },
-    { labelKey: "preferences.strategy.promotions", value: profile.promotions },
-    { labelKey: "preferences.strategy.operationType", value: profile.operationType },
-    { labelKey: "preferences.strategy.resources", value: profile.contentResources },
-    { labelKey: "preferences.strategy.camera", value: profile.cameraQuality },
-    { labelKey: "preferences.strategy.salesChannels", value: profile.salesChannels },
-    { labelKey: "preferences.strategy.socialGoal", value: profile.socialPriorityGoal },
-    { labelKey: "preferences.strategy.visualStyle", value: profile.productVisualStyle },
-    { labelKey: "preferences.strategy.frequency", value: profile.postingFrequency },
-    { labelKey: "preferences.strategy.perception", value: profile.brandPerception },
+  const onboardingQuestions = useMemo(() => {
+    const data = t("onboarding.questions", { returnObjects: true }) as unknown;
+    return Array.isArray(data) ? (data as { id: number; options?: { label: string }[] }[]) : [];
+  }, [i18n.language, t]);
+
+  const getOptionsFromOnboarding = (id: number) => {
+    const question = onboardingQuestions.find((item) => item.id === id);
+    const options = question?.options?.map((option) => option.label).filter(Boolean) ?? [];
+    return options;
+  };
+
+  const strategyFieldConfig: StrategyFieldConfig[] = [
+    {
+      key: "businessCategory",
+      labelKey: "preferences.strategy.category",
+      profileKey: "businessCategory",
+      dbKey: "business_category",
+      questionId: 1,
+    },
+    {
+      key: "brandHistory",
+      labelKey: "preferences.strategy.history",
+      profileKey: "brandHistory",
+      dbKey: "brand_history",
+      questionId: 2,
+    },
+    {
+      key: "brandDifferential",
+      labelKey: "preferences.strategy.differential",
+      profileKey: "brandDifferential",
+      dbKey: "brand_differential",
+      questionId: 4,
+    },
+    {
+      key: "targetAudience",
+      labelKey: "preferences.strategy.targetAudience",
+      profileKey: "targetAudience",
+      dbKey: "target_audience",
+      questionId: 5,
+    },
+    {
+      key: "promotions",
+      labelKey: "preferences.strategy.promotions",
+      profileKey: "promotions",
+      dbKey: "promotions",
+      questionId: 7,
+    },
+    {
+      key: "operationType",
+      labelKey: "preferences.strategy.operationType",
+      profileKey: "operationType",
+      dbKey: "operation_type",
+      questionId: 10,
+    },
+    {
+      key: "contentResources",
+      labelKey: "preferences.strategy.resources",
+      profileKey: "contentResources",
+      dbKey: "content_resources",
+      questionId: 13,
+    },
+    {
+      key: "cameraQuality",
+      labelKey: "preferences.strategy.camera",
+      profileKey: "cameraQuality",
+      dbKey: "camera_quality",
+      questionId: 14,
+    },
+    {
+      key: "salesChannels",
+      labelKey: "preferences.strategy.salesChannels",
+      profileKey: "salesChannels",
+      dbKey: "sales_channels",
+      questionId: 15,
+    },
+    {
+      key: "socialPriorityGoal",
+      labelKey: "preferences.strategy.socialGoal",
+      profileKey: "socialPriorityGoal",
+      dbKey: "social_priority_goal",
+      questionId: 18,
+    },
+    {
+      key: "productVisualStyle",
+      labelKey: "preferences.strategy.visualStyle",
+      profileKey: "productVisualStyle",
+      dbKey: "product_visual_style",
+      questionId: 20,
+    },
+    {
+      key: "postingFrequency",
+      labelKey: "preferences.strategy.frequency",
+      profileKey: "postingFrequency",
+      dbKey: "posting_frequency",
+      questionId: 21,
+    },
+    {
+      key: "brandPerception",
+      labelKey: "preferences.strategy.perception",
+      profileKey: "brandPerception",
+      dbKey: "brand_perception",
+      questionId: 25,
+    },
   ];
+
+  const activeConfig = activeField
+    ? strategyFieldConfig.find((item) => item.key === activeField) ?? null
+    : null;
+  const activeValueRaw = activeConfig ? (profile[activeConfig.profileKey] as string) : "";
+  const activeValue = activeValueRaw ? normalizeDisplayValue(activeValueRaw) : "";
+  const activeOptions = activeConfig ? getOptionsFromOnboarding(activeConfig.questionId) : [];
+  const selectOptions = activeOptions.length > 0 ? activeOptions : activeValue ? [activeValue] : [];
+  const activeSelectValue = selectOptions.includes(activeValue) ? activeValue : undefined;
+
+  const updateEditableField = async (nextValue: string) => {
+    if (!activeField || !activeConfig) return;
+    if (isUpdatingField) return;
+
+    setIsUpdatingField(true);
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("No user");
+
+      const { error } = await supabase
+        .from("profiles")
+        .update({
+          [activeConfig.dbKey]: nextValue,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (error) throw error;
+
+      updateProfile({ [activeConfig.profileKey]: nextValue } as Partial<BusinessProfile>);
+      toast({ title: t("preferences.toasts.saved") });
+      setActiveField(null);
+    } catch (error) {
+      console.error(error);
+      toast({
+        title: t("preferences.toasts.saveError"),
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdatingField(false);
+    }
+  };
+
+  const strategyItems = strategyFieldConfig.map((item) => ({
+    key: item.key,
+    labelKey: item.labelKey,
+    value: profile[item.profileKey] as string,
+  }));
 
   return (
     <div className="animate-fade-in min-h-screen bg-background p-6 pb-8">
@@ -202,7 +370,12 @@ const Preferences = () => {
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{t("preferences.myBrand")}</h2>
-            <Button variant="outline" size="sm" onClick={handleRetakeOnboarding}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleRetakeOnboarding}
+              className="border-[#685BC8] bg-[#685BC8] text-white hover:border-[#5a4db5] hover:bg-[#5a4db5] hover:text-white"
+            >
               <RefreshCw className="mr-2 h-3 w-3" />
               {t("preferences.retakeQuestionnaire")}
             </Button>
@@ -210,7 +383,13 @@ const Preferences = () => {
 
           <div className="divide-y divide-border rounded-xl border border-border bg-card text-sm">
             {strategyItems.map((item) => (
-              <StrategyItem key={item.labelKey} label={t(item.labelKey)} value={item.value} emptyValue={t("common.notAvailable")} />
+              <StrategyItem
+                key={item.key}
+                label={t(item.labelKey)}
+                value={item.value}
+                emptyValue={t("common.notAvailable")}
+                onClick={() => setActiveField(item.key)}
+              />
             ))}
           </div>
         </section>
@@ -222,15 +401,79 @@ const Preferences = () => {
           </Button>
         </section>
       </div>
+
+      <Dialog
+        open={Boolean(activeField)}
+        onOpenChange={(open) => {
+          if (!open && !isUpdatingField) {
+            setActiveField(null);
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{activeConfig ? t(activeConfig.labelKey) : ""}</DialogTitle>
+            <DialogDescription>
+              {activeConfig ? "Elegí una opción del cuestionario para actualizar este dato." : ""}
+            </DialogDescription>
+          </DialogHeader>
+          {activeConfig && (
+            <Select
+              value={activeSelectValue}
+              onValueChange={(value) => {
+                void updateEditableField(value);
+              }}
+              disabled={isUpdatingField || selectOptions.length === 0}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Seleccionar opción" />
+              </SelectTrigger>
+              <SelectContent>
+                {selectOptions.map((option) => (
+                  <SelectItem key={option} value={option}>
+                    {option}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-const StrategyItem = ({ label, value, emptyValue }: { label: string; value: string; emptyValue: string }) => (
-  <div className="flex flex-col gap-1 p-4">
-    <span className="text-xs uppercase tracking-wide text-muted-foreground">{label}</span>
-    <span className="font-medium capitalize text-foreground">{value ? value.replace(/_/g, " ") : emptyValue}</span>
-  </div>
-);
+const StrategyItem = ({
+  label,
+  value,
+  emptyValue,
+  onClick,
+}: {
+  label: string;
+  value: string;
+  emptyValue: string;
+  onClick?: () => void;
+}) => {
+  const content = (
+    <>
+      <span className="text-xs uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="font-medium capitalize text-foreground">{value ? normalizeDisplayValue(value) : emptyValue}</span>
+    </>
+  );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="flex w-full flex-col gap-1 p-4 text-left transition hover:bg-muted/40"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return <div className="flex flex-col gap-1 p-4">{content}</div>;
+};
 
 export default Preferences;
