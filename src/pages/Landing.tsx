@@ -56,7 +56,7 @@ const Landing = () => {
                 onClick={installApp}
                 variant="secondary"
                 size="sm"
-                className="h-9 bg-[#685BC8] px-4 text-xs text-white shadow-soft hover:bg-[#5a4db5] hover:text-white"
+                className="h-9 bg-[#685BC8] px-2 text-xs text-white shadow-soft hover:bg-[#5a4db5] hover:text-white"
               >
                 {t("landing.navbar.installApp")}
               </Button>
