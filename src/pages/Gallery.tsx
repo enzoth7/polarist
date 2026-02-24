@@ -259,7 +259,7 @@ const Gallery = () => {
       }
 
       const registration =
-        (await navigator.serviceWorker.getRegistration()) ?? (await navigator.serviceWorker.register("/sw.js"));
+        (await navigator.serviceWorker.getRegistration()) ?? (await navigator.serviceWorker.register("/sw-push.js"));
       const existingSubscription = await registration.pushManager.getSubscription();
       const subscription =
         existingSubscription ??
