@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-label="Moda despues">
-  <rect width="1600" height="900" fill="#030303" />
-  <rect x="250" y="140" width="1100" height="620" rx="28" fill="#0f172a" />
-  <rect x="560" y="410" width="480" height="110" rx="56" fill="#94a3b8" opacity="0.92" />
-  <text x="800" y="300" fill="#e5e7eb" font-family="Joyride, sans-serif" font-size="48" text-anchor="middle">Moda After</text>
-</svg>

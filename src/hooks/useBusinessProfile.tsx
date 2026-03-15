@@ -6,6 +6,11 @@ export interface BusinessProfile {
   businessCategory: string; // db: business_category
   avatarUrl: string; // db: avatar_url
   onboardingComplete: boolean; // db: onboarding_completed
+  contactInstagram: string;
+  contactWebsite: string;
+  contactWhatsapp: string;
+  contactEmail: string;
+  pushSubscription: Record<string, unknown> | null;
 
   brandHistory: string;
   brandDifferential: string;
@@ -37,6 +42,11 @@ const defaultProfile: BusinessProfile = {
   businessCategory: "",
   avatarUrl: "",
   onboardingComplete: false,
+  contactInstagram: "",
+  contactWebsite: "",
+  contactWhatsapp: "",
+  contactEmail: "",
+  pushSubscription: null,
   brandHistory: "",
   brandDifferential: "",
   targetAudience: "",
@@ -70,6 +80,7 @@ interface BusinessProfileContextType {
 
   fetchProfile: () => Promise<void>;
   completeMission: (date: string) => void;
+  savePushSubscription: (subscription: PushSubscription) => Promise<void>;
 }
 
 const BusinessProfileContext = createContext<BusinessProfileContextType | null>(null);
@@ -87,6 +98,7 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
         setProfile(defaultProfile);
         return;
       }
+      setProfile((prev) => ({ ...prev, contactEmail: user.email || "" }));
 
       const { data, error } = await supabase
         .from('profiles')
@@ -101,6 +113,11 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
           businessCategory: data.business_category || "",
           avatarUrl: data.avatar_url || "",
           onboardingComplete: data.onboarding_completed || false,
+          contactInstagram: data.contact_instagram || "",
+          contactWebsite: data.contact_website || "",
+          contactWhatsapp: data.contact_whatsapp || "",
+          contactEmail: data.contact_email || user.email || "",
+          pushSubscription: data.push_subscription || null,
           brandHistory: data.brand_history || "",
           brandDifferential: data.brand_differential || "",
           targetAudience: data.target_audience || "",
@@ -138,6 +155,24 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
     setProfile((prev) => ({ ...prev, ...updates }));
   };
 
+  const savePushSubscription = useCallback(async (subscription: PushSubscription) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) throw new Error("No user found");
+
+    const payload = subscription.toJSON();
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        push_subscription: payload,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    if (error) throw error;
+    setProfile((prev) => ({ ...prev, pushSubscription: payload }));
+  }, []);
 
 
   const completeMission = (date: string) => {
@@ -168,7 +203,9 @@ export function BusinessProfileProvider({ children }: { children: ReactNode }) {
   }, [fetchProfile]);
 
   return (
-    <BusinessProfileContext.Provider value={{ profile, loading, updateProfile, resetProfile, fetchProfile, completeMission }}>
+    <BusinessProfileContext.Provider
+      value={{ profile, loading, updateProfile, resetProfile, fetchProfile, completeMission, savePushSubscription }}
+    >
       {children}
     </BusinessProfileContext.Provider>
   );

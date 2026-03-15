@@ -9,28 +9,6 @@ const LANGUAGE_OPTIONS = [
 
 type LanguageCode = (typeof LANGUAGE_OPTIONS)[number]["code"];
 
-const SpainFlagIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-4 w-4 overflow-hidden rounded-full" aria-hidden>
-    <rect width="24" height="24" fill="#AA151B" />
-    <rect y="6" width="24" height="12" fill="#F1BF00" />
-  </svg>
-);
-
-const UsaFlagIcon = () => (
-  <svg viewBox="0 0 24 24" className="h-4 w-4 overflow-hidden rounded-full" aria-hidden>
-    <rect width="24" height="24" fill="#FFFFFF" />
-    <rect y="0" width="24" height="2.4" fill="#B22234" />
-    <rect y="4.8" width="24" height="2.4" fill="#B22234" />
-    <rect y="9.6" width="24" height="2.4" fill="#B22234" />
-    <rect y="14.4" width="24" height="2.4" fill="#B22234" />
-    <rect y="19.2" width="24" height="2.4" fill="#B22234" />
-    <rect width="10.8" height="10.2" fill="#3C3B6E" />
-  </svg>
-);
-
-const FlagIcon = ({ language }: { language: LanguageCode }) =>
-  language === "es" ? <SpainFlagIcon /> : <UsaFlagIcon />;
-
 const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
   const currentLanguage = (i18n.resolvedLanguage ?? i18n.language ?? "es").split("-")[0] as LanguageCode;
@@ -64,7 +42,7 @@ const LanguageSwitcher = () => {
               isActive && "bg-secondary text-foreground",
             )}
           >
-            <FlagIcon language={language.code} />
+            <span className="font-semibold text-xs tracking-wide">{language.code.toUpperCase()}</span>
           </Button>
         );
       })}

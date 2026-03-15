@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: "Polarist",
         short_name: "Polarist",
-        description: "Transform your business with AI-powered visual marketing automation",
+        description: "Potencia la imagen de tu negocio con contenido visual que enamora a tus clientes",
         start_url: "/",
         display: "standalone",
         background_color: "#FAFAFA",
@@ -46,7 +46,8 @@ export default defineConfig(({ mode }) => ({
         cleanupOutdatedCaches: true,
         skipWaiting: true,
         clientsClaim: true,
-        navigateFallbackDenylist: [/^\/~oauth/],
+        importScripts: ["sw-push.js"],
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/sitemap\.xml$/, /^\/robots\.txt$/],
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
         runtimeCaching: [
           {

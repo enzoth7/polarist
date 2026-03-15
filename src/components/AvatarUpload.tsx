@@ -74,8 +74,12 @@ const AvatarUpload = ({ avatarUrl, onUpload, size = 48 }: AvatarUploadProps) => 
                 </div>
             )}
 
-            {/* Hover overlay */}
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            {/* Hover/Uploading overlay */}
+            <div
+                className={`absolute inset-0 flex items-center justify-center bg-black/35 transition-opacity ${
+                    uploading ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+            >
                 {uploading ? (
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                 ) : (
