@@ -1,58 +1,79 @@
 import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
+import { Toaster as Sonner, toast } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Analytics } from "@vercel/analytics/react";
-import { BusinessProfileProvider } from "@/hooks/useBusinessProfile";
 import { ThemeProvider } from "@/hooks/useTheme";
-import { ProtectedRoute } from "@/components/ProtectedRoute";
-import Index from "./pages/Index";
+
+import Radar from "./pages/Radar";
+import Shortcuts from "./pages/Shortcuts";
+import Tools from "./pages/Tools";
+import Community from "./pages/Community";
+import Guides from "./pages/Guides";
+import Onboarding from "./pages/Onboarding";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Onboarding from "./pages/Onboarding";
-import Dashboard from "./pages/Dashboard";
-import Gallery from "./pages/Gallery";
-import Preferences from "./pages/Preferences";
-import Contact from "./pages/Contact";
-import About from "./pages/About";
-import Privacy from "./pages/Privacy";
-import Terms from "./pages/Terms";
+import MobileLayout from "./components/layout/MobileLayout";
 import NotFound from "./pages/NotFound";
-import DebugDownload from "./pages/DebugDownload";
+
+import { AuthProvider } from "@/hooks/useAuth";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
+
+// Global listener component for auth events
+const AuthListener = () => {
+  useEffect(() => {
+    const handleAuthRequired = () => {
+      toast.error("Acceso restringido", {
+        description: "Debes iniciar sesión con Google para usar esta función y personalizar tu perfil.",
+        action: {
+          label: "Iniciar Sesión",
+          onClick: () => {
+            window.location.href = "/login";
+          }
+        },
+        duration: 5000,
+      });
+    };
+
+    window.addEventListener("polarist-auth-required", handleAuthRequired);
+    return () => window.removeEventListener("polarist-auth-required", handleAuthRequired);
+  }, []);
+
+  return null;
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider>
-        <BusinessProfileProvider>
+        <AuthProvider>
+          <AuthListener />
           <Toaster />
-          <Sonner />
-          <Analytics />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
-              <Route path="/debug" element={<DebugDownload />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
+          <Sonner position="top-center" />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+            {/* Redirect root to Radar for MVP simplicity */}
+            <Route path="/" element={<Navigate to="/radar" replace />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            
+            {/* The main 5 tabs wrapped in the mobile bottom bar */}
+            <Route element={<MobileLayout />}>
+              <Route path="/radar" element={<Radar />} />
+              <Route path="/shortcuts" element={<Shortcuts />} />
+              <Route path="/tools" element={<Tools />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/guides" element={<Guides />} />
+            </Route>
 
-              <Route element={<ProtectedRoute />}>
-                <Route path="/onboarding" element={<Onboarding />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/gallery" element={<Gallery />} />
-                <Route path="/preferences" element={<Preferences />} />
-              </Route>
-
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </BusinessProfileProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+        </AuthProvider>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
