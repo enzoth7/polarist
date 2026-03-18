@@ -44,7 +44,7 @@ const Header = () => {
 
   if (currentHour >= 5 && currentHour < 12) {
     greeting = "Buenos dias";
-  } else if (currentHour >= 12 && currentHour < 20) {
+  } else if (currentHour >= 12 && currentHour < 19) {
     greeting = "Buenas tardes";
   } else {
     greeting = "Buenas noches";

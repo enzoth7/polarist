@@ -9,6 +9,7 @@ import {
   Megaphone,
   ShoppingBag,
   Sparkles,
+  Star,
   Stethoscope,
   Users,
 } from "lucide-react";
@@ -23,6 +24,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { fullToolsRanking } from "@/data/aiToolsCatalog";
+import { useToolInteractions } from "@/hooks/useToolInteractions";
 import { routes } from "@/lib/routes";
 
 const trendItems = [
@@ -82,8 +84,11 @@ const communityItems = [
 ] as const;
 
 const radarTopTools = fullToolsRanking.slice(0, 5);
+const radarTopToolIds = radarTopTools.map((tool) => tool.name);
 
 const Radar = () => {
+  const { getFavoriteCount, loading: favoritesLoading } = useToolInteractions(radarTopToolIds);
+
   return (
     <div className="min-h-full bg-background px-4 pb-24 pt-5 md:px-8 md:pb-12 md:pt-8">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
@@ -232,8 +237,14 @@ const Radar = () => {
                   imageClassName="p-0.5"
                 />
                 <div className="min-w-0">
-                  <span className="block text-base font-medium text-foreground">
-                    {tool.name}
+                  <span className="flex items-center gap-2 text-base font-medium text-foreground">
+                    <span>{tool.name}</span>
+                    {!favoritesLoading ? (
+                      <span className="inline-flex shrink-0 items-center gap-1 text-sm font-normal text-muted-foreground">
+                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                        <span>({getFavoriteCount(tool.name)})</span>
+                      </span>
+                    ) : null}
                   </span>
                   <span className="block text-sm text-muted-foreground">
                     {tool.category}
