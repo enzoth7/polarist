@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -12,9 +11,9 @@ import {
   Sparkles,
   Stethoscope,
   Users,
-  Wrench,
 } from "lucide-react";
 
+import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Button } from "@/components/ui/button";
 import {
   Carousel,
@@ -23,6 +22,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { fullToolsRanking } from "@/data/aiToolsCatalog";
 import { routes } from "@/lib/routes";
 
 const trendItems = [
@@ -81,33 +81,7 @@ const communityItems = [
   { name: "Coaches", icon: Stethoscope },
 ] as const;
 
-const quickTools = [
-  { name: "ChatGPT", domain: "openai.com" },
-  { name: "Claude", domain: "anthropic.com" },
-  { name: "Canva", domain: "canva.com" },
-] as const;
-
-function ToolLogo({ domain, name }: { domain: string; name: string }) {
-  const [hasError, setHasError] = useState(false);
-
-  if (hasError) {
-    return (
-      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted/40 text-muted-foreground">
-        <Wrench className="h-4 w-4" />
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={`https://www.google.com/s2/favicons?domain=${domain}&sz=128`}
-      alt={`Logo de ${name}`}
-      className="h-10 w-10 rounded-xl object-cover"
-      loading="lazy"
-      onError={() => setHasError(true)}
-    />
-  );
-}
+const radarTopTools = fullToolsRanking.slice(0, 5);
 
 const Radar = () => {
   return (
@@ -229,7 +203,7 @@ const Radar = () => {
                 Herramientas de IA más usadas
               </h2>
               <Link
-                to={routes.appTools}
+                to={routes.appToolsRanking}
                 className="inline-flex shrink-0 items-center gap-1 text-sm font-semibold text-primary transition-colors hover:underline"
               >
                 Ver ranking
@@ -237,24 +211,34 @@ const Radar = () => {
               </Link>
             </div>
             <p className="text-sm text-muted-foreground">
-              Tres nombres para ubicarte rápido antes de entrar al ranking completo.
+              Una lectura rapida del ranking oficial antes de entrar al listado completo.
             </p>
           </div>
 
           <div className="divide-y divide-border/50">
-            {quickTools.map((tool, index) => (
+            {radarTopTools.map((tool, index) => (
               <Link
                 key={tool.name}
-                to={routes.appTools}
+                to={routes.appToolsRanking}
                 className="flex items-center gap-4 py-4 transition-colors hover:text-primary"
               >
                 <span className="w-5 text-sm font-medium text-muted-foreground">
                   {index + 1}
                 </span>
-                <ToolLogo domain={tool.domain} name={tool.name} />
-                <span className="text-base font-medium text-foreground">
-                  {tool.name}
-                </span>
+                <ToolLogo
+                  name={tool.name}
+                  domain={tool.domain}
+                  className="h-10 w-10 border-none bg-transparent"
+                  imageClassName="p-0.5"
+                />
+                <div className="min-w-0">
+                  <span className="block text-base font-medium text-foreground">
+                    {tool.name}
+                  </span>
+                  <span className="block text-sm text-muted-foreground">
+                    {tool.category}
+                  </span>
+                </div>
               </Link>
             ))}
           </div>
