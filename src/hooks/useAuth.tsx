@@ -10,8 +10,10 @@ type PolaristUserProfile = {
   id: string;
   email: string;
   fullName: string;
+  username: string;
   avatarUrl: string;
   occupation: string;
+  country: string;
 };
 
 interface AuthContextType {
@@ -78,21 +80,39 @@ const getFallbackOccupation = (user: User) => {
   return "Miembro de Polarist";
 };
 
-const buildProfilePayload = (user: User) => ({
+const getFallbackUsername = (user: User) => {
+  const metadataUsername = user.user_metadata?.username || user.user_metadata?.user_name;
+
+  if (typeof metadataUsername === "string" && metadataUsername.trim()) {
+    return metadataUsername.trim().toLowerCase().replace(/\s+/g, "");
+  }
+
+  const emailPrefix = user.email?.split("@")[0]?.trim().toLowerCase().replace(/\s+/g, "");
+
+  if (emailPrefix) {
+    return emailPrefix.replace(/[^a-z0-9._-]/g, "") || `user${user.id.slice(0, 8)}`;
+  }
+
+  return `user${user.id.slice(0, 8)}`;
+};
+
+const buildProfilePayload = (user: User, username?: string | null) => ({
   id: user.id,
   email: user.email || "",
   full_name: getFallbackName(user),
+  username: username?.trim() || getFallbackUsername(user),
   avatar_url: getProviderAvatar(user),
   occupation: getFallbackOccupation(user),
+  country: null,
 });
 
-const ensureUserProfileRow = async (user: User) => {
-  const payload = buildProfilePayload(user);
+const ensureUserProfileRow = async (user: User, username?: string | null) => {
+  const payload = buildProfilePayload(user, username);
 
   const { data, error } = await supabase
     .from("polarist_usuarios")
     .upsert(payload, { onConflict: "id" })
-    .select("id, full_name, avatar_url, occupation, email")
+    .select("id, full_name, username, avatar_url, occupation, email, country")
     .single();
 
   if (error) {
@@ -106,7 +126,7 @@ const ensureUserProfileRow = async (user: User) => {
 const resolveUserProfile = async (user: User): Promise<PolaristUserProfile> => {
   const { data, error } = await supabase
     .from("polarist_usuarios")
-    .select("id, full_name, avatar_url, occupation, email")
+    .select("id, full_name, username, avatar_url, occupation, email, country")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -119,11 +139,13 @@ const resolveUserProfile = async (user: User): Promise<PolaristUserProfile> => {
     data &&
     (!data.avatar_url?.trim() || data.avatar_url.trim() === FALLBACK_AVATAR) &&
     providerAvatar !== FALLBACK_AVATAR;
+  const shouldRepairUsername = data && (!data.username?.trim() || /\s/.test(data.username));
+  const preservedUsername = shouldRepairUsername ? getFallbackUsername(user) : data?.username;
 
   const profileRow =
-    shouldRepairAvatar ?
-      await ensureUserProfileRow(user)
-    : data ?? await ensureUserProfileRow(user);
+    shouldRepairAvatar || shouldRepairUsername ?
+      await ensureUserProfileRow(user, preservedUsername)
+    : data ?? await ensureUserProfileRow(user, preservedUsername);
 
   return {
     id: user.id,
@@ -131,6 +153,8 @@ const resolveUserProfile = async (user: User): Promise<PolaristUserProfile> => {
       (typeof profileRow?.email === "string" && profileRow.email.trim()) ? profileRow.email.trim() : user.email || "",
     fullName:
       (typeof profileRow?.full_name === "string" && profileRow.full_name.trim()) ? profileRow.full_name.trim() : getFallbackName(user),
+    username:
+      (typeof profileRow?.username === "string" && profileRow.username.trim()) ? profileRow.username.trim() : getFallbackUsername(user),
     avatarUrl:
       (typeof profileRow?.avatar_url === "string" &&
         profileRow.avatar_url.trim() &&
@@ -139,6 +163,8 @@ const resolveUserProfile = async (user: User): Promise<PolaristUserProfile> => {
       : providerAvatar,
     occupation:
       (typeof profileRow?.occupation === "string" && profileRow.occupation.trim()) ? profileRow.occupation.trim() : getFallbackOccupation(user),
+    country:
+      (typeof profileRow?.country === "string" && profileRow.country.trim()) ? profileRow.country.trim() : "",
   };
 };
 

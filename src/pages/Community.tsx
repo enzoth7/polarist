@@ -1,317 +1,1172 @@
-import { MessageCircleHeart, MessagesSquare, Sparkles, type LucideIcon } from "lucide-react";
+import { type CSSProperties, type ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
+import { Link } from "react-router-dom";
+import {
+  BriefcaseBusiness,
+  Building2,
+  ChefHat,
+  Heart,
+  HeartPulse,
+  ImagePlus,
+  Landmark,
+  Loader2,
+  Megaphone,
+  MessageCircleHeart,
+  MessageSquare,
+  MessagesSquare,
+  PlusCircle,
+  ShoppingBag,
+  Sparkles,
+  Stethoscope,
+  Users,
+  X,
+} from "lucide-react";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/hooks/useAuth";
+import { useCommunity, type CommunityFeedMode, type Post, type Reply } from "@/hooks/useCommunity";
+import { getAppUserProfileRoute, routes } from "@/lib/routes";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
-type AreaKey = "gastronomia" | "administracion" | "ventas" | "marketing";
+const communityAreas = [
+  {
+    value: "general",
+    label: "General",
+    subtitle: "Dudas cruzadas y atajos para cualquier negocio",
+    icon: MessageCircleHeart,
+  },
+  {
+    value: "gastronomia",
+    label: "Gastronomia",
+    subtitle: "Reservas, cocina y servicio en movimiento",
+    icon: ChefHat,
+  },
+  {
+    value: "creadores",
+    label: "Creadores",
+    subtitle: "Contenido, ideas y piezas listas para publicar",
+    icon: Sparkles,
+  },
+  {
+    value: "agencias",
+    label: "Agencias",
+    subtitle: "Entrega mas rapida y menos retrabajo",
+    icon: Megaphone,
+  },
+  {
+    value: "inmobiliarias",
+    label: "Inmobiliarias",
+    subtitle: "Seguimiento, visitas y respuestas repetidas",
+    icon: Building2,
+  },
+  {
+    value: "abogados",
+    label: "Abogados",
+    subtitle: "Consultas frecuentes y orden documental",
+    icon: Landmark,
+  },
+  {
+    value: "retail",
+    label: "Retail",
+    subtitle: "Ventas, catalogo y atencion diaria",
+    icon: ShoppingBag,
+  },
+  {
+    value: "ecommerce",
+    label: "E-commerce",
+    subtitle: "Tienda, campanas y conversiones",
+    icon: BriefcaseBusiness,
+  },
+  {
+    value: "freelancers",
+    label: "Freelancers",
+    subtitle: "Propuestas, entregas y tiempo mejor usado",
+    icon: Users,
+  },
+  {
+    value: "salud",
+    label: "Salud",
+    subtitle: "Turnos, seguimiento y comunicacion clara",
+    icon: HeartPulse,
+  },
+  {
+    value: "coaches",
+    label: "Coaches",
+    subtitle: "Sesiones, seguimiento y materiales simples",
+    icon: Stethoscope,
+  },
+] as const;
 
-type Thread = {
-  name: string;
-  business: string;
-  businessType: string;
-  question: string;
-  shortcut: string;
-  replies: string;
-  savedTime: string;
-  mood: string;
-  initials: string;
+type CommunityAreaValue = (typeof communityAreas)[number]["value"];
+type CommunityAreaDefinition = (typeof communityAreas)[number];
+
+const communityFeedAreas = [
+  {
+    value: "all",
+    label: "Todos",
+    subtitle: "Todo el feed en una sola vista",
+    icon: MessagesSquare,
+  },
+  ...communityAreas,
+] as const;
+
+type CommunityFeedAreaValue = (typeof communityFeedAreas)[number]["value"];
+type CommunityFeedAreaDefinition = (typeof communityFeedAreas)[number];
+type CommunityTopTab = CommunityFeedMode | "trending";
+type CommunityTrendItem = CommunityAreaDefinition & {
+  activityCount: number;
+  postsCount: number;
+  repliesCount: number;
 };
 
-const areas: Array<{
-  value: AreaKey;
-  label: string;
-  subtitle: string;
-  stat: string;
-  icon: LucideIcon;
-}> = [
-  { value: "gastronomia", label: "Gastronomia", subtitle: "Pedidos, reservas y cocina", stat: "12 dudas abiertas", icon: Sparkles },
-  { value: "administracion", label: "Administracion", subtitle: "Cobros, facturas y orden", stat: "9 dudas abiertas", icon: Sparkles },
-  { value: "ventas", label: "Ventas", subtitle: "Seguimiento y cierres", stat: "15 dudas abiertas", icon: Sparkles },
-  { value: "marketing", label: "Marketing", subtitle: "Promos y contenido simple", stat: "11 dudas abiertas", icon: Sparkles },
-];
+const communityAreaMap = Object.fromEntries(
+  communityAreas.map((area) => [area.value, area]),
+) as Record<CommunityAreaValue, CommunityAreaDefinition>;
 
-const communityThreads: Record<AreaKey, Thread[]> = {
-  gastronomia: [
-    {
-      name: "Lucia",
-      business: "Panaderia de barrio",
-      businessType: "Toma pedidos por WhatsApp y mostrador",
-      question: "Hola, me escriben por WhatsApp a cualquier hora para pedir tortas. Quiero responder rapido sin copiar siempre lo mismo. Alguno ya encontro un atajo simple?",
-      shortcut: "Le compartieron un guion corto con tres respuestas base: precios, horarios y senas. Ahora solo cambia el sabor y ahorra casi toda la ida y vuelta.",
-      replies: "7 respuestas utiles",
-      savedTime: "Ahorra 3 horas por semana",
-      mood: "Tema activo hace 20 min",
-      initials: "LU",
-    },
-    {
-      name: "Martin",
-      business: "Restaurante familiar",
-      businessType: "Recibe reservas por Instagram y llamadas",
-      question: "Estoy mezclando reservas de Instagram con llamadas y se me pisan las mesas. Necesito algo que me deje todo mas claro sin volverme loco.",
-      shortcut: "La comunidad le sugirio una plantilla unica para pasar cada reserva a una sola lista y un mensaje de confirmacion que se manda en menos de un minuto.",
-      replies: "11 respuestas utiles",
-      savedTime: "Ahorra 5 horas por semana",
-      mood: "2 personas probando este atajo",
-      initials: "MA",
-    },
-    {
-      name: "Sofia",
-      business: "Cafe con delivery",
-      businessType: "Publica promos todos los dias",
-      question: "Pierdo mucho rato armando la promo del dia para historias. Necesito algo rapido que no quede feo y me saque el bloqueo.",
-      shortcut: "Le pasaron un formato fijo para promo diaria: foto, precio, llamado a la accion y horario. Solo cambia producto y sale en 10 minutos.",
-      replies: "5 respuestas utiles",
-      savedTime: "Ahorra 4 horas por semana",
-      mood: "Se movio hoy temprano",
-      initials: "SO",
-    },
-  ],
-  administracion: [
-    {
-      name: "Diego",
-      business: "Ferreteria",
-      businessType: "Maneja stock y pedidos a proveedores",
-      question: "Tengo los pedidos a proveedores en el mail, las notas en papel y despues no se que falta pagar. Quiero un orden simple para no olvidarme de nada.",
-      shortcut: "Le recomendaron pasar todo a una sola tabla con tres columnas: pedido, fecha y pagado. Tambien un recordatorio semanal para revisar lo pendiente.",
-      replies: "8 respuestas utiles",
-      savedTime: "Ahorra 2 horas por semana",
-      mood: "Tema abierto hoy",
-      initials: "DI",
-    },
-    {
-      name: "Paula",
-      business: "Estudio contable chico",
-      businessType: "Hace seguimiento de clientes por mail",
-      question: "Todos me mandan comprobantes por canales distintos. Estoy cansada de perseguir archivos y renombrarlos. Hay algun atajo facil?",
-      shortcut: "Otro miembro le compartio un mensaje tipo para pedir siempre el archivo con el mismo formato y una carpeta semanal ya preparada.",
-      replies: "10 respuestas utiles",
-      savedTime: "Ahorra 4 horas por semana",
-      mood: "3 personas lo guardaron",
-      initials: "PA",
-    },
-    {
-      name: "Nestor",
-      business: "Corralon",
-      businessType: "Arma presupuestos manuales",
-      question: "Cada presupuesto me lleva demasiado porque escribo todo desde cero. Quiero tardar menos y que se vea prolijo.",
-      shortcut: "Le dejaron una base de presupuesto que solo cambia cliente, materiales y total. Tambien un texto para seguimiento al dia siguiente.",
-      replies: "6 respuestas utiles",
-      savedTime: "Ahorra 6 horas por semana",
-      mood: "Ultima respuesta hace 1 hora",
-      initials: "NE",
-    },
-  ],
-  ventas: [
-    {
-      name: "Carla",
-      business: "Local de ropa",
-      businessType: "Vende por mostrador e Instagram",
-      question: "Muchas clientas preguntan precio, desaparecen y no vuelven. Quiero hacer seguimiento sin sonar pesada.",
-      shortcut: "Le sugirieron un mensaje corto de seguimiento para 24 horas despues, con foto, talle y una sola pregunta para retomar la charla.",
-      replies: "13 respuestas utiles",
-      savedTime: "Ahorra 3 horas por semana",
-      mood: "Tema con varias pruebas reales",
-      initials: "CA",
-    },
-    {
-      name: "Javier",
-      business: "Tienda de celulares",
-      businessType: "Pasa presupuestos por WhatsApp",
-      question: "Mando presupuestos todos los dias y despues no se a quien volver a escribirle. Necesito un sistema facil para no perder ventas.",
-      shortcut: "Un miembro le compartio una lista de seguimiento con tres estados: enviado, por responder y cerrado. Con eso ya sabe a quien llamar cada tarde.",
-      replies: "9 respuestas utiles",
-      savedTime: "Ahorra 4 horas por semana",
-      mood: "Tema activo hace 45 min",
-      initials: "JA",
-    },
-    {
-      name: "Rocio",
-      business: "Muebleria",
-      businessType: "Atiende consultas largas",
-      question: "Me escriben mucho para pedir medidas, colores y entrega. Quiero contestar bien pero sin pasar media tarde pegada al telefono.",
-      shortcut: "Le dejaron una respuesta base por modelo con medidas, colores, envio y tiempo de entrega. Solo cambia el producto y sigue la conversacion.",
-      replies: "7 respuestas utiles",
-      savedTime: "Ahorra 5 horas por semana",
-      mood: "Guardado por 6 personas",
-      initials: "RO",
-    },
-  ],
-  marketing: [
-    {
-      name: "Andrea",
-      business: "Peluqueria",
-      businessType: "Publica promos y recordatorios",
-      question: "No me salen ideas para publicar. Cuando por fin subo algo, ya perdi media hora. Quiero una rutina sencilla para no pensar tanto.",
-      shortcut: "Le pasaron una grilla semanal con cuatro tipos de posteos: promo, antes y despues, testimonio y agenda disponible.",
-      replies: "12 respuestas utiles",
-      savedTime: "Ahorra 3 horas por semana",
-      mood: "Tema fuerte esta semana",
-      initials: "AN",
-    },
-    {
-      name: "Emilio",
-      business: "Gimnasio barrial",
-      businessType: "Hace flyers y textos solo",
-      question: "Cada mes hago los flyers de cero y termino copiando cosas de otros. Necesito algo rapido y claro para mis promos.",
-      shortcut: "La comunidad le compartio una estructura fija: titulo, oferta, fecha, llamada a la accion y una foto del local. Sale mucho mas rapido y mas parejo.",
-      replies: "8 respuestas utiles",
-      savedTime: "Ahorra 4 horas por semana",
-      mood: "Ultimo aporte hace 30 min",
-      initials: "EM",
-    },
-    {
-      name: "Valeria",
-      business: "Libreria",
-      businessType: "Comunica novedades por estados",
-      question: "Tengo novedades todo el tiempo y no se como contarlas sin que queden aburridas. Quiero algo simple y constante.",
-      shortcut: "Le sugirieron un formato de tres pasos: que llego, para quien sirve y como pedirlo. Ahora resuelve cada estado en pocos minutos.",
-      replies: "6 respuestas utiles",
-      savedTime: "Ahorra 2 horas por semana",
-      mood: "Se reabrio hoy",
-      initials: "VA",
-    },
-  ],
+const communityFeedAreaMap = Object.fromEntries(
+  communityFeedAreas.map((area) => [area.value, area]),
+) as Record<CommunityFeedAreaValue, CommunityFeedAreaDefinition>;
+
+const isCommunityAreaValue = (value: string): value is CommunityAreaValue => value in communityAreaMap;
+
+const getInitialPostArea = (activeArea: CommunityFeedAreaValue): CommunityAreaValue =>
+  activeArea === "all" ? "general" : activeArea;
+
+const lineClampStyle = (lines: number): CSSProperties => ({
+  display: "-webkit-box",
+  WebkitBoxOrient: "vertical",
+  WebkitLineClamp: lines,
+  overflow: "hidden",
+});
+
+const fetchReplyAuthorInitials = (name?: string | null) =>
+  name?.trim().slice(0, 2).toUpperCase() || "PU";
+
+const CommunityUserAvatar = ({
+  src,
+  name,
+  className,
+  fallbackClassName,
+}: {
+  src?: string | null;
+  name?: string | null;
+  className: string;
+  fallbackClassName?: string;
+}) => {
+  const normalizedSrc = src?.trim() || "";
+  const [imageStatus, setImageStatus] = useState<"loading" | "loaded" | "error">(
+    normalizedSrc ? "loading" : "error",
+  );
+
+  useEffect(() => {
+    setImageStatus(normalizedSrc ? "loading" : "error");
+  }, [normalizedSrc]);
+
+  return (
+    <Avatar className={`${className} bg-muted/40`}>
+      {normalizedSrc ? (
+        <AvatarImage
+          src={normalizedSrc}
+          className="object-cover"
+          onLoadingStatusChange={(status) => {
+            if (status === "loaded") {
+              setImageStatus("loaded");
+            } else if (status === "error") {
+              setImageStatus("error");
+            }
+          }}
+        />
+      ) : null}
+      {imageStatus === "error" ? (
+        <AvatarFallback className={fallbackClassName}>
+          {fetchReplyAuthorInitials(name)}
+        </AvatarFallback>
+      ) : null}
+    </Avatar>
+  );
+};
+
+const getUserProfileHref = (username?: string | null) =>
+  username?.trim() ? getAppUserProfileRoute(username.trim()) : routes.appProfile;
+
+const showVisitorAuthToast = (action: string) => {
+  toast("Inicia sesion para participar", {
+    description: `Necesitas entrar con tu cuenta para ${action}.`,
+  });
+};
+
+const getTrendSummary = (item: Pick<CommunityTrendItem, "activityCount" | "postsCount" | "repliesCount">) => {
+  if (item.postsCount > 0 && item.repliesCount > 0) {
+    return `${item.activityCount} movimientos en las ultimas 48h`;
+  }
+
+  if (item.postsCount > 0) {
+    return `${item.postsCount} publicaciones recientes`;
+  }
+
+  return `${item.repliesCount} respuestas recientes`;
+};
+
+const CommunityTrendsList = ({
+  items,
+  onSelect,
+}: {
+  items: CommunityTrendItem[];
+  onSelect?: (value: CommunityAreaValue) => void;
+}) => (
+  <div className="divide-y divide-border/50">
+    {items.map((item) => {
+      const Icon = item.icon;
+
+      return (
+        <button
+          key={item.value}
+          type="button"
+          onClick={() => onSelect?.(item.value)}
+          className="flex w-full items-start gap-3 py-3 text-left transition-colors first:pt-0 last:pb-0 hover:text-foreground"
+        >
+          <span className="rounded-xl border border-border/50 bg-muted/30 p-2 text-foreground">
+            <Icon className="h-4 w-4" />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-sm font-medium text-foreground">{item.label}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">
+              {getTrendSummary(item)}
+            </span>
+          </span>
+        </button>
+      );
+    })}
+  </div>
+);
+
+const NewPostDialog = ({
+  open,
+  onOpenChange,
+  activeArea,
+  onCategoryChange,
+  createPost,
+  refreshPosts,
+  onPostCreated,
+  hideTrigger = false,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  activeArea: CommunityFeedAreaValue;
+  onCategoryChange: (value: CommunityFeedAreaValue) => void;
+  createPost: (title: string, content: string, category: string, imageFile?: File | null) => Promise<unknown>;
+  refreshPosts: () => Promise<void>;
+  onPostCreated?: () => void;
+  hideTrigger?: boolean;
+}) => {
+  const { status, loginAsGoogle } = useAuth();
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState<CommunityAreaValue>(getInitialPostArea(activeArea));
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setCategory(getInitialPostArea(activeArea));
+    setImageFile(null);
+    setImagePreviewUrl("");
+  };
+
+  useEffect(() => {
+    if (open) {
+      setCategory(getInitialPostArea(activeArea));
+    }
+  }, [activeArea, open]);
+
+  useEffect(() => {
+    if (!imageFile) {
+      setImagePreviewUrl("");
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(imageFile);
+    setImagePreviewUrl(objectUrl);
+
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [imageFile]);
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextFile = event.target.files?.[0] ?? null;
+    setImageFile(nextFile);
+  };
+
+  const handleDialogChange = (nextOpen: boolean) => {
+    if (!nextOpen) {
+      resetForm();
+    }
+
+    onOpenChange(nextOpen);
+  };
+
+  const handleSubmit = async () => {
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
+    const fallbackTitle =
+      cleanContent.split("\n").find((line) => line.trim())?.trim().slice(0, 80) || "Nueva publicacion";
+    const nextTitle = cleanTitle || fallbackTitle;
+
+    if (!cleanContent) {
+      toast.error("Escribe un mensaje antes de publicar.");
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      await createPost(nextTitle, cleanContent, category, imageFile);
+
+      const nextFeedArea = activeArea === "all" ? "all" : category;
+
+      onCategoryChange(nextFeedArea);
+
+      if (nextFeedArea === "all" || category === activeArea) {
+        await refreshPosts();
+      }
+
+      onPostCreated?.();
+      toast.success("Tu pregunta ya quedo publicada.");
+      handleDialogChange(false);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No pudimos publicar tu pregunta.";
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={handleDialogChange}>
+      {!hideTrigger ? (
+        <DialogTrigger asChild>
+          <Button size="lg" className="rounded-full px-7 shadow-soft">
+            <PlusCircle className="mr-2 h-5 w-5" />
+            Hacer una pregunta
+          </Button>
+        </DialogTrigger>
+      ) : null}
+
+      <DialogContent className="overflow-hidden rounded-[1.6rem] border-border/60 bg-background/95 p-0 shadow-soft backdrop-blur-xl sm:max-w-[500px]">
+        <div className="space-y-4 p-4 sm:p-5">
+          <div className="flex items-center justify-between gap-3">
+            <Select value={category} onValueChange={(value) => setCategory(value as CommunityAreaValue)}>
+              <SelectTrigger className="h-9 w-fit min-w-[170px] rounded-full border-border/50 bg-muted/25 px-3 text-sm shadow-none">
+                <SelectValue placeholder="Elige un nicho" />
+              </SelectTrigger>
+              <SelectContent className="rounded-2xl">
+                {communityAreas.map((area) => (
+                  <SelectItem key={area.value} value={area.value} className="rounded-xl">
+                    {area.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-3">
+            <Input
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="Titulo (opcional) o punto clave..."
+              className="h-auto border-0 bg-transparent px-0 py-0 text-lg font-semibold shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
+            />
+
+            <Textarea
+              value={content}
+              onChange={(event) => setContent(event.target.value)}
+              placeholder="Escribe tu mensaje..."
+              className="min-h-[140px] resize-none border-0 bg-transparent px-0 py-0 text-sm leading-7 shadow-none placeholder:text-muted-foreground/70 focus-visible:ring-0"
+            />
+
+            {imagePreviewUrl ? (
+              <div className="flex items-start gap-3">
+                <div className="relative h-20 w-20 overflow-hidden rounded-lg border border-border/50 bg-muted/20">
+                  <img
+                    src={imagePreviewUrl}
+                    alt="Previsualizacion de la imagen seleccionada"
+                    className="h-full w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setImageFile(null)}
+                    className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-background/90 text-foreground shadow-sm transition-colors hover:bg-background"
+                    aria-label="Quitar imagen"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="flex items-center justify-between gap-3 border-t border-border/50 pt-3">
+            <div className="flex items-center gap-2">
+              <input
+                id="community-image-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+
+              <Button asChild type="button" variant="ghost" className="rounded-full px-3 text-muted-foreground">
+                <label htmlFor="community-image-upload" className="cursor-pointer">
+                  <ImagePlus className="mr-2 h-4 w-4" />
+                  {imageFile ? "Cambiar foto" : "Subir foto"}
+                </label>
+              </Button>
+            </div>
+
+            {status === "authenticated" ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting || !content.trim()}
+                className="rounded-full px-5 shadow-none"
+              >
+                {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                Publicar
+              </Button>
+            ) : (
+              <Button onClick={loginAsGoogle} className="rounded-full px-5 shadow-none">
+                Continuar con Google
+              </Button>
+            )}
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const CommunityAreaButton = ({
+  area,
+  active,
+  layout,
+  onClick,
+}: {
+  area: CommunityFeedAreaDefinition;
+  active: boolean;
+  layout: "mobile" | "desktop";
+  onClick: () => void;
+}) => {
+  const Icon = area.icon;
+
+  if (layout === "desktop") {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className={`flex w-full items-start gap-3 rounded-2xl px-3 py-3 text-left transition-colors ${
+          active ? "bg-muted/60 text-foreground" : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+        }`}
+      >
+        <span className={`mt-0.5 rounded-xl p-2 ${active ? "bg-background text-foreground" : "bg-muted/50 text-muted-foreground"}`}>
+          <Icon className="h-4 w-4" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-medium">{area.label}</span>
+          <span className="mt-0.5 block text-xs leading-5 text-muted-foreground">
+            {area.subtitle}
+          </span>
+        </span>
+      </button>
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`inline-flex items-center gap-2 rounded-full border px-3 py-2 text-[13px] font-medium transition-colors ${
+        active
+          ? "border-foreground bg-foreground text-background"
+          : "border-border/60 bg-background text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+      }`}
+    >
+      <Icon className="h-4 w-4" />
+      <span>{area.label}</span>
+    </button>
+  );
+};
+
+export const PostCard = ({
+  post,
+  onReplyCreated,
+  toggleLike,
+}: {
+  post: Post;
+  onReplyCreated: () => void | Promise<void>;
+  toggleLike: (postId: string) => Promise<void>;
+}) => {
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [replyRefreshKey, setReplyRefreshKey] = useState(0);
+  const [newReply, setNewReply] = useState("");
+  const [isSubmittingReply, setIsSubmittingReply] = useState(false);
+  const [isReplyComposerOpen, setIsReplyComposerOpen] = useState(false);
+  const [isLiked, setIsLiked] = useState(post.is_liked);
+  const [likesCount, setLikesCount] = useState(post.likes_count);
+  const { status } = useAuth();
+  const { createReply } = useCommunity({ enabled: false });
+  const categoryLabel =
+    communityAreaMap[post.category as CommunityAreaValue]?.label ?? post.category;
+
+  useEffect(() => {
+    setIsLiked(post.is_liked);
+    setLikesCount(post.likes_count);
+  }, [post.is_liked, post.likes_count]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadReplies = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("community_replies")
+          .select(
+            `
+              *,
+              author:user_id (
+                full_name,
+                username,
+                avatar_url
+              )
+            `,
+          )
+          .eq("post_id", post.id)
+          .order("created_at", { ascending: true });
+
+        if (error) {
+          throw error;
+        }
+
+        if (isActive) {
+          setReplies(data || []);
+        }
+      } catch {
+        if (isActive) {
+          toast.error("No pudimos cargar las respuestas.");
+        }
+      }
+    };
+
+    void loadReplies();
+
+    return () => {
+      isActive = false;
+    };
+  }, [post.id, replyRefreshKey]);
+
+  const handleReply = async () => {
+    const cleanReply = newReply.trim();
+    if (!cleanReply) return;
+
+    try {
+      setIsSubmittingReply(true);
+      await createReply(post.id, cleanReply);
+      setNewReply("");
+      setIsReplyComposerOpen(false);
+      setReplyRefreshKey((current) => current + 1);
+      await onReplyCreated();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "No pudimos enviar la respuesta.";
+      toast.error(message);
+    } finally {
+      setIsSubmittingReply(false);
+    }
+  };
+
+  const handleLike = async () => {
+    if (status !== "authenticated") {
+      showVisitorAuthToast("dar me gusta");
+      return;
+    }
+
+    const nextIsLiked = !isLiked;
+    setIsLiked(nextIsLiked);
+    setLikesCount((prev) => (nextIsLiked ? prev + 1 : prev - 1));
+
+    try {
+      await toggleLike(post.id);
+    } catch {
+      setIsLiked(!nextIsLiked);
+      setLikesCount((prev) => (!nextIsLiked ? prev + 1 : prev - 1));
+      toast.error("No pudimos guardar tu me gusta.");
+    }
+  };
+
+  return (
+    <article className="border-b border-border/60 px-4 py-4 sm:px-5">
+      <div className="flex items-start gap-3">
+        <Link to={getUserProfileHref(post.author?.username)} className="shrink-0">
+          <CommunityUserAvatar
+            src={post.author?.avatar_url}
+            name={post.author?.full_name}
+            className="h-9 w-9 border border-border/50 transition-opacity hover:opacity-90"
+            fallbackClassName="bg-muted text-xs font-bold text-foreground"
+          />
+        </Link>
+
+        <div className="min-w-0 flex-1 space-y-2.5">
+          <div className="flex flex-wrap items-center gap-1.5 text-[13px] sm:text-sm">
+            <Link
+              to={getUserProfileHref(post.author?.username)}
+              className="truncate font-semibold text-foreground transition hover:underline"
+            >
+              {post.author?.full_name || "Usuario Polarist"}
+            </Link>
+            <span className="text-muted-foreground">&bull;</span>
+            <p className="text-muted-foreground">
+              {formatDistanceToNow(new Date(post.created_at), { addSuffix: true, locale: es })}
+            </p>
+            <Badge
+              variant="outline"
+              className="h-5 rounded-full border-border/60 px-2 text-[10px] font-medium text-muted-foreground"
+            >
+              {categoryLabel}
+            </Badge>
+          </div>
+
+          <div className="space-y-2">
+            <h3
+              className="text-[15px] font-semibold leading-5 text-foreground sm:text-[16px]"
+              style={lineClampStyle(2)}
+            >
+              {post.title}
+            </h3>
+            <p
+              className="text-[13px] leading-5 text-foreground/85 whitespace-pre-line sm:text-sm sm:leading-6"
+              style={lineClampStyle(post.image_url ? 3 : 4)}
+            >
+              {post.content}
+            </p>
+          </div>
+
+          {post.image_url ? (
+            <div className="overflow-hidden rounded-[1.1rem] border border-border/50 bg-muted/20">
+              <div className="aspect-[16/10]">
+                <img
+                  src={post.image_url}
+                  alt={`Imagen adjunta en ${post.title}`}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-1 pt-0.5">
+            {status === "authenticated" ? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`h-9 w-9 rounded-full text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground ${
+                  isReplyComposerOpen ? "bg-muted/50 text-foreground" : ""
+                }`}
+                aria-label={isReplyComposerOpen ? "Cerrar respuesta" : "Responder"}
+                title={isReplyComposerOpen ? "Cerrar respuesta" : "Responder"}
+                onClick={() => setIsReplyComposerOpen((current) => !current)}
+              >
+                <MessageSquare className="h-[18px] w-[18px]" />
+              </Button>
+            ) : (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-9 w-9 rounded-full text-muted-foreground transition-colors hover:bg-muted/50 hover:text-foreground"
+                aria-label="Responder"
+                title="Responder"
+                onClick={() => showVisitorAuthToast("responder")}
+              >
+                <MessageSquare className="h-[18px] w-[18px]" />
+              </Button>
+            )}
+
+            <div className="flex items-center gap-0.5">
+              {likesCount > 0 && (
+                <span className="text-[11px] font-semibold text-muted-foreground">
+                  {likesCount}
+                </span>
+              )}
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className={`h-9 w-9 rounded-full transition-colors hover:bg-muted/50 ${
+                  isLiked ? "bg-muted/50 text-foreground hover:text-foreground" : "text-muted-foreground hover:text-foreground"
+                }`}
+                aria-label={isLiked ? "Quitar me gusta" : "Dar me gusta"}
+                title={isLiked ? "Quitar me gusta" : "Dar me gusta"}
+                aria-pressed={isLiked}
+                onClick={handleLike}
+              >
+                <Heart className={`h-[18px] w-[18px] ${isLiked ? "fill-current" : ""}`} />
+              </Button>
+            </div>
+          </div>
+
+          {replies.length > 0 || isReplyComposerOpen ? (
+            <div className="space-y-3 border-t border-border/50 pt-3">
+              {replies.length > 0 ? (
+                <div className="space-y-3">
+                  {replies.map((reply) => (
+                    <div key={reply.id} className="flex gap-3">
+                      <Link to={getUserProfileHref(reply.author?.username)} className="shrink-0">
+                        <CommunityUserAvatar
+                          src={reply.author?.avatar_url}
+                          name={reply.author?.full_name}
+                          className="h-7 w-7 transition-opacity hover:opacity-90"
+                          fallbackClassName="text-[10px]"
+                        />
+                      </Link>
+                      <div className="min-w-0 flex-1 border-l border-border/50 pl-3">
+                        <div className="flex flex-wrap items-center gap-1.5 text-[11px] sm:text-xs">
+                          <Link
+                            to={getUserProfileHref(reply.author?.username)}
+                            className="font-semibold text-foreground transition hover:underline"
+                          >
+                            {reply.author?.full_name || "Miembro"}
+                          </Link>
+                          <span className="text-muted-foreground">&bull;</span>
+                          <p className="text-muted-foreground">
+                            {formatDistanceToNow(new Date(reply.created_at), {
+                              addSuffix: true,
+                              locale: es,
+                            })}
+                          </p>
+                        </div>
+                        <p className="mt-1 text-[13px] leading-5 text-foreground/85 whitespace-pre-line sm:text-sm sm:leading-6">
+                          {reply.content}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {isReplyComposerOpen && status === "authenticated" ? (
+                <div className="space-y-3">
+                  <Textarea
+                    value={newReply}
+                    onChange={(event) => setNewReply(event.target.value)}
+                    placeholder="Escribe una respuesta corta y util..."
+                    className="min-h-[84px] rounded-[1.15rem] border-border/60 bg-background px-3.5 py-3 text-[13px] sm:text-sm"
+                  />
+                  <div className="flex justify-end">
+                    <Button
+                      onClick={handleReply}
+                      disabled={isSubmittingReply || !newReply.trim()}
+                      className="rounded-full"
+                    >
+                      {isSubmittingReply ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                      Responder
+                    </Button>
+                  </div>
+                </div>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </article>
+  );
 };
 
 const Community = () => {
+  const [activeArea, setActiveArea] = useState<CommunityFeedAreaValue>("all");
+  const [activeTopTab, setActiveTopTab] = useState<CommunityTopTab>("for-you");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [trendingAreas, setTrendingAreas] = useState<CommunityTrendItem[]>([]);
+  const [trendsRefreshKey, setTrendsRefreshKey] = useState(0);
+  const [isFeedVisible, setIsFeedVisible] = useState(true);
+  const { status } = useAuth();
+  const feedMode: CommunityFeedMode = activeTopTab === "recent" ? "recent" : "for-you";
+  const {
+    posts,
+    loading,
+    isLoadingMore,
+    hasMore,
+    createPost,
+    refreshPosts,
+    loadMorePosts,
+    toggleLike,
+  } = useCommunity({
+    category: activeArea === "all" ? undefined : activeArea,
+    mode: feedMode,
+    pageSize: 15,
+    enabled: activeTopTab !== "trending",
+  });
+
+  const activeAreaMeta = useMemo(() => communityFeedAreaMap[activeArea], [activeArea]);
+  const hasTrendingAreas = trendingAreas.length > 0;
+  const topTabs = useMemo(
+    () =>
+      [
+        { value: "for-you", label: "Para ti" },
+        { value: "recent", label: "Recientes" },
+        ...(hasTrendingAreas ? [{ value: "trending", label: "Tendencias" }] : []),
+      ] as Array<{ value: CommunityTopTab; label: string }>,
+    [hasTrendingAreas],
+  );
+  const activeAreaDescription = activeArea === "all"
+    ? activeTopTab === "for-you"
+      ? "Cargando lo mas relevante de toda la comunidad..."
+      : "Cargando las publicaciones mas recientes de toda la comunidad..."
+    : activeTopTab === "for-you"
+      ? `Cargando lo mas relevante de ${activeAreaMeta.label.toLowerCase()}...`
+      : `Cargando las publicaciones mas recientes de ${activeAreaMeta.label.toLowerCase()}...`;
+  const emptyTitle = activeArea === "all"
+    ? activeTopTab === "for-you"
+      ? "Aun no hay publicaciones destacadas en el feed"
+      : "Aun no hay publicaciones recientes en el feed"
+    : activeTopTab === "for-you"
+      ? `Aun no hay publicaciones destacadas en ${activeAreaMeta.label}`
+      : `Aun no hay publicaciones recientes en ${activeAreaMeta.label}`;
+  const EmptyStateIcon = activeAreaMeta.icon;
+
+  const handleTrendSelect = useCallback((value: CommunityAreaValue) => {
+    setActiveArea(value);
+    setActiveTopTab("for-you");
+  }, []);
+
+  const handleComposerOpen = useCallback(() => {
+    if (status !== "authenticated") {
+      showVisitorAuthToast("publicar en la comunidad");
+      return;
+    }
+
+    setIsDialogOpen(true);
+  }, [status]);
+
+  const handleFeedActivity = useCallback(async () => {
+    await refreshPosts();
+    setTrendsRefreshKey((current) => current + 1);
+  }, [refreshPosts]);
+
+  useEffect(() => {
+    if (activeTopTab === "trending" && !hasTrendingAreas) {
+      setActiveTopTab("for-you");
+    }
+  }, [activeTopTab, hasTrendingAreas]);
+
+  useEffect(() => {
+    setIsFeedVisible(false);
+
+    const timeout = window.setTimeout(() => {
+      setIsFeedVisible(true);
+    }, 70);
+
+    return () => {
+      window.clearTimeout(timeout);
+    };
+  }, [activeArea, activeTopTab]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    const loadTrendingAreas = async () => {
+      try {
+        const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+
+        const [
+          { data: recentPosts, error: postsError },
+          { data: recentReplies, error: repliesError },
+        ] = await Promise.all([
+          supabase
+            .from("community_posts")
+            .select("id, category")
+            .gte("created_at", since),
+          supabase
+            .from("community_replies")
+            .select("post_id")
+            .gte("created_at", since),
+        ]);
+
+        if (postsError) {
+          throw postsError;
+        }
+
+        if (repliesError) {
+          throw repliesError;
+        }
+
+        const recentReplyPostIds = Array.from(
+          new Set((recentReplies || []).map((reply) => reply.post_id).filter(Boolean)),
+        );
+
+        const replyPostCategories = new Map<string, CommunityAreaValue>();
+
+        if (recentReplyPostIds.length > 0) {
+          const { data: replyPosts, error: replyPostsError } = await supabase
+            .from("community_posts")
+            .select("id, category")
+            .in("id", recentReplyPostIds);
+
+          if (replyPostsError) {
+            throw replyPostsError;
+          }
+
+          for (const replyPost of replyPosts || []) {
+            if (isCommunityAreaValue(replyPost.category)) {
+              replyPostCategories.set(replyPost.id, replyPost.category);
+            }
+          }
+        }
+
+        const trendCounts = new Map<
+          CommunityAreaValue,
+          { postsCount: number; repliesCount: number }
+        >();
+
+        const ensureTrendCount = (value: CommunityAreaValue) => {
+          const current = trendCounts.get(value) ?? { postsCount: 0, repliesCount: 0 };
+          trendCounts.set(value, current);
+          return current;
+        };
+
+        for (const post of recentPosts || []) {
+          if (!isCommunityAreaValue(post.category)) {
+            continue;
+          }
+
+          ensureTrendCount(post.category).postsCount += 1;
+        }
+
+        for (const reply of recentReplies || []) {
+          const nextCategory = replyPostCategories.get(reply.post_id);
+
+          if (!nextCategory) {
+            continue;
+          }
+
+          ensureTrendCount(nextCategory).repliesCount += 1;
+        }
+
+        const nextTrendingAreas = communityAreas
+          .map((area) => {
+            const counts = trendCounts.get(area.value) ?? { postsCount: 0, repliesCount: 0 };
+            return {
+              ...area,
+              ...counts,
+              activityCount: counts.postsCount + counts.repliesCount,
+            };
+          })
+          .filter((area) => area.activityCount > 0)
+          .sort((left, right) => {
+            if (right.activityCount !== left.activityCount) {
+              return right.activityCount - left.activityCount;
+            }
+
+            return right.postsCount - left.postsCount;
+          })
+          .slice(0, 6);
+
+        if (isActive) {
+          setTrendingAreas(nextTrendingAreas);
+        }
+      } catch (error) {
+        if (isActive) {
+          console.error("No pudimos cargar tendencias de comunidad:", error);
+          setTrendingAreas([]);
+        }
+      }
+    };
+
+    void loadTrendingAreas();
+
+    return () => {
+      isActive = false;
+    };
+  }, [trendsRefreshKey]);
+
   return (
-    <div className="min-h-full bg-background px-4 pb-24 pt-4 md:px-8 md:pb-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <Card className="rounded-[2rem] border-border/60 shadow-soft">
-            <CardHeader className="pb-4">
-              <Badge variant="secondary" className="w-fit rounded-full">Comunidad sin humo</Badge>
-              <CardTitle className="text-3xl font-black tracking-tight">Dudas normales. Respuestas utiles.</CardTitle>
-              <CardDescription className="max-w-2xl text-sm leading-7">
-                Este foro esta pensado para gente ocupada. Nadie entra aca a lucirse: entra a sacar una traba del medio y volver al negocio.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="grid gap-3 md:grid-cols-3">
-              <div className="rounded-2xl bg-muted/50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Lo que mas se busca</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">Respuestas rapidas para WhatsApp, reservas, presupuestos y contenido.</p>
-              </div>
-              <div className="rounded-2xl bg-muted/50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Tono de la comunidad</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">Sin palabras raras. Sin hacerse el experto. Todo baja a tareas del dia a dia.</p>
-              </div>
-              <div className="rounded-2xl bg-primary/10 p-4">
-                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-primary">Meta comun</p>
-                <p className="mt-2 text-sm font-semibold text-foreground">Ahorrar horas sin sentir que tienes que hacer un curso entero.</p>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="min-h-full bg-background pb-24 md:pb-10">
+      <NewPostDialog
+        open={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        activeArea={activeArea}
+        onCategoryChange={setActiveArea}
+        createPost={createPost}
+        refreshPosts={refreshPosts}
+        onPostCreated={() => {
+          setActiveTopTab("for-you");
+          setTrendsRefreshKey((current) => current + 1);
+        }}
+        hideTrigger
+      />
 
-          <Card className="rounded-[2rem] border-border/60 shadow-soft">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-xl font-black">Lo que esta pasando hoy</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="rounded-2xl border border-border/60 bg-muted/40 p-4">
-                <p className="text-sm font-semibold text-foreground">35 conversaciones abiertas</p>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">La mayoria pregunta por mensajes repetidos, orden interno y seguimiento de clientes.</p>
-              </div>
-              <div className="rounded-2xl border border-border/60 bg-muted/40 p-4">
-                <p className="text-sm font-semibold text-foreground">Atajos mas compartidos</p>
-                <p className="mt-1 text-sm leading-6 text-muted-foreground">Plantillas de respuesta, listas simples y rutinas para publicar sin pensar tanto.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </section>
-
-        <Tabs defaultValue="gastronomia" className="w-full">
-          <TabsList className="h-auto w-full flex-wrap justify-start gap-2 rounded-[1.5rem] bg-muted/60 p-2">
-            {areas.map((area) => (
-              <TabsTrigger
+      <div className="sticky top-0 z-10 border-b border-border/60 bg-background/80 backdrop-blur md:hidden">
+        <div className="overflow-x-auto px-3 py-2.5 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <div className="flex w-max gap-2">
+            {communityFeedAreas.map((area) => (
+              <CommunityAreaButton
                 key={area.value}
-                value={area.value}
-                className="rounded-xl px-4 py-2.5 text-sm font-semibold data-[state=active]:shadow-none"
-              >
-                {area.label}
-              </TabsTrigger>
+                area={area}
+                active={activeArea === area.value}
+                layout="mobile"
+                onClick={() => setActiveArea(area.value)}
+              />
             ))}
-          </TabsList>
-
-          {areas.map((area) => (
-            <TabsContent key={area.value} value={area.value} className="mt-4 space-y-4">
-              <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
-                <Card className="rounded-[2rem] border-border/60 shadow-soft">
-                  <CardContent className="flex flex-col gap-3 p-6 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-foreground">{area.label}</p>
-                      <p className="mt-1 text-sm leading-6 text-muted-foreground">{area.subtitle}</p>
-                    </div>
-                    <Badge variant="outline" className="rounded-full px-3 py-1 text-xs font-semibold">
-                      {area.stat}
-                    </Badge>
-                  </CardContent>
-                </Card>
-
-                <Card className="rounded-[2rem] border-border/60 shadow-soft">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-2 text-foreground">
-                      <MessagesSquare className="h-4 w-4" />
-                      <p className="text-sm font-semibold">Lo mas pedido</p>
-                    </div>
-                    <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                      Gente buscando un primer paso simple para dejar de repetir tareas y ganar aire.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="grid gap-4 xl:grid-cols-2">
-                {communityThreads[area.value].map((thread) => (
-                  <Card key={`${area.value}-${thread.name}`} className="rounded-[2rem] border-border/60 shadow-soft">
-                    <CardHeader className="pb-4">
-                      <div className="flex items-start gap-4">
-                        <Avatar className="h-12 w-12 border border-border/60">
-                          <AvatarFallback className="bg-muted text-sm font-bold text-foreground">{thread.initials}</AvatarFallback>
-                        </Avatar>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex flex-wrap items-center gap-2">
-                            <CardTitle className="text-lg font-bold">{thread.name}</CardTitle>
-                            <Badge variant="secondary" className="rounded-full">{thread.business}</Badge>
-                          </div>
-                          <CardDescription className="mt-1 text-sm">{thread.businessType}</CardDescription>
-                        </div>
-
-                        <Badge variant="outline" className="rounded-full px-3 py-1 text-[11px] font-semibold">
-                          {thread.savedTime}
-                        </Badge>
-                      </div>
-                    </CardHeader>
-
-                    <CardContent className="space-y-4">
-                      <div className="rounded-2xl bg-muted/50 p-4">
-                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">Duda real</p>
-                        <p className="mt-2 text-sm leading-7 text-foreground">{thread.question}</p>
-                      </div>
-
-                      <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
-                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                          <MessageCircleHeart className="h-4 w-4 text-primary" />
-                          Atajo que ya le sirvio a otro negocio
-                        </div>
-                        <p className="mt-2 text-sm leading-7 text-muted-foreground">{thread.shortcut}</p>
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-                        <span>{thread.replies}</span>
-                        <span className="h-1 w-1 rounded-full bg-border" />
-                        <span>{thread.mood}</span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+          </div>
+        </div>
       </div>
+
+      <div className="mx-auto max-w-[1200px] md:grid md:grid-cols-[250px_minmax(0,600px)_300px] md:gap-6 md:px-6 md:pt-6">
+        <aside className="hidden md:block">
+          <div className="sticky top-6 space-y-4">
+            <div className="px-2">
+              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                Comunidad
+              </p>
+              <p className="mt-2 text-2xl font-semibold tracking-tight text-foreground">
+                Timeline
+              </p>
+            </div>
+
+            <div className="space-y-1">
+              {communityFeedAreas.map((area) => (
+                <CommunityAreaButton
+                  key={area.value}
+                  area={area}
+                  active={activeArea === area.value}
+                  layout="desktop"
+                  onClick={() => setActiveArea(area.value)}
+                />
+              ))}
+            </div>
+          </div>
+        </aside>
+
+        <main className="min-w-0">
+          <section className="min-h-full bg-background md:border-x md:border-border/60">
+            <div className="flex border-b border-border/60">
+              {topTabs.map((tab) => (
+                <button
+                  key={tab.value}
+                  type="button"
+                  className={`flex-1 px-4 py-3 text-sm transition-colors ${
+                    activeTopTab === tab.value
+                      ? "border-b-2 border-foreground font-semibold text-foreground"
+                      : "font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                  } ${tab.value === "trending" ? "md:hidden" : ""}`}
+                  onClick={() => setActiveTopTab(tab.value)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+
+            <div className={`transition-opacity duration-200 ${isFeedVisible ? "opacity-100" : "opacity-0"}`}>
+              {activeTopTab === "trending" ? (
+                <div className="px-4 py-4 sm:px-5">
+                  <CommunityTrendsList items={trendingAreas} onSelect={handleTrendSelect} />
+                </div>
+              ) : loading ? (
+                <div className="flex min-h-[45vh] flex-col items-center justify-center px-6 py-16 text-center">
+                  <Loader2 className="mb-4 h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">
+                    {activeAreaDescription}
+                  </p>
+                </div>
+              ) : posts.length > 0 ? (
+                <div>
+                  {posts.map((post) => (
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onReplyCreated={handleFeedActivity}
+                      toggleLike={toggleLike}
+                    />
+                  ))}
+
+                  {hasMore ? (
+                    <div className="flex justify-center border-t border-border/60 px-4 py-5 sm:px-5">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        className="rounded-full px-5 text-sm text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                        disabled={isLoadingMore}
+                        onClick={() => void loadMorePosts()}
+                      >
+                        {isLoadingMore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                        Cargar mas
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              ) : (
+                <div className="flex min-h-[45vh] flex-col items-center justify-center px-6 py-16 text-center">
+                  <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-full border border-border/60 bg-background text-primary">
+                    <EmptyStateIcon className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-2xl font-semibold text-foreground">
+                    {emptyTitle}
+                  </h3>
+                  <p className="mt-2 max-w-md text-sm leading-7 text-muted-foreground">
+                    Se el primero en compartir una traba real o un atajo que ya te funciono.
+                  </p>
+                  <Button className="mt-6 rounded-full md:hidden" onClick={handleComposerOpen}>
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Publicar
+                  </Button>
+                </div>
+              )}
+            </div>
+          </section>
+        </main>
+
+        <aside className="hidden md:block">
+          <div className="sticky top-6 space-y-4">
+            <Button
+              size="lg"
+              className="w-full rounded-2xl px-4 py-6 text-base font-semibold"
+              onClick={handleComposerOpen}
+            >
+              <PlusCircle className="mr-2 h-5 w-5" />
+              Publicar
+            </Button>
+
+            {hasTrendingAreas ? (
+              <section className="rounded-[1.75rem] border border-border/60 bg-background p-4">
+                <div className="mb-3">
+                  <p className="text-lg font-semibold tracking-tight text-foreground">
+                    Tendencias
+                  </p>
+                </div>
+
+                <CommunityTrendsList items={trendingAreas} onSelect={handleTrendSelect} />
+              </section>
+            ) : null}
+          </div>
+        </aside>
+      </div>
+
+      <Button
+        size="icon"
+        className="fixed bottom-20 right-4 z-50 h-14 w-14 rounded-full shadow-lg md:hidden"
+        onClick={handleComposerOpen}
+      >
+        <PlusCircle className="h-6 w-6" />
+      </Button>
     </div>
   );
 };

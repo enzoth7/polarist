@@ -1,20 +1,19 @@
 import { Link, NavLink } from "react-router-dom";
-import { Moon, Search, Sun } from "lucide-react";
+import { LogIn, Moon, Search, Sun } from "lucide-react";
 
 import BrandLogo from "@/components/BrandLogo";
 import { useAuth } from "@/hooks/useAuth";
+import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { useTheme } from "@/hooks/useTheme";
-import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-const navItems = [
+const baseNavItems = [
   { label: "Inicio", to: routes.landing },
   { label: "Radar", to: routes.appRadar },
   { label: "Top Herramientas", to: routes.appTools },
   { label: "Guias", to: routes.appGuides },
   { label: "Comunidad", to: routes.appCommunity },
-  { label: "Perfil", to: routes.appProfile },
 ] as const;
 
 const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
@@ -36,6 +35,10 @@ const Header = () => {
   const { profile, status } = useAuth();
   const today = new Date();
   const currentHour = today.getHours();
+  const profileRoute =
+    profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
+  const navItems =
+    status === "authenticated" ? [...baseNavItems, { label: "Perfil", to: profileRoute }] : baseNavItems;
 
   let greeting = "Hola";
 
@@ -68,6 +71,18 @@ const Header = () => {
         </nav>
 
         <div className="ml-auto flex items-center gap-2">
+          {status !== "authenticated" ? (
+            <Button
+              asChild
+              className="hidden rounded-full border-0 bg-[#CCFF00] px-5 font-semibold text-[#0f1402] shadow-none transition-colors hover:bg-[#d8ff4a] md:inline-flex"
+            >
+              <Link to={routes.login}>
+                Comenzar
+                <LogIn className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          ) : null}
+
           <button
             type="button"
             aria-label="Buscar"

@@ -24,7 +24,7 @@ const Footer = ({ className }: FooterProps) => {
         <div className="flex flex-row items-center justify-center gap-2">
           <BrandLogo showLabel={false} imageClassName="h-5 w-5 rounded-md" />
           <p className="text-base font-bold tracking-tight text-foreground">
-            Polarist - Atajos de IA para dueños de negocios
+            Polarist - La dirección que necesitabas para usar la IA
           </p>
         </div>
 

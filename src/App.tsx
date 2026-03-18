@@ -4,9 +4,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from "@/hooks/useAuth";
-import { legacyAppRoutes, routes } from "@/lib/routes";
+import { getAppUserProfileRoute, legacyAppRoutes, routes } from "@/lib/routes";
 
 import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
@@ -27,6 +28,9 @@ import Radar from "./pages/Radar";
 import Settings from "./pages/Settings";
 import Shortcuts from "./pages/Shortcuts";
 import Tools from "./pages/Tools";
+import ToolsRanking from "./pages/ToolsRanking";
+import ToolsTips from "./pages/ToolsTips";
+import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +57,39 @@ const PublicLayout = () => {
   );
 };
 
+const ProfileRouteResolver = () => {
+  const { profile, status } = useAuth();
+
+  if (status === "loading" || (status === "authenticated" && !profile)) {
+    return <div className="min-h-full bg-background" />;
+  }
+
+  if (status !== "authenticated") {
+    return <Navigate to={routes.login} replace />;
+  }
+
+  if (status === "authenticated" && profile?.username?.trim()) {
+    return <Navigate to={getAppUserProfileRoute(profile.username.trim())} replace />;
+  }
+
+  return <Profile />;
+};
+
+const RequireAuthenticatedRoute = () => {
+  const { status } = useAuth();
+  const location = useLocation();
+
+  if (status === "loading") {
+    return <div className="min-h-full bg-background" />;
+  }
+
+  if (status !== "authenticated") {
+    return <Navigate to={routes.login} replace state={{ from: location.pathname }} />;
+  }
+
+  return <Outlet />;
+};
+
 const AppRoutes = () => {
   return (
     <Routes>
@@ -73,11 +110,16 @@ const AppRoutes = () => {
         <Route path="radar" element={<Radar />} />
         <Route path="shortcuts" element={<Shortcuts />} />
         <Route path="tools" element={<Tools />} />
+        <Route path="tools/ranking" element={<ToolsRanking />} />
+        <Route path="tools/trucos" element={<ToolsTips />} />
         <Route path="guides" element={<Guides />} />
         <Route path="community" element={<Community />} />
-        <Route path="profile" element={<Profile />} />
+        <Route path="profile" element={<ProfileRouteResolver />} />
+        <Route path="profile/:username" element={<UserProfile />} />
         <Route path="library" element={<Library />} />
-        <Route path="settings" element={<Settings />} />
+        <Route element={<RequireAuthenticatedRoute />}>
+          <Route path="settings" element={<Settings />} />
+        </Route>
       </Route>
 
       {legacyAppRoutes.map(({ from, to }) => (

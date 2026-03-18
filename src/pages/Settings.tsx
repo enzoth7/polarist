@@ -1,27 +1,33 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, LockKeyhole, Mail, UserRound } from "lucide-react";
+import { ArrowLeft, LockKeyhole, Mail, MapPin, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { routes } from "@/lib/routes";
+import { useAuth } from "@/hooks/useAuth";
+import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { supabase } from "@/lib/supabase";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { avatarUrl, profile, refreshProfile, status } = useAuth();
   const [fullName, setFullName] = useState("");
+  const [username, setUsername] = useState("");
   const [occupation, setOccupation] = useState("");
+  const [country, setCountry] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const profileRoute =
+    profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
 
   useEffect(() => {
     setFullName(profile?.fullName || "");
+    setUsername(profile?.username || "");
     setOccupation(profile?.occupation || "");
+    setCountry(profile?.country || "");
     setEmail(profile?.email || "");
   }, [profile]);
 
@@ -29,17 +35,29 @@ const Settings = () => {
     event.preventDefault();
 
     if (!profile) {
-      toast.error("No encontramos una sesión activa");
+      toast.error("No encontramos una sesion activa");
       return;
     }
 
     const normalizedFullName = fullName.trim();
+    const normalizedUsername = username.trim().toLowerCase();
     const normalizedOccupation = occupation.trim();
+    const normalizedCountry = country.trim();
     const normalizedEmail = email.trim();
     const normalizedPassword = password.trim();
 
     if (!normalizedFullName) {
       toast.error("El nombre completo es obligatorio");
+      return;
+    }
+
+    if (!normalizedUsername) {
+      toast.error("El username es obligatorio");
+      return;
+    }
+
+    if (/\s/.test(normalizedUsername)) {
+      toast.error("El username no puede tener espacios");
       return;
     }
 
@@ -71,7 +89,9 @@ const Settings = () => {
           {
             id: profile.id,
             full_name: normalizedFullName,
+            username: normalizedUsername,
             occupation: normalizedOccupation,
+            country: normalizedCountry || null,
             email: normalizedEmail,
             avatar_url: profile.avatarUrl,
           },
@@ -94,7 +114,12 @@ const Settings = () => {
       }
     } catch (error) {
       console.error("Error updating settings:", error);
-      toast.error("No se pudieron guardar los cambios");
+      const message = error instanceof Error ? error.message : "";
+      if (message.toLowerCase().includes("username") || message.toLowerCase().includes("duplicate")) {
+        toast.error("Ese username ya esta en uso");
+      } else {
+        toast.error("No se pudieron guardar los cambios");
+      }
     } finally {
       setIsSaving(false);
     }
@@ -103,7 +128,7 @@ const Settings = () => {
   if (status === "loading" && !profile) {
     return (
       <div className="flex min-h-full items-center justify-center bg-background p-6">
-        <p className="text-sm font-medium text-muted-foreground">Cargando configuración...</p>
+        <p className="text-sm font-medium text-muted-foreground">Cargando configuracion...</p>
       </div>
     );
   }
@@ -111,9 +136,9 @@ const Settings = () => {
   if (status !== "authenticated" || !profile) {
     return (
       <div className="flex min-h-full flex-col items-center justify-center gap-4 bg-background p-6 text-center">
-        <h1 className="text-2xl font-semibold text-foreground">Necesitas iniciar sesión</h1>
+        <h1 className="text-2xl font-semibold text-foreground">Necesitas iniciar sesion</h1>
         <p className="max-w-sm text-sm text-muted-foreground">
-          Inicia sesión con Google para editar tu perfil y la configuración de tu cuenta.
+          Inicia sesion con Google para editar tu perfil y la configuracion de tu cuenta.
         </p>
         <Button onClick={() => navigate(routes.login)}>Ir a login</Button>
       </div>
@@ -126,7 +151,7 @@ const Settings = () => {
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-              Configuración
+              Configuracion
             </p>
             <h1 className="text-3xl font-semibold tracking-tight text-foreground">
               Ajusta tu cuenta
@@ -134,7 +159,7 @@ const Settings = () => {
           </div>
 
           <Button asChild variant="ghost" className="rounded-full">
-            <Link to={routes.appProfile}>
+            <Link to={profileRoute}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Volver
             </Link>
@@ -150,7 +175,7 @@ const Settings = () => {
               <div>
                 <h2 className="text-lg font-semibold text-foreground">Foto de perfil</h2>
                 <p className="text-sm text-muted-foreground">
-                  Esta imagen viene desde tu cuenta de Google y aquí es solo de lectura.
+                  Esta imagen viene desde tu cuenta de Google y aqui es solo de lectura.
                 </p>
               </div>
             </div>
@@ -164,7 +189,7 @@ const Settings = () => {
 
             <div className="grid gap-5 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="fullName">Nombre Completo</Label>
+                <Label htmlFor="fullName">Nombre completo</Label>
                 <Input
                   id="fullName"
                   value={fullName}
@@ -175,13 +200,39 @@ const Settings = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="occupation">Ocupación</Label>
+                <Label htmlFor="occupation">Ocupacion</Label>
                 <Input
                   id="occupation"
                   value={occupation}
                   onChange={(event) => setOccupation(event.target.value)}
-                  placeholder="Tu ocupación"
+                  placeholder="Tu ocupacion"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(event) => setUsername(event.target.value)}
+                  placeholder="tuusuario"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="country">Pais</Label>
+                <div className="relative">
+                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="country"
+                    value={country}
+                    onChange={(event) => setCountry(event.target.value)}
+                    placeholder="Ej: Uruguay"
+                    className="pl-10"
+                  />
+                </div>
               </div>
             </div>
           </section>
@@ -189,12 +240,12 @@ const Settings = () => {
           <section className="rounded-[28px] bg-secondary/25 p-5 md:p-6">
             <div className="mb-5 flex items-center gap-2">
               <Mail className="h-5 w-5 text-primary" />
-              <h2 className="text-lg font-semibold text-foreground">Gestión de cuenta</h2>
+              <h2 className="text-lg font-semibold text-foreground">Gestion de cuenta</h2>
             </div>
 
             <div className="grid gap-5">
               <div className="space-y-2">
-                <Label htmlFor="email">Cambiar Email</Label>
+                <Label htmlFor="email">Cambiar email</Label>
                 <Input
                   id="email"
                   type="email"
@@ -206,7 +257,7 @@ const Settings = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Cambiar Contraseña</Label>
+                <Label htmlFor="password">Cambiar contrasena</Label>
                 <div className="relative">
                   <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                   <Input
@@ -214,13 +265,13 @@ const Settings = () => {
                     type="password"
                     value={password}
                     onChange={(event) => setPassword(event.target.value)}
-                    placeholder="Nueva contraseña"
+                    placeholder="Nueva contrasena"
                     autoComplete="new-password"
                     className="pl-10"
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Déjalo vacío si no quieres cambiar tu contraseña.
+                  Dejalo vacio si no quieres cambiar tu contrasena.
                 </p>
               </div>
             </div>

@@ -1,115 +1,107 @@
-import { useState } from "react";
-import { Wrench } from "lucide-react";
+import { Link } from "react-router-dom";
+import { ArrowRight, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ToolLogo } from "@/components/tools/ToolLogo";
+import {
+  fullToolsRanking,
+  getToolsForNiche,
+  toolBusinessNiches,
+  type ToolRankingItem,
+} from "@/data/aiToolsCatalog";
+import { useToolInteractions } from "@/hooks/useToolInteractions";
+import { routes } from "@/lib/routes";
 
-type RankedTool = {
-  name: string;
-  domain: string;
+const topTenTools = fullToolsRanking.slice(0, 10);
+const topTenToolIds = topTenTools.map((tool) => tool.name);
+
+type NicheSection = (typeof toolBusinessNiches)[number] & {
+  tools: Array<ToolRankingItem & { tag: string }>;
 };
 
-type NicheTool = RankedTool & {
-  tag: string;
-};
-
-type NicheSection = {
-  title: string;
-  tools: NicheTool[];
-};
-
-const topTenTools: RankedTool[] = [
-  { name: "ChatGPT", domain: "openai.com" },
-  { name: "Claude", domain: "anthropic.com" },
-  { name: "Canva", domain: "canva.com" },
-  { name: "n8n", domain: "n8n.io" },
-  { name: "Midjourney", domain: "midjourney.com" },
-  { name: "Loom", domain: "loom.com" },
-  { name: "HeyGen", domain: "heygen.com" },
-  { name: "Typeform", domain: "typeform.com" },
-  { name: "Kommo", domain: "kommo.com" },
-  { name: "ElevenLabs", domain: "elevenlabs.io" },
-] as const;
-
-const nicheSections: NicheSection[] = [
-  {
-    title: "Gastronomia",
-    tools: [
-      { name: "ChatGPT", domain: "openai.com", tag: "Menu y respuestas" },
-      { name: "Canva", domain: "canva.com", tag: "Promos visuales" },
-      { name: "Typeform", domain: "typeform.com", tag: "Reservas y pedidos" },
-    ],
-  },
-  {
-    title: "Ventas/CRM",
-    tools: [
-      { name: "Kommo", domain: "kommo.com", tag: "WhatsApp comercial" },
-      { name: "Manychat", domain: "manychat.com", tag: "DM en piloto automatico" },
-      { name: "Typeform", domain: "typeform.com", tag: "Captura de leads" },
-    ],
-  },
-  {
-    title: "Administracion",
-    tools: [
-      { name: "ChatGPT", domain: "openai.com", tag: "Textos y orden" },
-      { name: "Claude", domain: "anthropic.com", tag: "Redaccion fina" },
-      { name: "Loom", domain: "loom.com", tag: "Evita reuniones" },
-    ],
-  },
-  {
-    title: "Automatizacion",
-    tools: [
-      { name: "n8n", domain: "n8n.io", tag: "Operaciones conectadas" },
-      { name: "Zapier", domain: "zapier.com", tag: "Arranque rapido" },
-      { name: "Kommo", domain: "kommo.com", tag: "Seguimiento comercial" },
-    ],
-  },
-] as const;
-
-const ToolLogo = ({ name, domain }: RankedTool) => {
-  const [failed, setFailed] = useState(false);
-  const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
-
-  if (failed) {
-    return (
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-        <Wrench className="h-4 w-4" />
-      </div>
-    );
-  }
-
-  return (
-    <img
-      src={logoUrl}
-      alt={`${name} logo`}
-      loading="lazy"
-      referrerPolicy="no-referrer"
-      className="h-11 w-11 shrink-0 rounded-xl object-cover"
-      onError={() => setFailed(true)}
-    />
-  );
-};
+const nicheSections: NicheSection[] = toolBusinessNiches
+  .map((niche) => ({
+    ...niche,
+    tools: getToolsForNiche(niche.value)
+      .slice(0, 3)
+      .map((tool) => ({
+        ...tool,
+        tag: tool.nicheTags[niche.value] ?? tool.category,
+      })),
+  }))
+  .filter((section) => section.tools.length > 0);
 
 const Tools = () => {
+  const { getFavoriteCount, loading } = useToolInteractions(topTenToolIds);
+
   return (
-    <div className="min-h-full bg-background px-4 pb-24 pt-4 md:px-8 md:pb-10">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
-        <section className="space-y-4">
+    <div className="min-h-full bg-background px-4 pb-24 pt-5 md:px-8 md:pb-12">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-12">
+        <header className="flex flex-col gap-4">
+          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
+            Herramientas
+          </p>
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="space-y-2">
+              <h1 className="text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">
+                Las herramientas que mas se estan usando.
+              </h1>
+              <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
+                Primero el ranking global. Debajo, una seleccion clara por nicho para encontrar
+                rapido lo que mas encaja con tu negocio.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Button asChild className="rounded-full px-6">
+                <Link to={routes.appToolsRanking}>
+                  Ver ranking total
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild variant="outline" className="rounded-full border-border/40 px-6">
+                <Link to={routes.appToolsTips}>Ver tips</Link>
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <section className="space-y-5">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Top 10 Mundial</p>
-            <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">Ranking general</h1>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
+              Top 10 mundial
+            </p>
+            <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">
+              Top 10 ranking mundial
+            </h2>
           </div>
 
-          <div className="bg-background">
+          <div className="divide-y divide-border/40 border-y border-border/40">
             {topTenTools.map((tool, index) => (
-              <div
-                key={tool.name}
-                className="flex items-center gap-4 border-b border-border/45 py-4 last:border-b-0"
-              >
+              <div key={tool.name} className="flex items-center gap-4 py-4">
                 <span className="w-8 shrink-0 text-sm font-semibold text-muted-foreground">
                   {String(index + 1).padStart(2, "0")}
                 </span>
-                <ToolLogo name={tool.name} domain={tool.domain} />
-                <span className="text-base font-semibold tracking-tight text-foreground md:text-lg">{tool.name}</span>
+
+                <ToolLogo
+                  name={tool.name}
+                  domain={tool.domain}
+                  className="h-12 w-12 border-none bg-transparent"
+                  imageClassName="p-0.5"
+                />
+
+                <div className="min-w-0 flex-1">
+                  <p className="flex items-center gap-2 truncate text-base font-semibold tracking-tight text-foreground md:text-lg">
+                    {tool.name}
+                    {!loading ? (
+                      <span className="inline-flex shrink-0 items-center gap-1 text-sm font-normal text-muted-foreground">
+                        <Star className="h-3.5 w-3.5 fill-amber-500 text-amber-500" />
+                        <span>({getFavoriteCount(tool.name)})</span>
+                      </span>
+                    ) : null}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
@@ -117,38 +109,63 @@ const Tools = () => {
 
         <section className="space-y-5">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Top 3 por Nichos</p>
-            <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">Negocios especificos</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">
+              Negocios especificos
+            </p>
+            <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">
+              Herramientas por nicho
+            </h2>
           </div>
 
-          <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
-            {nicheSections.map((section) => (
-              <div key={section.title} className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="h-2.5 w-2.5 rounded-full bg-primary" />
-                  <h3 className="text-xl font-black tracking-tight text-foreground">{section.title}</h3>
-                </div>
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+            {nicheSections.map((section) => {
+              const Icon = section.icon;
 
-                <div className="bg-background">
-                  {section.tools.map((tool) => (
-                    <div
-                      key={`${section.title}-${tool.name}`}
-                      className="flex items-center gap-4 border-b border-border/45 py-4 last:border-b-0"
-                    >
-                      <ToolLogo name={tool.name} domain={tool.domain} />
-
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-base font-semibold tracking-tight text-foreground">{tool.name}</p>
-                      </div>
-
-                      <Badge variant="outline" className="rounded-full border-0 bg-muted px-3 py-1 text-[11px] font-semibold text-foreground">
-                        {tool.tag}
-                      </Badge>
+              return (
+                <section
+                  key={section.value}
+                  className="rounded-2xl border border-border/40 bg-muted/10 p-5"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-background/80 text-foreground">
+                      <Icon className="h-5 w-5" />
                     </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+                    <div className="min-w-0">
+                      <h3 className="text-lg font-bold tracking-tight text-foreground">
+                        {section.label}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">
+                        {section.subtitle}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 space-y-2">
+                    {section.tools.map((tool) => (
+                      <div
+                        key={`${section.value}-${tool.name}`}
+                        className="flex items-center gap-3 rounded-xl bg-background/70 px-3 py-3"
+                      >
+                        <ToolLogo name={tool.name} domain={tool.domain} className="h-11 w-11" />
+
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-semibold text-foreground">
+                            {tool.name}
+                          </p>
+                        </div>
+
+                        <Badge
+                          variant="outline"
+                          className="rounded-full border-border/40 bg-muted/30 px-3 py-1 text-[11px] font-medium text-foreground"
+                        >
+                          {tool.tag}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
           </div>
         </section>
       </div>

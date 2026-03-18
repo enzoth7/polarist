@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
-import { NavLink } from "react-router-dom";
-import { BookOpen, CircleUserRound, Home, Trophy, Users, type LucideIcon } from "lucide-react";
+import { Link, NavLink } from "react-router-dom";
+import { BookOpen, CircleUserRound, Home, LogIn, Trophy, Users, type LucideIcon } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
-import { routes } from "@/lib/routes";
+import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const NavItem = ({
@@ -31,9 +31,20 @@ const NavItem = ({
   </NavLink>
 );
 
+const GuestCtaNavItem = () => (
+  <Link to={routes.login} className="flex h-16 w-full items-center justify-center px-2 py-2">
+    <span className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-[#CCFF00] px-3 text-[13px] font-semibold text-[#0f1402] shadow-sm">
+      <LogIn className="h-4 w-4 stroke-[2px]" />
+      <span>Comenzar</span>
+    </span>
+  </Link>
+);
+
 const MobileNav = () => {
-  const { avatarUrl, status } = useAuth();
+  const { avatarUrl, profile, status } = useAuth();
   const showAuthAvatar = status === "authenticated" && avatarUrl && avatarUrl !== "/avatar.jpg";
+  const profileRoute =
+    profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
 
   return (
     <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+64px)] w-full border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
@@ -41,19 +52,23 @@ const MobileNav = () => {
       <NavItem to={routes.appTools} icon={Trophy} label="Top" />
       <NavItem to={routes.appGuides} icon={BookOpen} label="Guias" />
       <NavItem to={routes.appCommunity} icon={Users} label="Comunidad" />
-      <NavItem
-        to={routes.appProfile}
-        label="Perfil"
-        customIcon={
-          <div className="mb-1 flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-border/50 bg-muted/30">
-            {showAuthAvatar ? (
-              <img src={avatarUrl} alt="User avatar" className="h-full w-full object-cover" />
-            ) : (
-              <CircleUserRound className="h-5 w-5 text-muted-foreground stroke-[1.8px]" />
-            )}
-          </div>
-        }
-      />
+      {status === "authenticated" ? (
+        <NavItem
+          to={profileRoute}
+          label="Perfil"
+          customIcon={
+            <div className="mb-1 flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-border/50 bg-muted/30">
+              {showAuthAvatar ? (
+                <img src={avatarUrl} alt="User avatar" className="h-full w-full object-cover" />
+              ) : (
+                <CircleUserRound className="h-5 w-5 text-muted-foreground stroke-[1.8px]" />
+              )}
+            </div>
+          }
+        />
+      ) : (
+        <GuestCtaNavItem />
+      )}
     </nav>
   );
 };
