@@ -8,6 +8,8 @@ interface AuthContextType {
     loginAsGuest: () => void;
     logout: () => void;
     requireAuth: (action: () => void) => () => void;
+    avatarUrl: string;
+    setAvatarUrl: (url: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -15,6 +17,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // MVP: Iniciar siempre en loading o deslogueado para mostrar el Login
     const [status, setStatus] = useState<AuthState>("loading");
+    const [avatarUrl, setAvatarUrlState] = useState<string>("/avatar.jpg");
 
     // En un MVP simularemos que la carga se resuelve a deslogueado rápido
     React.useEffect(() => {
@@ -38,7 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ status, loginAsGoogle, loginAsGuest, logout, requireAuth }}>
+        <AuthContext.Provider value={{ status, loginAsGoogle, loginAsGuest, logout, requireAuth, avatarUrl, setAvatarUrl: setAvatarUrlState }}>
             {children}
         </AuthContext.Provider>
     );

@@ -11,6 +11,7 @@ import Shortcuts from "./pages/Shortcuts";
 import Tools from "./pages/Tools";
 import Community from "./pages/Community";
 import Guides from "./pages/Guides";
+import Profile from "./pages/Profile";
 import Onboarding from "./pages/Onboarding";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
@@ -66,8 +67,9 @@ const App = () => (
               <Route path="/radar" element={<Radar />} />
               <Route path="/shortcuts" element={<Shortcuts />} />
               <Route path="/tools" element={<Tools />} />
-              <Route path="/community" element={<Community />} />
               <Route path="/guides" element={<Guides />} />
+              <Route path="/community" element={<Community />} />
+              <Route path="/profile" element={<Profile />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />
