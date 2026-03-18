@@ -1,13 +1,9 @@
 User-agent: *
 Allow: /
-Disallow: /dashboard
+Disallow: /app/profile
+Disallow: /app/library
+Disallow: /app/settings
 Disallow: /onboarding
-Disallow: /login
 Disallow: /signup
-Disallow: /gallery
-Disallow: /design
-Disallow: /creations
-Disallow: /preferences
-Disallow: /debug
 
-Sitemap: https://polarist.vercel.app/sitemap.xml
+Sitemap: https://polarist.app/sitemap.xml
