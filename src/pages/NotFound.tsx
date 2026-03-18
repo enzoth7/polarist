@@ -1,6 +1,7 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { routes } from "@/lib/routes";
 
 const NotFound = () => {
   const location = useLocation();
@@ -15,9 +16,9 @@ const NotFound = () => {
       <div className="text-center">
         <h1 className="mb-4 text-4xl font-bold">404</h1>
         <p className="mb-4 text-xl text-muted-foreground">{t("notFound.message")}</p>
-        <a href="/" className="text-primary underline hover:text-primary/90">
+        <Link to={routes.landing} className="text-primary underline hover:text-primary/90">
           {t("common.returnHome")}
-        </a>
+        </Link>
       </div>
     </div>
   );

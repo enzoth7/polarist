@@ -1,58 +1,156 @@
-import React from "react";
-import { Wrench, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { Wrench } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+
+type RankedTool = {
+  name: string;
+  domain: string;
+};
+
+type NicheTool = RankedTool & {
+  tag: string;
+};
+
+type NicheSection = {
+  title: string;
+  tools: NicheTool[];
+};
+
+const topTenTools: RankedTool[] = [
+  { name: "ChatGPT", domain: "openai.com" },
+  { name: "Claude", domain: "anthropic.com" },
+  { name: "Canva", domain: "canva.com" },
+  { name: "n8n", domain: "n8n.io" },
+  { name: "Midjourney", domain: "midjourney.com" },
+  { name: "Loom", domain: "loom.com" },
+  { name: "HeyGen", domain: "heygen.com" },
+  { name: "Typeform", domain: "typeform.com" },
+  { name: "Kommo", domain: "kommo.com" },
+  { name: "ElevenLabs", domain: "elevenlabs.io" },
+] as const;
+
+const nicheSections: NicheSection[] = [
+  {
+    title: "Gastronomia",
+    tools: [
+      { name: "ChatGPT", domain: "openai.com", tag: "Menu y respuestas" },
+      { name: "Canva", domain: "canva.com", tag: "Promos visuales" },
+      { name: "Typeform", domain: "typeform.com", tag: "Reservas y pedidos" },
+    ],
+  },
+  {
+    title: "Ventas/CRM",
+    tools: [
+      { name: "Kommo", domain: "kommo.com", tag: "WhatsApp comercial" },
+      { name: "Manychat", domain: "manychat.com", tag: "DM en piloto automatico" },
+      { name: "Typeform", domain: "typeform.com", tag: "Captura de leads" },
+    ],
+  },
+  {
+    title: "Administracion",
+    tools: [
+      { name: "ChatGPT", domain: "openai.com", tag: "Textos y orden" },
+      { name: "Claude", domain: "anthropic.com", tag: "Redaccion fina" },
+      { name: "Loom", domain: "loom.com", tag: "Evita reuniones" },
+    ],
+  },
+  {
+    title: "Automatizacion",
+    tools: [
+      { name: "n8n", domain: "n8n.io", tag: "Operaciones conectadas" },
+      { name: "Zapier", domain: "zapier.com", tag: "Arranque rapido" },
+      { name: "Kommo", domain: "kommo.com", tag: "Seguimiento comercial" },
+    ],
+  },
+] as const;
+
+const ToolLogo = ({ name, domain }: RankedTool) => {
+  const [failed, setFailed] = useState(false);
+  const logoUrl = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+
+  if (failed) {
+    return (
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+        <Wrench className="h-4 w-4" />
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={logoUrl}
+      alt={`${name} logo`}
+      loading="lazy"
+      referrerPolicy="no-referrer"
+      className="h-11 w-11 shrink-0 rounded-xl object-cover"
+      onError={() => setFailed(true)}
+    />
+  );
+};
 
 const Tools = () => {
   return (
-    <div className="flex flex-col min-h-full bg-slate-50 dark:bg-zinc-950 p-4 pb-20">
-      <header className="mb-6 pt-2">
-        <h1 className="text-2xl font-bold tracking-tight">Tools</h1>
-        <p className="text-sm text-muted-foreground mt-1">
-          La élite, no una biblioteca masiva. Solo lo que sirve.
-        </p>
-      </header>
-      
-      <div className="flex flex-col gap-6">
-        
-        {/* Tool 1 */}
-        <div className="bg-card border border-border rounded-xl p-5 shadow-sm">
-          <div className="flex justify-between items-start mb-4">
-             <div className="flex gap-4 items-center">
-              <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl flex items-center justify-center font-bold text-white shadow-sm shadow-purple-200">
-                <Wrench className="w-6 h-6" />
+    <div className="min-h-full bg-background px-4 pb-24 pt-4 md:px-8 md:pb-10">
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-10">
+        <section className="space-y-4">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Top 10 Mundial</p>
+            <h1 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">Ranking general</h1>
+          </div>
+
+          <div className="bg-background">
+            {topTenTools.map((tool, index) => (
+              <div
+                key={tool.name}
+                className="flex items-center gap-4 border-b border-border/45 py-4 last:border-b-0"
+              >
+                <span className="w-8 shrink-0 text-sm font-semibold text-muted-foreground">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <ToolLogo name={tool.name} domain={tool.domain} />
+                <span className="text-base font-semibold tracking-tight text-foreground md:text-lg">{tool.name}</span>
               </div>
-              <div>
-                <h3 className="font-bold text-xl leading-tight">Make.com</h3>
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="bg-muted text-muted-foreground text-[10px] uppercase font-bold px-2 py-0.5 rounded-sm">
-                    Productividad
-                  </span>
+            ))}
+          </div>
+        </section>
+
+        <section className="space-y-5">
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Top 3 por Nichos</p>
+            <h2 className="mt-2 text-3xl font-black tracking-[-0.04em] text-foreground md:text-4xl">Negocios especificos</h2>
+          </div>
+
+          <div className="grid gap-x-10 gap-y-8 md:grid-cols-2">
+            {nicheSections.map((section) => (
+              <div key={section.title} className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-2.5 w-2.5 rounded-full bg-primary" />
+                  <h3 className="text-xl font-black tracking-tight text-foreground">{section.title}</h3>
+                </div>
+
+                <div className="bg-background">
+                  {section.tools.map((tool) => (
+                    <div
+                      key={`${section.title}-${tool.name}`}
+                      className="flex items-center gap-4 border-b border-border/45 py-4 last:border-b-0"
+                    >
+                      <ToolLogo name={tool.name} domain={tool.domain} />
+
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-base font-semibold tracking-tight text-foreground">{tool.name}</p>
+                      </div>
+
+                      <Badge variant="outline" className="rounded-full border-0 bg-muted px-3 py-1 text-[11px] font-semibold text-foreground">
+                        {tool.tag}
+                      </Badge>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
-            <Button variant="ghost" size="icon">
-              <ExternalLink className="w-5 h-5 text-muted-foreground" />
-            </Button>
+            ))}
           </div>
-
-          <div className="space-y-4">
-            <div>
-              <h4 className="font-bold text-sm text-foreground/80 mb-1">¿Qué hace?</h4>
-              <p className="text-sm text-muted-foreground">Conecta diferentes aplicaciones entre sí bajo la frase "Si pasa X, haz Y" sin usar código.</p>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-sm text-foreground/80 mb-1">Por qué te importa a ti</h4>
-              <p className="text-sm text-muted-foreground">Si sientes que pierdes horas copiando datos de correos a Excel, puedes delegarle esto 24/7 de forma automática y concentrarte en decisiones reales.</p>
-            </div>
-          </div>
-          <div className="mt-5 border-t border-border pt-4 text-center">
-             <button className="text-primary text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2 mx-auto">
-               Ver Caso Real Simplificado
-             </button>
-          </div>
-        </div>
-
+        </section>
       </div>
     </div>
   );
