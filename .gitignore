@@ -43,6 +43,7 @@ coverage/
 *.json
 !package.json
 !package-lock.json
+!vercel.json
 !tsconfig*.json
 !components.json
 !vitest.config.json
