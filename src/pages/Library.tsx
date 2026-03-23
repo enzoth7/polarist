@@ -1,34 +1,46 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
+import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolInteractionButtons } from "@/components/tools/ToolInteractionButtons";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { fullToolsRanking, toolNicheMap } from "@/data/aiToolsCatalog";
+import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
+import { useToolsQuery, type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
 
-const allToolIds = fullToolsRanking.map((tool) => tool.name);
-
 const Library = () => {
+  const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
   const { status } = useAuth();
   const { toast } = useToast();
+  const {
+    data: allTools = [],
+    error: toolsError,
+    isLoading: toolsLoading,
+  } = useToolsQuery();
+
+  const allToolIds = useMemo(() => allTools.map((tool) => tool.name), [allTools]);
   const {
     getFavoriteCount,
     isFavoritePending,
     isFavorited,
     isSavePending,
     isSaved,
-    loading,
+    loading: interactionsLoading,
     savedToolIdSet,
     toggleFavorite,
     toggleSave,
   } = useToolInteractions(allToolIds);
 
-  const savedTools = fullToolsRanking.filter((tool) => savedToolIdSet.has(tool.name));
+  const savedTools = useMemo(
+    () => allTools.filter((tool) => savedToolIdSet.has(tool.name)),
+    [allTools, savedToolIdSet],
+  );
 
   const showAuthToast = () =>
     toast({
@@ -82,7 +94,7 @@ const Library = () => {
               Mi biblioteca
             </h1>
             <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Tus herramientas guardadas viven aca y se cruzan directo con el ranking local.
+              Tus herramientas guardadas viven aca y se cruzan directo con el catalogo real.
             </p>
           </div>
 
@@ -106,9 +118,15 @@ const Library = () => {
               <Link to={routes.login}>Ir a login</Link>
             </Button>
           </div>
-        ) : loading ? (
+        ) : toolsLoading || interactionsLoading ? (
           <div className="rounded-3xl border border-border/40 bg-muted/10 px-5 py-10 text-center">
             <p className="text-sm font-medium text-muted-foreground">Cargando tu biblioteca...</p>
+          </div>
+        ) : toolsError ? (
+          <div className="rounded-3xl border border-border/40 bg-muted/10 px-5 py-10 text-center">
+            <p className="text-sm font-medium text-muted-foreground">
+              No pudimos cargar el catalogo de herramientas.
+            </p>
           </div>
         ) : savedTools.length === 0 ? (
           <div className="rounded-3xl border border-border/40 bg-muted/10 px-5 py-10 text-center">
@@ -127,7 +145,16 @@ const Library = () => {
             {savedTools.map((tool) => (
               <article
                 key={tool.name}
-                className="rounded-3xl border border-border/40 bg-muted/10 px-4 py-4 md:px-5"
+                role="button"
+                tabIndex={0}
+                onClick={() => setSelectedTool(tool)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setSelectedTool(tool);
+                  }
+                }}
+                className="cursor-pointer rounded-3xl border border-border/40 bg-muted/10 px-4 py-4 transition-colors hover:bg-muted/15 md:px-5"
               >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center">
                   <div className="flex min-w-0 flex-1 items-center gap-4">
@@ -168,22 +195,30 @@ const Library = () => {
                     </div>
                   </div>
 
-                  <ToolInteractionButtons
-                    className="justify-end"
-                    favoriteActive={isFavorited(tool.name)}
-                    favoriteCount={getFavoriteCount(tool.name)}
-                    favoritePending={isFavoritePending(tool.name)}
-                    saveActive={isSaved(tool.name)}
-                    savePending={isSavePending(tool.name)}
-                    onFavoriteClick={() => void handleFavoriteClick(tool.name)}
-                    onSaveClick={() => void handleSaveClick(tool.name)}
-                  />
+                  <div onClick={(event) => event.stopPropagation()}>
+                    <ToolInteractionButtons
+                      className="justify-end"
+                      favoriteActive={isFavorited(tool.name)}
+                      favoriteCount={getFavoriteCount(tool.name)}
+                      favoritePending={isFavoritePending(tool.name)}
+                      saveActive={isSaved(tool.name)}
+                      savePending={isSavePending(tool.name)}
+                      onFavoriteClick={() => void handleFavoriteClick(tool.name)}
+                      onSaveClick={() => void handleSaveClick(tool.name)}
+                    />
+                  </div>
                 </div>
               </article>
             ))}
           </div>
         )}
       </div>
+
+      <ToolDetailsModal
+        selectedTool={selectedTool}
+        isOpen={Boolean(selectedTool)}
+        onClose={() => setSelectedTool(null)}
+      />
     </div>
   );
 };

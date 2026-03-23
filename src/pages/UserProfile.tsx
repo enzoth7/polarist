@@ -11,6 +11,7 @@ import {
 import { toast } from "sonner";
 
 import { PostCard } from "@/pages/Community";
+import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import { useCommunity } from "@/hooks/useCommunity";
 import { usePublicUserProfile } from "@/hooks/usePublicUserProfile";
 import { useUserPosts } from "@/hooks/useUserPosts";
 import { useUserSavedTools } from "@/hooks/useUserSavedTools";
+import { type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
 
 const getInitials = (name?: string | null) => name?.trim().slice(0, 2).toUpperCase() || "PU";
@@ -41,6 +43,7 @@ const UserProfile = () => {
   const { tools, loading: toolsLoading } = useUserSavedTools(profile?.id);
   const { toggleLike } = useCommunity({ enabled: false });
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
   const libraryLabel = isOwnProfile ? "Mi biblioteca" : "Biblioteca";
@@ -236,7 +239,19 @@ const UserProfile = () => {
               ) : tools.length > 0 ? (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {tools.map((tool) => (
-                    <article key={tool.name} className="rounded-2xl border border-border/40 p-4">
+                    <article
+                      key={tool.name}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedTool(tool)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          setSelectedTool(tool);
+                        }
+                      }}
+                      className="cursor-pointer rounded-2xl border border-border/40 p-4 transition-colors hover:bg-muted/10"
+                    >
                       <div className="flex items-center gap-3">
                         <ToolLogo
                           name={tool.name}
@@ -281,6 +296,12 @@ const UserProfile = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      <ToolDetailsModal
+        selectedTool={selectedTool}
+        isOpen={Boolean(selectedTool)}
+        onClose={() => setSelectedTool(null)}
+      />
     </div>
   );
 };

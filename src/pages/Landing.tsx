@@ -22,10 +22,11 @@ const features = [
   },
 ] as const;
 
-const radarSignals = [
-  { label: "Victoria detectada", value: "Menu IA que aumento reservas en 48 horas" },
-  { label: "Prompt listo", value: "Responder clientes por WhatsApp en segundos" },
-  { label: "Conversacion activa", value: "Dueños compartiendo flujos que ya facturan" },
+const rankingSignals = [
+  { rank: "1", name: "ChatGPT", category: "Asistente General", trend: "+12%" },
+  { rank: "2", name: "Claude", category: "Redacción y Análisis", trend: "+24%" },
+  { rank: "3", name: "Midjourney", category: "Generación de Imágenes", trend: "+5%" },
+  { rank: "4", name: "Perplexity", category: "Buscador Inteligente", trend: "+45%" },
 ] as const;
 
 const Landing = () => {
@@ -47,7 +48,7 @@ const Landing = () => {
           <section className="max-w-2xl lg:w-[55%]">
             <div className="animate-fade-in inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-2 text-sm font-medium text-muted-foreground shadow-soft backdrop-blur-xl">
               <Sparkles className="h-4 w-4 text-primary" />
-              Resultados y atajos listos para copiar
+              La información justa que necesitás saber
             </div>
 
             <h1 className="animate-slide-up mt-6 max-w-3xl text-4xl font-black tracking-[-0.04em] text-foreground sm:text-5xl lg:text-6xl">
@@ -86,28 +87,41 @@ const Landing = () => {
               <div className="rounded-[2rem] border border-border/30 bg-foreground p-4 text-background">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-background/55">Radar diario</p>
+                    <p className="text-xs uppercase tracking-[0.3em] text-background/55">Ranking del Radar</p>
                   </div>
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-background/10">
+                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-background/10">
+                    <div className="absolute inset-0 animate-ping rounded-2xl border border-primary/30" />
                     <Compass className="h-5 w-5 text-primary" />
                   </div>
                 </div>
 
                 <div className="mt-5 flex gap-2 text-xs font-semibold">
-                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Gastronomia</span>
-                  <span className="rounded-full bg-primary px-3 py-1.5 text-primary-foreground">Hoy</span>
-                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Ventas</span>
+                  <span className="rounded-full bg-primary px-3 py-1.5 text-primary-foreground">Top 100</span>
+                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Tendencias</span>
+                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Nuevas</span>
                 </div>
 
-                <div className="mt-6 space-y-3">
-                  {radarSignals.map((signal, index) => (
+                <div className="relative mt-6 space-y-3 overflow-hidden rounded-[1.6rem]">
+                  <div className="absolute inset-x-0 -top-10 bottom-0 pointer-events-none">
+                    <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/5" />
+                    <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/10" />
+                    <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/10" />
+                  </div>
+
+                  {rankingSignals.map((tool, index) => (
                     <article
-                      key={signal.label}
-                      className="rounded-[1.6rem] border border-background/10 bg-background/5 p-4 backdrop-blur-xl"
+                      key={tool.name}
+                      className="relative z-10 flex flex-row items-center justify-between rounded-[1.6rem] border border-background/10 bg-background/5 p-4 backdrop-blur-md"
                       style={{ transform: `translateY(${index * 2}px)` }}
                     >
-                      <p className="text-xs uppercase tracking-[0.24em] text-background/50">{signal.label}</p>
-                      <p className="mt-2 text-sm font-semibold leading-6 text-background/90">{signal.value}</p>
+                      <div className="flex items-center gap-4">
+                        <span className="text-sm font-black text-primary">#{tool.rank}</span>
+                        <div>
+                          <p className="mt-1 text-sm font-bold leading-none text-background/90">{tool.name}</p>
+                          <p className="mt-1.5 text-[0.65rem] uppercase tracking-[0.1em] text-background/50">{tool.category}</p>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-emerald-400">{tool.trend}</span>
                     </article>
                   ))}
                 </div>
@@ -115,11 +129,11 @@ const Landing = () => {
                 <div className="mt-6 rounded-[1.7rem] bg-background px-4 py-4 text-foreground shadow-card">
                   <div className="flex items-center justify-between gap-4">
                     <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Atajo recomendado</p>
-                      <p className="mt-2 text-sm font-bold leading-6">Prompt para vender mas sin sonar robotico</p>
+                      <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">La joya oculta</p>
+                      <p className="mt-2 text-sm font-bold leading-6">Agente de ventas por WhatsApp</p>
                     </div>
                     <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                      <Copy className="h-4 w-4" />
+                      <Sparkles className="h-4 w-4" />
                     </div>
                   </div>
                 </div>
@@ -152,12 +166,12 @@ const Landing = () => {
         <section className="mt-16 rounded-[2.25rem] border border-border/60 bg-background/80 p-8 shadow-card backdrop-blur-2xl sm:p-10">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">Sin tutorialitis</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">Sin lenguaje técnico</p>
               <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-                Entra, detecta una oportunidad y sal con algo listo para aplicar.
+                Entrá, mira que te sirve y salí con algo listo para aplicar.
               </h2>
               <p className="mt-4 text-base leading-8 text-muted-foreground">
-                La entrada ideal es simple: abre la cuenta, mira el radar y copia el primer atajo que encaje con tu negocio.
+                Hacz una pregunta en la comunidad, mira las herramientas mejores valoradas por otros usuarios y guardá las tuyas propias.
               </p>
             </div>
 

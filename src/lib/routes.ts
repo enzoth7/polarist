@@ -10,7 +10,7 @@ export const routes = {
   appShortcuts: "/app/shortcuts",
   appTools: "/app/tools",
   appToolsRanking: "/app/tools/ranking",
-  appToolsTips: "/app/tools/trucos",
+  appToolsDiscoveries: "/app/tools/descubrimientos",
   appGuides: "/app/guides",
   appCommunity: "/app/community",
   appProfile: "/app/profile",

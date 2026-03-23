@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
@@ -662,15 +663,27 @@ export const PostCard = ({
           </div>
 
           {post.image_url ? (
-            <div className="overflow-hidden rounded-[1.1rem] border border-border/50 bg-muted/20">
-              <div className="aspect-[16/10]">
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className="cursor-zoom-in overflow-hidden rounded-[1.1rem] border border-border/50 bg-muted/20 transition-opacity hover:opacity-90">
+                  <div className="aspect-[16/10]">
+                    <img
+                      src={post.image_url}
+                      alt={`Imagen adjunta en ${post.title}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="max-w-[90vw] border-none bg-transparent p-0 shadow-none md:max-w-4xl">
+                <DialogTitle className="sr-only">Ver imagen</DialogTitle>
                 <img
                   src={post.image_url}
-                  alt={`Imagen adjunta en ${post.title}`}
-                  className="h-full w-full object-cover"
+                  alt={`Visor de ${post.title}`}
+                  className="h-auto max-h-[85vh] w-full rounded-lg object-contain"
                 />
-              </div>
-            </div>
+              </DialogContent>
+            </Dialog>
           ) : null}
 
           <div className="flex items-center justify-end gap-1 pt-0.5">

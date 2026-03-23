@@ -2,12 +2,12 @@ import { useMemo, useState, type Dispatch, type SetStateAction } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 
+import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolInteractionButtons } from "@/components/tools/ToolInteractionButtons";
+import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ToolLogo } from "@/components/tools/ToolLogo";
 import {
-  fullToolsRanking,
   toolNicheDefinitions,
   toolNicheMap,
   type ToolNicheKey,
@@ -15,6 +15,7 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
+import { useToolsQuery } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
 import {
   DropdownMenu,
@@ -24,6 +25,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 const toggleFilterValue = <T extends string>(
@@ -44,11 +46,16 @@ const ToolsRanking = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedKinds, setSelectedKinds] = useState<string[]>([]);
   const [selectedNiches, setSelectedNiches] = useState<ToolNicheKey[]>([]);
-
+  const {
+    data: officialTools = [],
+    error,
+    isLoading,
+  } = useToolsQuery({ isBeta: false });
   const rankingWithPosition = useMemo(
-    () => fullToolsRanking.map((tool, index) => ({ ...tool, position: index + 1 })),
-    [],
+    () => officialTools.map((tool, index) => ({ ...tool, position: index + 1 })),
+    [officialTools],
   );
+  const [selectedTool, setSelectedTool] = useState<(typeof rankingWithPosition)[number] | null>(null);
   const allToolIds = useMemo(() => rankingWithPosition.map((tool) => tool.name), [rankingWithPosition]);
   const {
     getFavoriteCount,
@@ -96,8 +103,8 @@ const ToolsRanking = () => {
 
     try {
       await toggleFavorite(toolId);
-    } catch (error) {
-      console.error("Error toggling tool favorite:", error);
+    } catch (nextError) {
+      console.error("Error toggling tool favorite:", nextError);
       toast({
         title: "No pudimos actualizar el favorito",
         description: "Intenta de nuevo en unos segundos.",
@@ -113,8 +120,8 @@ const ToolsRanking = () => {
 
     try {
       await toggleSave(toolId);
-    } catch (error) {
-      console.error("Error toggling tool save:", error);
+    } catch (nextError) {
+      console.error("Error toggling tool save:", nextError);
       toast({
         title: "No pudimos actualizar tu biblioteca",
         description: "Intenta de nuevo en unos segundos.",
@@ -134,7 +141,7 @@ const ToolsRanking = () => {
               Todas las herramientas
             </h1>
             <p className="max-w-2xl text-sm leading-7 text-muted-foreground">
-              Mismo catalogo, mismos logos y mismos nichos que ves en la vitrina principal.
+              Catalogo oficial cargado desde Supabase, con filtros por categoria, nicho y tipo.
             </p>
           </div>
 
@@ -149,217 +156,283 @@ const ToolsRanking = () => {
         <section className="space-y-4">
           <div className="flex items-center justify-between gap-3">
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted-foreground">
-              {filteredTools.length} herramientas visibles
+              {isLoading ? "Cargando herramientas..." : `${filteredTools.length} herramientas visibles`}
             </p>
           </div>
 
-          <div className="overflow-hidden rounded-[28px] border border-border/40 bg-background">
-            <div className="overflow-x-auto">
-              <Table className="min-w-[1100px]">
-                <TableHeader>
-                  <TableRow className="border-border/40 hover:bg-transparent">
-                    <TableHead className="w-[92px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Posicion
-                    </TableHead>
-                    <TableHead className="min-w-[280px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Nombre
-                    </TableHead>
-                    <TableHead className="w-[180px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-                          >
-                            Categoria
-                            <ChevronDown className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
-                          <DropdownMenuLabel>Categorias</DropdownMenuLabel>
-                          <DropdownMenuCheckboxItem
-                            checked={selectedCategories.length === 0}
-                            onCheckedChange={() => setSelectedCategories([])}
-                          >
-                            Todas
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuSeparator />
-                          {categoryOptions.map((category) => (
-                            <DropdownMenuCheckboxItem
-                              key={category}
-                              checked={selectedCategories.includes(category)}
-                              onCheckedChange={() =>
-                                toggleFilterValue(selectedCategories, category, setSelectedCategories)
-                              }
-                            >
-                              {category}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableHead>
-                    <TableHead className="w-[220px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-                          >
-                            Nicho
-                            <ChevronDown className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="start" className="w-56">
-                          <DropdownMenuLabel>Negocios</DropdownMenuLabel>
-                          <DropdownMenuCheckboxItem
-                            checked={selectedNiches.length === 0}
-                            onCheckedChange={() => setSelectedNiches([])}
-                          >
-                            Todos
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuSeparator />
-                          {toolNicheDefinitions.map((niche) => (
-                            <DropdownMenuCheckboxItem
-                              key={niche.value}
-                              checked={selectedNiches.includes(niche.value)}
-                              onCheckedChange={() =>
-                                toggleFilterValue(selectedNiches, niche.value, setSelectedNiches)
-                              }
-                            >
-                              {niche.label}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableHead>
-                    <TableHead className="w-[160px] px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="ml-auto inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
-                          >
-                            Tipo
-                            <ChevronDown className="h-4 w-4" />
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-56">
-                          <DropdownMenuLabel>Tipos</DropdownMenuLabel>
-                          <DropdownMenuCheckboxItem
-                            checked={selectedKinds.length === 0}
-                            onCheckedChange={() => setSelectedKinds([])}
-                          >
-                            Todos
-                          </DropdownMenuCheckboxItem>
-                          <DropdownMenuSeparator />
-                          {kindOptions.map((kind) => (
-                            <DropdownMenuCheckboxItem
-                              key={kind}
-                              checked={selectedKinds.includes(kind)}
-                              onCheckedChange={() => toggleFilterValue(selectedKinds, kind, setSelectedKinds)}
-                            >
-                              {kind}
-                            </DropdownMenuCheckboxItem>
-                          ))}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableHead>
-                    <TableHead className="w-[180px] px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                      Interacciones
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-
-                <TableBody>
-                  {filteredTools.map((tool) => {
-                    const matchedNiche = selectedNiches.find((niche) => tool.niches.includes(niche));
-                    const displayNiches = matchedNiche ? [matchedNiche] : tool.niches.slice(0, 2);
-                    const matchedTag = matchedNiche ? tool.nicheTags[matchedNiche] : undefined;
-
-                    return (
-                      <TableRow
-                        key={`${tool.position}-${tool.name}`}
-                        className="border-border/40 hover:bg-muted/10"
-                      >
-                        <TableCell className="px-5 py-4 align-middle">
-                          <span className="text-sm font-semibold text-muted-foreground">
-                            {String(tool.position).padStart(2, "0")}
-                          </span>
+          {isLoading ? (
+            <div className="overflow-hidden rounded-[28px] border border-border/40 bg-background">
+              <div className="overflow-x-auto">
+                <Table className="min-w-[1100px]">
+                  <TableHeader>
+                    <TableRow className="border-border/40 hover:bg-transparent">
+                      <TableHead className="px-5 py-4">Posicion</TableHead>
+                      <TableHead className="px-5 py-4">Nombre</TableHead>
+                      <TableHead className="px-5 py-4">Categoria</TableHead>
+                      <TableHead className="px-5 py-4">Nicho</TableHead>
+                      <TableHead className="px-5 py-4 text-right">Tipo</TableHead>
+                      <TableHead className="px-5 py-4 text-right">Interacciones</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {Array.from({ length: 6 }).map((_, index) => (
+                      <TableRow key={index} className="border-border/40">
+                        <TableCell className="px-5 py-4">
+                          <Skeleton className="h-4 w-8" />
                         </TableCell>
-
-                        <TableCell className="px-5 py-4 align-middle">
-                          <div className="flex min-w-0 items-center gap-4">
-                            <ToolLogo
-                              name={tool.name}
-                              domain={tool.domain}
-                              className="h-12 w-12 border-none bg-transparent"
-                              imageClassName="p-0.5"
-                            />
-                            <div className="min-w-0">
-                              <p className="truncate text-base font-semibold tracking-tight text-foreground">
-                                {tool.name}
-                              </p>
-                              {matchedTag ? (
-                                <p className="mt-1 text-xs text-muted-foreground">
-                                  {matchedTag}
-                                </p>
-                              ) : null}
+                        <TableCell className="px-5 py-4">
+                          <div className="flex items-center gap-4">
+                            <Skeleton className="h-12 w-12 rounded-xl" />
+                            <div className="space-y-2">
+                              <Skeleton className="h-4 w-32" />
+                              <Skeleton className="h-3 w-24" />
                             </div>
                           </div>
                         </TableCell>
-
-                        <TableCell className="px-5 py-4 align-middle">
-                          <Badge
-                            variant="outline"
-                            className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
-                          >
-                            {tool.category}
-                          </Badge>
+                        <TableCell className="px-5 py-4">
+                          <Skeleton className="h-6 w-24 rounded-full" />
                         </TableCell>
-
-                        <TableCell className="px-5 py-4 align-middle">
-                          <div className="flex flex-wrap gap-2">
-                            {displayNiches.map((niche) => (
-                              <Badge
-                                key={`${tool.name}-${niche}`}
-                                variant="outline"
-                                className="rounded-full border-border/40 px-3 py-1 text-[11px] font-medium text-muted-foreground"
-                              >
-                                {toolNicheMap[niche].label}
-                              </Badge>
-                            ))}
+                        <TableCell className="px-5 py-4">
+                          <div className="flex gap-2">
+                            <Skeleton className="h-6 w-20 rounded-full" />
+                            <Skeleton className="h-6 w-20 rounded-full" />
                           </div>
                         </TableCell>
-
-                        <TableCell className="px-5 py-4 text-right align-middle">
-                          <Badge
-                            variant="outline"
-                            className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
-                          >
-                            {tool.kind}
-                          </Badge>
+                        <TableCell className="px-5 py-4 text-right">
+                          <div className="ml-auto w-fit">
+                            <Skeleton className="h-6 w-20 rounded-full" />
+                          </div>
                         </TableCell>
-
-                        <TableCell className="px-5 py-4 text-right align-middle">
-                          <ToolInteractionButtons
-                            favoriteActive={isFavorited(tool.name)}
-                            favoriteCount={getFavoriteCount(tool.name)}
-                            favoritePending={isFavoritePending(tool.name)}
-                            saveActive={isSaved(tool.name)}
-                            savePending={isSavePending(tool.name)}
-                            onFavoriteClick={() => void handleFavoriteClick(tool.name)}
-                            onSaveClick={() => void handleSaveClick(tool.name)}
-                          />
+                        <TableCell className="px-5 py-4 text-right">
+                          <div className="ml-auto flex w-fit gap-2">
+                            <Skeleton className="h-10 w-20 rounded-full" />
+                            <Skeleton className="h-10 w-10 rounded-full" />
+                          </div>
                         </TableCell>
                       </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </div>
-          </div>
+          ) : error ? (
+            <div className="rounded-3xl border border-border/40 bg-muted/10 px-5 py-10 text-center">
+              <p className="text-sm font-medium text-muted-foreground">
+                No pudimos cargar el ranking oficial.
+              </p>
+            </div>
+          ) : (
+            <div className="overflow-hidden rounded-[28px] border border-border/40 bg-background">
+              <div className="overflow-x-auto">
+                <Table className="min-w-[1100px]">
+                  <TableHeader>
+                    <TableRow className="border-border/40 hover:bg-transparent">
+                      <TableHead className="w-[92px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        Posicion
+                      </TableHead>
+                      <TableHead className="min-w-[280px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        Nombre
+                      </TableHead>
+                      <TableHead className="w-[180px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              Categoria
+                              <ChevronDown className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="w-56">
+                            <DropdownMenuLabel>Categorias</DropdownMenuLabel>
+                            <DropdownMenuCheckboxItem
+                              checked={selectedCategories.length === 0}
+                              onCheckedChange={() => setSelectedCategories([])}
+                            >
+                              Todas
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuSeparator />
+                            {categoryOptions.map((category) => (
+                              <DropdownMenuCheckboxItem
+                                key={category}
+                                checked={selectedCategories.includes(category)}
+                                onCheckedChange={() =>
+                                  toggleFilterValue(selectedCategories, category, setSelectedCategories)
+                                }
+                              >
+                                {category}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
+                      <TableHead className="w-[220px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              Nicho
+                              <ChevronDown className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="w-56">
+                            <DropdownMenuLabel>Negocios</DropdownMenuLabel>
+                            <DropdownMenuCheckboxItem
+                              checked={selectedNiches.length === 0}
+                              onCheckedChange={() => setSelectedNiches([])}
+                            >
+                              Todos
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuSeparator />
+                            {toolNicheDefinitions.map((niche) => (
+                              <DropdownMenuCheckboxItem
+                                key={niche.value}
+                                checked={selectedNiches.includes(niche.value)}
+                                onCheckedChange={() =>
+                                  toggleFilterValue(selectedNiches, niche.value, setSelectedNiches)
+                                }
+                              >
+                                {niche.label}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
+                      <TableHead className="w-[160px] px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button
+                              type="button"
+                              className="ml-auto inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                              Tipo
+                              <ChevronDown className="h-4 w-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuLabel>Tipos</DropdownMenuLabel>
+                            <DropdownMenuCheckboxItem
+                              checked={selectedKinds.length === 0}
+                              onCheckedChange={() => setSelectedKinds([])}
+                            >
+                              Todos
+                            </DropdownMenuCheckboxItem>
+                            <DropdownMenuSeparator />
+                            {kindOptions.map((kind) => (
+                              <DropdownMenuCheckboxItem
+                                key={kind}
+                                checked={selectedKinds.includes(kind)}
+                                onCheckedChange={() => toggleFilterValue(selectedKinds, kind, setSelectedKinds)}
+                              >
+                                {kind}
+                              </DropdownMenuCheckboxItem>
+                            ))}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
+                      <TableHead className="w-[180px] px-5 py-4 text-right text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                        Interacciones
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
 
-          {filteredTools.length === 0 ? (
+                  <TableBody>
+                    {filteredTools.map((tool) => {
+                      const matchedNiche = selectedNiches.find((niche) => tool.niches.includes(niche));
+                      const displayNiches = matchedNiche ? [matchedNiche] : tool.niches.slice(0, 2);
+                      const matchedTag = matchedNiche ? tool.nicheTags[matchedNiche] : undefined;
+
+                      return (
+                        <TableRow
+                          key={`${tool.position}-${tool.name}`}
+                          onClick={() => setSelectedTool(tool)}
+                          className="cursor-pointer border-border/40 hover:bg-muted/10"
+                        >
+                          <TableCell className="px-5 py-4 align-middle">
+                            <span className="text-sm font-semibold text-muted-foreground">
+                              {String(tool.position).padStart(2, "0")}
+                            </span>
+                          </TableCell>
+
+                          <TableCell className="px-5 py-4 align-middle">
+                            <div className="flex min-w-0 items-center gap-4">
+                              <ToolLogo
+                                name={tool.name}
+                                domain={tool.domain}
+                                className="h-12 w-12 border-none bg-transparent"
+                                imageClassName="p-0.5"
+                              />
+                              <div className="min-w-0">
+                                <p className="truncate text-base font-semibold tracking-tight text-foreground">
+                                  {tool.name}
+                                </p>
+                                {matchedTag ? (
+                                  <p className="mt-1 text-xs text-muted-foreground">
+                                    {matchedTag}
+                                  </p>
+                                ) : null}
+                              </div>
+                            </div>
+                          </TableCell>
+
+                          <TableCell className="px-5 py-4 align-middle">
+                            <Badge
+                              variant="outline"
+                              className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
+                            >
+                              {tool.category}
+                            </Badge>
+                          </TableCell>
+
+                          <TableCell className="px-5 py-4 align-middle">
+                            <div className="flex flex-wrap gap-2">
+                              {displayNiches.map((niche) => (
+                                <Badge
+                                  key={`${tool.name}-${niche}`}
+                                  variant="outline"
+                                  className="rounded-full border-border/40 px-3 py-1 text-[11px] font-medium text-muted-foreground"
+                                >
+                                  {toolNicheMap[niche].label}
+                                </Badge>
+                              ))}
+                            </div>
+                          </TableCell>
+
+                          <TableCell className="px-5 py-4 text-right align-middle">
+                            <Badge
+                              variant="outline"
+                              className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
+                            >
+                              {tool.kind}
+                            </Badge>
+                          </TableCell>
+
+                          <TableCell className="px-5 py-4 text-right align-middle">
+                            <div onClick={(event) => event.stopPropagation()}>
+                              <ToolInteractionButtons
+                                favoriteActive={isFavorited(tool.name)}
+                                favoriteCount={getFavoriteCount(tool.name)}
+                                favoritePending={isFavoritePending(tool.name)}
+                                saveActive={isSaved(tool.name)}
+                                savePending={isSavePending(tool.name)}
+                                onFavoriteClick={() => void handleFavoriteClick(tool.name)}
+                                onSaveClick={() => void handleSaveClick(tool.name)}
+                              />
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          )}
+
+          {!isLoading && !error && filteredTools.length === 0 ? (
             <div className="border border-border/40 px-5 py-10 text-center">
               <p className="text-sm font-medium text-muted-foreground">
                 No hay herramientas para esa combinacion de filtros.
@@ -368,6 +441,12 @@ const ToolsRanking = () => {
           ) : null}
         </section>
       </div>
+
+      <ToolDetailsModal
+        selectedTool={selectedTool}
+        isOpen={Boolean(selectedTool)}
+        onClose={() => setSelectedTool(null)}
+      />
     </div>
   );
 };

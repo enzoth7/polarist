@@ -28,8 +28,8 @@ import Radar from "./pages/Radar";
 import Settings from "./pages/Settings";
 import Shortcuts from "./pages/Shortcuts";
 import Tools from "./pages/Tools";
+import ToolsDiscoveries from "./pages/ToolsDiscoveries";
 import ToolsRanking from "./pages/ToolsRanking";
-import ToolsTips from "./pages/ToolsTips";
 import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
@@ -111,7 +111,7 @@ const AppRoutes = () => {
         <Route path="shortcuts" element={<Shortcuts />} />
         <Route path="tools" element={<Tools />} />
         <Route path="tools/ranking" element={<ToolsRanking />} />
-        <Route path="tools/trucos" element={<ToolsTips />} />
+        <Route path="tools/descubrimientos" element={<ToolsDiscoveries />} />
         <Route path="guides" element={<Guides />} />
         <Route path="community" element={<Community />} />
         <Route path="profile" element={<ProfileRouteResolver />} />

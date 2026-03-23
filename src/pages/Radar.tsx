@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowRight,
@@ -14,8 +15,10 @@ import {
   Users,
 } from "lucide-react";
 
+import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Carousel,
   CarouselContent,
@@ -23,50 +26,50 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { fullToolsRanking } from "@/data/aiToolsCatalog";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
+import { useToolsQuery, type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
 
 const trendItems = [
   {
-    title: "Claude 3.5 acelera respuestas para equipos chicos",
+    title: "La mayor actualización de ChatGPT",
     description:
-      "Cada vez más negocios lo usan para escribir mejor y resolver tareas diarias sin perder tiempo.",
+      "La nueva versión ahora puede leer montañas de información de una sola vez (como libros enteros o decenas de balances) y planificar tareas sola sin que estés encima.",
     accent: "from-amber-300 via-orange-400 to-rose-500",
     glow: "bg-orange-300/35",
-    panel: "from-amber-100/95 via-orange-100/80 to-rose-200/70",
+    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
   },
   {
-    title: "Sora lleva el video corto a otro nivel",
+    title: "Google hace su IA más barata y veloz",
     description:
-      "La generación de clips realistas vuelve más fácil probar ideas para redes sin grabar tanto.",
+      "Presentaron a Gemini 3.1 Flash-Lite, una inteligencia muchísimo más rápida pensada para emprendedores que necesitan hacer 10.000 tareas automáticas de golpe sin arruinarse pagando.",
     accent: "from-cyan-300 via-sky-500 to-indigo-600",
     glow: "bg-sky-300/30",
-    panel: "from-cyan-100/95 via-sky-100/80 to-indigo-200/70",
+    image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=800&q=80",
   },
   {
-    title: "Canva suma más atajos para campañas exprés",
+    title: "La próxima generación de cerebros para la IA",
     description:
-      "Diseños, copies e ideas rápidas en un mismo lugar para publicar sin frenar la operación.",
+      "NVIDIA, la empresa que fabrica las 'placas madre' de las inteligencias artificiales, anunció Rubin. Serán el corazón de la IA para que razonen mucho más como humanos.",
     accent: "from-fuchsia-300 via-pink-500 to-violet-600",
     glow: "bg-fuchsia-300/30",
-    panel: "from-fuchsia-100/95 via-pink-100/80 to-violet-200/70",
+    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
   },
   {
-    title: "ChatGPT empuja flujos más simples para pymes",
+    title: "La IA ya empieza a usar el mouse por vos",
     description:
-      "Se vuelve más útil para ordenar tareas, responder consultas y ahorrar horas de prueba y error.",
+      "Los creadores de Claude probaron un modelo de IA que literalmente toma control de tu computadora (Mac) para organizar tus archivos y cliquear programas autónomamente.",
     accent: "from-emerald-300 via-teal-500 to-cyan-600",
     glow: "bg-emerald-300/30",
-    panel: "from-emerald-100/95 via-teal-100/80 to-cyan-200/70",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
   },
   {
-    title: "Automatizar mensajes ya no parece cosa de expertos",
+    title: "Los bots que trabajan solos ya son reales",
     description:
-      "Herramientas visuales acercan respuestas automáticas y seguimientos sin tocar código.",
+      "Muchas startups están lanzando software que no te pide chatear, sino que vos le decis 'Buscá los mejores clientes en internet y preparales un email a cada uno', y lo hace.",
     accent: "from-yellow-300 via-lime-400 to-emerald-500",
     glow: "bg-lime-300/30",
-    panel: "from-yellow-100/95 via-lime-100/80 to-emerald-200/70",
+    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80",
   },
 ] as const;
 
@@ -83,10 +86,11 @@ const communityItems = [
   { name: "Coaches", icon: Stethoscope },
 ] as const;
 
-const radarTopTools = fullToolsRanking.slice(0, 5);
-const radarTopToolIds = radarTopTools.map((tool) => tool.name);
-
 const Radar = () => {
+  const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
+  const { data: officialTools = [], isLoading: toolsCatalogLoading } = useToolsQuery({ isBeta: false });
+  const radarTopTools = useMemo(() => officialTools.slice(0, 5), [officialTools]);
+  const radarTopToolIds = useMemo(() => radarTopTools.map((tool) => tool.name), [radarTopTools]);
   const { getFavoriteCount, loading: favoritesLoading } = useToolInteractions(radarTopToolIds);
 
   return (
@@ -95,11 +99,11 @@ const Radar = () => {
         <section className="space-y-5">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-              Tendencias
+              Última Semana
             </p>
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-foreground md:text-5xl">
-                Lo que se está moviendo en IA
+                Lo más destacado de la semana
               </h1>
               <p className="max-w-2xl text-sm text-muted-foreground md:text-base">
                 Noticias rápidas para entender qué vale la pena mirar hoy.
@@ -123,9 +127,7 @@ const Radar = () => {
                     />
                     <div className="grid min-h-[26rem] md:min-h-[30rem] md:grid-cols-2">
                       <div className="relative z-10 flex flex-col justify-between gap-6 px-7 py-8 md:px-10 md:py-10">
-                        <div className="inline-flex w-fit items-center rounded-full bg-background/85 px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-foreground/80 backdrop-blur">
-                          Tendencia {index + 1}
-                        </div>
+
                         <div className="space-y-4">
                           <h2 className="max-w-xl text-3xl font-semibold leading-tight text-white md:text-5xl">
                             {item.title}
@@ -137,17 +139,12 @@ const Radar = () => {
                       </div>
 
                       <div className="relative min-h-[18rem] md:min-h-full">
-                        <div className="absolute inset-0 bg-black/10" />
-                        <div
-                          className={`absolute inset-4 rounded-[30px] bg-gradient-to-br ${item.panel} shadow-inner`}
-                        >
-                          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.95),transparent_24%),radial-gradient(circle_at_82%_18%,rgba(255,255,255,0.58),transparent_18%),linear-gradient(150deg,rgba(255,255,255,0.24),rgba(255,255,255,0.02))]" />
-                          <div className="absolute inset-x-8 top-8 h-10 rounded-full bg-background/70 backdrop-blur" />
-                          <div className="absolute left-8 right-20 top-24 h-20 rounded-[28px] bg-background/85 shadow-lg" />
-                          <div className="absolute bottom-8 left-8 right-8 grid grid-cols-2 gap-4">
-                            <div className="h-24 rounded-[26px] bg-background/82 shadow-lg" />
-                            <div className="h-24 rounded-[26px] bg-background/72 shadow-lg" />
-                          </div>
+                        <div className="absolute inset-0 p-4 pb-8 md:p-8">
+                          <img
+                            src={item.image}
+                            alt={item.title}
+                            className="h-full w-full rounded-[24px] object-cover shadow-2xl brightness-95 transition-all md:rounded-[30px]"
+                          />
                         </div>
                       </div>
                     </div>
@@ -221,37 +218,51 @@ const Radar = () => {
           </div>
 
           <div className="divide-y divide-border/50">
-            {radarTopTools.map((tool, index) => (
-              <Link
-                key={tool.name}
-                to={routes.appToolsRanking}
-                className="flex items-center gap-4 py-4 transition-colors hover:text-primary"
-              >
-                <span className="w-5 text-sm font-medium text-muted-foreground">
-                  {index + 1}
-                </span>
-                <ToolLogo
-                  name={tool.name}
-                  domain={tool.domain}
-                  className="h-10 w-10 border-none bg-transparent"
-                  imageClassName="p-0.5"
-                />
-                <div className="min-w-0">
-                  <span className="flex items-center gap-2 text-base font-medium text-foreground">
-                    <span>{tool.name}</span>
-                    {!favoritesLoading ? (
-                      <span className="inline-flex shrink-0 items-center gap-1 text-sm font-normal text-muted-foreground">
-                        <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                        <span>({getFavoriteCount(tool.name)})</span>
-                      </span>
-                    ) : null}
-                  </span>
-                  <span className="block text-sm text-muted-foreground">
-                    {tool.category}
-                  </span>
+            {toolsCatalogLoading ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <div key={index} className="flex items-center gap-4 py-4">
+                  <Skeleton className="h-4 w-5" />
+                  <Skeleton className="h-10 w-10 rounded-xl" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <Skeleton className="h-4 w-36" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
                 </div>
-              </Link>
-            ))}
+              ))
+            ) : (
+              radarTopTools.map((tool, index) => (
+                <button
+                  key={tool.name}
+                  type="button"
+                  onClick={() => setSelectedTool(tool)}
+                  className="flex w-full items-center gap-4 py-4 text-left transition-colors hover:text-primary"
+                >
+                  <span className="w-5 text-sm font-medium text-muted-foreground">
+                    {index + 1}
+                  </span>
+                  <ToolLogo
+                    name={tool.name}
+                    domain={tool.domain}
+                    className="h-10 w-10 border-none bg-transparent"
+                    imageClassName="p-0.5"
+                  />
+                  <div className="min-w-0">
+                    <span className="flex items-center gap-2 text-base font-medium text-foreground">
+                      <span>{tool.name}</span>
+                      {!favoritesLoading ? (
+                        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-normal text-muted-foreground">
+                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                          <span>({getFavoriteCount(tool.name)})</span>
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="block text-sm text-muted-foreground">
+                      {tool.category}
+                    </span>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
         </section>
 
@@ -270,6 +281,12 @@ const Radar = () => {
           </div>
         </section>
       </div>
+
+      <ToolDetailsModal
+        selectedTool={selectedTool}
+        isOpen={Boolean(selectedTool)}
+        onClose={() => setSelectedTool(null)}
+      />
     </div>
   );
 };
