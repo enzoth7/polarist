@@ -10,10 +10,10 @@ import { Button } from "@/components/ui/button";
 
 const baseNavItems = [
   { label: "Inicio", to: routes.landing },
-  { label: "Radar", to: routes.appRadar },
-  { label: "Top Herramientas", to: routes.appTools },
-  { label: "Guias", to: routes.appGuides },
-  { label: "Comunidad", to: routes.appCommunity },
+  { label: "Tendencias", to: routes.appRadar },
+  { label: "Herramientas", to: routes.appTools },
+  { label: "Recursos", to: routes.appGuides },
+  // { label: "Comunidad", to: routes.appCommunity }, // Guardado para después
 ] as const;
 
 const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
@@ -38,7 +38,19 @@ const Header = () => {
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
   const navItems =
-    status === "authenticated" ? [...baseNavItems, { label: "Perfil", to: profileRoute }] : baseNavItems;
+    status === "authenticated" 
+      ? [
+          { label: "Tendencias", to: routes.appRadar },
+          { label: "Herramientas", to: routes.appTools },
+          { label: "Recursos", to: routes.appGuides },
+          { label: "Perfil", to: profileRoute }
+        ]
+      : [
+          { label: "Inicio", to: routes.landing },
+          { label: "Tendencias", to: routes.appRadar },
+          { label: "Herramientas", to: routes.appTools },
+          { label: "Recursos", to: routes.appGuides }
+        ];
 
   let greeting = "Hola";
 
@@ -56,49 +68,40 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <div className="flex items-center gap-3 px-4 py-3 md:px-8">
-        <div className="flex min-w-0 items-center gap-3">
+      <div className="grid grid-cols-3 items-center px-4 py-3 md:px-8 max-w-[2000px] mx-auto">
+        {/* Lado Izquierdo: Logo y Saludo */}
+        <div className="flex items-center gap-3 overflow-hidden">
           <Link to={routes.landing} aria-label="Ir al inicio" className="shrink-0">
             <BrandLogo showLabel={false} imageClassName="h-10 w-10 rounded-xl border-border/60" />
           </Link>
           <p className="truncate text-base font-black tracking-tight text-foreground md:text-lg">{greetingLabel}</p>
         </div>
 
-        <nav className="hidden flex-1 items-center justify-center gap-6 md:flex">
+        {/* Centro: Navegación Principal (Absolutamente Centrada) */}
+        <nav className="hidden items-center justify-center gap-6 md:flex">
           {navItems.map((item) => (
             <DesktopNavItem key={item.to} {...item} />
           ))}
         </nav>
 
-        <div className="ml-auto flex items-center gap-2">
-          {status !== "authenticated" ? (
+        {/* Lado Derecho: Acciones y Tema */}
+        <div className="flex items-center justify-end gap-3">
+          {status !== "authenticated" && (
             <Button
               asChild
-              className="hidden rounded-full border-0 bg-[#CCFF00] px-5 font-semibold text-[#0f1402] shadow-none transition-colors hover:bg-[#d8ff4a] md:inline-flex"
+              className="h-10 px-6 rounded-full bg-[#CCFF00] font-bold text-[#0f1402] hover:bg-[#d8ff4a] transition-all hidden md:flex"
             >
               <Link to={routes.login}>
-                Comenzar
-                <LogIn className="ml-2 h-4 w-4" />
+                Iniciar sesión
               </Link>
             </Button>
-          ) : null}
-
-          <button
-            type="button"
-            aria-label="Buscar"
-            className="group flex h-10 w-10 items-center justify-center overflow-hidden rounded-full border border-border/60 bg-background/75 text-muted-foreground transition-all hover:text-foreground md:hover:w-32"
-          >
-            <Search className="h-4 w-4 shrink-0" />
-            <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-medium opacity-0 transition-all duration-200 group-hover:ml-2 group-hover:max-w-[72px] group-hover:opacity-100">
-              Buscar
-            </span>
-          </button>
+          )}
 
           <Button
             variant="outline"
             size="icon"
             onClick={toggleTheme}
-            className="h-10 w-10 rounded-full border-border/80 bg-background/75 text-foreground hover:bg-muted"
+            className="h-10 w-10 rounded-full border-border/80 bg-background/75 text-foreground hover:bg-muted transition-colors"
             title="Alternar tema"
           >
             {theme === "light" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}

@@ -157,46 +157,7 @@ const Radar = () => {
           </Carousel>
         </section>
 
-        <section className="space-y-4">
-          <div className="space-y-1">
-            <h2 className="text-2xl font-semibold tracking-tight text-foreground">
-              Comunidades
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              Elegí un rubro y mirá qué dudas y victorias comparten otros dueños.
-            </p>
-          </div>
 
-          <Carousel
-            opts={{ align: "start" }}
-            className="mx-auto w-full max-w-[calc(100%-2.5rem)] md:max-w-[calc(100%-5rem)]"
-          >
-            <CarouselContent className="-ml-3 md:-ml-4">
-              {communityItems.map(({ name, icon: Icon }) => (
-                <CarouselItem
-                  key={name}
-                  className="basis-[34%] pl-3 sm:basis-[24%] md:basis-[18%] md:pl-4 lg:basis-[14%]"
-                >
-                  <Link
-                    to={routes.appCommunity}
-                    className="group flex items-center justify-center"
-                  >
-                    <div className="flex flex-col items-center gap-3 text-center">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors group-hover:bg-primary/16">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <span className="text-sm font-medium text-foreground transition-colors group-hover:text-primary">
-                        {name}
-                      </span>
-                    </div>
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="-left-2 top-[2.05rem] h-10 w-10 border-none bg-background/92 shadow-md backdrop-blur disabled:opacity-30 md:-left-5" />
-            <CarouselNext className="-right-2 top-[2.05rem] h-10 w-10 border-none bg-background/92 shadow-md backdrop-blur disabled:opacity-30 md:-right-5" />
-          </Carousel>
-        </section>
 
         <section className="space-y-4">
           <div className="space-y-1">

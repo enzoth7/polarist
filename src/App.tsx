@@ -41,18 +41,12 @@ const PublicLayout = () => {
   return (
     <div className="relative flex min-h-screen flex-col bg-background">
       <Header />
-      <main className={`min-h-0 flex-1 ${isLandingRoute ? "pb-[calc(env(safe-area-inset-bottom,16px)+72px)] md:pb-0" : ""}`}>
+      <main className="min-h-0 flex-1">
         <Outlet />
       </main>
       <Footer />
 
-      {isLandingRoute ? (
-        <div className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 md:hidden">
-          <div className="pointer-events-auto w-full">
-            <MobileNav />
-          </div>
-        </div>
-      ) : null}
+
     </div>
   );
 };

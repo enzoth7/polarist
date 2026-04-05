@@ -47,27 +47,42 @@ const MobileNav = () => {
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
 
   return (
-    <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+64px)] w-full border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
-      <NavItem to={routes.appRadar} icon={Home} label="Inicio" />
-      <NavItem to={routes.appTools} icon={Trophy} label="Top" />
-      <NavItem to={routes.appGuides} icon={BookOpen} label="Guias" />
-      <NavItem to={routes.appCommunity} icon={Users} label="Comunidad" />
+    <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+64px)] w-full items-center justify-center border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
       {status === "authenticated" ? (
-        <NavItem
-          to={profileRoute}
-          label="Perfil"
-          customIcon={
-            <div className="mb-1 flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-border/50 bg-muted/30">
-              {showAuthAvatar ? (
-                <img src={avatarUrl} alt="User avatar" className="h-full w-full object-cover" />
-              ) : (
-                <CircleUserRound className="h-5 w-5 text-muted-foreground stroke-[1.8px]" />
-              )}
-            </div>
-          }
-        />
+        <div className="flex w-full justify-around items-center">
+          <NavItem to={routes.appRadar} icon={Trophy} label="Tendencias" />
+          <NavItem to={routes.appTools} icon={BookOpen} label="Herramientas" />
+          <NavItem to={routes.appGuides} icon={BookOpen} label="Recursos" />
+          <NavItem
+            to={profileRoute}
+            label="Perfil"
+            customIcon={
+              <div className="mb-1 flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-border/50 bg-muted/30">
+                {showAuthAvatar ? (
+                  <img src={avatarUrl} alt="User avatar" className="h-full w-full object-cover" />
+                ) : (
+                  <CircleUserRound className="h-5 w-5 text-muted-foreground stroke-[1.8px]" />
+                )}
+              </div>
+            }
+          />
+        </div>
       ) : (
-        <GuestCtaNavItem />
+        <div className="flex w-full justify-around items-center">
+          <NavItem to={routes.landing} icon={Home} label="Inicio" />
+          <NavItem to={routes.appRadar} icon={Trophy} label="Tendencias" />
+          <NavItem to={routes.appTools} icon={BookOpen} label="Herramientas" />
+          <NavItem to={routes.appGuides} icon={BookOpen} label="Recursos" />
+          <div className="flex h-16 w-full items-center justify-center px-1">
+            <Link 
+              to={routes.login} 
+              className="flex h-10 w-full items-center justify-center gap-1 rounded-xl bg-[#CCFF00] px-2 text-[10px] font-black uppercase text-[#0f1402] shadow-sm transition-transform active:scale-95"
+            >
+              <LogIn className="h-3 w-3 stroke-[3px]" />
+              <span>Login</span>
+            </Link>
+          </div>
+        </div>
       )}
     </nav>
   );

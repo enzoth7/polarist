@@ -42,7 +42,7 @@
   }
 
   .dark {
-    --background: 34 3% 12%; /* 201E1F */
+    --background: 34 3% 6%; /* #0F0E0E - Ligeramente más claro que negro puro */
     --foreground: 39 27% 94%; /* F3F0EA */
     --card: 34 3% 16%; /* Slightly lighter dark */
     --card-foreground: 39 27% 94%;

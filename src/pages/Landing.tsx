@@ -1,188 +1,157 @@
-import { Compass, Copy, MessageSquare, Sparkles, Store } from "lucide-react";
-import { Link } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
+import { useAuth } from "@/hooks/useAuth";
 
-const features = [
-  {
-    icon: Store,
-    title: "Feed de Victorias por Rubro",
-    description: "Casos concretos filtrados para gastronomia, indumentaria, retail y servicios, sin humo ni teoria eterna.",
-  },
-  {
-    icon: Copy,
-    title: "Prompts listos para copiar",
-    description: "Atajos accionables para vender, responder clientes, crear contenido y automatizar tareas repetitivas.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Chats con dueños de negocios como tu",
-    description: "Conversaciones aterrizadas con gente que ya probo la herramienta en un negocio real, no en un laboratorio.",
-  },
-] as const;
-
-const rankingSignals = [
-  { rank: "1", name: "ChatGPT", category: "Asistente General", trend: "+12%" },
-  { rank: "2", name: "Claude", category: "Redacción y Análisis", trend: "+24%" },
-  { rank: "3", name: "Midjourney", category: "Generación de Imágenes", trend: "+5%" },
-  { rank: "4", name: "Perplexity", category: "Buscador Inteligente", trend: "+45%" },
-] as const;
+const carouselCards = [
+  { img: "/images/tendencias.png", text: "Tendencias", route: routes.appRadar, id: "tendencias" },
+  { img: "/images/herramientas.png", text: "Herramientas", route: routes.appTools, id: "herramientas" },
+  { img: "/images/recursos.png", text: "Recursos", route: routes.appLibrary, id: "recursos" },
+];
 
 const Landing = () => {
+  const { status } = useAuth();
+  const navigate = useNavigate();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % carouselCards.length);
+    }, 8500); 
+    return () => clearInterval(timer);
+  }, [isHovered]);
+
+  const handleCardClick = (index: number, route: string) => {
+    if (index === activeIndex) {
+      navigate(route);
+    } else {
+      setActiveIndex(index);
+    }
+  };
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background text-foreground">
-      <div aria-hidden className="landing-grid absolute inset-0 opacity-60" />
-      <div
-        aria-hidden
-        className="absolute inset-x-0 top-0 h-[34rem] bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.2),transparent_58%)]"
-      />
-      <div aria-hidden className="animate-float-gentle absolute -left-16 top-24 h-64 w-64 rounded-full bg-secondary/20 blur-3xl" />
-      <div
-        aria-hidden
-        className="animate-float-slower absolute -right-12 bottom-16 h-72 w-72 rounded-full bg-accent/20 blur-3xl"
-      />
+    <div className="flex flex-col items-center min-h-[calc(100vh-80px)] bg-background transition-colors duration-500 overflow-hidden">
+      {/* pt-24 asegura que no haya superposición con el header, y márgenes simétricos reducidos */}
+      <section className="relative flex flex-col items-center w-full max-w-7xl px-4 pt-24 pb-8">
+        
+        {/* Titular Principal */}
+        <div className="mb-14 text-center z-10 relative">
+          <motion.h1 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-4xl sm:text-5xl lg:text-6xl xl:text-6xl text-foreground leading-[1.1] font-bold tracking-tight transition-colors duration-500"
+            style={{ letterSpacing: "-0.03em" }}
+          >
+            Tu mapa de IA <br />
+            para crear y crecer
+          </motion.h1>
+        </div>
 
-      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col px-6 pb-16 pt-6 sm:px-8 lg:px-12">
-        <main className="flex flex-1 flex-col justify-center gap-16 py-12 lg:flex-row lg:items-center lg:py-16">
-          <section className="max-w-2xl lg:w-[55%]">
-            <div className="animate-fade-in inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-4 py-2 text-sm font-medium text-muted-foreground shadow-soft backdrop-blur-xl">
-              <Sparkles className="h-4 w-4 text-primary" />
-              La información justa que necesitás saber
-            </div>
+        {/* Carrusel 3D */}
+        <div className="relative w-full h-[320px] sm:h-[360px] lg:h-[380px] flex items-center justify-center pt-2" style={{ perspective: "1500px" }}>
+          {carouselCards.map((card, index) => {
+            const total = carouselCards.length;
+            const diff = (index - activeIndex + total) % total;
+            
+            let x = 0;
+            let z = 0;
+            let opacity = 0;
+            let scale = 0.5;
+            let rotateY = 0;
+            let isCenter = false;
 
-            <h1 className="animate-slide-up mt-6 max-w-3xl text-4xl font-black tracking-[-0.04em] text-foreground sm:text-5xl lg:text-6xl">
-              El radar de Inteligencia Artificial para los que no tienen tiempo de aprender IA.
-            </h1>
+            if (diff === 0) {
+              x = 0;
+              z = 240;
+              opacity = 1;
+              scale = 1;
+              rotateY = 0;
+              isCenter = true;
+            } else if (diff === 1 || diff === -(total - 1)) {
+              x = 340;
+              z = -120;
+              opacity = 1;
+              scale = 0.85;
+              rotateY = -55;
+            } else if (diff === total - 1 || diff === -1) {
+              x = -340;
+              z = -120;
+              opacity = 1;
+              scale = 0.85;
+              rotateY = 55;
+            }
 
-            <p
-              className="animate-slide-up mt-6 max-w-2xl text-base leading-8 text-muted-foreground sm:text-lg"
-              style={{ animationDelay: "120ms", animationFillMode: "both" }}
+            return (
+              <motion.div
+                key={index}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                className="absolute w-[180px] h-[280px] sm:w-[220px] sm:h-[340px] md:w-[240px] md:h-[370px] rounded-[32px] overflow-hidden shadow-[0_45px_100px_-35px_rgba(0,0,0,0.6)] border border-white/10 cursor-pointer bg-background"
+                initial={false}
+                animate={{
+                  x: x,
+                  z: z,
+                  scale: scale,
+                  rotateY: rotateY,
+                  opacity: opacity,
+                  zIndex: isCenter ? 50 : 20,
+                }}
+                transition={{
+                  type: "spring",
+                  stiffness: 60,
+                  damping: 20,
+                  mass: 0.8
+                }}
+                onClick={() => handleCardClick(index, card.route)}
+                style={{ transformStyle: "preserve-3d", transformOrigin: "center center" }}
+              >
+                {/* Restauramos la imagen estática sin recortes */}
+                <img src={card.img} alt={card.text} className="absolute inset-0 w-full h-full object-cover z-10" />
+                
+                {/* Degradado para Legibilidad Inferior */}
+                <div className="absolute inset-0 z-30 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none"></div>
+                {!isCenter && (
+                  <div className="absolute inset-0 z-40 bg-black/60 transition-opacity duration-500 backdrop-blur-[1px]"></div>
+                )}
+
+                {/* Etiqueta de Texto */}
+                <div className="absolute bottom-10 left-8 z-50">
+                  <motion.div 
+                    animate={{ scale: isCenter ? 1 : 0.9, opacity: isCenter ? 1 : 0.7 }}
+                    className="flex flex-col"
+                  >
+                    <p className="font-bold text-white text-[10px] sm:text-[11px] uppercase tracking-[0.3em] drop-shadow-md mb-2 opacity-60">Categoría</p>
+                    <p className="font-bold text-white text-base sm:text-lg tracking-tight drop-shadow-md">{card.text}</p>
+                  </motion.div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Botón de Acción */}
+        {status !== "authenticated" && (
+          <motion.div 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="mt-20 z-40"
+          >
+            <Button
+              asChild
+              className="rounded-full border-0 bg-[#CCFF00] px-10 py-6 text-lg font-bold text-[#0f1402] shadow-[0_15px_35px_rgba(204,255,0,0.25)] transition-all hover:bg-[#d8ff4a] hover:scale-105 active:scale-95"
             >
-              Polarist corta el ruido. En vez de tutoriales largos, te entrega victorias reales, prompts accionables y conversaciones
-              utiles para aplicar hoy mismo en tu negocio.
-            </p>
-
-            <div
-              className="animate-slide-up mt-10 grid gap-3 sm:grid-cols-3"
-              style={{ animationDelay: "220ms", animationFillMode: "both" }}
-            >
-              <div className="rounded-[1.75rem] border border-border/60 bg-background/75 p-5 shadow-soft backdrop-blur-xl">
-                <p className="text-sm font-medium text-muted-foreground">Radar curado</p>
-                <p className="mt-2 text-xl font-black tracking-tight">Feed por rubro</p>
-              </div>
-              <div className="rounded-[1.75rem] border border-border/60 bg-background/75 p-5 shadow-soft backdrop-blur-xl">
-                <p className="text-sm font-medium text-muted-foreground">Implementacion inmediata</p>
-                <p className="mt-2 text-xl font-black tracking-tight">Copiar y ejecutar</p>
-              </div>
-              <div className="rounded-[1.75rem] border border-border/60 bg-background/75 p-5 shadow-soft backdrop-blur-xl">
-                <p className="text-sm font-medium text-muted-foreground">Aprendizaje social</p>
-                <p className="mt-2 text-xl font-black tracking-tight">Comunidad util</p>
-              </div>
-            </div>
-          </section>
-
-          <section className="relative flex w-full justify-center lg:w-[45%] lg:justify-end">
-            <div className="relative w-full max-w-[380px] rounded-[2.4rem] border border-border/60 bg-background/70 p-3 shadow-2xl backdrop-blur-2xl">
-              <div className="rounded-[2rem] border border-border/30 bg-foreground p-4 text-background">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.3em] text-background/55">Ranking del Radar</p>
-                  </div>
-                  <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-background/10">
-                    <div className="absolute inset-0 animate-ping rounded-2xl border border-primary/30" />
-                    <Compass className="h-5 w-5 text-primary" />
-                  </div>
-                </div>
-
-                <div className="mt-5 flex gap-2 text-xs font-semibold">
-                  <span className="rounded-full bg-primary px-3 py-1.5 text-primary-foreground">Top 100</span>
-                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Tendencias</span>
-                  <span className="rounded-full bg-background/10 px-3 py-1.5 text-background/80">Nuevas</span>
-                </div>
-
-                <div className="relative mt-6 space-y-3 overflow-hidden rounded-[1.6rem]">
-                  <div className="absolute inset-x-0 -top-10 bottom-0 pointer-events-none">
-                    <div className="absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/5" />
-                    <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/10" />
-                    <div className="absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-background/10" />
-                  </div>
-
-                  {rankingSignals.map((tool, index) => (
-                    <article
-                      key={tool.name}
-                      className="relative z-10 flex flex-row items-center justify-between rounded-[1.6rem] border border-background/10 bg-background/5 p-4 backdrop-blur-md"
-                      style={{ transform: `translateY(${index * 2}px)` }}
-                    >
-                      <div className="flex items-center gap-4">
-                        <span className="text-sm font-black text-primary">#{tool.rank}</span>
-                        <div>
-                          <p className="mt-1 text-sm font-bold leading-none text-background/90">{tool.name}</p>
-                          <p className="mt-1.5 text-[0.65rem] uppercase tracking-[0.1em] text-background/50">{tool.category}</p>
-                        </div>
-                      </div>
-                      <span className="text-xs font-bold text-emerald-400">{tool.trend}</span>
-                    </article>
-                  ))}
-                </div>
-
-                <div className="mt-6 rounded-[1.7rem] bg-background px-4 py-4 text-foreground shadow-card">
-                  <div className="flex items-center justify-between gap-4">
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">La joya oculta</p>
-                      <p className="mt-2 text-sm font-bold leading-6">Agente de ventas por WhatsApp</p>
-                    </div>
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
-                      <Sparkles className="h-4 w-4" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="absolute -right-6 top-14 hidden rounded-2xl border border-border/60 bg-background/80 px-4 py-3 shadow-card backdrop-blur-xl sm:block">
-                <p className="text-xs uppercase tracking-[0.24em] text-muted-foreground">Tiempo ahorrado</p>
-                <p className="mt-1 text-lg font-black tracking-tight">Horas, no cursos</p>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <section id="features" className="grid gap-4 md:grid-cols-3">
-          {features.map((feature, index) => (
-            <article
-              key={feature.title}
-              className="animate-fade-in rounded-[2rem] border border-border/60 bg-background/75 p-6 shadow-soft backdrop-blur-xl"
-              style={{ animationDelay: `${index * 120 + 180}ms`, animationFillMode: "both" }}
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 text-primary">
-                <feature.icon className="h-5 w-5" />
-              </div>
-              <h3 className="mt-5 text-2xl font-black tracking-tight">{feature.title}</h3>
-              <p className="mt-3 text-sm leading-7 text-muted-foreground">{feature.description}</p>
-            </article>
-          ))}
-        </section>
-
-        <section className="mt-16 rounded-[2.25rem] border border-border/60 bg-background/80 p-8 shadow-card backdrop-blur-2xl sm:p-10">
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-            <div className="max-w-2xl">
-              <p className="text-sm font-semibold uppercase tracking-[0.28em] text-primary">Sin lenguaje técnico</p>
-              <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
-                Entrá, mira que te sirve y salí con algo listo para aplicar.
-              </h2>
-              <p className="mt-4 text-base leading-8 text-muted-foreground">
-                Hacz una pregunta en la comunidad, mira las herramientas mejores valoradas por otros usuarios y guardá las tuyas propias.
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3">
-              <Button asChild size="lg" className="h-14 rounded-full bg-foreground px-8 text-base font-bold text-background hover:bg-foreground/90">
-                <Link to={routes.login}>Comenzar ahora</Link>
-              </Button>
-            </div>
-          </div>
-        </section>
-      </div>
+              <Link to={routes.login}>
+                Comenzar
+              </Link>
+            </Button>
+          </motion.div>
+        )}
+      </section>
     </div>
   );
 };
