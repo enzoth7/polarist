@@ -29,7 +29,7 @@ export const toolNicheDefinitions = [
   },
   {
     value: "gastronomia",
-    label: "Gastronomia",
+    label: "Gastronomía",
     subtitle: "Reservas, cocina y servicio en movimiento",
     icon: ChefHat,
   },
@@ -42,7 +42,7 @@ export const toolNicheDefinitions = [
   {
     value: "agencias",
     label: "Agencias",
-    subtitle: "Entrega mas rapida y menos retrabajo",
+    subtitle: "Entrega más rápida y menos retrabajo",
     icon: Megaphone,
   },
   {
@@ -60,13 +60,13 @@ export const toolNicheDefinitions = [
   {
     value: "retail",
     label: "Retail",
-    subtitle: "Ventas, catalogo y atencion diaria",
+    subtitle: "Ventas, catálogo y atención diaria",
     icon: ShoppingBag,
   },
   {
     value: "ecommerce",
     label: "E-commerce",
-    subtitle: "Tienda, campanas y conversiones",
+    subtitle: "Tienda, campañas y conversiones",
     icon: BriefcaseBusiness,
   },
   {
@@ -78,7 +78,7 @@ export const toolNicheDefinitions = [
   {
     value: "salud",
     label: "Salud",
-    subtitle: "Turnos, seguimiento y comunicacion clara",
+    subtitle: "Turnos, seguimiento y comunicación clara",
     icon: HeartPulse,
   },
   {

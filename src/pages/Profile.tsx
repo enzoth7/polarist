@@ -15,7 +15,7 @@ const Profile = () => {
     try {
       setIsLoggingOut(true);
       await logout();
-      navigate(routes.login, { replace: true });
+      navigate(routes.landing, { replace: true });
     } catch (error) {
       console.error("Error signing out:", error);
       toast.error("No se pudo cerrar sesión");

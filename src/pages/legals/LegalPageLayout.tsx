@@ -7,12 +7,28 @@ type LegalPageLayoutProps = {
   title: string;
   description: string;
   children: ReactNode;
+  showSecondaryGlow?: boolean;
 };
 
-const LegalPageLayout = ({ eyebrow, title, description, children }: LegalPageLayoutProps) => {
+const LegalPageLayout = ({
+  eyebrow,
+  title,
+  description,
+  children,
+  showSecondaryGlow = true,
+}: LegalPageLayoutProps) => {
   return (
     <div className="relative min-h-full overflow-hidden bg-background px-4 py-10 md:px-8 md:py-14">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.14),transparent_38%),radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.12),transparent_28%)]" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.14),transparent_38%)]"
+      />
+      {showSecondaryGlow ? (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.12),transparent_28%)]"
+        />
+      ) : null}
 
       <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6">
         <div className="max-w-3xl">

@@ -50,7 +50,7 @@ const communityAreas = [
   },
   {
     value: "gastronomia",
-    label: "Gastronomia",
+    label: "Gastronomía",
     subtitle: "Reservas, cocina y servicio en movimiento",
     icon: ChefHat,
   },
@@ -63,7 +63,7 @@ const communityAreas = [
   {
     value: "agencias",
     label: "Agencias",
-    subtitle: "Entrega mas rapida y menos retrabajo",
+    subtitle: "Entrega más rápida y menos retrabajo",
     icon: Megaphone,
   },
   {
@@ -81,13 +81,13 @@ const communityAreas = [
   {
     value: "retail",
     label: "Retail",
-    subtitle: "Ventas, catalogo y atencion diaria",
+    subtitle: "Ventas, catálogo y atención diaria",
     icon: ShoppingBag,
   },
   {
     value: "ecommerce",
     label: "E-commerce",
-    subtitle: "Tienda, campanas y conversiones",
+    subtitle: "Tienda, campañas y conversiones",
     icon: BriefcaseBusiness,
   },
   {
@@ -99,7 +99,7 @@ const communityAreas = [
   {
     value: "salud",
     label: "Salud",
-    subtitle: "Turnos, seguimiento y comunicacion clara",
+    subtitle: "Turnos, seguimiento y comunicación clara",
     icon: HeartPulse,
   },
   {
@@ -203,14 +203,14 @@ const getUserProfileHref = (username?: string | null) =>
   username?.trim() ? getAppUserProfileRoute(username.trim()) : routes.appProfile;
 
 const showVisitorAuthToast = (action: string) => {
-  toast("Inicia sesion para participar", {
+  toast("Inicia sesión para participar", {
     description: `Necesitas entrar con tu cuenta para ${action}.`,
   });
 };
 
 const getTrendSummary = (item: Pick<CommunityTrendItem, "activityCount" | "postsCount" | "repliesCount">) => {
   if (item.postsCount > 0 && item.repliesCount > 0) {
-    return `${item.activityCount} movimientos en las ultimas 48h`;
+    return `${item.activityCount} movimientos en las últimas 48h`;
   }
 
   if (item.postsCount > 0) {
@@ -325,7 +325,7 @@ const NewPostDialog = ({
     const cleanTitle = title.trim();
     const cleanContent = content.trim();
     const fallbackTitle =
-      cleanContent.split("\n").find((line) => line.trim())?.trim().slice(0, 80) || "Nueva publicacion";
+      cleanContent.split("\n").find((line) => line.trim())?.trim().slice(0, 80) || "Nueva publicación";
     const nextTitle = cleanTitle || fallbackTitle;
 
     if (!cleanContent) {
@@ -346,7 +346,7 @@ const NewPostDialog = ({
       }
 
       onPostCreated?.();
-      toast.success("Tu pregunta ya quedo publicada.");
+      toast.success("Tu pregunta ya quedó publicada.");
       handleDialogChange(false);
     } catch (error) {
       const message = error instanceof Error ? error.message : "No pudimos publicar tu pregunta.";
@@ -842,18 +842,18 @@ const Community = () => {
   );
   const activeAreaDescription = activeArea === "all"
     ? activeTopTab === "for-you"
-      ? "Cargando lo mas relevante de toda la comunidad..."
-      : "Cargando las publicaciones mas recientes de toda la comunidad..."
+      ? "Cargando lo más relevante de toda la comunidad..."
+      : "Cargando las publicaciones más recientes de toda la comunidad..."
     : activeTopTab === "for-you"
-      ? `Cargando lo mas relevante de ${activeAreaMeta.label.toLowerCase()}...`
-      : `Cargando las publicaciones mas recientes de ${activeAreaMeta.label.toLowerCase()}...`;
+      ? `Cargando lo más relevante de ${activeAreaMeta.label.toLowerCase()}...`
+      : `Cargando las publicaciones más recientes de ${activeAreaMeta.label.toLowerCase()}...`;
   const emptyTitle = activeArea === "all"
     ? activeTopTab === "for-you"
-      ? "Aun no hay publicaciones destacadas en el feed"
-      : "Aun no hay publicaciones recientes en el feed"
+      ? "Aún no hay publicaciones destacadas en el feed"
+      : "Aún no hay publicaciones recientes en el feed"
     : activeTopTab === "for-you"
-      ? `Aun no hay publicaciones destacadas en ${activeAreaMeta.label}`
-      : `Aun no hay publicaciones recientes en ${activeAreaMeta.label}`;
+      ? `Aún no hay publicaciones destacadas en ${activeAreaMeta.label}`
+      : `Aún no hay publicaciones recientes en ${activeAreaMeta.label}`;
   const EmptyStateIcon = activeAreaMeta.icon;
 
   const handleTrendSelect = useCallback((value: CommunityAreaValue) => {
@@ -1121,7 +1121,7 @@ const Community = () => {
                         onClick={() => void loadMorePosts()}
                       >
                         {isLoadingMore ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                        Cargar mas
+                        Cargar más
                       </Button>
                     </div>
                   ) : null}

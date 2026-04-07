@@ -18,23 +18,34 @@ const footerLinks = [
 
 const Footer = ({ className }: FooterProps) => {
   return (
-    <footer className={cn("w-full border-t border-border/60 bg-muted/20 px-6 py-10", className)}>
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-6 text-center">
+    <footer
+      className={cn(
+        "relative w-full overflow-hidden border-t border-black/10 bg-white/50 px-6 py-8 backdrop-blur-[16px] dark:border-white/15 dark:bg-white/[0.04]",
+        className,
+      )}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.56)_0%,rgba(255,255,255,0.2)_45%,rgba(255,255,255,0.08)_100%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_45%,rgba(255,255,255,0.02)_100%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(184,219,77,0.2),transparent_34%),radial-gradient(circle_at_82%_86%,rgba(145,198,171,0.16),transparent_40%)] dark:bg-[radial-gradient(circle_at_18%_10%,rgba(204,255,0,0.11),transparent_34%),radial-gradient(circle_at_82%_86%,rgba(129,255,190,0.08),transparent_40%)]" />
+
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5 text-center">
         {/* LÍNEA 1: Logo y Slogan */}
-        <div className="flex flex-row items-center justify-center gap-2">
-          <BrandLogo showLabel={false} imageClassName="h-5 w-5 rounded-md" />
-          <p className="text-base font-bold tracking-tight text-foreground">
-            Polarist - La dirección que necesitabas para usar la IA
+        <div className="flex flex-col items-center justify-center gap-1">
+          <div className="flex items-center justify-center gap-1.5">
+            <BrandLogo showLabel={false} imageClassName="h-5 w-5 rounded-md" />
+            <p className="text-[13px] font-semibold tracking-tight text-foreground/82">Polarist</p>
+          </div>
+          <p className="text-[15px] font-semibold tracking-tight text-foreground">
+            Tu mapa de IA para crear y crecer
           </p>
         </div>
 
         {/* LÍNEA 2: Links */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <nav className="flex flex-wrap items-center justify-center gap-2.5">
           {footerLinks.map((link) => (
             <Link
               key={link.label}
               to={link.to}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="inline-flex items-center rounded-full border border-black/10 bg-white/55 px-4 py-1.5 text-sm font-semibold text-foreground/82 shadow-[0_10px_24px_-20px_rgba(0,0,0,0.65)] transition-colors hover:bg-white/80 hover:text-foreground dark:border-white/18 dark:bg-white/[0.08] dark:text-white/82 dark:hover:bg-white/[0.14] dark:hover:text-white"
             >
               {link.label}
             </Link>

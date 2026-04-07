@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const conceptos = [
+export const conceptosBasicos = [
   {
     title: "Inteligencia Artificial (IA)",
     description: "Tecnología que puede resolver tareas como una persona (Ej: escribir, crear imágenes, responder preguntas)",
@@ -82,7 +82,7 @@ const ConceptosBasicos = () => {
 
         <CardContent className="p-0">
           <Accordion type="single" collapsible defaultValue="concepto-1" className="w-full">
-            {conceptos.map((concepto, index) => (
+            {conceptosBasicos.map((concepto, index) => (
               <AccordionItem
                 key={concepto.title}
                 value={`concepto-${index + 1}`}

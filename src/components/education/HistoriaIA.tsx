@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-const timeline = [
+export const historiaIATimeline = [
   {
     year: "1950",
     title: "El inicio",
@@ -69,7 +69,7 @@ const HistoriaIA = () => {
             <div className="absolute bottom-0 left-2 top-0 w-[2px] rounded-full bg-gradient-to-b from-primary via-secondary to-accent" />
 
             <Accordion type="single" collapsible defaultValue="historia-1" className="space-y-3">
-              {timeline.map((item, index) => (
+              {historiaIATimeline.map((item, index) => (
                 <AccordionItem
                   key={`${item.year}-${item.title}`}
                   value={`historia-${index + 1}`}

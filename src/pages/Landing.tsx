@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { routes } from "@/lib/routes";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -11,9 +12,12 @@ const carouselCards = [
   { img: "/images/recursos.png", text: "Recursos", route: routes.appLibrary, id: "recursos" },
 ];
 
+const AUTO_ROTATE_MS = 6000;
+
 const Landing = () => {
   const { status } = useAuth();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -21,7 +25,7 @@ const Landing = () => {
     if (isHovered) return;
     const timer = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % carouselCards.length);
-    }, 8500); 
+    }, AUTO_ROTATE_MS);
     return () => clearInterval(timer);
   }, [isHovered]);
 
@@ -56,6 +60,11 @@ const Landing = () => {
           {carouselCards.map((card, index) => {
             const total = carouselCards.length;
             const diff = (index - activeIndex + total) % total;
+
+            const sideX = isMobile ? 186 : 340;
+            const sideZ = isMobile ? -90 : -120;
+            const sideScale = isMobile ? 0.78 : 0.85;
+            const sideRotate = isMobile ? 62 : 55;
             
             let x = 0;
             let z = 0;
@@ -72,17 +81,17 @@ const Landing = () => {
               rotateY = 0;
               isCenter = true;
             } else if (diff === 1 || diff === -(total - 1)) {
-              x = 340;
-              z = -120;
+              x = sideX;
+              z = sideZ;
               opacity = 1;
-              scale = 0.85;
-              rotateY = -55;
+              scale = sideScale;
+              rotateY = -sideRotate;
             } else if (diff === total - 1 || diff === -1) {
-              x = -340;
-              z = -120;
+              x = -sideX;
+              z = sideZ;
               opacity = 1;
-              scale = 0.85;
-              rotateY = 55;
+              scale = sideScale;
+              rotateY = sideRotate;
             }
 
             return (

@@ -2,7 +2,6 @@ import { ArrowUpRight } from "lucide-react";
 
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { getToolHref, type ToolItem } from "@/hooks/useTools";
+import { withSpanishAccents } from "@/lib/withSpanishAccents";
 
 type ToolDetailsModalProps = {
   selectedTool: ToolItem | null;
@@ -31,9 +31,17 @@ export function ToolDetailsModal({
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open ? onClose() : null}>
       {selectedTool ? (
-        <DialogContent className="overflow-hidden rounded-[1.6rem] border-border/60 bg-background/95 p-0 shadow-soft backdrop-blur-xl sm:max-w-[640px]">
-          <div className="space-y-6 p-5 sm:p-6">
-            <DialogHeader className="space-y-4 text-left">
+        <DialogContent
+          overlayClassName="bg-black/45 backdrop-blur-[3px] data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0"
+          closeClassName="-right-2 -top-2 z-[60] h-10 w-10 rounded-full border border-[#CCFF00]/60 bg-[#6f9400] p-0 text-[#0d1204] opacity-100 shadow-[0_16px_32px_-20px_rgba(0,0,0,0.72)] backdrop-blur-xl hover:bg-[#7fa600] focus:ring-[#CCFF00]/75 dark:border-[#CCFF00]/60 dark:bg-[#6f9400] dark:text-[#0d1204] dark:hover:bg-[#7fa600] sm:-right-4 sm:-top-4"
+          className="overflow-visible rounded-[30px] border border-black/10 bg-white/60 p-0 text-foreground shadow-[0_28px_64px_-38px_rgba(7,12,9,0.85)] backdrop-blur-[22px] duration-500 ease-out data-[state=open]:zoom-in-[98%] data-[state=closed]:zoom-out-[98%] data-[state=open]:slide-in-from-top-[50.5%] data-[state=closed]:slide-out-to-top-[50.5%] dark:border-white/20 dark:bg-white/[0.06] dark:text-white sm:max-w-[650px]"
+        >
+          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.68)_0%,rgba(255,255,255,0.34)_26%,rgba(255,255,255,0.08)_52%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.07)_25%,rgba(255,255,255,0.02)_48%,rgba(8,14,10,0.34)_100%)]" />
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.54),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(177,215,66,0.18),transparent_46%)] dark:bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.14),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(204,255,0,0.08),transparent_46%)]" />
+          <div className="pointer-events-none absolute left-5 right-5 top-0 h-px bg-black/10 dark:bg-white/30" />
+
+          <div className="relative space-y-6 p-5 sm:p-6">
+            <DialogHeader className="space-y-4 rounded-2xl border border-black/10 bg-white/45 p-4 text-left backdrop-blur-md dark:border-white/15 dark:bg-white/[0.05]">
               <div className="flex items-start gap-4">
                 <ToolLogo
                   name={selectedTool.name}
@@ -52,15 +60,15 @@ export function ToolDetailsModal({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Badge
                       variant="outline"
-                      className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
+                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
                     >
-                      {selectedTool.category}
+                      {withSpanishAccents(selectedTool.category)}
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
+                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
                     >
-                      {selectedTool.kind}
+                      {withSpanishAccents(selectedTool.kind)}
                     </Badge>
                   </div>
                 </div>
@@ -68,14 +76,14 @@ export function ToolDetailsModal({
 
               <DialogDescription className="text-sm leading-6 text-muted-foreground">
                 {selectedTool.isBeta
-                  ? "Exploracion temprana, acceso cambiante y propuesta todavia en formacion."
-                  : "Ficha resumida de la herramienta dentro del catalogo oficial."}
+                  ? "Exploración temprana, acceso cambiante y propuesta todavía en formación."
+                  : "Ficha resumida de la herramienta dentro del catálogo oficial."}
               </DialogDescription>
             </DialogHeader>
 
-            <section className="space-y-2 border-t border-border/50 pt-4">
+            <section className="space-y-2 rounded-2xl border border-black/10 bg-white/45 px-4 py-4 backdrop-blur-md dark:border-white/15 dark:bg-white/[0.05]">
               <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                Que es?
+                ¿Qué es?
               </h3>
               <p
                 className={
@@ -84,13 +92,13 @@ export function ToolDetailsModal({
                   : "text-sm leading-7 text-muted-foreground/60"
                 }
               >
-                {description ?? "Descripcion en redaccion..."}
+                {description ?? "Descripción en redacción..."}
               </p>
             </section>
 
-            <section className="space-y-2 border-t border-border/50 pt-4">
+            <section className="space-y-2 rounded-2xl border border-black/10 bg-white/45 px-4 py-4 backdrop-blur-md dark:border-white/15 dark:bg-white/[0.05]">
               <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
-                Para quienes sirve?
+                ¿Para quiénes sirve?
               </h3>
               <p
                 className={
@@ -99,7 +107,7 @@ export function ToolDetailsModal({
                   : "text-sm leading-7 text-muted-foreground/60"
                 }
               >
-                {whoIsItFor ?? "Perfil ideal en redaccion..."}
+                {whoIsItFor ?? "Perfil ideal en redacción..."}
               </p>
 
               <div className="flex flex-wrap gap-2 pt-2">
@@ -107,21 +115,24 @@ export function ToolDetailsModal({
                   <Badge
                     key={`${selectedTool.name}-${niche}`}
                     variant="outline"
-                    className="rounded-full border-border/40 px-3 py-1 text-[11px] font-medium text-muted-foreground"
+                    className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-muted-foreground dark:border-white/20 dark:bg-white/10 dark:text-white/75"
                   >
-                    {toolNicheMap[niche].label}
+                    {withSpanishAccents(toolNicheMap[niche].label)}
                   </Badge>
                 ))}
               </div>
             </section>
 
-            <DialogFooter className="border-t border-border/50 pt-4">
-              <Button asChild className="w-full rounded-full px-6 sm:w-auto">
-                <a href={getToolHref(selectedTool)} target="_blank" rel="noreferrer">
-                  Visitar web
-                  <ArrowUpRight className="h-4 w-4" />
-                </a>
-              </Button>
+            <DialogFooter className="pt-1">
+              <a
+                href={getToolHref(selectedTool)}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#CCFF00] bg-[#CCFF00] px-3 py-1 text-sm font-semibold text-[#0d1204] transition hover:border-[#d8ff4a] hover:bg-[#d8ff4a] dark:border-[#CCFF00] dark:bg-[#CCFF00] dark:text-[#0d1204] dark:hover:border-[#d8ff4a] dark:hover:bg-[#d8ff4a]"
+              >
+                Visitar web
+                <ArrowUpRight className="h-4 w-4" />
+              </a>
             </DialogFooter>
           </div>
         </DialogContent>

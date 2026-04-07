@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useToolsQuery, type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
+import { withSpanishAccents } from "@/lib/withSpanishAccents";
 import {
   Table,
   TableBody,
@@ -58,7 +59,7 @@ const ToolsDiscoveries = () => {
               </div>
               <p className="max-w-3xl text-sm leading-7 text-muted-foreground">
                 Herramientas en fase experimental, inestables o muy nuevas. No garantizamos
-                que funcionen manana, pero valen la pena explorarlas.
+                que funcionen mañana, pero valen la pena explorarlas.
               </p>
             </div>
 
@@ -106,9 +107,9 @@ const ToolsDiscoveries = () => {
                     <Table className="min-w-[900px]">
                       <TableHeader>
                         <TableRow className="border-border/40 hover:bg-transparent">
-                          <TableHead className="px-5 py-4">Posicion</TableHead>
+                          <TableHead className="px-5 py-4">Posición</TableHead>
                           <TableHead className="px-5 py-4">Nombre</TableHead>
-                          <TableHead className="px-5 py-4">Categoria</TableHead>
+                          <TableHead className="px-5 py-4">Categoría</TableHead>
                           <TableHead className="px-5 py-4">Nicho</TableHead>
                           <TableHead className="px-5 py-4 text-right">Tipo</TableHead>
                         </TableRow>
@@ -185,7 +186,7 @@ const ToolsDiscoveries = () => {
                           </div>
 
                           <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                            {tool.description ?? "Sin descripcion disponible por ahora."}
+                            {tool.description ?? "Sin descripción disponible por ahora."}
                           </p>
 
                           <div className="mt-3 flex flex-wrap gap-2">
@@ -193,13 +194,13 @@ const ToolsDiscoveries = () => {
                               variant="outline"
                               className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
                             >
-                              {tool.category}
+                              {withSpanishAccents(tool.category)}
                             </Badge>
                             <Badge
                               variant="outline"
                               className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
                             >
-                              {tool.kind}
+                              {withSpanishAccents(tool.kind)}
                             </Badge>
                             {tool.niches.slice(0, 2).map((niche) => (
                               <Badge
@@ -207,7 +208,7 @@ const ToolsDiscoveries = () => {
                                 variant="outline"
                                 className="rounded-full border-border/40 px-3 py-1 text-[11px] font-medium text-muted-foreground"
                               >
-                                {toolNicheMap[niche].label}
+                                {withSpanishAccents(toolNicheMap[niche].label)}
                               </Badge>
                             ))}
                           </div>
@@ -228,13 +229,13 @@ const ToolsDiscoveries = () => {
                       <TableHeader>
                         <TableRow className="border-border/40 hover:bg-transparent">
                           <TableHead className="w-[92px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                            Posicion
+                            Posición
                           </TableHead>
                           <TableHead className="min-w-[280px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                             Nombre
                           </TableHead>
                           <TableHead className="w-[180px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                            Categoria
+                            Categoría
                           </TableHead>
                           <TableHead className="w-[220px] px-5 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
                             Nicho
@@ -281,7 +282,7 @@ const ToolsDiscoveries = () => {
                                 variant="outline"
                                 className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
                               >
-                                {tool.category}
+                                {withSpanishAccents(tool.category)}
                               </Badge>
                             </TableCell>
                             <TableCell className="px-5 py-4 align-middle">
@@ -292,7 +293,7 @@ const ToolsDiscoveries = () => {
                                     variant="outline"
                                     className="rounded-full border-border/40 px-3 py-1 text-[11px] font-medium text-muted-foreground"
                                   >
-                                    {toolNicheMap[niche].label}
+                                    {withSpanishAccents(toolNicheMap[niche].label)}
                                   </Badge>
                                 ))}
                               </div>
@@ -303,7 +304,7 @@ const ToolsDiscoveries = () => {
                                   variant="outline"
                                   className="rounded-full border-border/40 bg-muted/20 px-3 py-1 text-[11px] font-medium text-foreground"
                                 >
-                                  {tool.kind}
+                                  {withSpanishAccents(tool.kind)}
                                 </Badge>
                                 <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
                               </div>

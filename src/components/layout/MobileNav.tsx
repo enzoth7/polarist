@@ -1,87 +1,42 @@
-import type { ReactNode } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { BookOpen, CircleUserRound, Home, LogIn, Trophy, Users, type LucideIcon } from "lucide-react";
 
 import { useAuth } from "@/hooks/useAuth";
 import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
-const NavItem = ({
-  to,
-  icon: Icon,
-  label,
-  customIcon,
-}: {
-  to: string;
-  icon?: LucideIcon;
-  label: string;
-  customIcon?: ReactNode;
-}) => (
+const NavItem = ({ to, label }: { to: string; label: string }) => (
   <NavLink
     to={to}
     className={({ isActive }) =>
       cn(
-        "flex h-16 w-full flex-col items-center justify-center pt-2 pb-1 text-xs transition-colors duration-200",
-        isActive ? "font-medium text-foreground" : "text-muted-foreground hover:text-foreground/80",
+        "flex h-14 w-full items-center justify-center px-2 text-[11px] font-semibold uppercase tracking-[0.12em] transition-colors duration-200",
+        isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground/80",
       )
     }
   >
-    {customIcon ? customIcon : Icon ? <Icon className="mb-1 h-6 w-6 stroke-[1.5px]" /> : null}
     <span>{label}</span>
   </NavLink>
 );
 
-const GuestCtaNavItem = () => (
-  <Link to={routes.login} className="flex h-16 w-full items-center justify-center px-2 py-2">
-    <span className="inline-flex h-full w-full items-center justify-center gap-2 rounded-2xl bg-[#CCFF00] px-3 text-[13px] font-semibold text-[#0f1402] shadow-sm">
-      <LogIn className="h-4 w-4 stroke-[2px]" />
-      <span>Comenzar</span>
-    </span>
-  </Link>
-);
-
 const MobileNav = () => {
-  const { avatarUrl, profile, status } = useAuth();
-  const showAuthAvatar = status === "authenticated" && avatarUrl && avatarUrl !== "/avatar.jpg";
+  const { profile, status } = useAuth();
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
 
   return (
-    <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+64px)] w-full items-center justify-center border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
+    <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+56px)] w-full items-center justify-center border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
       {status === "authenticated" ? (
-        <div className="flex w-full justify-around items-center">
-          <NavItem to={routes.appRadar} icon={Trophy} label="Tendencias" />
-          <NavItem to={routes.appTools} icon={BookOpen} label="Herramientas" />
-          <NavItem to={routes.appGuides} icon={BookOpen} label="Recursos" />
-          <NavItem
-            to={profileRoute}
-            label="Perfil"
-            customIcon={
-              <div className="mb-1 flex h-6 w-6 items-center justify-center overflow-hidden rounded-full border border-border/50 bg-muted/30">
-                {showAuthAvatar ? (
-                  <img src={avatarUrl} alt="User avatar" className="h-full w-full object-cover" />
-                ) : (
-                  <CircleUserRound className="h-5 w-5 text-muted-foreground stroke-[1.8px]" />
-                )}
-              </div>
-            }
-          />
+        <div className="grid w-full grid-cols-4 items-center">
+          <NavItem to={routes.appRadar} label="Tendencias" />
+          <NavItem to={routes.appTools} label="Herramientas" />
+          <NavItem to={routes.appGuides} label="Recursos" />
+          <NavItem to={profileRoute} label="Biblioteca" />
         </div>
       ) : (
-        <div className="flex w-full justify-around items-center">
-          <NavItem to={routes.landing} icon={Home} label="Inicio" />
-          <NavItem to={routes.appRadar} icon={Trophy} label="Tendencias" />
-          <NavItem to={routes.appTools} icon={BookOpen} label="Herramientas" />
-          <NavItem to={routes.appGuides} icon={BookOpen} label="Recursos" />
-          <div className="flex h-16 w-full items-center justify-center px-1">
-            <Link 
-              to={routes.login} 
-              className="flex h-10 w-full items-center justify-center gap-1 rounded-xl bg-[#CCFF00] px-2 text-[10px] font-black uppercase text-[#0f1402] shadow-sm transition-transform active:scale-95"
-            >
-              <LogIn className="h-3 w-3 stroke-[3px]" />
-              <span>Login</span>
-            </Link>
-          </div>
+        <div className="grid w-full grid-cols-3 items-center">
+          <NavItem to={routes.landing} label="Inicio" />
+          <NavItem to={routes.appRadar} label="Tendencias" />
+          <NavItem to={routes.appTools} label="Herramientas" />
         </div>
       )}
     </nav>

@@ -8,7 +8,12 @@ type PublicSavedToolRow = {
   created_at: string;
 };
 
-const fetchUserSavedTools = async (userId: string): Promise<ToolItem[]> => {
+type UserSavedToolsResult = {
+  tools: ToolItem[];
+  savedToolCreatedAtById: Record<string, string>;
+};
+
+const fetchUserSavedTools = async (userId: string): Promise<UserSavedToolsResult> => {
   const { data, error } = await supabase.rpc("get_public_user_saved_tools", {
     profile_user_id: userId,
   });
@@ -18,13 +23,27 @@ const fetchUserSavedTools = async (userId: string): Promise<ToolItem[]> => {
   }
 
   const toolRows = (data ?? []) as PublicSavedToolRow[];
-  const toolIds = toolRows.map((row) => row.tool_id);
+  const sortedToolRows = [...toolRows].sort(
+    (left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime(),
+  );
+  const toolIds = sortedToolRows.map((row) => row.tool_id);
 
   if (toolIds.length === 0) {
-    return [];
+    return {
+      tools: [],
+      savedToolCreatedAtById: {},
+    };
   }
 
-  return fetchTools({ names: toolIds });
+  const tools = await fetchTools({ names: toolIds });
+  const savedToolCreatedAtById = Object.fromEntries(
+    sortedToolRows.map((row) => [row.tool_id, row.created_at]),
+  );
+
+  return {
+    tools,
+    savedToolCreatedAtById,
+  };
 };
 
 export function useUserSavedTools(userId?: string) {
@@ -36,7 +55,8 @@ export function useUserSavedTools(userId?: string) {
   });
 
   return {
-    tools: query.data ?? [],
+    tools: query.data?.tools ?? [],
+    savedToolCreatedAtById: query.data?.savedToolCreatedAtById ?? {},
     loading: query.isLoading,
     error: query.error instanceof Error ? query.error.message : null,
   };
