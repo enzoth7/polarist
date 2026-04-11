@@ -1,3 +1,5 @@
+export const config = { runtime: 'edge' };
+
 const ARTIFICIAL_ANALYSIS_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const SUCCESS_CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 const NO_STORE_CACHE_CONTROL = "no-store";
@@ -54,7 +56,7 @@ const createJsonResponse = (
     },
   });
 
-export default async function handler(request: Request) {
+async function handleMetricsRequest(request: Request) {
   if (request.method !== "GET") {
     return createJsonResponse(
       {
@@ -154,5 +156,22 @@ export default async function handler(request: Request) {
     );
   } finally {
     clearTimeout(timeoutId);
+  }
+}
+
+export default async function handler(request: Request) {
+  try {
+    return await handleMetricsRequest(request);
+  } catch (error) {
+    return createJsonResponse(
+      {
+        error: "The metrics proxy crashed before completing the request.",
+        details: error instanceof Error ? error.message : "Unknown proxy error.",
+      },
+      {
+        status: 500,
+        cacheControl: NO_STORE_CACHE_CONTROL,
+      },
+    );
   }
 }

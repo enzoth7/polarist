@@ -46,11 +46,11 @@ const trendItems = [
 
 const Radar = () => {
   return (
-    <div className="min-h-full bg-background px-4 pb-24 pt-2 md:px-8 md:pb-12 md:pt-3">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-8">
+    <div className="min-h-full bg-background px-4 pb-24 pt-2 md:px-8 md:pb-12 md:pt-3 xl:px-10">
+      <div className="flex w-full flex-col gap-10">
         <section className="space-y-4">
           <div className="relative left-1/2 w-screen -translate-x-1/2">
-            <div className="mx-auto w-full max-w-[1700px] px-4 md:px-8">
+            <div className="mx-auto w-full px-4 md:px-8 xl:px-10">
               <CinematicSlider items={trendItems} />
             </div>
           </div>

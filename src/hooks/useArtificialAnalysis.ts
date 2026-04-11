@@ -1,28 +1,17 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getModelVisual, type ModelVisual } from "@/lib/modelIcons";
+import {
+  RADAR_MOCK_MODELS,
+  buildRadarMetricCards,
+  type ArtificialAnalysisModel,
+  type RadarMetricCard,
+  type RadarMetricKey,
+  type RadarMetricPoint,
+} from "@/lib/artificialAnalysisMetrics";
 
 const ARTIFICIAL_ANALYSIS_API_URL = "/api/metrics";
 const RADAR_MODELS_LIMIT = 10;
-
-type BetterDirection = "higher" | "lower";
-
-export type ArtificialAnalysisModel = {
-  id: string;
-  name: string;
-  slug: string;
-  model_creator: {
-    name: string;
-    slug: string;
-  };
-  evaluations?: {
-    artificial_analysis_intelligence_index?: number | null;
-  } | null;
-  pricing?: {
-    price_1m_blended_3_to_1?: number | null;
-  } | null;
-  median_output_tokens_per_second?: number | null;
-};
+const IS_LOCAL_DEVELOPMENT = import.meta.env.DEV;
 
 type ArtificialAnalysisResponse = {
   data?: ArtificialAnalysisModel[];
@@ -32,146 +21,29 @@ type ArtificialAnalysisResponse = {
   upstreamStatus?: number;
 };
 
-export type RadarMetricKey = "intelligence" | "speed" | "price";
-
-export type RadarMetricPoint = {
-  id: string;
-  rank: number;
-  label: string;
-  slug: string;
-  creatorName: string;
-  creatorSlug: string;
-  value: number;
-  displayValue: string;
-  detailValue: string;
-  visual: ModelVisual;
-};
-
-export type RadarMetricCard = {
-  key: RadarMetricKey;
-  title: string;
-  subtitle: string;
-  better: BetterDirection;
-  points: RadarMetricPoint[];
-};
-
-type MetricDefinition = {
-  key: RadarMetricKey;
-  title: string;
-  subtitle: string;
-  better: BetterDirection;
-  getValue: (model: ArtificialAnalysisModel) => number | null | undefined;
-};
-
-const METRIC_DEFINITIONS: MetricDefinition[] = [
-  {
-    key: "intelligence",
-    title: "INTELIGENCIA",
-    subtitle: "Artificial Analysis Intelligence Index",
-    better: "higher",
-    getValue: (model) => model.evaluations?.artificial_analysis_intelligence_index,
-  },
-  {
-    key: "speed",
-    title: "VELOCIDAD",
-    subtitle: "Mediana de tokens de salida por segundo",
-    better: "higher",
-    getValue: (model) => model.median_output_tokens_per_second,
-  },
-  {
-    key: "price",
-    title: "PRECIO",
-    subtitle: "Costo blended por 1M de tokens",
-    better: "lower",
-    getValue: (model) => model.pricing?.price_1m_blended_3_to_1,
-  },
-];
-
-const numberFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 0,
-});
-
-const decimalFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 0,
-});
-
-const compactPriceFormatter = new Intl.NumberFormat("en-US", {
-  maximumFractionDigits: 2,
-  minimumFractionDigits: 1,
-});
-
-const isFinitePositiveNumber = (value: number | null | undefined): value is number =>
-  typeof value === "number" && Number.isFinite(value) && value > 0;
-
-const formatMetricValue = (metricKey: RadarMetricKey, value: number) => {
-  if (metricKey === "price") {
-    return value < 1 ? value.toFixed(2) : compactPriceFormatter.format(value);
+const parseJsonSafely = <T>(value: string) => {
+  if (!value) {
+    return null;
   }
 
-  return numberFormatter.format(Math.round(value));
+  try {
+    return JSON.parse(value) as T;
+  } catch {
+    return null;
+  }
 };
 
-const formatMetricDetailValue = (metricKey: RadarMetricKey, value: number) => {
-  if (metricKey === "price") {
-    return `US$ ${decimalFormatter.format(value)} / 1M tok`;
+const buildInvalidPayloadErrorMessage = (rawPayload: string) => {
+  const trimmedPayload = rawPayload.trim();
+
+  if (trimmedPayload.startsWith("<!DOCTYPE") || trimmedPayload.startsWith("<html")) {
+    return "El proxy devolvio HTML en lugar de JSON. Usa `vercel dev` o se activara el mock local.";
   }
 
-  if (metricKey === "speed") {
-    return `${numberFormatter.format(Math.round(value))} tok/s`;
-  }
-
-  return `${numberFormatter.format(Math.round(value))} pts`;
+  return "Artificial Analysis no devolvio una lista de modelos valida.";
 };
 
-export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit = RADAR_MODELS_LIMIT) {
-  return METRIC_DEFINITIONS.map((metric) => {
-    const points = models
-      .map((model) => {
-        const value = metric.getValue(model);
-
-        if (!isFinitePositiveNumber(value)) {
-          return null;
-        }
-
-        return {
-          id: model.id,
-          rank: 0,
-          label: model.name,
-          slug: model.slug,
-          creatorName: model.model_creator?.name ?? "Proveedor desconocido",
-          creatorSlug: model.model_creator?.slug ?? "",
-          value,
-          displayValue: formatMetricValue(metric.key, value),
-          detailValue: formatMetricDetailValue(metric.key, value),
-          visual: getModelVisual(model.slug, model.model_creator?.slug),
-        } satisfies RadarMetricPoint;
-      })
-      .filter((point): point is RadarMetricPoint => Boolean(point))
-      .sort((left, right) => {
-        if (metric.better === "higher") {
-          return right.value - left.value;
-        }
-
-        return left.value - right.value;
-      })
-      .slice(0, limit)
-      .map((point, index) => ({
-        ...point,
-        rank: index + 1,
-      }));
-
-    return {
-      key: metric.key,
-      title: metric.title,
-      subtitle: metric.subtitle,
-      better: metric.better,
-      points,
-    } satisfies RadarMetricCard;
-  }).filter((card) => card.points.length > 0);
-}
-
-export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
+async function fetchArtificialAnalysisModelsFromProxy(signal?: AbortSignal) {
   const response = await fetch(ARTIFICIAL_ANALYSIS_API_URL, {
     headers: {
       Accept: "application/json",
@@ -179,7 +51,8 @@ export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
     signal,
   });
 
-  const payload = (await response.json().catch(() => null)) as ArtificialAnalysisResponse | null;
+  const rawPayload = await response.text();
+  const payload = parseJsonSafely<ArtificialAnalysisResponse>(rawPayload);
 
   if (!response.ok) {
     const detail =
@@ -193,10 +66,35 @@ export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
   }
 
   if (!payload?.data || !Array.isArray(payload.data)) {
-    throw new Error("Artificial Analysis no devolvio una lista de modelos valida.");
+    throw new Error(buildInvalidPayloadErrorMessage(rawPayload));
   }
 
   return payload.data;
+}
+
+const isAbortError = (error: unknown) =>
+  error instanceof DOMException
+    ? error.name === "AbortError"
+    : error instanceof Error && error.name === "AbortError";
+
+export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
+  try {
+    return await fetchArtificialAnalysisModelsFromProxy(signal);
+  } catch (error) {
+    if (isAbortError(error)) {
+      throw error;
+    }
+
+    if (IS_LOCAL_DEVELOPMENT) {
+      console.warn(
+        "[useArtificialAnalysis] Falling back to deterministic mock data in development.",
+        error,
+      );
+      return RADAR_MOCK_MODELS;
+    }
+
+    throw error;
+  }
 }
 
 export function useArtificialAnalysis(limit = RADAR_MODELS_LIMIT) {
@@ -210,3 +108,12 @@ export function useArtificialAnalysis(limit = RADAR_MODELS_LIMIT) {
     refetchOnWindowFocus: false,
   });
 }
+
+export type {
+  ArtificialAnalysisModel,
+  RadarMetricCard,
+  RadarMetricKey,
+  RadarMetricPoint,
+} from "@/lib/artificialAnalysisMetrics";
+
+export { RADAR_MOCK_MODELS, buildRadarMetricCards } from "@/lib/artificialAnalysisMetrics";

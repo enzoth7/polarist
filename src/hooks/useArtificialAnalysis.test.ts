@@ -4,6 +4,7 @@ import { getModelVisual } from "@/lib/modelIcons";
 
 import {
   buildRadarMetricCards,
+  RADAR_MOCK_MODELS,
   type ArtificialAnalysisModel,
 } from "./useArtificialAnalysis";
 
@@ -90,6 +91,24 @@ describe("buildRadarMetricCards", () => {
     expect(speedCard?.points[0]?.label).toBe("Gemini 2.5 Flash");
     expect(priceCard?.points[0]?.label).toBe("DeepSeek V3");
     expect(priceCard?.points[0]?.displayValue).toBe("0.30");
+  });
+
+  it("builds render-safe cards from the deterministic development mock", () => {
+    const cards = buildRadarMetricCards(RADAR_MOCK_MODELS);
+
+    expect(cards.map((card) => card.key)).toEqual(["intelligence", "speed", "price"]);
+
+    for (const card of cards) {
+      expect(card.points).toHaveLength(10);
+
+      for (const point of card.points) {
+        expect(point.label).toBeTruthy();
+        expect(point.visual).toBeDefined();
+        expect(point.visual.accentFrom).toBeTruthy();
+        expect(point.visual.accentTo).toBeTruthy();
+        expect(point.visual.glow).toBeTruthy();
+      }
+    }
   });
 });
 
