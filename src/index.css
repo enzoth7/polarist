@@ -1,3 +1,47 @@
+/* Arno Pro - Self-hosted */
+@font-face {
+  font-family: 'Arno Pro';
+  src: url('/fonts/ArnoPro-LightDisplay.otf') format('opentype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arno Pro';
+  src: url('/fonts/arno-pro.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arno Pro';
+  src: url('/fonts/ArnoPro-Smbd.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arno Pro';
+  src: url('/fonts/ArnoPro-SmbdItalic.otf') format('opentype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arno Pro';
+  src: url('/fonts/arnopro-bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Arno Pro Display';
+  src: url('/fonts/arnopro-display.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -42,30 +86,30 @@
   }
 
   .dark {
-    --background: 34 3% 6%; /* #0F0E0E - Ligeramente más claro que negro puro */
-    --foreground: 39 27% 94%; /* F3F0EA */
-    --card: 34 3% 16%; /* Slightly lighter dark */
-    --card-foreground: 39 27% 94%;
-    --popover: 34 3% 16%;
-    --popover-foreground: 39 27% 94%;
+    --background: 0 0% 0%; /* #000000 - Negro profundo, tiniebla absoluta */
+    --foreground: 0 0% 100%; /* #FFFFFF - Blanco limpio */
+    --card: 0 0% 7%; /* #121212 - Negro profundo para cards */
+    --card-foreground: 0 0% 95%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 95%;
     
     --primary: 69 100% 50%;
-    --primary-foreground: 34 3% 12%;
+    --primary-foreground: 0 0% 5%;
     
     --secondary: 247 50% 57%;
-    --secondary-foreground: 39 27% 94%;
+    --secondary-foreground: 0 0% 95%;
     
-    --muted: 34 3% 20%;
-    --muted-foreground: 39 10% 70%;
+    --muted: 0 0% 10%; /* #1a1a1a - Negro ligeramente elevado, sin gris marrón */
+    --muted-foreground: 0 0% 60%; /* #999 - Gris neutro, sin calidez */
     
     --accent: 13 100% 58%;
-    --accent-foreground: 39 27% 94%;
+    --accent-foreground: 0 0% 95%;
     
     --destructive: 0 65% 45%;
-    --destructive-foreground: 39 27% 94%;
+    --destructive-foreground: 0 0% 95%;
     
-    --border: 34 3% 20%;
-    --input: 34 3% 20%;
+    --border: 0 0% 12%; /* #1F1F1F - Bordes sutiles pero negros */
+    --input: 0 0% 12%;
     --ring: 69 100% 50%;
   }
 }

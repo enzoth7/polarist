@@ -20,12 +20,12 @@ const Footer = ({ className }: FooterProps) => {
   return (
     <footer
       className={cn(
-        "relative w-full overflow-hidden border-t border-black/10 bg-white/50 px-6 py-8 backdrop-blur-[16px] dark:border-white/15 dark:bg-white/[0.04]",
+        "relative w-full overflow-hidden border-t border-black/10 bg-white/50 px-6 py-8 backdrop-blur-[16px] dark:border-white/[0.06] dark:bg-[#050505]",
         className,
       )}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.56)_0%,rgba(255,255,255,0.2)_45%,rgba(255,255,255,0.08)_100%)] dark:bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.03)_45%,rgba(255,255,255,0.02)_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(184,219,77,0.2),transparent_34%),radial-gradient(circle_at_82%_86%,rgba(145,198,171,0.16),transparent_40%)] dark:bg-[radial-gradient(circle_at_18%_10%,rgba(204,255,0,0.11),transparent_34%),radial-gradient(circle_at_82%_86%,rgba(129,255,190,0.08),transparent_40%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.56)_0%,rgba(255,255,255,0.2)_45%,rgba(255,255,255,0.08)_100%)] dark:bg-none" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_10%,rgba(184,219,77,0.2),transparent_34%),radial-gradient(circle_at_82%_86%,rgba(145,198,171,0.16),transparent_40%)] dark:bg-none" />
 
       <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5 text-center">
         {/* LÍNEA 1: Logo y Slogan */}
@@ -35,7 +35,7 @@ const Footer = ({ className }: FooterProps) => {
             <p className="text-[13px] font-semibold tracking-tight text-foreground/82">Polarist</p>
           </div>
           <p className="text-[15px] font-semibold tracking-tight text-foreground">
-            Tu mapa de IA para crear y crecer
+            La forma más simple de usar IA en tu negocio
           </p>
         </div>
 
@@ -45,7 +45,7 @@ const Footer = ({ className }: FooterProps) => {
             <Link
               key={link.label}
               to={link.to}
-              className="inline-flex items-center rounded-full border border-black/10 bg-white/55 px-4 py-1.5 text-sm font-semibold text-foreground/82 shadow-[0_10px_24px_-20px_rgba(0,0,0,0.65)] transition-colors hover:bg-white/80 hover:text-foreground dark:border-white/18 dark:bg-white/[0.08] dark:text-white/82 dark:hover:bg-white/[0.14] dark:hover:text-white"
+              className="inline-flex items-center rounded-full border border-black/10 bg-white/55 px-4 py-1.5 text-sm font-semibold text-foreground/82 shadow-[0_10px_24px_-20px_rgba(0,0,0,0.65)] transition-colors hover:bg-white/80 hover:text-foreground dark:border-white/10 dark:bg-white/[0.05] dark:text-white/80 dark:hover:bg-white/[0.10] dark:hover:text-white"
             >
               {link.label}
             </Link>

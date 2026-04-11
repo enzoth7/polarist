@@ -20,7 +20,7 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "text-sm font-semibold text-muted-foreground transition-colors hover:text-primary",
+        "rounded-lg px-4 py-2 text-[15px] font-semibold text-muted-foreground transition-colors hover:text-primary",
         isActive && "text-foreground",
       )
     }
@@ -36,18 +36,18 @@ const Header = () => {
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
   const navItems =
-    status === "authenticated" 
+    status === "authenticated"
       ? [
-          { label: "Tendencias", to: routes.appRadar },
-          { label: "Herramientas", to: routes.appTools },
-          { label: "Recursos", to: routes.appGuides },
-          { label: "Biblioteca", to: profileRoute }
-        ]
+        { label: "Tendencias", to: routes.appRadar },
+        { label: "Herramientas", to: routes.appTools },
+        { label: "Recursos", to: routes.appGuides },
+        { label: "Biblioteca", to: profileRoute }
+      ]
       : [
-          { label: "Inicio", to: routes.landing },
-          { label: "Tendencias", to: routes.appRadar },
-          { label: "Herramientas", to: routes.appTools },
-        ];
+        { label: "Inicio", to: routes.landing },
+        { label: "Tendencias", to: routes.appRadar },
+        { label: "Herramientas", to: routes.appTools },
+      ];
 
   let greeting = "Hola";
 
@@ -74,7 +74,7 @@ const Header = () => {
         { label: "Recursos", to: routes.appGuides },
         { label: "Biblioteca", to: profileRoute },
       ]
-    : [
+      : [
         { label: "Inicio", to: routes.landing },
         { label: "Tendencias", to: routes.appRadar },
         { label: "Herramientas", to: routes.appTools },
@@ -82,7 +82,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/50 bg-background/80 backdrop-blur-md">
-      <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-3 md:max-w-[2000px] md:grid-cols-3 md:px-8">
+      <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-4 md:max-w-[2000px] md:grid-cols-3 md:px-16 lg:px-24 xl:px-28">
         {/* Lado Izquierdo */}
         <div className="flex items-center justify-start">
           <Sheet>
@@ -149,7 +149,7 @@ const Header = () => {
           </p>
         </div>
 
-        <nav className="hidden items-center justify-center gap-6 md:flex">
+        <nav className="hidden items-center justify-center gap-10 md:flex">
           {navItems.map((item) => (
             <DesktopNavItem key={item.to} {...item} />
           ))}
@@ -160,7 +160,7 @@ const Header = () => {
           {status !== "authenticated" && (
             <Button
               asChild
-              className="hidden h-10 rounded-full bg-[#CCFF00] px-6 font-bold text-[#0f1402] transition-all hover:bg-[#d8ff4a] md:inline-flex"
+              className="hidden h-11 rounded-full bg-[#CCFF00] px-8 text-[15px] font-bold text-[#0f1402] transition-all hover:bg-[#d8ff4a] md:inline-flex"
             >
               <Link to={routes.login}>
                 Iniciar sesión
