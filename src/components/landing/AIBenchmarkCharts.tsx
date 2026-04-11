@@ -11,8 +11,7 @@ import {
   LabelList
 } from 'recharts';
 
-const API_KEY = "aa_XcegpNFdebzSDzpWXUQPOchdMfRoWXNO";
-const API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
+const API_URL = "/api/metrics";
 
 interface ModelData {
   id: string;
@@ -51,9 +50,10 @@ const AIBenchmarkCharts = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(API_URL, {
-          headers: { 'x-api-key': API_KEY }
-        });
+        const response = await fetch(API_URL);
+        if (!response.ok) {
+          throw new Error(`Metrics proxy error: ${response.status}`);
+        }
         const json = await response.json();
         if (json.data) {
           setData(json.data);
@@ -68,7 +68,7 @@ const AIBenchmarkCharts = () => {
   }, []);
 
   const getTopModels = (key: 'intelligence' | 'speed' | 'price', limit = 10) => {
-    let sorted = [...data];
+    const sorted = [...data];
     if (key === 'intelligence') {
       sorted.sort((a, b) => (b.evaluations.artificial_analysis_intelligence_index || 0) - (a.evaluations.artificial_analysis_intelligence_index || 0));
     } else if (key === 'speed') {
