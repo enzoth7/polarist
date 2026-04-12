@@ -3,10 +3,8 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import WorldMapSVG from "@/components/landing/WorldMapSVG";
+import InferenceGlobeHero from "@/components/landing/InferenceGlobeHero";
 import { routes } from "@/lib/routes";
-import { useAuth } from "@/hooks/useAuth";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -47,13 +45,8 @@ const problemBlocks = [
 ] as const;
 
 const Landing = () => {
-  const { status } = useAuth();
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const descRef = useRef<HTMLParagraphElement>(null);
-  const ctaRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
   const problemsSectionRef = useRef<HTMLDivElement>(null);
   const videoSectionRef = useRef<HTMLDivElement>(null);
 
@@ -66,38 +59,6 @@ const Landing = () => {
           pinSpacing: false,
           start: "top top",
           end: "bottom top",
-        });
-      }
-
-      const heroTl = gsap.timeline({
-        defaults: { ease: "power3.out", duration: 0.8 },
-      });
-
-      if (titleRef.current) {
-        heroTl.from(titleRef.current, { opacity: 0, y: 40 });
-      }
-
-      if (descRef.current) {
-        heroTl.from(descRef.current, { opacity: 0, y: 30 }, "-=0.5");
-      }
-
-      if (ctaRef.current) {
-        heroTl.from(ctaRef.current, { opacity: 0, y: 20 }, "-=0.4");
-      }
-
-      if (mapRef.current) {
-        heroTl.from(mapRef.current, { opacity: 0, y: 30 }, "-=0.3");
-
-        gsap.to(mapRef.current, {
-          scrollTrigger: {
-            trigger: mapRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-          y: -60,
-          scale: 1.03,
-          ease: "none",
         });
       }
 
@@ -204,7 +165,7 @@ const Landing = () => {
 
       ScrollTrigger.refresh();
     },
-    { scope: containerRef, dependencies: [status], revertOnUpdate: true },
+    { scope: containerRef, revertOnUpdate: true },
   );
 
   return (
@@ -212,41 +173,10 @@ const Landing = () => {
       <div className="relative z-10">
         <section
           ref={heroRef}
-          className="relative z-10 flex min-h-screen w-full flex-col items-center justify-center bg-white px-6 pt-[15vh]"
+          className="relative z-10 flex min-h-screen w-full flex-col items-center justify-start overflow-hidden bg-[#000000]"
         >
-          <div className="flex w-full flex-col items-center justify-center text-center">
-            <div className="max-w-none">
-              <h1
-                ref={titleRef}
-                className="whitespace-nowrap text-center font-bold tracking-tight text-[#1a1a1a] leading-[1.05]"
-                style={{ fontSize: "clamp(1.8rem, 5vw, 5rem)", letterSpacing: "-0.04em" }}
-              >
-                La forma más simple de usar IA en tu vida
-              </h1>
-            </div>
-
-            <p
-              ref={descRef}
-              className="mt-6 max-w-3xl text-center text-base leading-relaxed text-[#555555] sm:mt-8 sm:text-lg lg:text-xl"
-            >
-              Polarist es una plataforma digital que conecta a las personas con herramientas e
-              información clave para mejorar procesos a través de Inteligencia Artificial.
-            </p>
-
-            {status !== "authenticated" && (
-              <div ref={ctaRef} className="mt-12 rounded-full sm:mt-14">
-                <Button
-                  asChild
-                  className="rounded-full border-0 bg-[#CCFF00] px-10 py-6 text-lg font-bold text-[#0f1402] shadow-[0_15px_35px_rgba(204,255,0,0.25)] transition-all hover:scale-105 hover:bg-[#d8ff4a] hover:shadow-[0_0_40px_rgba(204,255,0,0.5),0_0_80px_rgba(204,255,0,0.2)] active:scale-95"
-                >
-                  <Link to={routes.login}>Comenzar</Link>
-                </Button>
-              </div>
-            )}
-          </div>
-
-          <div ref={mapRef} className="mt-16 flex w-full items-center justify-center sm:mt-24">
-            <WorldMapSVG />
+          <div className="relative z-10 w-full">
+            <InferenceGlobeHero />
           </div>
         </section>
       </div>

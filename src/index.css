@@ -189,3 +189,41 @@
     animation: float-slower 9s ease-in-out infinite;
   }
 }
+
+.radar-swiper {
+  perspective: 1900px;
+}
+
+.radar-swiper .swiper-wrapper {
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1) !important;
+}
+
+.radar-swiper .swiper-slide {
+  opacity: 1;
+  z-index: 4 !important;
+  transition: filter 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.radar-swiper .swiper-slide .radar-card {
+  transform: scale(1);
+  transform-origin: center center;
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.radar-swiper .swiper-slide-active {
+  z-index: 20 !important;
+}
+
+.radar-swiper .swiper-slide-active .radar-card {
+  transform: scale(1.2);
+  border-color: rgba(255, 255, 255, 0.34);
+  box-shadow: 0 38px 120px -48px rgba(0, 0, 0, 0.95);
+}
+
+.radar-swiper .swiper-slide-prev,
+.radar-swiper .swiper-slide-next {
+  z-index: 10 !important;
+}

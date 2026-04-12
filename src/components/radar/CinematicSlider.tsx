@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
-import { AnimatePresence, motion, useReducedMotion, type PanInfo } from "framer-motion";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { Autoplay, EffectCreative } from "swiper/modules";
+import { Swiper, SwiperSlide } from "swiper/react";
+import type { Swiper as SwiperType } from "swiper";
+
+import "swiper/css";
+import "swiper/css/effect-creative";
 
 type CinematicSliderItem = {
   title: string;
@@ -15,210 +19,114 @@ type CinematicSliderProps = {
 };
 
 const AUTOPLAY_MS = 6800;
-const TRANSITION_GUARD_MS = 760;
-
-const wrapIndex = (length: number, index: number) => ((index % length) + length) % length;
 
 export function CinematicSlider({ items }: CinematicSliderProps) {
-  const isMobile = useIsMobile();
-  const prefersReducedMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [navDirection, setNavDirection] = useState<1 | -1>(1);
-  const [remainingMs, setRemainingMs] = useState(AUTOPLAY_MS);
 
   const canNavigate = items.length > 1;
-  const isAutoPlayEnabled = canNavigate && !prefersReducedMotion;
 
   useEffect(() => {
-    if (!isTransitioning) {
-      return;
+    if (activeIndex >= items.length) {
+      setActiveIndex(0);
     }
-
-    const timeoutId = window.setTimeout(
-      () => setIsTransitioning(false),
-      prefersReducedMotion ? 0 : TRANSITION_GUARD_MS,
-    );
-
-    return () => window.clearTimeout(timeoutId);
-  }, [isTransitioning, prefersReducedMotion]);
-
-  useEffect(() => {
-    if (!isAutoPlayEnabled) {
-      return;
-    }
-
-    const timeoutId = window.setTimeout(() => {
-      setNavDirection(1);
-      setActiveIndex(wrapIndex(items.length, activeIndex + 1));
-      setIsTransitioning(true);
-      setRemainingMs(AUTOPLAY_MS);
-    }, remainingMs);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [activeIndex, isAutoPlayEnabled, items.length, remainingMs]);
-
-  useEffect(() => {
-    setRemainingMs(AUTOPLAY_MS);
-  }, [activeIndex]);
+  }, [activeIndex, items.length]);
 
   if (items.length === 0) {
     return null;
   }
 
-  const goTo = (nextIndex: number, directionHint?: 1 | -1) => {
-    if (isTransitioning) {
-      return;
-    }
-
-    const normalizedIndex = wrapIndex(items.length, nextIndex);
-
-    if (normalizedIndex === activeIndex) {
-      return;
-    }
-
-    const resolvedDirection =
-      directionHint ??
-      (() => {
-        const forwardDistance = wrapIndex(items.length, normalizedIndex - activeIndex);
-        const backwardDistance = wrapIndex(items.length, activeIndex - normalizedIndex);
-        return forwardDistance <= backwardDistance ? 1 : -1;
-      })();
-
-    setNavDirection(resolvedDirection);
-    setActiveIndex(normalizedIndex);
-    setIsTransitioning(true);
-    setRemainingMs(AUTOPLAY_MS);
-  };
-
-  const handleHeroDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-    if (!canNavigate) {
-      return;
-    }
-
-    if (info.offset.x <= -50) {
-      goTo(activeIndex + 1, 1);
-      return;
-    }
-
-    if (info.offset.x >= 50) {
-      goTo(activeIndex - 1, -1);
-    }
-  };
-
-  const getVisibleCards = () => {
-    const visibleCount = isMobile ? 3 : 5;
-    const half = Math.floor(visibleCount / 2);
-    const cards: Array<{
-      item: CinematicSliderItem;
-      originalIndex: number;
-      offset: number;
-      isActive: boolean;
-    }> = [];
-
-    for (let i = -half; i <= half; i++) {
-      const index = wrapIndex(items.length, activeIndex + i);
-      cards.push({
-        item: items[index],
-        originalIndex: index,
-        offset: i,
-        isActive: i === 0,
-      });
-    }
-
-    return cards;
-  };
-
   return (
-    <section className="relative isolate flex h-[clamp(500px,85vh,900px)] flex-col overflow-x-clip bg-transparent text-white">
-      <div className="relative flex flex-1 items-center justify-center">
-        <div className="relative flex h-full w-full items-center justify-center overflow-visible">
-          <AnimatePresence initial={false} mode="popLayout">
-            {getVisibleCards().map((card) => (
-              <motion.div
-                key={card.item.title}
-                layout
-                className="absolute cursor-pointer"
-                style={{
-                  width: card.isActive
-                    ? "clamp(300px, 36vw, 480px)"
-                    : Math.abs(card.offset) === 1
-                      ? "clamp(250px, 28vw, 380px)"
-                      : "clamp(210px, 23vw, 300px)",
-                  zIndex: card.isActive ? 10 : Math.abs(card.offset) === 1 ? 8 : 6,
-                }}
-                initial={{
-                  x:
-                    card.offset === 0
-                      ? 0
-                      : card.offset * (isMobile ? 220 : Math.abs(card.offset) === 1 ? 380 : 350),
-                  opacity: 0,
-                  scale: 0.7,
-                }}
-                animate={{
-                  x:
-                    card.offset === 0
-                      ? 0
-                      : card.offset * (isMobile ? 220 : Math.abs(card.offset) === 1 ? 380 : 350),
-                  opacity: card.isActive ? 1 : Math.abs(card.offset) === 1 ? 0.8 : 0.55,
-                  scale: card.isActive ? 1 : Math.abs(card.offset) === 1 ? 0.92 : 0.85,
-                  filter: card.isActive
-                    ? "brightness(1)"
-                    : `brightness(${Math.abs(card.offset) === 1 ? 0.75 : 0.5})`,
-                }}
-                exit={{
-                  x: navDirection * -600,
-                  opacity: 0,
-                  scale: 0.6,
-                }}
-                transition={
-                  prefersReducedMotion
-                    ? { duration: 0 }
-                    : {
-                        type: "spring",
-                        stiffness: 260,
-                        damping: 30,
-                        mass: 1,
-                      }
-                }
-                onClick={() => {
-                  if (!card.isActive) {
-                    goTo(card.originalIndex, card.offset > 0 ? 1 : -1);
-                  }
-                }}
-                drag={card.isActive && canNavigate ? "x" : false}
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.08}
-                onDragEnd={card.isActive ? handleHeroDragEnd : undefined}
-              >
-                <div className="relative aspect-[2/3] overflow-hidden rounded-2xl border border-white/10 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.8)]">
-                  <img
-                    src={card.item.image}
-                    alt={card.item.title}
-                    className="h-full w-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+    <section className="relative isolate flex h-[clamp(500px,85vh,900px)] flex-col overflow-x-clip text-white">
+      <div className="absolute inset-0 -z-20 overflow-hidden">
+        {items.map((item, index) => (
+          <div
+            key={`radar-bg-${item.title}`}
+            className="absolute inset-0 bg-cover bg-center opacity-0 transition-opacity duration-500 ease-out"
+            style={{
+              backgroundImage: `url(${item.image})`,
+              filter: "blur(50px)",
+              transform: "scale(1.12)",
+              opacity: activeIndex === index ? 0.55 : 0,
+            }}
+          />
+        ))}
 
-                  {card.isActive && (
-                    <motion.div
-                      className="absolute inset-x-0 bottom-0 p-6"
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.15, duration: 0.5, ease: "easeOut" }}
-                    >
-                      <h2 className="text-balance text-xl font-bold leading-tight tracking-tight text-white sm:text-2xl">
-                        {card.item.title}
-                      </h2>
-                      <p className="mt-3 line-clamp-2 text-sm leading-relaxed text-white/75">
-                        {card.item.description}
-                      </p>
-                    </motion.div>
-                  )}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_72%,rgba(212,255,0,0.16),rgba(212,255,0,0.05)_38%,transparent_62%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,0.16),rgba(0,0,0,0.74)_58%,rgba(0,0,0,0.9)_100%)]" />
+        <div className="absolute inset-0 bg-black/35" />
+      </div>
+
+      <div className="relative z-10 flex flex-1 items-center justify-center">
+        <Swiper
+          modules={[EffectCreative, Autoplay]}
+          className="radar-swiper !w-full !overflow-visible px-4 md:px-8 xl:px-12"
+          effect="creative"
+          centeredSlides
+          slidesPerView="auto"
+          loop={canNavigate}
+          loopedSlides={items.length}
+          loopAdditionalSlides={items.length}
+          watchSlidesProgress
+          grabCursor={canNavigate}
+          allowTouchMove={canNavigate}
+          speed={960}
+          autoplay={
+            canNavigate ?
+              {
+                delay: AUTOPLAY_MS,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+              }
+            : false
+          }
+          onRealIndexChange={(swiper: SwiperType) => {
+            setActiveIndex(swiper.realIndex);
+          }}
+          creativeEffect={{
+            perspective: true,
+            limitProgress: 2,
+            prev: {
+              translate: ["-120%", 0, -500],
+              rotate: [0, 25, 0],
+              scale: 0.8,
+              shadow: true,
+            },
+            next: {
+              translate: ["120%", 0, -500],
+              rotate: [0, -25, 0],
+              scale: 0.8,
+              shadow: true,
+            },
+          }}
+        >
+          {items.map((item) => (
+            <SwiperSlide
+              key={item.title}
+              className="radar-swiper-slide !h-auto !w-[clamp(220px,24vw,330px)] !overflow-visible"
+            >
+              <article className="radar-card group relative aspect-[9/16] overflow-hidden rounded-3xl border border-white/16 bg-black/20 shadow-[0_30px_85px_-35px_rgba(0,0,0,0.95)]">
+                <img
+                  src={item.image}
+                  alt={item.title}
+                  className="h-full w-full object-cover"
+                  loading="lazy"
+                />
+
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/28 to-black/10" />
+                <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.02)_30%,rgba(255,255,255,0)_66%)]" />
+
+                <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
+                  <h2 className="text-balance text-lg font-bold leading-tight tracking-tight text-white md:text-xl">
+                    {item.title}
+                  </h2>
+                  <p className="mt-3 line-clamp-3 text-[0.86rem] leading-relaxed text-white/78 md:text-[0.92rem]">
+                    {item.description}
+                  </p>
                 </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
+              </article>
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     </section>
   );
