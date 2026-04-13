@@ -271,7 +271,7 @@ const ToolsRanking = () => {
                     className="relative overflow-hidden rounded-[20px] border border-black/12 bg-white/55 px-3 py-2.5 shadow-[0_16px_34px_-26px_rgba(0,0,0,0.7)] backdrop-blur-md dark:border-white/15 dark:bg-white/[0.08]"
                   >
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(150deg,rgba(255,255,255,0.55)_0%,rgba(255,255,255,0.2)_34%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(150deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.06)_36%,rgba(255,255,255,0.02)_100%)]" />
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.58),transparent_42%),radial-gradient(circle_at_84%_100%,rgba(182,224,70,0.2),transparent_40%)] dark:bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(204,255,0,0.08),transparent_40%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.58),transparent_42%),radial-gradient(circle_at_84%_100%,rgba(0,0,0,0.05),transparent_40%)] dark:bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(255,255,255,0.03),transparent_40%)]" />
                     <div className="relative z-10 flex items-center gap-2">
                     <Skeleton className="h-8 w-10 rounded-full bg-black/10 dark:bg-white/12" />
                     <Skeleton className="h-11 w-11 rounded-full bg-black/10 dark:bg-white/12" />
@@ -305,7 +305,7 @@ const ToolsRanking = () => {
                     className="group relative overflow-hidden rounded-[20px] border border-black/12 bg-white/55 px-3 py-2.5 text-foreground shadow-[0_16px_34px_-26px_rgba(0,0,0,0.7)] backdrop-blur-md transition-colors hover:bg-white/70 dark:border-white/15 dark:bg-white/[0.08] dark:text-white dark:hover:bg-white/[0.14]"
                   >
                     <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(150deg,rgba(255,255,255,0.55)_0%,rgba(255,255,255,0.2)_34%,rgba(255,255,255,0.05)_100%)] dark:bg-[linear-gradient(150deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.06)_36%,rgba(255,255,255,0.02)_100%)]" />
-                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.58),transparent_42%),radial-gradient(circle_at_84%_100%,rgba(182,224,70,0.2),transparent_40%)] dark:bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(204,255,0,0.08),transparent_40%)]" />
+                    <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.58),transparent_42%),radial-gradient(circle_at_84%_100%,rgba(0,0,0,0.05),transparent_40%)] dark:bg-[radial-gradient(circle_at_16%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(255,255,255,0.03),transparent_40%)]" />
 
                     <div className="relative z-10 flex items-center gap-2">
                       <span className="inline-flex h-8 min-w-10 items-center justify-center rounded-full bg-black/10 px-2 text-xs font-bold tracking-[0.08em] text-foreground/70 dark:bg-white/10 dark:text-white/75">
@@ -334,7 +334,7 @@ const ToolsRanking = () => {
                         aria-label={isFavorited(tool.name) ? "Quitar estrella" : "Marcar con estrella"}
                         className={cn(
                           "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CCFF00]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isFavorited(tool.name) ?
                             "border-amber-400/55 bg-amber-300/30 text-amber-600 dark:border-amber-300/45 dark:bg-amber-300/20 dark:text-amber-200"
                           : "border-black/20 bg-black/10 text-foreground/65 hover:bg-black/15 dark:border-white/20 dark:bg-white/10 dark:text-white/70 dark:hover:bg-white/15",
@@ -355,9 +355,9 @@ const ToolsRanking = () => {
                         aria-label={isSaved(tool.name) ? "Quitar de guardados" : "Guardar en tu perfil"}
                         className={cn(
                           "relative inline-flex h-6 w-[44px] shrink-0 items-center rounded-full border p-0 transition-all",
-                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#CCFF00]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/70 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                           isSaved(tool.name) ?
-                            "border-[#CCFF00]/70 bg-[#CCFF00]/30"
+                            "border-primary/70 bg-primary/30"
                           : "border-black/20 bg-black/10 dark:border-white/20 dark:bg-white/10",
                           isSavePending(tool.name) && "cursor-not-allowed opacity-60",
                         )}

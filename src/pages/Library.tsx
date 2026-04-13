@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { Bookmark } from "lucide-react";
 
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolInteractionButtons } from "@/components/tools/ToolInteractionButtons";
 import { ToolLogo } from "@/components/tools/ToolLogo";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
@@ -17,13 +15,10 @@ import { withSpanishAccents } from "@/lib/withSpanishAccents";
 
 const Library = () => {
   const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
+  const [logoPreview, setLogoPreview] = useState<{ name: string; domain: string } | null>(null);
   const { status } = useAuth();
   const { toast } = useToast();
-  const {
-    data: allTools = [],
-    error: toolsError,
-    isLoading: toolsLoading,
-  } = useToolsQuery();
+  const { data: allTools = [], error: toolsError, isLoading: toolsLoading } = useToolsQuery();
 
   const allToolIds = useMemo(() => allTools.map((tool) => tool.name), [allTools]);
   const {
@@ -45,194 +40,180 @@ const Library = () => {
 
   const showAuthToast = () =>
     toast({
-      title: "Inicia sesión para usar tu biblioteca",
-      description: "Guarda herramientas desde el ranking y las vas a ver acá.",
+      title: "Iniciá sesión para usar tu biblioteca",
+      description: "Guardá herramientas desde el ranking y las vas a ver acá.",
     });
 
   const handleFavoriteClick = async (toolId: string) => {
-    if (status !== "authenticated") {
-      showAuthToast();
-      return;
-    }
-
+    if (status !== "authenticated") { showAuthToast(); return; }
     try {
       await toggleFavorite(toolId);
-    } catch (error) {
-      console.error("Error toggling tool favorite:", error);
-      toast({
-        title: "No pudimos actualizar el favorito",
-        description: "Intenta de nuevo en unos segundos.",
-      });
+    } catch {
+      toast({ title: "No pudimos actualizar el favorito", description: "Intentá de nuevo en unos segundos." });
     }
   };
 
   const handleSaveClick = async (toolId: string) => {
-    if (status !== "authenticated") {
-      showAuthToast();
-      return;
-    }
-
+    if (status !== "authenticated") { showAuthToast(); return; }
     try {
       await toggleSave(toolId);
-    } catch (error) {
-      console.error("Error toggling tool save:", error);
-      toast({
-        title: "No pudimos actualizar tu biblioteca",
-        description: "Intenta de nuevo en unos segundos.",
-      });
+    } catch {
+      toast({ title: "No pudimos actualizar tu biblioteca", description: "Intentá de nuevo en unos segundos." });
     }
   };
 
+  // ─── Estado vacío / loading reutilizable ───────────────────────────
+  const EmptyState = ({ title, description, cta }: { title: string; description: string; cta?: React.ReactNode }) => (
+    <div className="flex flex-col items-center justify-center text-center py-16 px-6">
+      <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-zinc-100 text-zinc-400">
+        <Bookmark className="h-6 w-6" />
+      </div>
+      <h2 className="text-xl font-black tracking-tight text-zinc-900">{title}</h2>
+      <p className="mt-2 max-w-xs text-sm font-medium text-zinc-400 leading-relaxed">{description}</p>
+      {cta && <div className="mt-6">{cta}</div>}
+    </div>
+  );
+
   return (
-    <div className="min-h-full bg-background px-5 pb-24 pt-5 md:px-8 md:pb-12">
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div className="pointer-events-none absolute inset-0 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_10%_6%,rgba(184,219,77,0.22),transparent_34%),radial-gradient(circle_at_88%_90%,rgba(145,198,171,0.2),transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.82)_0%,rgba(246,244,239,0.95)_100%)] dark:bg-[radial-gradient(circle_at_10%_6%,rgba(204,255,0,0.12),transparent_34%),radial-gradient(circle_at_88%_90%,rgba(129,255,190,0.09),transparent_40%),linear-gradient(180deg,rgba(8,15,11,0.9)_0%,rgba(6,11,8,0.98)_100%)]" />
+    <div className="min-h-full bg-[#F0F2F6] px-4 pb-24 pt-8 md:px-8 md:pt-10">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-5">
 
-        <section className="relative overflow-hidden rounded-[32px] border border-black/10 bg-white/60 px-5 py-6 text-foreground shadow-[0_22px_45px_-30px_rgba(9,15,12,0.75)] backdrop-blur-[18px] dark:border-white/20 dark:bg-white/[0.06] dark:text-white md:px-7 md:py-7">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.68)_0%,rgba(255,255,255,0.34)_26%,rgba(255,255,255,0.08)_52%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.07)_25%,rgba(255,255,255,0.02)_48%,rgba(8,14,10,0.34)_100%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.54),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(177,215,66,0.2),transparent_46%)] dark:bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.14),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(204,255,0,0.08),transparent_46%)]" />
-          <div className="pointer-events-none absolute left-6 right-6 top-0 h-px bg-black/10 dark:bg-white/30" />
-
-          <div className="relative flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">
-                Biblioteca
-              </p>
-              <h1 className="text-3xl font-semibold tracking-tight text-foreground dark:text-white">
-                Mi biblioteca
-              </h1>
-            </div>
-
-            <Button
-              asChild
-              variant="ghost"
-              className="h-auto rounded-full border border-[#CCFF00] bg-[#CCFF00] px-3.5 py-1.5 text-xs font-semibold text-[#0d1204] backdrop-blur-md transition hover:border-[#d8ff4a] hover:bg-[#d8ff4a] hover:text-[#0d1204] focus-visible:ring-[#CCFF00]/70 dark:border-[#CCFF00] dark:bg-[#CCFF00] dark:text-[#0d1204] dark:hover:border-[#d8ff4a] dark:hover:bg-[#d8ff4a] dark:hover:text-[#0d1204]"
-            >
-              <Link to={routes.appProfile}>
-                <ArrowLeft className="mr-1.5 h-4 w-4" />
-                Volver
-              </Link>
-            </Button>
+        {/* ─── Header ─────────────────────────────────────────────── */}
+        <div className="flex items-end justify-between mb-2">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Personal</span>
+            <h1 className="text-[clamp(2rem,4vw,3rem)] font-black tracking-tight leading-none text-zinc-900 mt-0.5">
+              Mi biblioteca
+            </h1>
           </div>
-        </section>
+          <Link
+            to={routes.appTools}
+            className="flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-4 py-2 text-[13px] font-bold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 hover:scale-105 active:scale-95"
+          >
+            Ver herramientas
+          </Link>
+        </div>
 
-        <section className="relative overflow-hidden rounded-[30px] border border-black/10 bg-white/60 p-5 shadow-[0_18px_36px_-26px_rgba(0,0,0,0.62)] backdrop-blur-[18px] dark:border-white/20 dark:bg-white/[0.06] md:p-6">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.56)_0%,rgba(255,255,255,0.28)_34%,rgba(255,255,255,0.06)_60%,rgba(8,13,10,0.08)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.05)_28%,rgba(255,255,255,0.02)_56%,rgba(8,14,10,0.32)_100%)]" />
-          <div className="pointer-events-none absolute left-5 right-5 top-0 h-px bg-black/10 dark:bg-white/30" />
-
-          <div className="relative">
-            {status !== "authenticated" ? (
-              <div className="rounded-2xl border border-black/10 bg-white/45 px-5 py-10 text-center dark:border-white/15 dark:bg-white/[0.05]">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground dark:text-white">
-                  Inicia sesión para usar tu biblioteca
-                </h2>
-                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
-                  Cuando guardes herramientas desde el ranking, las vas a encontrar acá.
-                </p>
-                <Button asChild className="mt-6 rounded-full px-6">
-                  <Link to={routes.login}>Ir al login</Link>
-                </Button>
-              </div>
-            ) : toolsLoading || interactionsLoading ? (
-              <div className="rounded-2xl border border-black/10 bg-white/45 px-5 py-10 text-center dark:border-white/15 dark:bg-white/[0.05]">
-                <p className="text-sm font-medium text-muted-foreground">Cargando tu biblioteca...</p>
-              </div>
-            ) : toolsError ? (
-              <div className="rounded-2xl border border-black/10 bg-white/45 px-5 py-10 text-center dark:border-white/15 dark:bg-white/[0.05]">
-                <p className="text-sm font-medium text-muted-foreground">
-                  No pudimos cargar el catálogo de herramientas.
-                </p>
-              </div>
-            ) : savedTools.length === 0 ? (
-              <div className="rounded-2xl border border-black/10 bg-white/45 px-5 py-10 text-center dark:border-white/15 dark:bg-white/[0.05]">
-                <h2 className="text-xl font-semibold tracking-tight text-foreground dark:text-white">
-                  Todavía no guardaste herramientas
-                </h2>
-                <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-muted-foreground">
-                  Marca herramientas con el ícono de guardado para armar tu propia selección.
-                </p>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="mt-6 rounded-full border-black/10 bg-white/55 px-6 backdrop-blur-md hover:bg-white/75 dark:border-white/20 dark:bg-white/[0.08] dark:hover:bg-white/[0.14]"
+        {/* ─── Contenido principal ─────────────────────────────────── */}
+        <section className="relative overflow-hidden rounded-[28px] bg-white border border-zinc-100 shadow-[0_8px_30px_rgba(0,0,0,0.05)] p-6">
+          {status !== "authenticated" ? (
+            <EmptyState
+              title="Iniciá sesión para ver tu biblioteca"
+              description="Guardá herramientas desde el ranking y las vas a encontrar acá."
+              cta={
+                <Link
+                  to={routes.login}
+                  className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-2.5 text-[13px] font-bold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 hover:scale-105 active:scale-95"
                 >
-                  <Link to={routes.appTools}>Ir a Herramientas</Link>
-                </Button>
+                  Ir al login
+                </Link>
+              }
+            />
+          ) : toolsLoading || interactionsLoading ? (
+            <div className="flex flex-col gap-3">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 rounded-2xl bg-zinc-50 border border-zinc-100 p-4 animate-pulse">
+                  <div className="h-12 w-12 rounded-xl bg-zinc-200 shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 bg-zinc-200 rounded-full" />
+                    <div className="h-3 w-20 bg-zinc-100 rounded-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : toolsError ? (
+            <EmptyState
+              title="No pudimos cargar la biblioteca"
+              description="Revisá tu conexión y volvé a intentar."
+            />
+          ) : savedTools.length === 0 ? (
+            <EmptyState
+              title="Todavía no guardaste herramientas"
+              description="Marcá herramientas con el ícono de guardado para armar tu propia selección."
+              cta={
+                <Link
+                  to={routes.appTools}
+                  className="inline-flex items-center rounded-full border border-zinc-200 bg-white px-5 py-2.5 text-[13px] font-bold text-zinc-900 shadow-sm transition-all hover:bg-zinc-50 hover:scale-105 active:scale-95"
+                >
+                  Ir a Herramientas
+                </Link>
+              }
+            />
+          ) : (
+            <div className="flex flex-col gap-2">
+              {/* Contador */}
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-zinc-400">
+                  {savedTools.length} herramienta{savedTools.length !== 1 ? "s" : ""} guardada{savedTools.length !== 1 ? "s" : ""}
+                </span>
               </div>
-            ) : (
-              <div className="space-y-3">
-                {savedTools.map((tool) => (
-                  <article
-                    key={tool.name}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setSelectedTool(tool)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter" || event.key === " ") {
-                        event.preventDefault();
-                        setSelectedTool(tool);
-                      }
-                    }}
-                    className="cursor-pointer rounded-2xl border border-black/10 bg-white/45 px-4 py-4 shadow-[0_14px_28px_-24px_rgba(0,0,0,0.72)] backdrop-blur-md transition-colors hover:bg-white/65 dark:border-white/15 dark:bg-white/[0.05] dark:hover:bg-white/[0.1] md:px-5"
+
+              {savedTools.map((tool) => (
+                <article
+                  key={tool.name}
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => setSelectedTool(tool)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedTool(tool); }
+                  }}
+                  className="group flex items-center gap-4 rounded-2xl border border-zinc-100 bg-white px-4 py-3.5 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-200 hover:shadow-[0_8px_24px_rgba(0,0,0,0.07)] hover:-translate-y-0.5 cursor-pointer md:px-5"
+                >
+                  {/* Logo — clickeable para preview */}
+                  <div
+                    onClick={(e) => { e.stopPropagation(); setLogoPreview({ name: tool.name, domain: tool.domain }); }}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-zinc-100 bg-zinc-50 overflow-hidden cursor-zoom-in hover:scale-110 transition-transform duration-200"
                   >
-                    <div className="flex flex-col gap-4 md:flex-row md:items-center">
-                      <div className="flex min-w-0 flex-1 items-center gap-4">
-                        <ToolLogo
-                          name={tool.name}
-                          domain={tool.domain}
-                          className="h-12 w-12 border-none bg-transparent"
-                          imageClassName="p-0.5"
-                        />
+                    <ToolLogo
+                      name={tool.name}
+                      domain={tool.domain}
+                      className="h-8 w-8 border-none bg-transparent"
+                      imageClassName="p-0"
+                    />
+                  </div>
 
-                        <div className="min-w-0">
-                          <h2 className="truncate text-lg font-semibold tracking-tight text-foreground dark:text-white">
-                            {tool.name}
-                          </h2>
-                          <div className="mt-2 flex flex-wrap gap-2">
-                            <Badge
-                              variant="outline"
-                              className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
-                            >
-                              {withSpanishAccents(tool.category)}
-                            </Badge>
-                            <Badge
-                              variant="outline"
-                              className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
-                            >
-                              {withSpanishAccents(tool.kind)}
-                            </Badge>
-                            {tool.niches.slice(0, 2).map((niche) => (
-                              <Badge
-                                key={`${tool.name}-${niche}`}
-                                variant="outline"
-                                className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-muted-foreground dark:border-white/20 dark:bg-white/10 dark:text-white/75"
-                              >
-                                {withSpanishAccents(toolNicheMap[niche].label)}
-                              </Badge>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div onClick={(event) => event.stopPropagation()}>
-                        <ToolInteractionButtons
-                          className="justify-end"
-                          favoriteActive={isFavorited(tool.name)}
-                          favoriteCount={getFavoriteCount(tool.name)}
-                          favoritePending={isFavoritePending(tool.name)}
-                          saveActive={isSaved(tool.name)}
-                          savePending={isSavePending(tool.name)}
-                          onFavoriteClick={() => void handleFavoriteClick(tool.name)}
-                          onSaveClick={() => void handleSaveClick(tool.name)}
-                        />
-                      </div>
+                  {/* Info */}
+                  <div className="min-w-0 flex-1">
+                    <h2 className="truncate text-[15px] font-black tracking-tight text-zinc-900">
+                      {tool.name}
+                    </h2>
+                    <div className="mt-1.5 flex flex-wrap gap-1.5">
+                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+                        {withSpanishAccents(tool.category)}
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-500">
+                        {withSpanishAccents(tool.kind)}
+                      </span>
+                      {tool.niches.slice(0, 1).map((niche) => (
+                        <span
+                          key={`${tool.name}-${niche}`}
+                          className="inline-flex items-center rounded-full bg-zinc-50 border border-zinc-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-zinc-400"
+                        >
+                          {withSpanishAccents(toolNicheMap[niche].label)}
+                        </span>
+                      ))}
                     </div>
-                  </article>
-                ))}
-              </div>
-            )}
-          </div>
+                  </div>
+
+                  {/* Acciones */}
+                  <div onClick={(e) => e.stopPropagation()} className="shrink-0">
+                    <ToolInteractionButtons
+                      className="justify-end"
+                      favoriteActive={isFavorited(tool.name)}
+                      favoriteCount={getFavoriteCount(tool.name)}
+                      favoritePending={isFavoritePending(tool.name)}
+                      saveActive={isSaved(tool.name)}
+                      savePending={isSavePending(tool.name)}
+                      onFavoriteClick={() => void handleFavoriteClick(tool.name)}
+                      onSaveClick={() => void handleSaveClick(tool.name)}
+                    />
+                  </div>
+                </article>
+              ))}
+            </div>
+          )}
         </section>
+
       </div>
 
       <ToolDetailsModal
@@ -240,6 +221,46 @@ const Library = () => {
         isOpen={Boolean(selectedTool)}
         onClose={() => setSelectedTool(null)}
       />
+
+      {/* ─── Lightbox logo ───────────────────────────────────────── */}
+      {logoPreview && (
+        <div
+          className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setLogoPreview(null)}
+        >
+          <div
+            className="relative flex flex-col items-center gap-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Cerrar */}
+            <button
+              onClick={() => setLogoPreview(null)}
+              className="absolute -top-12 right-0 flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition-all hover:bg-white/20"
+              aria-label="Cerrar"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            {/* Logo ampliado */}
+            <div className="flex h-40 w-40 items-center justify-center rounded-[36px] border border-white/20 bg-white shadow-[0_32px_80px_rgba(0,0,0,0.5)] overflow-hidden">
+              <ToolLogo
+                name={logoPreview.name}
+                domain={logoPreview.domain}
+                className="h-28 w-28 border-none bg-transparent"
+                imageClassName="p-0"
+              />
+            </div>
+
+            {/* Nombre */}
+            <p className="text-[15px] font-black tracking-tight text-white">
+              {logoPreview.name}
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

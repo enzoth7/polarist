@@ -90,13 +90,13 @@ const AIBenchmarkCharts = () => {
 
   if (loading) return (
     <div className="flex h-96 items-center justify-center bg-black">
-      <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#CCFF00] border-t-transparent"></div>
+      <div className="h-8 w-8 animate-spin rounded-full border-4 border-white border-t-transparent"></div>
     </div>
   );
 
   const charts = [
     { title: "INTELIGENCIA", key: 'intelligence' as const, color: "#9333ea" },
-    { title: "VELOCIDAD", key: 'speed' as const, color: "#CCFF00" },
+    { title: "VELOCIDAD", key: 'speed' as const, color: "#ffffff" },
     { title: "PRECIO", key: 'price' as const, color: "#f97316" }
   ];
 
@@ -207,7 +207,7 @@ const AIBenchmarkCharts = () => {
       <div className="mt-20 flex flex-col items-center gap-6">
         <div className="h-[1px] w-40 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
         <p className="text-[10px] text-zinc-600 font-bold tracking-widest uppercase">
-          Powered by <a href="https://artificialanalysis.ai" target="_blank" rel="noopener noreferrer" className="text-[#CCFF00] hover:underline">Artificial Analysis</a>
+          Powered by <a href="https://artificialanalysis.ai" target="_blank" rel="noopener noreferrer" className="text-white hover:underline">Artificial Analysis</a>
         </p>
       </div>
     </div>

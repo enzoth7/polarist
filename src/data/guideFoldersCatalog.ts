@@ -1,4 +1,4 @@
-export type GuideFolderKind = "stats" | "marketing" | "prompts" | "timeline" | "design" | "automation";
+export type GuideFolderKind = "social" | "web" | "visual" | "decision" | "strategy" | "timeline" | "terms" | "prompts" | "memory";
 
 export type GuideFolderCard = {
   id: string;
@@ -10,46 +10,67 @@ export type GuideFolderCard = {
 
 export const guideFoldersCatalog: GuideFolderCard[] = [
   {
-    id: "recursos",
-    eyebrow: "Recursos",
-    title: "World class resources at your fingertips",
-    description: "Explorá {count}+ conceptos prácticos para dominar IA desde cero.",
-    kind: "stats",
+    id: "social",
+    eyebrow: "Social Media",
+    title: "Bases de Redes Sociales",
+    description: "Patrones de atención, jerarquía algorítmica y los principios inmutables para el contenido orgánico.",
+    kind: "social",
   },
   {
-    id: "marketing",
-    eyebrow: "Marketing",
-    title: "Campañas y contenido listos para accionar",
-    description: "Ideas, copies y workflows para crecer sin fricción operativa.",
-    kind: "marketing",
+    id: "web",
+    eyebrow: "Desarrollo Web",
+    title: "Estructuras de Internet",
+    description: "Cómo funciona la web, frameworks básicos y la lógica elemental para entender software sin programar.",
+    kind: "web",
   },
   {
-    id: "prompts",
-    eyebrow: "Prompts",
-    title: "Prompts claros para mejores resultados",
-    description: "Plantillas listas para ventas, soporte y creación de contenido.",
-    kind: "prompts",
+    id: "visual",
+    eyebrow: "Arte & Diseño",
+    title: "Conceptos Visuales",
+    description: "Composición espacial, teoría de jerarquías y estéticas premium sin necesidad de ser diseñador.",
+    kind: "visual",
   },
   {
-    id: "historia",
-    eyebrow: "Historia de IA",
-    title: "La IA no es nueva",
-    description: "Un vistazo rápido a los hitos que hicieron posible la IA actual.",
+    id: "decision",
+    eyebrow: "Criterio Tecnológico",
+    title: "Cuándo Usar IA (y Cuándo No)",
+    description: "Un marco de decisión sólido para delegar lo correcto y mantener el trabajo manual donde aporta valor.",
+    kind: "decision",
+  },
+  {
+    id: "strategy",
+    eyebrow: "Diferenciación",
+    title: "Destruye la Homogeneidad",
+    description: "La IA estandariza. Descubre los pilares tácticos para que tu marca evada el tono robótico y predomine.",
+    kind: "strategy",
+  },
+  {
+    id: "timeline",
+    eyebrow: "Historia de la IA",
+    title: "Origen de las Máquinas",
+    description: "El linaje directo: desde el hardware básico hasta los cerebros sintéticos que levantan mundos.",
     kind: "timeline",
   },
   {
-    id: "diseno",
-    eyebrow: "Diseño con IA",
-    title: "Diseño visual sin ruido",
-    description: "Composición, estilo y consistencia para piezas que se vean premium.",
-    kind: "design",
+    id: "terms",
+    eyebrow: "Glosario Oficial",
+    title: "Términos Básicos de IA",
+    description: "Inferencia, Tokens, Perceptrones. La guía de léxico definitiva para hablar de tecnología con autoridad.",
+    kind: "terms",
   },
   {
-    id: "automatizacion",
-    eyebrow: "Automatización",
-    title: "Automatizá tareas con lógica simple",
-    description: "Conectá herramientas y armá procesos que se ejecuten solos.",
-    kind: "automation",
+    id: "prompts",
+    eyebrow: "Ingeniería Prompt",
+    title: "Prompts Validados",
+    description: "Fórmulas calificadas de alta precisión. Listas para inyectar y explotar algoritmos de cualquier motor.",
+    kind: "prompts",
+  },
+  {
+    id: "memory",
+    eyebrow: "Context Molding",
+    title: "Inyectando Memoria",
+    description: "La técnica maestra para nutrir LLMs. Archivos base para guiar la personalidad de GPTs y Gems.",
+    kind: "memory",
   },
 ];
 

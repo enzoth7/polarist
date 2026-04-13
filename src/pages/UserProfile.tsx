@@ -3,10 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowUpDown,
   FolderOpen,
-  LogOut,
   Search,
-  Settings,
+  Sparkles,
+  Trash2,
+  X,
 } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
@@ -138,6 +140,11 @@ const UserProfile = () => {
   const [activeSavedFilter, setActiveSavedFilter] = useState<SavedFilterKey>("all");
   const [toolsSortOrder, setToolsSortOrder] = useState<SavedOrder>("recent");
   const [resourcesSortOrder, setResourcesSortOrder] = useState<SavedOrder>("recent");
+  const [showImagePreview, setShowImagePreview] = useState(false);
+
+  const goToSettings = () => {
+    navigate(routes.appSettings);
+  };
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
   const savedGuideOwnerId = isOwnProfile ? user?.id : "__disabled__";
@@ -241,9 +248,7 @@ const UserProfile = () => {
     );
   }
 
-  const goToSettings = () => {
-    navigate(routes.appSettings);
-  };
+
 
   return (
     <div className="min-h-full bg-background px-4 pb-24 pt-5 md:px-6 md:pb-12">
@@ -274,10 +279,8 @@ const UserProfile = () => {
                 <div className="flex items-start justify-between gap-3">
                   <button
                     type="button"
-                    onClick={isOwnProfile ? goToSettings : undefined}
-                    className={`inline-flex items-center justify-center rounded-full text-left transition ${
-                      isOwnProfile ? "hover:opacity-95" : ""
-                    }`}
+                    onClick={() => setShowImagePreview(true)}
+                    className="group relative inline-flex items-center justify-center rounded-full text-left transition hover:opacity-95 active:scale-95"
                   >
                     <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full text-xl font-semibold text-white">
                       {profile.avatar_url ? (
@@ -290,36 +293,11 @@ const UserProfile = () => {
                         <span>{getInitials(profile.full_name)}</span>
                       )}
                     </div>
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-opacity group-hover:opacity-100">
+                      <Sparkles className="h-5 w-5 text-white/70" />
+                    </div>
                   </button>
 
-                  <div className="flex items-center gap-2">
-                    {isOwnProfile ? (
-                      <Button
-                        type="button"
-                        onClick={() => void handleLogout()}
-                        disabled={isSigningOut}
-                        variant="outline"
-                        className="h-11 rounded-full border-red-500/35 bg-red-500/15 px-4 text-red-700 shadow-[0_14px_30px_-24px_rgba(220,38,38,0.85)] backdrop-blur-md transition hover:bg-red-500/22 hover:text-red-700 disabled:opacity-60 dark:border-red-400/40 dark:bg-red-500/20 dark:text-red-100 dark:hover:bg-red-500/28 dark:hover:text-red-100"
-                      >
-                        <LogOut className="mr-2 h-4 w-4" />
-                        <span className="text-xs font-semibold tracking-[0.02em]">
-                          {isSigningOut ? "Cerrando sesión..." : "Cerrar sesión"}
-                        </span>
-                      </Button>
-                    ) : null}
-
-                    {isOwnProfile ? (
-                      <button
-                        type="button"
-                        onClick={goToSettings}
-                        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-black/10 bg-white/40 text-foreground transition hover:bg-white/65 dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
-                        title="Configuración"
-                        aria-label="Ir a configuración"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </button>
-                    ) : null}
-                  </div>
                 </div>
 
                 <div className="space-y-3">
@@ -619,6 +597,46 @@ const UserProfile = () => {
         isOpen={Boolean(selectedTool)}
         onClose={() => setSelectedTool(null)}
       />
+
+      {/* Modal de Imagen Grande */}
+      <AnimatePresence>
+        {showImagePreview && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
+            onClick={() => setShowImagePreview(false)}
+          >
+            <motion.button
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowImagePreview(false);
+              }}
+            >
+              <X className="h-6 w-6" />
+            </motion.button>
+
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              className="relative aspect-square w-full max-w-2xl overflow-hidden rounded-3xl shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={profile?.avatar_url || "/avatar.jpg"}
+                alt="Avatar grande"
+                className="h-full w-full object-cover"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

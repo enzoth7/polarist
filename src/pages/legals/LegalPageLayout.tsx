@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-
 type LegalPageLayoutProps = {
   eyebrow: string;
   title: string;
@@ -18,28 +16,21 @@ const LegalPageLayout = ({
   showSecondaryGlow = true,
 }: LegalPageLayoutProps) => {
   return (
-    <div className="relative min-h-full overflow-hidden bg-background px-4 py-10 md:px-8 md:py-14">
+    <div className="relative min-h-full overflow-hidden bg-[#F0F2F6] px-4 py-20 md:px-8 md:py-24">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.14),transparent_38%)]"
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.08),transparent_40%)]"
       />
-      {showSecondaryGlow ? (
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.12),transparent_28%)]"
-        />
-      ) : null}
 
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">{eyebrow}</p>
-          <h1 className="mt-3 text-4xl font-black tracking-[-0.04em] text-foreground sm:text-5xl">{title}</h1>
-          <p className="mt-4 text-base leading-8 text-muted-foreground">{description}</p>
+      <div className="relative mx-auto flex w-full max-w-4xl flex-col gap-10">
+        <div className="max-w-3xl px-4 md:px-0">
+          <h1 className="mt-4 text-[clamp(2.5rem,5vw,4.5rem)] font-black tracking-tighter text-zinc-900 leading-[0.95]">{title}</h1>
+          <p className="mt-6 text-lg font-medium leading-relaxed text-zinc-500">{description}</p>
         </div>
 
-        <Card className="rounded-[2rem] border-border/60 bg-card/95 shadow-card backdrop-blur-xl">
-          <CardContent className="p-6 md:p-8">{children}</CardContent>
-        </Card>
+        <div className="bg-white rounded-[2.5rem] p-8 md:p-14 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.03)] border border-white/60">
+          <div className="space-y-10 py-1">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -52,11 +43,9 @@ type LegalSectionProps = {
 
 export const LegalSection = ({ title, children }: LegalSectionProps) => {
   return (
-    <section className="rounded-[1.5rem] border border-border/60 bg-background/70 p-5 shadow-soft">
-      <CardHeader className="px-0 pb-4 pt-0">
-        <CardTitle className="text-xl font-black tracking-tight">{title}</CardTitle>
-      </CardHeader>
-      <CardDescription className="px-0 pt-0 text-sm leading-7 text-muted-foreground">{children}</CardDescription>
+    <section className="space-y-4">
+      <h2 className="text-2xl font-black tracking-tight text-zinc-900">{title}</h2>
+      <div className="text-[15px] leading-relaxed font-medium text-zinc-500">{children}</div>
     </section>
   );
 };

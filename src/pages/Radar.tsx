@@ -1,5 +1,6 @@
 import { CinematicSlider } from "@/components/radar/CinematicSlider";
-import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";
+import { FinalCTA } from "@/components/layout/FinalCTA";
+import { routes } from "@/lib/routes";
 
 const trendItems = [
   {
@@ -8,7 +9,7 @@ const trendItems = [
       "La nueva versión ahora puede leer montañas de información de una sola vez (como libros enteros o decenas de balances) y planificar tareas sola sin que estés encima.",
     accent: "from-amber-300 via-orange-400 to-rose-500",
     glow: "bg-orange-300/35",
-    image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tendencias/0567845538eb96368b4c86e2a7f4e9b2.jpg",
   },
   {
     title: "Google hace su IA más barata y veloz",
@@ -16,7 +17,7 @@ const trendItems = [
       "Presentaron a Gemini 3.1 Flash-Lite, una inteligencia muchísimo más rápida pensada para emprendedores que necesitan hacer 10.000 tareas automáticas de golpe sin arruinarse pagando.",
     accent: "from-cyan-300 via-sky-500 to-indigo-600",
     glow: "bg-sky-300/30",
-    image: "https://images.unsplash.com/photo-1573164713988-8665fc963095?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tendencias/3f0b63682c405e9c5b70bcbb834efe37.jpg",
   },
   {
     title: "La próxima generación de cerebros para la IA",
@@ -24,7 +25,7 @@ const trendItems = [
       "NVIDIA, la empresa que fabrica las 'placas madre' de las inteligencias artificiales, anunció Rubin. Serán el corazón de la IA para que razonen mucho más como humanos.",
     accent: "from-fuchsia-300 via-pink-500 to-violet-600",
     glow: "bg-fuchsia-300/30",
-    image: "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tendencias/fe196a3f0e0aa1a5f022f95b626c0f9d.jpg",
   },
   {
     title: "La IA ya empieza a usar el mouse por vos",
@@ -32,32 +33,33 @@ const trendItems = [
       "Los creadores de Claude probaron un modelo de IA que literalmente toma control de tu computadora (Mac) para organizar tus archivos y cliquear programas autónomamente.",
     accent: "from-emerald-300 via-teal-500 to-cyan-600",
     glow: "bg-emerald-300/30",
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tendencias/f57b5c5b5bee379afb03805e94b4b462.jpg",
   },
   {
     title: "Los bots que trabajan solos ya son reales",
     description:
       "Muchas startups están lanzando software que no te pide chatear, sino que vos le decis 'Buscá los mejores clientes en internet y preparales un email a cada uno', y lo hace.",
-    accent: "from-yellow-300 via-lime-400 to-emerald-500",
-    glow: "bg-lime-300/30",
-    image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=800&q=80",
+    accent: "from-zinc-300 via-zinc-400 to-zinc-500",
+    glow: "bg-zinc-300/30",
+    image: "/images/tendencias/f39cb2c7bc7c67bc80018275b488c78e.jpg",
   },
 ] as const;
 
 const Radar = () => {
   return (
-    <div className="min-h-full bg-background px-4 pb-24 pt-2 md:px-8 md:pb-12 md:pt-3 xl:px-10">
+    <div className="min-h-full bg-background pb-0 pt-0">
       <div className="flex w-full flex-col gap-10">
         <section className="space-y-4">
-          <div className="relative left-1/2 w-screen -translate-x-1/2">
-            <div className="mx-auto w-full px-4 md:px-8 xl:px-10">
-              <CinematicSlider items={trendItems} />
-            </div>
-          </div>
+          <CinematicSlider items={trendItems} />
         </section>
-
-        <RadarMetricsBoard />
       </div>
+
+      <FinalCTA 
+        title="Mantenete a la vanguardia"
+        description="La IA evoluciona cada día. No te quedes atrás y seguí explorando las herramientas que están cambiando el mercado."
+        buttonText="Ver herramientas"
+        to={routes.appTools}
+      />
     </div>
   );
 };

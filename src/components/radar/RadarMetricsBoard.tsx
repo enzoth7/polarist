@@ -23,8 +23,9 @@ import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const SERIF_TITLE_STYLE = {
-  fontFamily: "'Arno Pro Display', 'Arno Pro', Georgia, serif",
-} as const;
+  fontFamily: '"Playfair Display", serif',
+  fontWeight: 600,
+};
 
 const CARD_CONFIG: Record<
   RadarMetricKey,
@@ -141,7 +142,6 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
         fontSize={10}
         fontWeight={500}
         fill="#666"
-        style={{ fontFamily: "Inter, system-ui, sans-serif" }}
       >
         {point.tickLabel}
       </text>
@@ -224,7 +224,6 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
         <div className="min-w-0">
           <h3
             className="text-[2rem] leading-none tracking-[-0.02em] text-gray-900"
-            style={SERIF_TITLE_STYLE}
           >
             {config.title}
           </h3>
@@ -352,18 +351,6 @@ export function RadarMetricsBoard() {
           </article>
         ) : null}
 
-        <div className="flex justify-center pt-1">
-          <Button
-            asChild
-            variant="outline"
-            className="rounded-full border-white/20 bg-transparent px-6 text-white hover:bg-white/6 hover:text-white"
-          >
-            <Link to={routes.appTools}>
-              Ver Herramientas
-              <ArrowRight className="ml-2 h-4 w-4" />
-            </Link>
-          </Button>
-        </div>
       </div>
     </section>
   );

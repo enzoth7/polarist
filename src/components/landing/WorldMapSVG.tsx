@@ -196,7 +196,7 @@ const WorldMapSVG = () => {
               y1={connection.y1}
               x2={connection.x2}
               y2={connection.y2}
-              stroke="#CCFF00"
+              stroke="#FFFFFF"
               strokeOpacity="0.2"
               strokeWidth="1"
             />
@@ -208,7 +208,7 @@ const WorldMapSVG = () => {
               cx={node.x}
               cy={node.y}
               r={DOT_RADIUS}
-              fill="#CCFF00"
+              fill="#FFFFFF"
               opacity="0.8"
               className="world-map-svg__active-node"
               style={{ animationDelay: node.delay }}

@@ -13,6 +13,7 @@ import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
 import MobileLayout from "./components/layout/MobileLayout";
 import MobileNav from "./components/layout/MobileNav";
+import ChatAssistant from "./components/ChatAssistant";
 import AboutUs from "./pages/legals/AboutUs";
 import Contact from "./pages/legals/Contact";
 import PrivacyPolicy from "./pages/legals/PrivacyPolicy";
@@ -36,17 +37,19 @@ const queryClient = new QueryClient();
 
 const PublicLayout = () => {
   const location = useLocation();
-  const isLandingRoute = location.pathname === routes.landing;
+  const { status } = useAuth();
+  
+  if (status === "authenticated" && location.pathname === routes.landing) {
+    return <Navigate to={routes.appRadar} replace />;
+  }
 
   return (
-    <div className="relative flex min-h-screen flex-col bg-background">
+    <div className="relative flex min-h-dvh flex-col bg-white">
       <Header />
       <main className="min-h-0 flex-1">
         <Outlet />
       </main>
-      <Footer />
-
-
+      <Footer dark={true} />
     </div>
   );
 };
@@ -134,6 +137,7 @@ const App = () => (
           <Sonner position="top-center" />
           <BrowserRouter>
             <AppRoutes />
+            <ChatAssistant />
           </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>

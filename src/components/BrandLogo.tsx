@@ -13,14 +13,14 @@ const BrandLogo = ({ className, imageClassName, labelClassName, showLabel = true
       <img
         src="/Polarist_logo.jpeg"
         alt="Logo de Polarist"
-        className={cn("h-10 w-10 rounded-sm border border-border object-cover", imageClassName)}
+        className={cn("h-10 w-10 rounded-full border border-border object-cover", imageClassName)}
       />
       {showLabel ? (
         <span
           className={cn("font-body text-foreground", labelClassName)}
-          style={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", fontSize: "1rem" }}
+          style={{ fontWeight: 800, letterSpacing: "-0.02em", fontSize: "1rem" }}
         >
-          POLARIST
+          Polarist
         </span>
       ) : null}
     </div>

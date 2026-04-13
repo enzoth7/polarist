@@ -35,7 +35,7 @@ const fetchUserSavedTools = async (userId: string): Promise<UserSavedToolsResult
     };
   }
 
-  const tools = await fetchTools({ names: toolIds });
+  const tools = await fetchTools({ ids: toolIds });
   const savedToolCreatedAtById = Object.fromEntries(
     sortedToolRows.map((row) => [row.tool_id, row.created_at]),
   );

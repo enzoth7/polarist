@@ -38,14 +38,11 @@ const TermsConditions = () => {
     >
       <div className="space-y-4">
         {termsSections.map((section) => (
-          <section
-            key={section.title}
-            className="rounded-[1.5rem] border border-black/10 bg-white/55 p-5 shadow-[0_20px_34px_-28px_rgba(0,0,0,0.68)] backdrop-blur-md dark:border-white/15 dark:bg-white/[0.06]"
-          >
+          <section key={section.title} className="space-y-3">
             <h2 className="text-xl font-black tracking-tight text-foreground dark:text-white">
               {section.title}
             </h2>
-            <p className="mt-3 text-sm leading-7 text-muted-foreground dark:text-white/72">
+            <p className="text-sm leading-7 text-muted-foreground dark:text-white/72">
               {section.content}
             </p>
           </section>

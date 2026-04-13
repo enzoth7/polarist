@@ -69,7 +69,7 @@ const MobileLayout = () => {
 
           <main
             ref={mainScrollRef}
-            className="relative flex-1 overflow-y-auto pb-8 md:pb-10"
+            className="relative flex-1 overflow-y-auto"
             onTouchStart={handleAppTouchStart}
             onTouchEnd={handleAppTouchEnd}
             onTouchCancel={resetSwipeGesture}
@@ -78,7 +78,10 @@ const MobileLayout = () => {
               <div className="flex-1">
                 <Outlet />
               </div>
-              <Footer className="mt-auto pb-8" />
+              <Footer 
+                className="mt-auto" 
+                dark={true} 
+              />
             </div>
           </main>
         </div>

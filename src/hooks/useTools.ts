@@ -36,6 +36,7 @@ export type ToolItem = {
 type FetchToolsOptions = {
   isBeta?: boolean;
   names?: string[];
+  ids?: string[];
   limit?: number;
 };
 
@@ -109,6 +110,7 @@ export const getToolHref = (tool: Pick<ToolItem, "url" | "domain">) => {
 
 export async function fetchTools(options: FetchToolsOptions = {}) {
   const normalizedNames = normalizeToolNames(options.names);
+  const normalizedIds = normalizeToolNames(options.ids);
 
   // Until the schema has an explicit rank column, created_at is our ordering source.
   let query = supabase
@@ -124,6 +126,10 @@ export async function fetchTools(options: FetchToolsOptions = {}) {
     query = query.in("name", normalizedNames);
   }
 
+  if (normalizedIds.length > 0) {
+    query = query.in("id", normalizedIds);
+  }
+
   const { data, error } = await query;
 
   if (error) {
@@ -136,6 +142,13 @@ export async function fetchTools(options: FetchToolsOptions = {}) {
     const toolsByName = new Map(tools.map((tool) => [tool.name, tool]));
     tools = normalizedNames
       .map((name) => toolsByName.get(name))
+      .filter((tool): tool is ToolItem => Boolean(tool));
+  }
+
+  if (normalizedIds.length > 0) {
+    const toolsById = new Map(tools.map((tool) => [tool.id, tool]));
+    tools = normalizedIds
+      .map((id) => toolsById.get(id))
       .filter((tool): tool is ToolItem => Boolean(tool));
   }
 
@@ -155,6 +168,7 @@ export function useToolsQuery(options: UseToolsQueryOptions = {}) {
       {
         isBeta: fetchOptions.isBeta ?? null,
         names: normalizeToolNames(fetchOptions.names),
+        ids: normalizeToolNames(fetchOptions.ids),
         limit: fetchOptions.limit ?? null,
       },
     ],

@@ -32,7 +32,7 @@ const ParticleSphere = () => {
         {points.map((p, i) => (
           <motion.div
             key={i}
-            className="absolute rounded-full bg-foreground shadow-[0_0_10px_rgba(0,0,0,0.1)] dark:shadow-[0_0_10px_rgba(255,255,255,0.1)]"
+            className="absolute rounded-full bg-white shadow-[0_0_12px_rgba(255,255,255,0.3)]"
             style={{
               width: "2.5px",
               height: "2.5px",
@@ -57,7 +57,7 @@ const ParticleSphere = () => {
       </motion.div>
       
       {/* Aura/Resplandor Central de Marca - Adaptativo */}
-      <div className="absolute inset-0 m-auto h-[180px] w-[180px] rounded-full bg-[#CCFF00]/10 dark:bg-[#CCFF00]/5 blur-[70px] -z-10" />
+      <div className="absolute inset-0 m-auto h-[180px] w-[180px] rounded-full bg-foreground/10 dark:bg-foreground/5 blur-[70px] -z-10" />
       
       {/* Sombreado de Profundidad Sutil */}
       <div className="absolute inset-0 m-auto h-[120px] w-[120px] rounded-full bg-foreground/5 blur-[40px] -z-10" />
@@ -110,7 +110,9 @@ const Login = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center overflow-hidden bg-background px-6 pb-12 pt-12 transition-colors duration-500 text-foreground">
+    <div className="relative flex min-h-screen flex-col items-center overflow-hidden bg-[#111113] px-6 pb-12 pt-12 transition-colors duration-500 text-white">
+      <div className="absolute inset-0 z-0 bg-grid-white/[0.02] pointer-events-none" />
+      
       {/* Overlay de Carga Mejorado */}
       <AnimatePresence>
         {isLoading && (
@@ -118,14 +120,14 @@ const Login = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-background/90 backdrop-blur-md"
+            className="absolute inset-0 z-[100] flex flex-col items-center justify-center bg-[#111113]/95 backdrop-blur-md"
           >
             <div className="relative flex flex-col items-center gap-6">
-              <Loader2 className="h-10 w-10 animate-spin text-[#CCFF00]" />
+              <Loader2 className="h-10 w-10 animate-spin text-[#ccff00]" />
               <motion.p 
                 animate={{ opacity: [0.5, 1, 0.5] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
-                className="text-xs font-bold tracking-[0.3em] text-foreground uppercase"
+                className="text-xs font-bold tracking-[0.3em] text-white uppercase"
               >
                 Iniciando Sesión...
               </motion.p>
@@ -134,27 +136,20 @@ const Login = () => {
         )}
       </AnimatePresence>
 
-      {/* Logo arriba del todo */}
-       <div className="mb-12 flex justify-center z-50">
-        <BrandLogo
-          className="gap-3"
-          imageClassName="h-12 w-12 rounded-xl"
-          labelClassName="text-[14px] tracking-[0.25em] font-bold"
-        />
-      </div>
 
-      <div className="flex flex-1 flex-col items-center justify-center w-full max-w-lg">
+
+      <div className="flex flex-1 flex-col items-center justify-center w-full max-w-lg relative z-10">
         
         {/* Esfera de Partículas con Aura Adaptativa */}
-        <div className="mb-8 flex items-center justify-center">
+        <div className="mb-10 flex items-center justify-center">
           <ParticleSphere />
         </div>
 
         <div className="w-full text-center z-10">
           <motion.h1 
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl"
+            className="mb-4 text-5xl font-black leading-tight tracking-tighter text-white sm:text-6xl"
           >
             Bienvenidos
           </motion.h1>
@@ -163,41 +158,39 @@ const Login = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="mx-auto max-w-md text-base font-medium leading-relaxed text-muted-foreground opacity-90 sm:text-lg"
+            className="mx-auto max-w-sm text-base font-medium leading-relaxed text-zinc-400 opacity-90 sm:text-lg"
           >
-            Tu punto de partida para dominar la IA.
+            Tu punto de partida para <span className="text-white font-bold">dominar la IA.</span>
           </motion.p>
         </div>
       </div>
 
       {/* Botones abajo */}
-      <div className="mt-auto flex w-full max-w-sm flex-col gap-4 z-10 px-4">
+      <div className="mt-8 flex w-full max-w-sm flex-col gap-5 z-10 px-4">
         <Button
           onClick={handleGoogleLogin}
           disabled={isLoading}
-          className="h-[60px] w-full rounded-2xl border-none bg-foreground text-[17px] font-bold tracking-wide text-background shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] transition-all hover:scale-[1.02] hover:bg-foreground/90 active:scale-[0.98]"
+          className="h-[64px] w-full rounded-full border-none bg-white text-[16px] font-black tracking-tight text-black shadow-[0_20px_40px_-12px_rgba(255,255,255,0.1)] transition-all hover:scale-[1.03] hover:bg-white/95 hover:shadow-[0_25px_50px_-12px_rgba(255,255,255,0.15)] active:scale-[0.97]"
           variant="default"
         >
           <GoogleIcon />
           Continuar con Google
         </Button>
 
-        <Button asChild variant="ghost" className="h-[55px] group rounded-2xl text-muted-foreground transition-all hover:bg-[#CCFF00] hover:text-[#0f1402] hover:shadow-[0_12px_32px_rgba(204,255,0,0.15)] shadow-[0_4px_12px_rgba(0,0,0,0.1)] active:scale-95 text-sm font-bold">
+        <Button asChild variant="ghost" className="h-[55px] group rounded-full text-zinc-500 transition-all hover:bg-white/5 hover:text-white active:scale-95 text-sm font-bold border border-white/5">
           <Link to={routes.landing} className="flex items-center justify-center">
-            <ArrowLeft className="mr-2 h-4 w-4 transition-colors group-hover:text-[#0f1402]" />
+            <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
             Volver al inicio
           </Link>
         </Button>
 
-        <p className="mt-4 px-8 text-center text-[11px] font-medium leading-relaxed text-muted-foreground opacity-60">
-          Tu privacidad es nuestra prioridad.
-          <br />
-          Explora con confianza.
+        <p className="mt-6 px-4 text-center text-[10px] font-bold uppercase tracking-[0.15em] text-zinc-500 opacity-50 whitespace-nowrap">
+          Privacidad garantizada • Polarist 2026
         </p>
       </div>
 
       {/* Brillo de fondo sutil */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[600px] w-[600px] rounded-full bg-foreground/5 blur-[120px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-10 h-[500px] w-[500px] rounded-full bg-[#ccff00]/5 blur-[120px]" />
     </div>
   );
 };

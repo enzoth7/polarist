@@ -2,6 +2,7 @@ import { ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { conceptosBasicos } from "@/components/education/ConceptosBasicos";
+import { FolderDetailView } from "@/components/guides/FolderDetailView";
 import { guideFoldersCatalog, type GuideFolderCard } from "@/data/guideFoldersCatalog";
 import { cn } from "@/lib/utils";
 
@@ -12,9 +13,28 @@ const slatTransition = [
   "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)",
 ].join(", ");
 
+const folderTones = [
+  { fill: "#D8CCB5", ink: "#413F3E" },
+  { fill: "#C4C4C2", ink: "#413F3E" },
+  { fill: "#8C7F72", ink: "#F4EFE6" },
+  { fill: "#6A5E54", ink: "#F4EFE6" },
+  { fill: "#8C7F72", ink: "#F3EEE6" },
+  { fill: "#413F3E", ink: "#F2ECE3" },
+] as const;
+
+const folderTexture = (isDark: boolean) =>
+  `repeating-linear-gradient(
+    180deg,
+    ${isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.14)"} 0px,
+    ${isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.14)"} 1px,
+    ${isDark ? "rgba(0,0,0,0.045)" : "rgba(0,0,0,0.03)"} 1px,
+    ${isDark ? "rgba(0,0,0,0.045)" : "rgba(0,0,0,0.03)"} 2px
+  )`;
+
 const Guides = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
 
   const coverCards = useMemo<GuideFolderCard[]>(
     () =>
@@ -28,101 +48,163 @@ const Guides = () => {
 
   const expandedIndex = hoveredIndex ?? activeIndex;
 
+  if (openedFolderId) {
+    return (
+      <FolderDetailView
+        folderId={openedFolderId}
+        onClose={() => setOpenedFolderId(null)}
+      />
+    );
+  }
+
   return (
-    <div className="min-h-full bg-[#020202] px-4 pb-24 pt-8 md:px-8 md:pb-16 md:pt-10">
-      <div className="relative mx-auto w-full max-w-[1240px]">
-        <section className="relative overflow-hidden rounded-[34px] border border-white/10 bg-black p-3 md:p-5">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_8%_14%,rgba(255,255,255,0.08),transparent_38%),radial-gradient(circle_at_90%_84%,rgba(255,255,255,0.06),transparent_44%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_22%,rgba(255,255,255,0)_68%)]" />
+    <div className="min-h-full bg-[#F0F2F6] px-4 pb-24 pt-8 md:px-8 md:pb-16 md:pt-10">
+      <div className="mx-auto w-full max-w-[95vw] 2xl:max-w-[1400px]">
+        <div className="mb-10 flex flex-col items-center justify-center px-2 md:mb-14">
+          <h1 className="text-center text-4xl font-black tracking-tight text-[#1a1a1a] sm:text-5xl lg:text-7xl" style={{ letterSpacing: "-0.03em" }}>
+            Recursos
+          </h1>
+        </div>
 
-          <div className="relative z-10 mb-5 px-2 md:mb-7">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/55">Guides</p>
-            <h1 className="mt-2 text-[1.55rem] font-semibold leading-[1.08] text-white md:text-[2rem]">
-              Horizontal Expanding Slat Accordion
-            </h1>
-            <p className="mt-2 max-w-[60ch] text-sm leading-relaxed text-white/65 md:text-[0.95rem]">
-              Hover para expandir cada slat. En móvil, tocá una tarjeta para abrir su contenido.
-            </p>
-          </div>
+        <div
+          className="relative flex flex-col gap-3 pt-2 md:h-[520px] md:flex-row md:pt-4"
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          {coverCards.map((card, index) => {
+            const isExpanded = index === expandedIndex;
+            const tone = folderTones[index % folderTones.length];
+            const isDarkTone = tone.ink !== "#413F3E";
+            const tabPositionStyle = { left: "8%" };
+            const tabClipPath = "polygon(0 0, 75% 0, 85% 26%, 100% 26%, 100% 100%, 0 100%)";
+            const tabShapeStyle = {
+              ...tabPositionStyle,
+              top: 0,
+              width: "min(70%,140px)",
+              height: 44,
+              clipPath: tabClipPath,
+            };
+            const bodyTop = 28;
+            const paperSurfaceStyle = {
+              backgroundColor: tone.fill,
+              backgroundImage: folderTexture(isDarkTone),
+            };
+            const mutedInk = isDarkTone ? "rgba(244,239,230,0.74)" : "rgba(65,63,62,0.74)";
+            const fadedInk = isDarkTone ? "rgba(244,239,230,0.55)" : "rgba(65,63,62,0.56)";
+            const ctaBackground = isDarkTone ? "rgba(244,239,230,0.16)" : "rgba(65,63,62,0.1)";
+            const ctaBorder = isDarkTone ? "rgba(244,239,230,0.34)" : "rgba(65,63,62,0.24)";
 
-          <div
-            className="relative z-10 flex flex-col gap-3 md:h-[520px] md:flex-row"
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {coverCards.map((card, index) => {
-              const isExpanded = index === expandedIndex;
-
-              return (
-                <article
-                  id={`guide-${card.id}`}
-                  key={card.id}
-                  tabIndex={0}
-                  aria-expanded={isExpanded}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  onFocus={() => setHoveredIndex(index)}
-                  onClick={() => setActiveIndex(index)}
-                  style={{ flexGrow: isExpanded ? 4 : 1, transition: slatTransition }}
-                  className={cn(
-                    "group relative min-h-[170px] min-w-0 overflow-hidden rounded-[24px] border bg-white/[0.03] p-0 backdrop-blur-[14px]",
-                    "md:basis-0 md:cursor-pointer",
-                    isExpanded ? "border-white/35 bg-white/[0.09]" : "border-white/20 bg-white/[0.04]",
-                  )}
+            return (
+              <article
+                id={`guide-${card.id}`}
+                key={card.id}
+                tabIndex={0}
+                aria-expanded={isExpanded}
+                onMouseEnter={() => setHoveredIndex(index)}
+                onFocus={() => setHoveredIndex(index)}
+                onClick={() => setActiveIndex(index)}
+                style={{ flexGrow: isExpanded ? 10 : 1, transition: slatTransition }}
+                className={cn(
+                  "group relative min-h-[170px] min-w-0 overflow-visible border border-transparent p-0",
+                  "md:basis-0 md:cursor-pointer",
+                  isExpanded ? "z-20 -translate-y-0.5" : "z-10",
+                )}
+                aria-label={`Carpeta ${card.title}`}
+              >
+                <div
+                  className="pointer-events-none absolute inset-0 z-20"
+                  style={{
+                    filter: isExpanded ?
+                        "drop-shadow(0 32px 48px rgba(0,0,0,0.15)) drop-shadow(0 12px 24px rgba(0,0,0,0.08))"
+                      : "drop-shadow(0 16px 36px rgba(0,0,0,0.07)) drop-shadow(0 8px 16px rgba(0,0,0,0.04))",
+                  }}
                 >
-                  <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.05)_0%,rgba(255,255,255,0.02)_34%,rgba(255,255,255,0)_72%)]" />
-                  <div className="pointer-events-none absolute left-4 right-4 top-0 h-px bg-white/30" />
+                  <div
+                    className="absolute shadow-[inset_1.5px_2px_3px_rgba(255,255,255,0.5),inset_-1px_-1px_3px_rgba(0,0,0,0.08)]"
+                    style={{
+                      ...tabShapeStyle,
+                      ...paperSurfaceStyle,
+                      borderTopLeftRadius: 16,
+                      borderTopRightRadius: 16,
+                    }}
+                  />
+                  <div
+                    className="absolute inset-x-0 bottom-0 shadow-[inset_1.5px_2px_3px_rgba(255,255,255,0.5),inset_-1.5px_-2.5px_4px_rgba(0,0,0,0.1)]"
+                    style={{
+                      top: bodyTop,
+                      ...paperSurfaceStyle,
+                      borderRadius: 16,
+                    }}
+                  />
+                </div>
 
-                  <div className="relative flex h-full min-h-[170px] flex-col p-5 md:min-h-0 md:p-6">
-                    <p className="w-fit rounded-full border border-white/14 bg-white/[0.05] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-white/78">
-                      {card.eyebrow}
+                <div className="relative z-40 flex h-full min-h-[170px] flex-col overflow-hidden p-5 pt-[4.9rem] md:min-h-0 md:p-6 md:pt-[5.25rem]">
+                  <span
+                    className={cn(
+                      "absolute left-5 top-[38px] md:left-6 md:top-[42px] text-[10.5px] font-semibold uppercase tracking-[0.18em]",
+                      isExpanded ? "opacity-100 delay-150 duration-300" : "opacity-0 duration-[50ms]"
+                    )}
+                    style={{ color: mutedInk }}
+                  >
+                    {card.eyebrow}
+                  </span>
+                  <h2
+                    className={cn(
+                      "pointer-events-none absolute bottom-6 left-8 hidden max-h-[80%] overflow-hidden whitespace-nowrap text-[0.82rem] font-semibold uppercase tracking-[0.22em] [text-orientation:mixed] [writing-mode:vertical-rl] md:block",
+                      isExpanded ? "opacity-0" : "opacity-100",
+                    )}
+                    style={{
+                      transition: isExpanded ? "opacity 0.05s ease" : "opacity 0.5s ease 0.4s",
+                      color: mutedInk,
+                    }}
+                  >
+                    {card.title}
+                  </h2>
+
+                  <h2
+                    className={cn(
+                      "mt-3 text-balance text-[1.02rem] font-semibold leading-tight transition-[max-height,opacity] duration-300 md:hidden",
+                      isExpanded ? "max-h-0 opacity-0" : "max-h-20 opacity-100",
+                    )}
+                    style={{ color: tone.ink }}
+                  >
+                    {card.title}
+                  </h2>
+
+                  <div
+                    className={cn(
+                      "mt-auto min-w-[280px] w-full max-w-[36ch] shrink-0 text-left transition-all",
+                      isExpanded ? "translate-y-0 opacity-100 delay-[150ms] duration-500" : "pointer-events-none translate-y-6 opacity-0 delay-0 duration-[50ms]",
+                    )}
+                    style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
+                  >
+                    <h3 className="text-balance text-[1.12rem] font-semibold leading-[1.14] md:text-[1.5rem]" style={{ color: tone.ink }}>
+                      {card.title}
+                    </h3>
+                    <p className="mt-3 max-w-[38ch] text-pretty text-[0.84rem] leading-relaxed md:text-[0.93rem]" style={{ color: fadedInk }}>
+                      {card.description}
                     </p>
 
-                    <h2
-                      className={cn(
-                        "pointer-events-none absolute bottom-5 left-1/2 hidden max-h-[80%] -translate-x-1/2 overflow-hidden whitespace-nowrap text-[0.82rem] font-semibold uppercase tracking-[0.22em] text-white/88 [text-orientation:mixed] [writing-mode:vertical-rl] md:block",
-                        isExpanded ? "translate-y-5 opacity-0" : "translate-y-0 opacity-100",
-                      )}
-                      style={{ transition: "opacity 0.45s ease, transform 0.45s ease" }}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setOpenedFolderId(card.id);
+                      }}
+                      className="mt-6 inline-flex items-center gap-2 rounded-full border px-7 py-3 text-[11.5px] font-bold uppercase tracking-[0.20em] transition-all hover:scale-105 active:scale-95 shadow-sm"
+                      style={{
+                        borderColor: ctaBorder,
+                        backgroundColor: ctaBackground,
+                        color: mutedInk,
+                      }}
                     >
-                      {card.title}
-                    </h2>
-
-                    <h2
-                      className={cn(
-                        "mt-3 text-balance text-[1.02rem] font-semibold leading-tight text-white transition-[max-height,opacity] duration-300 md:hidden",
-                        isExpanded ? "max-h-0 opacity-0" : "max-h-20 opacity-100",
-                      )}
-                    >
-                      {card.title}
-                    </h2>
-
-                    <div
-                      className={cn(
-                        "mt-auto max-w-[36ch] text-left transition-all duration-500",
-                        isExpanded ? "translate-y-0 opacity-100 delay-150" : "pointer-events-none translate-y-6 opacity-0 delay-0",
-                      )}
-                      style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
-                    >
-                      <h3 className="text-balance text-[1.12rem] font-semibold leading-[1.14] text-white md:text-[1.5rem]">
-                        {card.title}
-                      </h3>
-                      <p className="mt-3 max-w-[38ch] text-pretty text-[0.84rem] leading-relaxed text-white/72 md:text-[0.93rem]">
-                        {card.description}
-                      </p>
-
-                      <a
-                        href={`#guide-${card.id}`}
-                        className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/[0.06] px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.18em] text-white transition-colors hover:border-white/60 hover:bg-white/[0.16]"
-                      >
-                        Preview
-                        <ArrowUpRight className="h-3.5 w-3.5" />
-                      </a>
-                    </div>
+                      Comenzar
+                      <ArrowUpRight className="h-4 w-4" />
+                    </button>
                   </div>
-                </article>
-              );
-            })}
-          </div>
-        </section>
+                </div>
+              </article>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

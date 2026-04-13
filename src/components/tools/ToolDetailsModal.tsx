@@ -33,7 +33,7 @@ export function ToolDetailsModal({
       {selectedTool ? (
         <DialogContent
           overlayClassName="bg-black/45 backdrop-blur-[3px] data-[state=open]:fade-in-0 data-[state=closed]:fade-out-0"
-          closeClassName="-right-2 -top-2 z-[60] h-10 w-10 rounded-full border border-[#CCFF00]/60 bg-[#6f9400] p-0 text-[#0d1204] opacity-100 shadow-[0_16px_32px_-20px_rgba(0,0,0,0.72)] backdrop-blur-xl hover:bg-[#7fa600] focus:ring-[#CCFF00]/75 dark:border-[#CCFF00]/60 dark:bg-[#6f9400] dark:text-[#0d1204] dark:hover:bg-[#7fa600] sm:-right-4 sm:-top-4"
+          closeClassName="-right-2 -top-2 z-[60] h-10 w-10 rounded-full border border-primary/60 bg-primary p-0 text-primary-foreground opacity-100 shadow-[0_16px_32px_-20px_rgba(0,0,0,0.72)] backdrop-blur-xl hover:bg-primary/90 focus:ring-primary/75 dark:border-primary/60 dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90 sm:-right-4 sm:-top-4"
           className="overflow-visible rounded-[30px] border border-black/10 bg-white/60 p-0 text-foreground shadow-[0_28px_64px_-38px_rgba(7,12,9,0.85)] backdrop-blur-[22px] duration-500 ease-out data-[state=open]:zoom-in-[98%] data-[state=closed]:zoom-out-[98%] data-[state=open]:slide-in-from-top-[50.5%] data-[state=closed]:slide-out-to-top-[50.5%] dark:border-white/20 dark:bg-white/[0.06] dark:text-white sm:max-w-[650px]"
         >
           <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.68)_0%,rgba(255,255,255,0.34)_26%,rgba(255,255,255,0.08)_52%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.07)_25%,rgba(255,255,255,0.02)_48%,rgba(8,14,10,0.34)_100%)]" />
@@ -128,7 +128,7 @@ export function ToolDetailsModal({
                 href={getToolHref(selectedTool)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-[#CCFF00] bg-[#CCFF00] px-3 py-1 text-sm font-semibold text-[#0d1204] transition hover:border-[#d8ff4a] hover:bg-[#d8ff4a] dark:border-[#CCFF00] dark:bg-[#CCFF00] dark:text-[#0d1204] dark:hover:border-[#d8ff4a] dark:hover:bg-[#d8ff4a]"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 dark:border-primary dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
               >
                 Visitar web
                 <ArrowUpRight className="h-4 w-4" />

@@ -296,7 +296,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         loginAsGoogle,
         logout,
         refreshProfile,
-        avatarUrl: profile?.avatarUrl || (user ? getProviderAvatar(user) : FALLBACK_AVATAR),
+        avatarUrl:
+          (profile?.avatarUrl && profile.avatarUrl !== FALLBACK_AVATAR) ?
+            profile.avatarUrl
+          : user ?
+            getProviderAvatar(user)
+          : FALLBACK_AVATAR,
       }}
     >
       {children}
