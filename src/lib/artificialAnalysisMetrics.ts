@@ -298,40 +298,6 @@ export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit =
       })
       .slice(0, limit);
 
-    // ==========================================
-    // 🎨 CAPA DE "MARKETING" (Ajustes de Escala)
-    // ==========================================
-    if (points.length > 1) {
-      if (metric.key === "intelligence") {
-        // Queremos una brecha de al menos 25 puntos entre el maximo y el minimo real
-        const maxReal = points[0].value;
-        const minReal = points[points.length - 1].value;
-        const desiredMin = maxReal - 25;
-        
-        points.forEach((p) => {
-           if (p.value === maxReal) return;
-           const ratio = (maxReal - p.value) / (maxReal - minReal);
-           p.value = maxReal - (ratio * 25);
-        });
-      } 
-      else if (metric.key === "speed") {
-        // Escalar la velocidad para que el top sea ~216 (como en la web)
-        const currentMax = points[0].value;
-        if (currentMax < 216) {
-          const factor = 216 / currentMax;
-          points.forEach((p) => { p.value = p.value * factor; });
-        }
-      } 
-      else if (metric.key === "price") {
-        // Escalar precio para que el más caro (el ultimo en sort ya que "lower is better") llegue a 10.0
-        const mostExpensive = points[points.length - 1].value;
-        if (mostExpensive < 10.0) {
-          const factor = 10.0 / mostExpensive;
-          points.forEach((p) => { p.value = p.value * factor; });
-        }
-      }
-    }
-
     // Actualizar ranks, formats y re-aplicar formato
     const finalizedPoints = points.map((point, index) => {
       point.rank = index + 1;
