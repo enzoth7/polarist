@@ -1,5 +1,4 @@
-import { AlertTriangle, ArrowRight, RefreshCw } from "lucide-react";
-import { Link } from "react-router-dom";
+import { AlertTriangle, RefreshCw } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -19,7 +18,6 @@ import {
   type RadarMetricKey,
   type RadarMetricPoint,
 } from "@/hooks/useArtificialAnalysis";
-import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 const SERIF_TITLE_STYLE = {
@@ -36,18 +34,18 @@ const CARD_CONFIG: Record<
   }
 > = {
   intelligence: {
-    title: "Intelligence",
-    subtitle: "Artificial Analysis Intelligence Index; Higher is better",
+    title: "Inteligencia",
+    subtitle: "Índice de Inteligencia de Artificial Analysis; Más alto es mejor",
     accentClassName: "bg-violet-600",
   },
   speed: {
-    title: "Speed",
-    subtitle: "Median output tokens per second; Higher is better",
+    title: "Velocidad",
+    subtitle: "Mediana de tokens de salida por segundo; Más alto es mejor",
     accentClassName: "bg-amber-400",
   },
   price: {
-    title: "Price",
-    subtitle: "Price, blended 3:1 input/output ($/1M tokens); Lower is better",
+    title: "Precio",
+    subtitle: "3:1 entrada/salida ($/1M tokens); Más bajo es mejor",
     accentClassName: "bg-orange-500",
   },
 };
@@ -112,23 +110,24 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
   }
 
   return (
-    <g transform={`translate(${x}, ${y + 12}) rotate(-60)`} overflow="visible">
-      <rect x={0} y={0} width={14} height={14} rx={2} fill="#ffffff" stroke="#e5e7eb" />
+    <g transform={`translate(${x - 5}, ${y + 2}) rotate(-50)`} overflow="visible">
+      {/* rect centrado: x = -(width/2) para que el eje de la barra pase por el centro del ícono */}
+      <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#e5e7eb" />
       {point.visual.iconSrc ? (
         <image
           href={point.visual.iconSrc}
-          x={2}
+          x={-7}
           y={2}
-          width={10}
-          height={10}
+          width={14}
+          height={14}
           preserveAspectRatio="xMidYMid meet"
         />
       ) : (
         <text
-          x={7}
-          y={9}
+          x={0}
+          y={13}
           textAnchor="middle"
-          fontSize={5.5}
+          fontSize={7}
           fontWeight={700}
           fill="#666"
         >
@@ -136,10 +135,10 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
         </text>
       )}
       <text
-        x={20}
-        y={12}
-        textAnchor="start"
-        fontSize={10}
+        x={-12}
+        y={28}
+        textAnchor="end"
+        fontSize={13}
         fontWeight={500}
         fill="#666"
       >
@@ -162,9 +161,9 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
         </div>
       </div>
 
-      <div className="mt-8 h-[400px]">
+      <div className="mt-8 h-[320px]">
         <div className="relative h-full overflow-visible">
-          <div className="absolute inset-x-0 top-0 bottom-[140px]">
+          <div className="absolute inset-x-0 top-0 bottom-[110px]">
             {[0, 1, 2, 3].map((line) => (
               <div
                 key={`${metricKey}-line-${line}`}
@@ -190,7 +189,7 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
             </div>
           </div>
 
-          <div className="absolute inset-x-0 bottom-0 h-[140px]">
+          <div className="absolute inset-x-0 bottom-0 h-[110px]">
             <div className="grid h-full grid-cols-10 gap-4">
               {Array.from({ length: 10 }).map((_, index) => (
                 <div key={`${metricKey}-tick-${index}`} className="relative">
@@ -233,11 +232,11 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
         </div>
       </div>
 
-      <div className="mt-8 h-[400px] overflow-visible">
+      <div className="mt-8 h-[320px] overflow-visible">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
             data={chartData}
-            margin={{ top: 20, left: 20, right: 20, bottom: 132 }}
+            margin={{ top: 20, left: 45, right: 25, bottom: 90 }}
             style={{ overflow: "visible" }}
           >
             <CartesianGrid vertical={false} stroke="#f3f4f6" />
@@ -246,7 +245,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
               interval={0}
               tickLine={false}
               axisLine={{ stroke: "#d1d5db" }}
-              height={148}
+              height={110}
               tickMargin={10}
               style={{ overflow: "visible" }}
               tick={(props) => <ModelTick {...props} pointsBySlug={pointsBySlug} />}
@@ -288,8 +287,8 @@ export function RadarMetricsBoard() {
     error instanceof Error ? error.message : "No se pudieron cargar las metricas de Artificial Analysis.";
 
   return (
-    <section className="w-full space-y-10 px-1 pb-4 pt-4 md:px-0">
-      <div className="mx-auto w-full max-w-[1400px] space-y-10">
+    <section className="w-full space-y-10 pb-4 pt-4">
+      <div className="mx-auto w-full max-w-[1600px] space-y-10 px-8">
         <header className="space-y-3 text-center">
           <h2 className="text-3xl font-semibold tracking-[-0.03em] text-white md:text-4xl">
             Radar de modelos de IA
@@ -305,7 +304,7 @@ export function RadarMetricsBoard() {
         </header>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 xl:gap-10">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 xl:gap-7">
             {LOADING_CARD_KEYS.map((metricKey) => (
               <MetricCardSkeleton key={metricKey} metricKey={metricKey} />
             ))}
@@ -333,7 +332,7 @@ export function RadarMetricsBoard() {
         ) : null}
 
         {!isLoading && !isError && metricCards.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-3 xl:gap-10">
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 xl:gap-7">
             {metricCards.map((card) => (
               <MetricCard key={card.key} card={card} />
             ))}

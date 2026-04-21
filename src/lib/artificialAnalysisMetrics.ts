@@ -52,166 +52,117 @@ type MetricDefinition = {
   getValue: (model: ArtificialAnalysisModel) => number | null | undefined;
 };
 
+// Slugs (o prefijos) que el radar oficial de Polarist debe mostrar.
+// Cualquier modelo de la API que no coincida con alguno de estos prefijos
+// es descartado antes del renderizado.
+export const RADAR_SLUG_WHITELIST: ReadonlyArray<string> = [
+  "claude-opus-4",
+  "gpt-5",
+  "gpt-oss-120b",
+  "gemini-3",
+  "kimi-k2",
+  "grok-4",
+  "llama-",
+  "glm-5",
+  "deepseek-v3",
+  "nemotron-",
+];
+
+export const isInRadarWhitelist = (slug: string): boolean => {
+  const normalized = slug.trim().toLowerCase();
+  return RADAR_SLUG_WHITELIST.some((prefix) => normalized.startsWith(prefix));
+};
+
 export const RADAR_MOCK_MODELS: ArtificialAnalysisModel[] = [
   {
-    id: "gpt-4o",
-    name: "GPT-4o",
-    slug: "gpt-4o",
-    model_creator: {
-      name: "OpenAI",
-      slug: "openai",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 58,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 5.4,
-    },
-    median_output_tokens_per_second: 78,
+    id: "claude-opus-4",
+    name: "Claude Opus 4.7",
+    slug: "claude-opus-4",
+    model_creator: { name: "Anthropic", slug: "anthropic" },
+    evaluations: { artificial_analysis_intelligence_index: 82 },
+    pricing: { price_1m_blended_3_to_1: 18.0 },
+    median_output_tokens_per_second: 58,
   },
   {
-    id: "claude-3-5-sonnet",
-    name: "Claude 3.5 Sonnet",
-    slug: "claude-3-5-sonnet",
-    model_creator: {
-      name: "Anthropic",
-      slug: "anthropic",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 55,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 6,
-    },
-    median_output_tokens_per_second: 66,
+    id: "gpt-5",
+    name: "GPT-5.4",
+    slug: "gpt-5",
+    model_creator: { name: "OpenAI", slug: "openai" },
+    evaluations: { artificial_analysis_intelligence_index: 79 },
+    pricing: { price_1m_blended_3_to_1: 15.0 },
+    median_output_tokens_per_second: 72,
   },
   {
-    id: "gemini-1.5-pro",
-    name: "Gemini 1.5 Pro",
-    slug: "gemini-1.5-pro",
-    model_creator: {
-      name: "Google",
-      slug: "google",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 54,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 4.4,
-    },
-    median_output_tokens_per_second: 124,
+    id: "gemini-3.0-pro",
+    name: "Gemini 3.1 Pro Preview",
+    slug: "gemini-3.0-pro",
+    model_creator: { name: "Google", slug: "google" },
+    evaluations: { artificial_analysis_intelligence_index: 76 },
+    pricing: { price_1m_blended_3_to_1: 10.0 },
+    median_output_tokens_per_second: 140,
   },
   {
-    id: "gemini-1.5-flash",
-    name: "Gemini 1.5 Flash",
-    slug: "gemini-1.5-flash",
-    model_creator: {
-      name: "Google",
-      slug: "google",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 46,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 1.2,
-    },
-    median_output_tokens_per_second: 186,
+    id: "kimi-k2",
+    name: "Kimi K2.6",
+    slug: "kimi-k2",
+    model_creator: { name: "Kimi", slug: "kimi" },
+    evaluations: { artificial_analysis_intelligence_index: 71 },
+    pricing: { price_1m_blended_3_to_1: 4.5 },
+    median_output_tokens_per_second: 105,
+  },
+  {
+    id: "grok-4",
+    name: "Grok 4.20",
+    slug: "grok-4",
+    model_creator: { name: "xAI", slug: "xai" },
+    evaluations: { artificial_analysis_intelligence_index: 68 },
+    pricing: { price_1m_blended_3_to_1: 6.0 },
+    median_output_tokens_per_second: 220,
+  },
+  {
+    id: "llama-4-maverick",
+    name: "Meta Llama 4",
+    slug: "llama-4-maverick",
+    model_creator: { name: "Meta", slug: "meta" },
+    evaluations: { artificial_analysis_intelligence_index: 63 },
+    pricing: { price_1m_blended_3_to_1: 2.0 },
+    median_output_tokens_per_second: 95,
+  },
+  {
+    id: "glm-5",
+    name: "GLM-5.1",
+    slug: "glm-5",
+    model_creator: { name: "Zhipu", slug: "zhipu" },
+    evaluations: { artificial_analysis_intelligence_index: 58 },
+    pricing: { price_1m_blended_3_to_1: 1.8 },
+    median_output_tokens_per_second: 88,
   },
   {
     id: "deepseek-v3",
-    name: "DeepSeek V3",
+    name: "DeepSeek V3.2",
     slug: "deepseek-v3",
-    model_creator: {
-      name: "DeepSeek",
-      slug: "deepseek",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 45,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 0.3,
-    },
-    median_output_tokens_per_second: 92,
+    model_creator: { name: "DeepSeek", slug: "deepseek" },
+    evaluations: { artificial_analysis_intelligence_index: 55 },
+    pricing: { price_1m_blended_3_to_1: 0.3 },
+    median_output_tokens_per_second: 110,
   },
   {
-    id: "grok-2",
-    name: "Grok 2",
-    slug: "grok-2",
-    model_creator: {
-      name: "xAI",
-      slug: "xai",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 48,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 3.2,
-    },
-    median_output_tokens_per_second: 210,
+    id: "nemotron-3",
+    name: "NVIDIA Nemotron 3",
+    slug: "nemotron-3",
+    model_creator: { name: "NVIDIA", slug: "nvidia" },
+    evaluations: { artificial_analysis_intelligence_index: 50 },
+    pricing: { price_1m_blended_3_to_1: 1.2 },
+    median_output_tokens_per_second: 160,
   },
   {
-    id: "llama-3.1-405b",
-    name: "Llama 3.1 405B",
-    slug: "llama-3.1-405b",
-    model_creator: {
-      name: "Meta",
-      slug: "meta",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 43,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 2.9,
-    },
-    median_output_tokens_per_second: 61,
-  },
-  {
-    id: "mistral-large-2",
-    name: "Mistral Large 2",
-    slug: "mistral-large-2",
-    model_creator: {
-      name: "Mistral",
-      slug: "mistral",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 41,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 4.8,
-    },
-    median_output_tokens_per_second: 54,
-  },
-  {
-    id: "command-r-plus",
-    name: "Command R+",
-    slug: "command-r-plus",
-    model_creator: {
-      name: "Cohere",
-      slug: "cohere",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 39,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 2.6,
-    },
-    median_output_tokens_per_second: 102,
-  },
-  {
-    id: "nemotron-4-340b",
-    name: "Nemotron 4 340B",
-    slug: "nemotron-4-340b",
-    model_creator: {
-      name: "NVIDIA",
-      slug: "nvidia",
-    },
-    evaluations: {
-      artificial_analysis_intelligence_index: 37,
-    },
-    pricing: {
-      price_1m_blended_3_to_1: 0.8,
-    },
-    median_output_tokens_per_second: 149,
+    id: "gpt-oss-120b",
+    name: "GPT-OSS 120B",
+    slug: "gpt-oss-120b",
+    model_creator: { name: "OpenAI", slug: "openai" },
+    evaluations: { artificial_analysis_intelligence_index: 46 },
+    pricing: { price_1m_blended_3_to_1: 0.5 },
+    median_output_tokens_per_second: 185,
   },
 ];
 
@@ -277,8 +228,10 @@ const formatMetricDetailValue = (metricKey: RadarMetricKey, value: number) => {
 };
 
 export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit = RADAR_MODELS_LIMIT) {
+  const whitelisted = models.filter((m) => isInRadarWhitelist(m.slug));
+
   return METRIC_DEFINITIONS.map((metric) => {
-    const points = models
+    const points = whitelisted
       .map((model) => {
         const value = metric.getValue(model);
 

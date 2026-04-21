@@ -11,8 +11,6 @@ import { useToolInteractions } from "@/hooks/useToolInteractions";
 import { type ToolItem, useToolsQuery } from "@/hooks/useTools";
 import { showBubbleToast } from "@/lib/showBubbleToast";
 import { cn } from "@/lib/utils";
-import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";
-
 gsap.registerPlugin(Flip);
 
 const normalizeText = (value: string) =>
@@ -396,7 +394,6 @@ const Tools = () => {
               </section>
             ))}
 
-            <RadarMetricsBoard />
           </div>
         )}
 

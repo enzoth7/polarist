@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /app/profile
+Disallow: /app/library
+Disallow: /app/settings
+Disallow: /onboarding
+Disallow: /signup
+
+Sitemap: https://polarist.app/sitemap.xml

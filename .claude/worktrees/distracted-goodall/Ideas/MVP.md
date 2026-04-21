@@ -1,0 +1,13 @@
+Al contrario de todo lo que dijeron las tres guías de las cosas, a mí lo único que me preocupa es cómo retener al usuario. Lo demás no me preocupa en absoluto porque hoy en día, con los agentes de IA y las automatizaciones, se puede hacer absolutamente todo.
+
+Por ejemplo yo me imagino la persona, emprendedores, que es el nicho que atacamos. No saben qué hacer; se sienten perdidos porque la gente odia sentirse ignorante, porque le ataca el ego. Y nosotros, de una forma simple y sencilla, le decimos: "Mira vos podés venir y mirás estas son las guías, las herramientas que más se utilizan. Estas se utilizan más en esto y todos aquellos, si vos te registrás, aparte de ver este ranking te va a aparecer una sección especialmente para vos de qué guías podés utilizar dos o tres."
+
+Si lo explicás de una forma muy fácil, "Vos querés sacar mejores fotos, usa esto. Vos querés hacer esto, usa esto", sencillo, simple como un niño. Si lo explicamos, entonces luego lo que pasa es que la persona se registra; tenemos los datos. 
+
+Y bueno el tema es que justamente la persona se registra, obtenemos los datos y de ahí comenzamos a hacerle un poco más personalizado porque la gente no quiere herramientas de ella.
+
+¿Qué herramientas le sirven a ellas? Para sentirse menos ignorante y para mejorar es un complemento más a su negocio. Mucha gente no tiene ni idea. Yo tengo un script de automatización de mails pero siempre es información. Después tengo que entrar a fijarme en qué es. No le vamos a enseñar para qué sirve cada herramienta, o sea no le vamos a decir "tienes que hacer esto y esto". No es un paso a paso pero sí le decimos: "si usas esta herramienta y entras en esta página web, te va a servir para esto porque tu negocio funciona así así o vos en tu vida necesitas esto, esto y esto o si haces una combinación de cloud con excel, vas a tener los dashboards que queres en 10 segundos, por así decirlo", ese tipo de cosas que la gente no tiene idea y la gente no quiere averiguar porque le da miedo. 
+
+El MVP Trip es sencillo, fácil. Con los mismos ya tenemos el dominio: es Polarist, la estrella polar, la T. Por eso inscribimos Tecnologia. No se, pero es guiamos a las personas hacia la facilidad de entender la IA. Esto se va a quedar; son herramientas que hay que entenderlas y muchos emprendedores les cuesta hacerlo porque no encuentran.
+
+Aparte todas las páginas que hay que enseñan de tecnología IA son todo anichado para gente que ya sabe de código, que ya sabe lo que está haciendo. La gente entra a esas páginas y no tiene ni idea, como hacking.com o hacker news o cosas así. Lo queremos democratizar, llevar a las personas así que eso. 
