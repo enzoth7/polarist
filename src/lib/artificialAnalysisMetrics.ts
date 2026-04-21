@@ -69,101 +69,109 @@ export const RADAR_SLUG_WHITELIST: ReadonlyArray<string> = [
 ];
 
 export const isInRadarWhitelist = (slug: string): boolean => {
-  const normalized = slug.trim().toLowerCase();
-  return RADAR_SLUG_WHITELIST.some((prefix) => normalized.startsWith(prefix));
+  return true; // Quitamos el filtro para que utilice esta lista exacta sin perder a Muse ni a los modificados.
 };
 
 export const RADAR_MOCK_MODELS: ArtificialAnalysisModel[] = [
   {
     id: "claude-opus-4",
-    name: "Claude Opus 4.7",
+    name: "Claude Opus 4.7 (max)",
     slug: "claude-opus-4",
     model_creator: { name: "Anthropic", slug: "anthropic" },
-    evaluations: { artificial_analysis_intelligence_index: 82 },
-    pricing: { price_1m_blended_3_to_1: 18.0 },
-    median_output_tokens_per_second: 58,
-  },
-  {
-    id: "gpt-5",
-    name: "GPT-5.4",
-    slug: "gpt-5",
-    model_creator: { name: "OpenAI", slug: "openai" },
-    evaluations: { artificial_analysis_intelligence_index: 79 },
-    pricing: { price_1m_blended_3_to_1: 15.0 },
-    median_output_tokens_per_second: 72,
-  },
-  {
-    id: "gemini-3.0-pro",
-    name: "Gemini 3.1 Pro Preview",
-    slug: "gemini-3.0-pro",
-    model_creator: { name: "Google", slug: "google" },
-    evaluations: { artificial_analysis_intelligence_index: 76 },
+    evaluations: { artificial_analysis_intelligence_index: 57 },
     pricing: { price_1m_blended_3_to_1: 10.0 },
-    median_output_tokens_per_second: 140,
+    median_output_tokens_per_second: 42,
   },
   {
-    id: "kimi-k2",
-    name: "Kimi K2.6",
-    slug: "kimi-k2",
-    model_creator: { name: "Kimi", slug: "kimi" },
-    evaluations: { artificial_analysis_intelligence_index: 71 },
+    id: "gemini-3-pro",
+    name: "Gemini 3.1 Pro Preview",
+    slug: "gemini-3-pro",
+    model_creator: { name: "Google", slug: "google" },
+    evaluations: { artificial_analysis_intelligence_index: 57 },
     pricing: { price_1m_blended_3_to_1: 4.5 },
-    median_output_tokens_per_second: 105,
+    median_output_tokens_per_second: 121,
   },
   {
-    id: "grok-4",
-    name: "Grok 4.20",
-    slug: "grok-4",
-    model_creator: { name: "xAI", slug: "xai" },
-    evaluations: { artificial_analysis_intelligence_index: 68 },
-    pricing: { price_1m_blended_3_to_1: 6.0 },
-    median_output_tokens_per_second: 220,
+    id: "gpt-5-4",
+    name: "GPT-5.4 (xhigh)",
+    slug: "gpt-5-4",
+    model_creator: { name: "OpenAI", slug: "openai" },
+    evaluations: { artificial_analysis_intelligence_index: 57 },
+    pricing: { price_1m_blended_3_to_1: 5.6 },
+    median_output_tokens_per_second: 74,
   },
   {
-    id: "llama-4-maverick",
-    name: "Meta Llama 4",
-    slug: "llama-4-maverick",
+    id: "kimi-k2-6",
+    name: "Kimi K2.6",
+    slug: "kimi-k2-6",
+    model_creator: { name: "Kimi", slug: "kimi" },
+    evaluations: { artificial_analysis_intelligence_index: 54 },
+    pricing: { price_1m_blended_3_to_1: 1.7 },
+    median_output_tokens_per_second: 134,
+  },
+  {
+    id: "muse-spark",
+    name: "Muse Spark",
+    slug: "muse-spark",
     model_creator: { name: "Meta", slug: "meta" },
-    evaluations: { artificial_analysis_intelligence_index: 63 },
-    pricing: { price_1m_blended_3_to_1: 2.0 },
-    median_output_tokens_per_second: 95,
+    evaluations: { artificial_analysis_intelligence_index: 52 },
+    pricing: null, /* No aparece en precio ni vel pero sí en inteligencia */
+    median_output_tokens_per_second: null,
   },
   {
-    id: "glm-5",
+    id: "glm-5-1",
     name: "GLM-5.1",
-    slug: "glm-5",
+    slug: "glm-5-1",
     model_creator: { name: "Zhipu", slug: "zhipu" },
-    evaluations: { artificial_analysis_intelligence_index: 58 },
-    pricing: { price_1m_blended_3_to_1: 1.8 },
-    median_output_tokens_per_second: 88,
+    evaluations: { artificial_analysis_intelligence_index: 51 },
+    pricing: { price_1m_blended_3_to_1: 2.1 },
+    median_output_tokens_per_second: 44,
   },
   {
-    id: "deepseek-v3",
-    name: "DeepSeek V3.2",
-    slug: "deepseek-v3",
-    model_creator: { name: "DeepSeek", slug: "deepseek" },
-    evaluations: { artificial_analysis_intelligence_index: 55 },
-    pricing: { price_1m_blended_3_to_1: 0.3 },
-    median_output_tokens_per_second: 110,
+    id: "grok-4-20",
+    name: "Grok 4.20 0309 v2",
+    slug: "grok-4-20",
+    model_creator: { name: "xAI", slug: "xai" },
+    evaluations: { artificial_analysis_intelligence_index: 49 },
+    pricing: { price_1m_blended_3_to_1: 3.0 },
+    median_output_tokens_per_second: 181,
   },
   {
-    id: "nemotron-3",
-    name: "NVIDIA Nemotron 3",
-    slug: "nemotron-3",
-    model_creator: { name: "NVIDIA", slug: "nvidia" },
-    evaluations: { artificial_analysis_intelligence_index: 50 },
-    pricing: { price_1m_blended_3_to_1: 1.2 },
+    id: "gemini-3-flash",
+    name: "Gemini 3 Flash",
+    slug: "gemini-3-flash",
+    model_creator: { name: "Google", slug: "google" },
+    evaluations: { artificial_analysis_intelligence_index: 46 },
+    pricing: { price_1m_blended_3_to_1: 1.1 },
     median_output_tokens_per_second: 160,
   },
   {
+    id: "deepseek-v3-2",
+    name: "DeepSeek V3.2",
+    slug: "deepseek-v3-2",
+    model_creator: { name: "DeepSeek", slug: "deepseek" },
+    evaluations: { artificial_analysis_intelligence_index: 42 },
+    pricing: { price_1m_blended_3_to_1: 0.3 },
+    median_output_tokens_per_second: 31,
+  },
+  {
+    id: "nemotron-3-super",
+    name: "NVIDIA Nemotron 3 Super",
+    slug: "nemotron-3-super",
+    model_creator: { name: "NVIDIA", slug: "nvidia" },
+    evaluations: { artificial_analysis_intelligence_index: 36 },
+    pricing: { price_1m_blended_3_to_1: 0.4 },
+    median_output_tokens_per_second: 154,
+  },
+  {
     id: "gpt-oss-120b",
-    name: "GPT-OSS 120B",
+    name: "gpt-oss-120B (high)",
     slug: "gpt-oss-120b",
     model_creator: { name: "OpenAI", slug: "openai" },
-    evaluations: { artificial_analysis_intelligence_index: 46 },
-    pricing: { price_1m_blended_3_to_1: 0.5 },
-    median_output_tokens_per_second: 185,
-  },
+    evaluations: { artificial_analysis_intelligence_index: 33 },
+    pricing: { price_1m_blended_3_to_1: 0.3 },
+    median_output_tokens_per_second: 215,
+  }
 ];
 
 const METRIC_DEFINITIONS: MetricDefinition[] = [
@@ -228,10 +236,46 @@ const formatMetricDetailValue = (metricKey: RadarMetricKey, value: number) => {
 };
 
 export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit = RADAR_MODELS_LIMIT) {
-  const whitelisted = models.filter((m) => isInRadarWhitelist(m.slug));
+  // 1. Filtrar solo los que tienen evaluacion base de inteligencia (ignorar obsoletos/brotados)
+  const validModels = models.filter((m) => typeof m.evaluations?.artificial_analysis_intelligence_index === 'number');
+
+  // 2. Agrupar por marca/creador asegurando que SÓLO entren los que tienen un ICONO local asignado
+  const providerGroups: Record<string, ArtificialAnalysisModel[]> = {};
+
+  validModels.forEach((model) => {
+    const visual = getModelVisual(model.slug, model.model_creator?.slug);
+    
+    // Regla de Negocio: Si no está en nuestro modelIcons.ts mapped a un PNG local, queda afuera.
+    if (!visual.iconSrc) {
+      return;
+    }
+
+    const creator = model.model_creator?.slug?.toLowerCase() || "unknown";
+    if (!providerGroups[creator]) {
+      providerGroups[creator] = [];
+    }
+    providerGroups[creator].push(model);
+  });
+
+  // 3. Regla de Topes de Mercado (Quotas)
+  const PREMIUM_PROVIDERS = ["openai", "anthropic", "google"];
+  const curatedSelection: ArtificialAnalysisModel[] = [];
+
+  Object.entries(providerGroups).forEach(([creator, creatorModels]) => {
+    // Ordenar de mayor a menor inteligencia
+    creatorModels.sort((a, b) => 
+      (b.evaluations?.artificial_analysis_intelligence_index ?? 0) - 
+      (a.evaluations?.artificial_analysis_intelligence_index ?? 0)
+    );
+
+    // Los grandes pueden tener 2 representantes en el grafico, el resto solo su "campeon" (1).
+    const quota = PREMIUM_PROVIDERS.includes(creator) ? 2 : 1;
+    
+    curatedSelection.push(...creatorModels.slice(0, quota));
+  });
 
   return METRIC_DEFINITIONS.map((metric) => {
-    const points = whitelisted
+    const points = curatedSelection
       .map((model) => {
         const value = metric.getValue(model);
 

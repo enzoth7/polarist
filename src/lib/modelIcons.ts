@@ -96,7 +96,7 @@ const PROVIDER_VISUALS = {
     glow: "290 100% 74%",
   },
   zhipu: {
-    iconSrc: "/logos/ai/zhipu.png",
+    iconSrc: "/logos/ai/zai.png",
     fallbackLabel: "GL",
     accentFrom: "211 97% 63%",
     accentTo: "248 92% 68%",
@@ -156,7 +156,7 @@ const MODEL_PREFIX_PROVIDER_MAP: Array<[prefix: string, provider: ProviderKey]> 
   ["qwen-", "alibaba"],
   ["kimi-", "kimi"],
   ["kimi", "kimi"],
-  ["muse-", "muse"],
+  ["muse-", "meta"],
   ["command-", "cohere"],
   ["aya-", "cohere"],
   ["glm-", "zhipu"],

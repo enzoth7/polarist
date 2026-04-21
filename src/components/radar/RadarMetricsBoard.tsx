@@ -111,29 +111,33 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
 
   return (
     <g transform={`translate(${x - 5}, ${y + 2}) rotate(-50)`} overflow="visible">
-      {/* rect centrado: x = -(width/2) para que el eje de la barra pase por el centro del ícono */}
-      <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#e5e7eb" />
-      {point.visual.iconSrc ? (
-        <image
-          href={point.visual.iconSrc}
-          x={-7}
-          y={2}
-          width={14}
-          height={14}
-          preserveAspectRatio="xMidYMid meet"
-        />
-      ) : (
-        <text
-          x={0}
-          y={13}
-          textAnchor="middle"
-          fontSize={7}
-          fontWeight={700}
-          fill="#666"
-        >
-          {point.visual.fallbackLabel.slice(0, 2)}
-        </text>
-      )}
+      {/* Contra-rotación +50° sobre el centro del ícono (0, 9) → queda horizontal */}
+      <g transform="rotate(50, 0, 9)">
+        <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#e5e7eb" />
+        {point.visual.iconSrc ? (
+          <image
+            href={point.visual.iconSrc}
+            x={-7}
+            y={2}
+            width={14}
+            height={14}
+            preserveAspectRatio="xMidYMid meet"
+          />
+        ) : (
+          <text
+            x={0}
+            y={13}
+            textAnchor="middle"
+            fontSize={7}
+            fontWeight={700}
+            fill="#666"
+          >
+            {point.visual.fallbackLabel.slice(0, 2)}
+          </text>
+        )}
+      </g>
+
+      {/* El texto del modelo hereda rotate(-50) del padre → sigue inclinado */}
       <text
         x={-12}
         y={28}
