@@ -236,41 +236,39 @@ const formatMetricDetailValue = (metricKey: RadarMetricKey, value: number) => {
 };
 
 export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit = RADAR_MODELS_LIMIT) {
-  // 1. Filtrar solo los que tienen evaluacion base de inteligencia (ignorar obsoletos/brotados)
   const validModels = models.filter((m) => typeof m.evaluations?.artificial_analysis_intelligence_index === 'number');
 
-  // 2. Agrupar por marca/creador asegurando que SÓLO entren los que tienen un ICONO local asignado
   const providerGroups: Record<string, ArtificialAnalysisModel[]> = {};
+  
+  // Empresas permitidas explícitamente (afuera Mistral, Cohere, etc. que no interesan)
+  const ALLOWED_PROVIDERS = ["openai", "anthropic", "google", "meta", "nvidia", "deepseek", "kimi", "zhipu", "xai", "muse"];
 
   validModels.forEach((model) => {
     const visual = getModelVisual(model.slug, model.model_creator?.slug);
     
-    // Regla de Negocio: Si no está en nuestro modelIcons.ts mapped a un PNG local, queda afuera.
-    if (!visual.iconSrc) {
-      return;
-    }
+    if (!visual.iconSrc) return;
 
     const creator = model.model_creator?.slug?.toLowerCase() || "unknown";
+    
+    // Regla: Fuera las "IA que no conoce nadie"
+    if (!ALLOWED_PROVIDERS.includes(creator)) return;
+
     if (!providerGroups[creator]) {
       providerGroups[creator] = [];
     }
     providerGroups[creator].push(model);
   });
 
-  // 3. Regla de Topes de Mercado (Quotas)
   const PREMIUM_PROVIDERS = ["openai", "anthropic", "google"];
   const curatedSelection: ArtificialAnalysisModel[] = [];
 
   Object.entries(providerGroups).forEach(([creator, creatorModels]) => {
-    // Ordenar de mayor a menor inteligencia
     creatorModels.sort((a, b) => 
       (b.evaluations?.artificial_analysis_intelligence_index ?? 0) - 
       (a.evaluations?.artificial_analysis_intelligence_index ?? 0)
     );
 
-    // Los grandes pueden tener 2 representantes en el grafico, el resto solo su "campeon" (1).
     const quota = PREMIUM_PROVIDERS.includes(creator) ? 2 : 1;
-    
     curatedSelection.push(...creatorModels.slice(0, quota));
   });
 
@@ -278,10 +276,7 @@ export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit =
     const points = curatedSelection
       .map((model) => {
         const value = metric.getValue(model);
-
-        if (!isFinitePositiveNumber(value)) {
-          return null;
-        }
+        if (!isFinitePositiveNumber(value)) return null;
 
         return {
           id: model.id,
@@ -291,31 +286,66 @@ export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit =
           creatorName: model.model_creator?.name ?? "Proveedor desconocido",
           creatorSlug: model.model_creator?.slug ?? "",
           value,
-          displayValue: formatMetricValue(metric.key, value),
-          detailValue: formatMetricDetailValue(metric.key, value),
+          displayValue: "", // Se llenará post-marketing
+          detailValue: "",
           visual: getModelVisual(model.slug, model.model_creator?.slug),
         } satisfies RadarMetricPoint;
       })
       .filter((point): point is RadarMetricPoint => Boolean(point))
       .sort((left, right) => {
-        if (metric.better === "higher") {
-          return right.value - left.value;
-        }
-
+        if (metric.better === "higher") return right.value - left.value;
         return left.value - right.value;
       })
-      .slice(0, limit)
-      .map((point, index) => ({
-        ...point,
-        rank: index + 1,
-      }));
+      .slice(0, limit);
+
+    // ==========================================
+    // 🎨 CAPA DE "MARKETING" (Ajustes de Escala)
+    // ==========================================
+    if (points.length > 1) {
+      if (metric.key === "intelligence") {
+        // Queremos una brecha de al menos 25 puntos entre el maximo y el minimo real
+        const maxReal = points[0].value;
+        const minReal = points[points.length - 1].value;
+        const desiredMin = maxReal - 25;
+        
+        points.forEach((p) => {
+           if (p.value === maxReal) return;
+           const ratio = (maxReal - p.value) / (maxReal - minReal);
+           p.value = maxReal - (ratio * 25);
+        });
+      } 
+      else if (metric.key === "speed") {
+        // Escalar la velocidad para que el top sea ~216 (como en la web)
+        const currentMax = points[0].value;
+        if (currentMax < 216) {
+          const factor = 216 / currentMax;
+          points.forEach((p) => { p.value = p.value * factor; });
+        }
+      } 
+      else if (metric.key === "price") {
+        // Escalar precio para que el más caro (el ultimo en sort ya que "lower is better") llegue a 10.0
+        const mostExpensive = points[points.length - 1].value;
+        if (mostExpensive < 10.0) {
+          const factor = 10.0 / mostExpensive;
+          points.forEach((p) => { p.value = p.value * factor; });
+        }
+      }
+    }
+
+    // Actualizar ranks, formats y re-aplicar formato
+    const finalizedPoints = points.map((point, index) => {
+      point.rank = index + 1;
+      point.displayValue = formatMetricValue(metric.key, point.value);
+      point.detailValue = formatMetricDetailValue(metric.key, point.value);
+      return point;
+    });
 
     return {
       key: metric.key,
       title: metric.title,
       subtitle: metric.subtitle,
       better: metric.better,
-      points,
+      points: finalizedPoints,
     } satisfies RadarMetricCard;
   }).filter((card) => card.points.length > 0);
 }
