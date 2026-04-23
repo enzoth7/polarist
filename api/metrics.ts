@@ -1,4 +1,4 @@
-export const config = { runtime: 'edge' };
+export const config = { runtime: 'nodejs' };
 
 const ARTIFICIAL_ANALYSIS_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const SUCCESS_CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
@@ -130,7 +130,23 @@ async function handleMetricsRequest(request: Request) {
       );
     }
 
-    return createJsonResponse(parsedBody);
+    // Normalizar la respuesta: el hook espera { data: ArtificialAnalysisModel[] }
+    // La API de Artificial Analysis devuelve el array directo o en una propiedad.
+    let models: unknown;
+    if (Array.isArray(parsedBody)) {
+      models = parsedBody;
+    } else if (
+      parsedBody &&
+      typeof parsedBody === "object" &&
+      "models" in parsedBody &&
+      Array.isArray((parsedBody as Record<string, unknown>).models)
+    ) {
+      models = (parsedBody as Record<string, unknown>).models;
+    } else {
+      models = parsedBody;
+    }
+
+    return createJsonResponse({ data: models });
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
       return createJsonResponse(
