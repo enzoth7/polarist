@@ -3,7 +3,7 @@ export const config = { runtime: 'nodejs' };
 const ARTIFICIAL_ANALYSIS_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const SUCCESS_CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 const NO_STORE_CACHE_CONTROL = "no-store";
-const REQUEST_TIMEOUT_MS = 9_000; // Al límite de Vercel Hobby (10s)
+const REQUEST_TIMEOUT_MS = 15_000; 
 
 const parseJsonSafely = (value: string): unknown => {
   if (!value) {
@@ -12,7 +12,8 @@ const parseJsonSafely = (value: string): unknown => {
 
   try {
     return JSON.parse(value) as unknown;
-  } catch {
+  } catch (err) {
+    console.error("JSON parse error:", err);
     return null;
   }
 };
@@ -52,6 +53,7 @@ const createJsonResponse = (
       "Cache-Control": cacheControl,
       "CDN-Cache-Control": cacheControl,
       "Vercel-CDN-Cache-Control": cacheControl,
+      "X-Proxy-Debug": new Date().toISOString(),
       ...headers,
     },
   });
@@ -86,16 +88,15 @@ async function handleMetricsRequest(request: Request) {
     );
   }
 
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-
   try {
     const upstreamResponse = await fetch(ARTIFICIAL_ANALYSIS_API_URL, {
+      method: "GET",
       headers: {
         Accept: "application/json",
         "x-api-key": apiKey,
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Referer": "https://polarist.app/",
       },
-      signal: controller.signal,
     });
 
     const rawBody = await upstreamResponse.text();
