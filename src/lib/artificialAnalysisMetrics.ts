@@ -240,19 +240,14 @@ export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit =
 
   const providerGroups: Record<string, ArtificialAnalysisModel[]> = {};
   
-  // Empresas permitidas explícitamente (afuera Mistral, Cohere, etc. que no interesan)
-  const ALLOWED_PROVIDERS = ["openai", "anthropic", "google", "meta", "nvidia", "deepseek", "kimi", "zhipu", "xai", "muse"];
-
   validModels.forEach((model) => {
     const visual = getModelVisual(model.slug, model.model_creator?.slug);
     
-    if (!visual.iconSrc) return;
+    // Si no tenemos ícono o es el genérico ("AI"), lo saltamos para mantener la estética premium
+    if (!visual.iconSrc || visual.fallbackLabel === "AI") return;
 
     const creator = model.model_creator?.slug?.toLowerCase() || "unknown";
     
-    // Regla: Fuera las "IA que no conoce nadie"
-    if (!ALLOWED_PROVIDERS.includes(creator)) return;
-
     if (!providerGroups[creator]) {
       providerGroups[creator] = [];
     }
