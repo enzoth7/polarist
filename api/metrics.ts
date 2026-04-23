@@ -3,7 +3,7 @@ export const config = { runtime: 'nodejs' };
 const ARTIFICIAL_ANALYSIS_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const SUCCESS_CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 const NO_STORE_CACHE_CONTROL = "no-store";
-const REQUEST_TIMEOUT_MS = 12_000;
+const REQUEST_TIMEOUT_MS = 8_000; // Vercel hobby limit: 10s — usamos 8s para tener margen
 
 const parseJsonSafely = (value: string): unknown => {
   if (!value) {
@@ -130,28 +130,36 @@ async function handleMetricsRequest(request: Request) {
       );
     }
 
-    // Normalizar la respuesta: el hook espera { data: ArtificialAnalysisModel[] }
-    // La API de Artificial Analysis devuelve el array directo o en una propiedad.
+    // Normalizar la respuesta: el hook espera { data: ArtificialAnalysisModel[] }.
+    // La API puede devolver: array directo, { data: [] }, { models: [] }, u otro objeto.
+    const body = parsedBody as Record<string, unknown>;
     let models: unknown;
+
     if (Array.isArray(parsedBody)) {
+      // Caso: [...models]
       models = parsedBody;
-    } else if (
-      parsedBody &&
-      typeof parsedBody === "object" &&
-      "models" in parsedBody &&
-      Array.isArray((parsedBody as Record<string, unknown>).models)
-    ) {
-      models = (parsedBody as Record<string, unknown>).models;
+    } else if (Array.isArray(body["data"])) {
+      // Caso más común: { data: [...] }
+      models = body["data"];
+    } else if (Array.isArray(body["models"])) {
+      // Alternativo: { models: [...] }
+      models = body["models"];
     } else {
+      // Fallback: pasar el objeto crudo y dejar que el hook lo valide
       models = parsedBody;
     }
 
     return createJsonResponse({ data: models });
   } catch (error) {
-    if (error instanceof DOMException && error.name === "AbortError") {
+    // AbortError puede venir como DOMException (Edge) o Error genérico (Node.js)
+    const isAbortError =
+      (error instanceof DOMException && error.name === "AbortError") ||
+      (error instanceof Error && error.name === "AbortError");
+
+    if (isAbortError) {
       return createJsonResponse(
         {
-          error: "Timed out while contacting Artificial Analysis.",
+          error: "Timed out while contacting Artificial Analysis (8s).",
         },
         {
           status: 504,
