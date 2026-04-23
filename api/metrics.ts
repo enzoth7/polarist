@@ -102,40 +102,8 @@ async function handleMetricsRequest(request: Request) {
     const rawBody = await upstreamResponse.text();
     const parsedBody = parseJsonSafely(rawBody);
 
-    if (!upstreamResponse.ok) {
-      return createJsonResponse(
-        {
-          error: `Artificial Analysis responded with ${upstreamResponse.status}.`,
-          details:
-            getPayloadMessage(parsedBody) ??
-            rawBody.slice(0, 500) ??
-            "The upstream API returned an unknown error.",
-          upstreamStatus: upstreamResponse.status,
-        },
-        {
-          status: 502,
-          cacheControl: NO_STORE_CACHE_CONTROL,
-        },
-      );
-    }
-
-    if (!parsedBody || typeof parsedBody !== "object") {
-      return createJsonResponse(
-        {
-          error: "Artificial Analysis returned an invalid JSON payload.",
-        },
-        {
-          status: 502,
-          cacheControl: NO_STORE_CACHE_CONTROL,
-        },
-      );
-    }
-
-    // Normalizar la respuesta: el hook espera { data: ArtificialAnalysisModel[] }.
-    // La API puede devolver: array directo, { data: [] }, { models: [] }, u otro objeto.
-    const body = parsedBody as Record<string, unknown>;
-    let models: unknown;
-
+    // Normalizar la respuesta para que siempre sea { data: [...] }
+    let models: unknown[] = [];
     if (Array.isArray(parsedBody)) {
       // Caso: [...models]
       models = parsedBody;
