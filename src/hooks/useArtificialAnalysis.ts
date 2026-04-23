@@ -11,7 +11,7 @@ import {
 
 const ARTIFICIAL_ANALYSIS_API_URL = "/api/metrics";
 const RADAR_MODELS_LIMIT = 10;
-const IS_LOCAL_DEVELOPMENT = import.meta.env.DEV;
+const CLIENT_FETCH_TIMEOUT_MS = 7_000;
 
 type ArtificialAnalysisResponse = {
   data?: ArtificialAnalysisModel[];
@@ -78,22 +78,35 @@ const isAbortError = (error: unknown) =>
     : error instanceof Error && error.name === "AbortError";
 
 export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
+  // Timeout propio del cliente para no depender solo del servidor
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), CLIENT_FETCH_TIMEOUT_MS);
+
+  // Combinar la señal externa (react-query) con la de timeout
+  const combinedSignal = signal
+    ? AbortSignal.any
+      ? AbortSignal.any([signal, controller.signal])
+      : controller.signal
+    : controller.signal;
+
   try {
-    return await fetchArtificialAnalysisModelsFromProxy(signal);
+    const models = await fetchArtificialAnalysisModelsFromProxy(combinedSignal);
+    return models;
   } catch (error) {
-    if (isAbortError(error)) {
+    // Si react-query cancela la query (unmount), propagar
+    if (isAbortError(error) && signal?.aborted) {
       throw error;
     }
 
-    if (IS_LOCAL_DEVELOPMENT) {
-      console.warn(
-        "[useArtificialAnalysis] Falling back to deterministic mock data in development.",
-        error,
-      );
-      return RADAR_MOCK_MODELS;
-    }
-
-    throw error;
+    // En cualquier otro caso (timeout, API caída, key no configurada)
+    // usar mock data para que la página siempre muestre algo
+    console.warn(
+      "[useArtificialAnalysis] API no disponible, usando mock data.",
+      error instanceof Error ? error.message : error,
+    );
+    return RADAR_MOCK_MODELS;
+  } finally {
+    clearTimeout(timeoutId);
   }
 }
 
@@ -104,7 +117,7 @@ export function useArtificialAnalysis(limit = RADAR_MODELS_LIMIT) {
     select: (models) => buildRadarMetricCards(models, limit),
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    retry: 1,
+    retry: false, // el fallback a mock ya está en fetchArtificialAnalysisModels
     refetchOnWindowFocus: false,
   });
 }
