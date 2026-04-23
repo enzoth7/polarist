@@ -78,28 +78,19 @@ const isAbortError = (error: unknown) =>
     : error instanceof Error && error.name === "AbortError";
 
 export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
-  // Timeout propio del cliente para no depender solo del servidor
+  // Timeout del cliente para no depender del servidor
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), CLIENT_FETCH_TIMEOUT_MS);
 
-  // Combinar la señal externa (react-query) con la de timeout
-  const combinedSignal = signal
-    ? AbortSignal.any
-      ? AbortSignal.any([signal, controller.signal])
-      : controller.signal
-    : controller.signal;
-
   try {
-    const models = await fetchArtificialAnalysisModelsFromProxy(combinedSignal);
+    const models = await fetchArtificialAnalysisModelsFromProxy(controller.signal);
     return models;
   } catch (error) {
-    // Si react-query cancela la query (unmount), propagar
+    // Si react-query canceló la query (unmount), propagar
     if (isAbortError(error) && signal?.aborted) {
       throw error;
     }
-
-    // En cualquier otro caso (timeout, API caída, key no configurada)
-    // usar mock data para que la página siempre muestre algo
+    // Cualquier otro fallo: timeout, API caída, key no configurada → mock
     console.warn(
       "[useArtificialAnalysis] API no disponible, usando mock data.",
       error instanceof Error ? error.message : error,
@@ -110,14 +101,20 @@ export async function fetchArtificialAnalysisModels(signal?: AbortSignal) {
   }
 }
 
+// Datos placeholder pre-calculados: se muestran instantáneamente mientras carga la API
+const PLACEHOLDER_METRIC_CARDS = buildRadarMetricCards(RADAR_MOCK_MODELS);
+
 export function useArtificialAnalysis(limit = RADAR_MODELS_LIMIT) {
   return useQuery({
     queryKey: ["artificial-analysis", "radar-metrics", limit],
     queryFn: ({ signal }) => fetchArtificialAnalysisModels(signal),
     select: (models) => buildRadarMetricCards(models, limit),
+    // placeholderData: muestra mock inmediatamente → isLoading es false desde el render 1.
+    // Si la API real responde, reemplaza. Si falla, el mock queda visible. Skeleton nunca se cuelga.
+    placeholderData: PLACEHOLDER_METRIC_CARDS,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
-    retry: false, // el fallback a mock ya está en fetchArtificialAnalysisModels
+    retry: false,
     refetchOnWindowFocus: false,
   });
 }
