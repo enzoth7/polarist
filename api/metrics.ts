@@ -3,7 +3,7 @@ export const config = { runtime: 'nodejs' };
 const ARTIFICIAL_ANALYSIS_API_URL = "https://artificialanalysis.ai/api/v2/data/llms/models";
 const SUCCESS_CACHE_CONTROL = "public, max-age=0, s-maxage=300, stale-while-revalidate=600";
 const NO_STORE_CACHE_CONTROL = "no-store";
-const REQUEST_TIMEOUT_MS = 8_000; // Vercel hobby limit: 10s — usamos 8s para tener margen
+const REQUEST_TIMEOUT_MS = 9_000; // Al límite de Vercel Hobby (10s)
 
 const parseJsonSafely = (value: string): unknown => {
   if (!value) {
@@ -172,6 +172,7 @@ async function handleMetricsRequest(request: Request) {
       {
         error: "The metrics proxy failed to reach Artificial Analysis.",
         details: error instanceof Error ? error.message : "Unknown proxy error.",
+        stack: error instanceof Error ? error.stack?.slice(0, 200) : undefined,
       },
       {
         status: 502,

@@ -11,7 +11,7 @@ import {
 
 const ARTIFICIAL_ANALYSIS_API_URL = "/api/metrics";
 const RADAR_MODELS_LIMIT = 10;
-const CLIENT_FETCH_TIMEOUT_MS = 7_000;
+const CLIENT_FETCH_TIMEOUT_MS = 9_500;
 
 type ArtificialAnalysisResponse = {
   data?: ArtificialAnalysisModel[];
