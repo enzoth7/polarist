@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polarist — Brand Kit / Opción B: 4px Sutil</title>
+    <style>
+        @font-face {
+            font-family: 'Arno Pro';
+            src: url('ARNO PRO/ArnoPro-LightDisplay.otf') format('opentype');
+            font-weight: 300;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Arno Pro';
+            src: url('ARNO PRO/arno-pro.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Arno Pro';
+            src: url('ARNO PRO/ArnoPro-Smbd.otf') format('opentype');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Arno Pro';
+            src: url('ARNO PRO/ArnoPro-SmbdItalic.otf') format('opentype');
+            font-weight: 600;
+            font-style: italic;
+        }
+        @font-face {
+            font-family: 'Arno Pro';
+            src: url('ARNO PRO/arnopro-bold.otf') format('opentype');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Light Body.ttf') format('truetype');
+            font-weight: 300;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Roman Body.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Medium Body.ttf') format('truetype');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Semi Bold Body.ttf') format('truetype');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Bold Body.ttf') format('truetype');
+            font-weight: 700;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Sequel Sans';
+            src: url('SEQUEL SANS/Sequel Sans Black Body.ttf') format('truetype');
+            font-weight: 900;
+            font-style: normal;
+        }
+
+        :root {
+            --green: #CAFE5B;
+            --black: #010101;
+            --white: #F6F6F6;
+
+            /* OPCIÓN B — 4px SUTIL */
+            --r-sm: 2px;
+            --r:    4px;
+            --r-lg: 6px;
+
+            --font-serif: 'Arno Pro', Georgia, serif;
+            --font-sans:  'Sequel Sans', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: #111;
+            font-family: var(--font-sans);
+            font-weight: 400;
+            color: var(--white);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── UTILS ── */
+        .label {
+            font-family: var(--font-sans);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(246,246,246,0.35);
+        }
+        .sec-num {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 14px;
+        }
+        .sec-num.dark { color: rgba(1,1,1,0.35); }
+        .hr { width: 100%; height: 1px; background: rgba(255,255,255,0.07); }
+        .hr.light { background: rgba(1,1,1,0.08); }
+
+        /* ── COVER ── */
+        .cover {
+            background: var(--black);
+            height: 100svh;
+            min-height: 560px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 56px 64px;
+        }
+        .cover-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .cover-logo {
+            width: 64px;
+            height: 64px;
+            object-fit: cover;
+        }
+        .cover-main {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            padding: 0 0 40px;
+        }
+        .cover-title {
+            font-family: var(--font-sans);
+            font-size: clamp(64px, 9vw, 130px);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -4px;
+            line-height: 0.84;
+        }
+        .cover-title em {
+            font-style: normal;
+            color: var(--green);
+            display: block;
+        }
+        .cover-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+        .cover-tagline {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 16px;
+            color: rgba(246,246,246,0.4);
+            max-width: 380px;
+            line-height: 1.55;
+        }
+
+        /* ── SECTION ── */
+        .sec {
+            padding: 80px 64px;
+        }
+        .sec.light {
+            background: var(--white);
+            color: var(--black);
+        }
+        .sec.dim {
+            background: #0A0A0A;
+        }
+        .sec-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 56px;
+        }
+        .sec-h {
+            font-family: var(--font-sans);
+            font-size: 44px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -1.5px;
+            line-height: 1;
+        }
+        .sec-note {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(246,246,246,0.45);
+            max-width: 300px;
+        }
+        .sec-note.dark { color: rgba(1,1,1,0.45); }
+
+        /* ── 01 COLORS ── */
+        .color-strip {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+        }
+        .swatch {
+            padding: 48px 40px;
+            min-height: 260px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .swatch-name {
+            font-size: 22px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+        }
+        .swatch-hex {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            letter-spacing: 2px;
+            opacity: 0.55;
+            margin-top: 4px;
+        }
+        .swatch-use {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.55;
+            opacity: 0.65;
+        }
+        .swatch-rgb {
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            opacity: 0.3;
+            margin-top: 4px;
+        }
+
+        /* ── 02 LOGO ── */
+        .logo-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+        .logo-cell {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 32px;
+        }
+        .logo-cell img {
+            width: 100%;
+            max-width: 140px;
+            height: auto;
+            object-fit: contain;
+        }
+        .logo-cell-lbl {
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+        }
+        .logo-cell.bg-black  { background: var(--black); }
+        .logo-cell.bg-black .logo-cell-lbl  { color: rgba(246,246,246,0.3); }
+        .logo-cell.bg-white  { background: var(--white); }
+        .logo-cell.bg-white .logo-cell-lbl  { color: rgba(1,1,1,0.35); }
+        .logo-cell.bg-green  { background: var(--green); }
+        .logo-cell.bg-green .logo-cell-lbl  { color: rgba(1,1,1,0.4); }
+        .logo-cell.bg-dark   { background: #111; border: 1px solid rgba(255,255,255,0.06); }
+        .logo-cell.bg-dark .logo-cell-lbl   { color: rgba(246,246,246,0.3); }
+
+        .logo-rules {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+            margin-top: 2px;
+        }
+        .logo-rule-block {
+            padding: 32px 40px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+        .rule-mark {
+            font-size: 20px;
+            line-height: 1;
+            flex-shrink: 0;
+        }
+        .rule-mark.ok { color: var(--green); }
+        .rule-mark.no { color: rgba(246,246,246,0.35); }
+
+        /* ── 03 TYPOGRAPHY ── */
+        .type-cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+        }
+        .combo-block {
+            margin-top: 72px;
+            padding: 56px 48px;
+            background: var(--white);
+            border: 1px solid rgba(1,1,1,0.08);
+            border-radius: var(--r);
+        }
+        .combo-lbl {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.35);
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(1,1,1,0.1);
+        }
+        .combo-titular {
+            font-family: var(--font-serif);
+            font-weight: 300;
+            font-size: clamp(36px, 5vw, 56px);
+            line-height: 1.05;
+            color: var(--black);
+            margin-bottom: 28px;
+        }
+        .combo-subtitular {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 22px;
+            line-height: 1.35;
+            color: var(--black);
+            margin-bottom: 24px;
+        }
+        .combo-cuerpo {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 15px;
+            line-height: 1.7;
+            color: rgba(1,1,1,0.65);
+            max-width: 640px;
+            margin-bottom: 40px;
+        }
+        .combo-legend {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            padding-top: 28px;
+            border-top: 1px solid rgba(1,1,1,0.08);
+        }
+        .combo-leg-item .combo-leg-role {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 9px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.35);
+            margin-bottom: 6px;
+        }
+        .combo-leg-item .combo-leg-font {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--black);
+        }
+        .face-label {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.35);
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(1,1,1,0.1);
+        }
+        .face-big {
+            font-size: 80px;
+            line-height: 0.9;
+            margin-bottom: 20px;
+        }
+        .face-quote {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 15px;
+            color: rgba(1,1,1,0.5);
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+        .weight-rows { display: flex; flex-direction: column; }
+        .w-row {
+            display: flex;
+            align-items: baseline;
+            gap: 20px;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(1,1,1,0.07);
+        }
+        .w-lbl {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.3);
+            min-width: 90px;
+            font-family: var(--font-sans);
+        }
+        .w-sample { font-size: 21px; line-height: 1.2; color: var(--black); }
+
+        .type-scale { margin-top: 64px; }
+        .scale-lbl {
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.3);
+            margin-bottom: 24px;
+        }
+        .s-row {
+            display: flex;
+            align-items: baseline;
+            gap: 40px;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(1,1,1,0.07);
+        }
+        .s-meta { min-width: 140px; }
+        .s-tag {
+            font-size: 9px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(1,1,1,0.3);
+        }
+        .s-spec {
+            font-size: 10px;
+            color: rgba(1,1,1,0.45);
+            margin-top: 3px;
+            letter-spacing: 0.5px;
+        }
+
+        /* ── 04 SPACING ── */
+        .space-track {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            margin-top: 48px;
+        }
+        .sp-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .sp-bar { background: var(--green); width: 48px; }
+        .sp-val { font-size: 13px; font-weight: 700; color: var(--green); }
+        .sp-nm { font-size: 9px; letter-spacing: 1px; opacity: 0.4; text-transform: uppercase; }
+
+        /* ── 05 CORNERS ── */
+        .corner-badge {
+            background: var(--green);
+            color: var(--black);
+            display: inline-block;
+            padding: 10px 24px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            border-radius: var(--r-sm);
+        }
+        .corner-demos {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            margin-top: 48px;
+        }
+        .corner-demo { display: flex; flex-direction: column; gap: 14px; }
+        .corner-box {
+            height: 110px;
+            border: 1px solid var(--green);
+            background: rgba(202,254,91,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            color: var(--green);
+        }
+        .corner-name { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); }
+        .corner-desc { font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: rgba(246,246,246,0.5); line-height: 1.55; }
+
+        /* ── 06 COMPONENTS ── */
+        .comp-group { margin-bottom: 72px; }
+        .comp-group:last-child { margin-bottom: 0; }
+        .comp-title {
+            font-size: 10px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--green);
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(202,254,91,0.2);
+            margin-bottom: 32px;
+        }
+
+        /* Buttons */
+        .btn-shelf { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; margin-bottom: 20px; }
+        .btn {
+            font-family: var(--font-sans);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            padding: 13px 26px;
+            border-radius: var(--r);
+            border: none;
+            cursor: pointer;
+            display: inline-block;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .btn-sm  { font-size: 11px; padding: 9px 18px; }
+        .btn-lg  { font-size: 15px; padding: 17px 38px; letter-spacing: 0.5px; }
+        .btn-p   { background: var(--green); color: var(--black); }
+        .btn-g   { background: transparent; color: var(--green); border: 1px solid var(--green); }
+        .btn-s   { background: transparent; color: var(--white); border: 1px solid rgba(246,246,246,0.28); }
+        .btn-d   { background: var(--white); color: var(--black); }
+
+        /* Cards */
+        .cards-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+        }
+        .card {
+            background: #111;
+            padding: 40px;
+            border-radius: var(--r-lg);
+            display: flex;
+            flex-direction: column;
+        }
+        .card-h {
+            font-family: var(--font-serif);
+            font-weight: 400;
+            font-size: 26px;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            flex: 1;
+        }
+        .card-p {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.65;
+            color: rgba(246,246,246,0.55);
+            margin-bottom: 28px;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2px;
+        }
+        .stat-block { padding: 40px; text-align: center; }
+        .stat-n {
+            font-family: var(--font-serif);
+            font-weight: 400;
+            font-size: 58px;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-l {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            opacity: 0.35;
+        }
+
+        /* Forms */
+        .form-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+        .form-stack { display: flex; flex-direction: column; gap: 20px; }
+        .fld { display: flex; flex-direction: column; gap: 8px; }
+        .fld-lbl {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: rgba(246,246,246,0.4);
+        }
+        .fld-input, .fld-select, .fld-ta {
+            font-family: var(--font-sans);
+            font-size: 14px;
+            padding: 13px 16px;
+            background: rgba(246,246,246,0.04);
+            border: 1px solid rgba(246,246,246,0.14);
+            border-radius: var(--r);
+            color: var(--white);
+            outline: none;
+            width: 100%;
+        }
+        .fld-input:focus, .fld-ta:focus { border-color: var(--green); }
+        .fld-input::placeholder, .fld-ta::placeholder { color: rgba(246,246,246,0.25); }
+        .fld-ta { resize: vertical; }
+        .fld-select { appearance: none; color: rgba(246,246,246,0.5); }
+
+        /* Nav */
+        .nav-mock {
+            background: var(--black);
+            border: 1px solid rgba(255,255,255,0.07);
+            padding: 18px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: var(--r);
+        }
+        .nav-brand-area { display: flex; align-items: center; gap: 10px; }
+        .nav-logo { width: 28px; height: 28px; object-fit: contain; }
+        .nav-name { font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-links { display: flex; gap: 36px; list-style: none; }
+        .nav-links a {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: rgba(246,246,246,0.5);
+            text-decoration: none;
+        }
+
+        /* Hero mockup */
+        .hero-mock {
+            background: var(--black);
+            border: 1px solid rgba(255,255,255,0.07);
+            padding: 80px 64px;
+            border-radius: var(--r-lg);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 64px;
+            align-items: center;
+        }
+        .hero-h {
+            font-family: var(--font-serif);
+            font-weight: 400;
+            font-size: 52px;
+            line-height: 1.05;
+            margin-bottom: 20px;
+        }
+        .hero-sub {
+            font-family: var(--font-sans);
+            font-weight: 700;
+            font-size: 18px;
+            line-height: 1.4;
+            color: var(--white);
+            margin-bottom: 20px;
+        }
+        .hero-p {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 15px;
+            line-height: 1.65;
+            color: rgba(246,246,246,0.55);
+            margin-bottom: 36px;
+        }
+        .hero-img-placeholder {
+            aspect-ratio: 4/3;
+            background: rgba(202,254,91,0.05);
+            border: 1px solid rgba(202,254,91,0.15);
+            border-radius: var(--r-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(202,254,91,0.3);
+            font-size: 11px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        /* ── 07 RULES ── */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2px;
+        }
+        .rule-blk {
+            padding: 48px;
+        }
+        .rule-blk-ttl {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 28px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+        .rule-blk-ttl.ok { color: var(--green); border-bottom-color: rgba(202,254,91,0.2); }
+        .rule-blk-ttl.no { color: rgba(246,246,246,0.5); }
+        .rule-item { display: flex; gap: 14px; margin-bottom: 14px; align-items: flex-start; }
+        .rule-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 8px; flex-shrink: 0; }
+        .rule-dot.ok { background: var(--green); }
+        .rule-dot.no { background: rgba(246,246,246,0.3); }
+        .rule-txt {
+            font-family: var(--font-sans);
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 1.6;
+            color: rgba(246,246,246,0.65);
+        }
+
+        /* ── FOOTER ── */
+        .kit-footer {
+            padding: 48px 64px;
+            background: var(--black);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-logo { width: 36px; height: 36px; object-fit: contain; }
+        .footer-meta { text-align: right; }
+
+        /* ── FIXED BADGE ── */
+        .opt-badge {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--green);
+            color: var(--black);
+            font-family: var(--font-sans);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 8px 16px;
+            border-radius: var(--r-sm);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+
+<div class="opt-badge">Opción B — 4px Sutil</div>
+
+<!-- ═══════════════════════════════════════════ COVER -->
+<section class="cover">
+    <div class="cover-top">
+        <img src="6.png" alt="Polarist" class="cover-logo">
+        <div style="text-align: right;">
+            <div class="label">Brand Guidelines</div>
+            <div class="label" style="margin-top:4px;color:rgba(246,246,246,0.2);">2026 / Identity System</div>
+        </div>
+    </div>
+
+    <div class="cover-main">
+        <div class="cover-title">
+            POLARIST
+            <em>BRAND KIT</em>
+        </div>
+    </div>
+
+    <div class="cover-bottom">
+        <p class="cover-tagline">Entre la autoridad de la consultoría y la energía disruptiva de la IA.</p>
+        <div class="label">polarist.app</div>
+    </div>
+</section>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 01 — COLOR -->
+<section class="sec" style="padding-bottom:0;">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">01 — Color</div>
+            <div class="sec-h">Paleta de Color</div>
+        </div>
+        <p class="sec-note">Tres colores. Sin excepciones.<br>El verde se usa como acento, nunca como fondo dominante.</p>
+    </div>
+</section>
+
+<div class="color-strip">
+    <div class="swatch" style="background:#CAFE5B; color:#010101;">
+        <div>
+            <div class="swatch-name">Polarist Green</div>
+            <div class="swatch-hex" style="color:rgba(1,1,1,0.5);">#CAFE5B</div>
+        </div>
+        <div class="swatch-use" style="color:rgba(1,1,1,0.6);">CTAs, highlights, acento de marca. Reservarlo para crear impacto.</div>
+        <div class="swatch-rgb" style="color:rgba(1,1,1,0.35);">RGB 202 · 254 · 91</div>
+    </div>
+    <div class="swatch" style="background:#010101; color:#F6F6F6; border-left:1px solid rgba(255,255,255,0.07); border-right:1px solid rgba(255,255,255,0.07);">
+        <div>
+            <div class="swatch-name">Pure Black</div>
+            <div class="swatch-hex">#010101</div>
+        </div>
+        <div class="swatch-use" style="color:rgba(246,246,246,0.5);">Fondo primario, texto sobre fondos claros. La base de toda la identidad.</div>
+        <div class="swatch-rgb" style="color:rgba(246,246,246,0.2);">RGB 1 · 1 · 1</div>
+    </div>
+    <div class="swatch" style="background:#F6F6F6; color:#010101;">
+        <div>
+            <div class="swatch-name">Off White</div>
+            <div class="swatch-hex" style="color:rgba(1,1,1,0.5);">#F6F6F6</div>
+        </div>
+        <div class="swatch-use" style="color:rgba(1,1,1,0.55);">Texto sobre negro, fondos claros. Nunca blanco puro — siempre este tono.</div>
+        <div class="swatch-rgb" style="color:rgba(1,1,1,0.3);">RGB 246 · 246 · 246</div>
+    </div>
+</div>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 02 — LOGO -->
+<section class="sec" style="padding-bottom:0;">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">02 — Logo</div>
+            <div class="sec-h">Sistema de Logo</div>
+        </div>
+        <p class="sec-note">El isotipo funciona en tres fondos. No distorsionar, no recolorear, no cambiar proporciones.</p>
+    </div>
+</section>
+
+<div class="logo-grid">
+    <div class="logo-cell bg-dark">
+        <img src="1.png" alt="Polarist">
+        <div class="logo-cell-lbl">Blanco / sin fondo</div>
+    </div>
+    <div class="logo-cell bg-white">
+        <img src="2.png" alt="Polarist">
+        <div class="logo-cell-lbl">Negro / sin fondo</div>
+    </div>
+    <div class="logo-cell bg-dark">
+        <img src="3.png" alt="Polarist">
+        <div class="logo-cell-lbl">Verde / sin fondo</div>
+    </div>
+    <div class="logo-cell bg-black">
+        <img src="4.png" alt="Polarist">
+        <div class="logo-cell-lbl">Blanco sobre negro</div>
+    </div>
+    <div class="logo-cell bg-white">
+        <img src="5.png" alt="Polarist">
+        <div class="logo-cell-lbl">Negro sobre blanco</div>
+    </div>
+    <div class="logo-cell bg-green">
+        <img src="6.png" alt="Polarist">
+        <div class="logo-cell-lbl">Negro sobre verde — principal</div>
+    </div>
+    <div class="logo-cell bg-black">
+        <img src="7.png" alt="Polarist">
+        <div class="logo-cell-lbl">Verde sobre negro</div>
+    </div>
+</div>
+
+<div class="logo-rules">
+    <div class="logo-rule-block">
+        <div class="rule-mark ok">✓</div>
+        <div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px; color:var(--green);">Espacio mínimo</div>
+            <div style="font-family:var(--font-sans); font-weight:400; font-size:14px; color:rgba(246,246,246,0.6); line-height:1.6;">Siempre dejar un margen equivalente a la mitad del ancho del isotipo en todos sus lados.</div>
+        </div>
+    </div>
+    <div class="logo-rule-block">
+        <div class="rule-mark no">✕</div>
+        <div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px; color:#FF4040;">Usos incorrectos</div>
+            <div style="font-family:var(--font-sans); font-weight:400; font-size:14px; color:rgba(246,246,246,0.6); line-height:1.6;">No estirar, no rotar, no aplicar sombra, no usar sobre fondos de color que no sean los de la paleta.</div>
+        </div>
+    </div>
+</div>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 03 — TYPOGRAPHY -->
+<section class="sec light">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num dark">03 — Tipografía</div>
+            <div class="sec-h" style="color:var(--black);">Sistema Tipográfico</div>
+        </div>
+        <p class="sec-note dark">Titulares en Arno Pro. Subtítulos y énfasis en Sequel Sans Bold. Todo el cuerpo de texto en Sequel Sans Regular. Sin excepciones.</p>
+    </div>
+
+    <div class="type-cols">
+        <div>
+            <div class="face-label">Arno Pro — Serif / Editorial</div>
+            <div class="face-big" style="font-family:var(--font-serif); color:var(--black);">Aa</div>
+            <div class="face-quote">"La precisión es la forma más elevada de elegancia."</div>
+            <div class="weight-rows">
+                <div class="w-row">
+                    <div class="w-lbl">Light 300</div>
+                    <div class="w-sample" style="font-family:var(--font-serif); font-weight:300;">Consultoría en IA</div>
+                </div>
+                <div class="w-row">
+                    <div class="w-lbl">Regular 400</div>
+                    <div class="w-sample" style="font-family:var(--font-serif); font-weight:400;">Consultoría en IA</div>
+                </div>
+                <div class="w-row">
+                    <div class="w-lbl">Semibold 600</div>
+                    <div class="w-sample" style="font-family:var(--font-serif); font-weight:600;">Consultoría en IA</div>
+                </div>
+                <div class="w-row" style="border-bottom:none;">
+                    <div class="w-lbl">Bold 700</div>
+                    <div class="w-sample" style="font-family:var(--font-serif); font-weight:700;">Consultoría en IA</div>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="face-label">Sequel Sans — Sans / Técnica</div>
+            <div class="face-big" style="font-family:var(--font-sans); font-weight:700; color:var(--black);">Aa</div>
+            <div style="font-family:var(--font-sans); font-size:13px; letter-spacing:4px; text-transform:uppercase; color:rgba(1,1,1,0.35); margin-bottom:32px;">
+                Precisión · Automatización · IA
+            </div>
+            <div class="weight-rows">
+                <div class="w-row">
+                    <div class="w-lbl">Light 300</div>
+                    <div class="w-sample" style="font-family:var(--font-sans); font-weight:300;">Polarist System</div>
+                </div>
+                <div class="w-row">
+                    <div class="w-lbl">Regular 400</div>
+                    <div class="w-sample" style="font-family:var(--font-sans); font-weight:400;">Polarist System</div>
+                </div>
+                <div class="w-row">
+                    <div class="w-lbl">Medium 500</div>
+                    <div class="w-sample" style="font-family:var(--font-sans); font-weight:500;">Polarist System</div>
+                </div>
+                <div class="w-row" style="border-bottom:none;">
+                    <div class="w-lbl">Bold 700</div>
+                    <div class="w-sample" style="font-family:var(--font-sans); font-weight:700;">Polarist System</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="combo-block">
+        <div class="combo-lbl">Combinación Tipográfica</div>
+        <div class="combo-titular">Innovación que conecta el futuro.</div>
+        <div class="combo-subtitular">Conectamos ideas. Creamos soluciones. Impulsamos el cambio.</div>
+        <div class="combo-cuerpo">Usamos Arno Pro para titulares que transmiten autoridad y visión. Combinada con Sequel Sans Bold para subtítulos y énfasis, y Sequel Sans Regular como base del cuerpo de texto, logramos jerarquía, claridad y un lenguaje visual moderno y funcional.</div>
+        <div class="combo-legend">
+            <div class="combo-leg-item">
+                <div class="combo-leg-role">Titular</div>
+                <div class="combo-leg-font">Arno Pro</div>
+            </div>
+            <div class="combo-leg-item">
+                <div class="combo-leg-role">Subtitular / Énfasis</div>
+                <div class="combo-leg-font">Sequel Sans Bold</div>
+            </div>
+            <div class="combo-leg-item">
+                <div class="combo-leg-role">Cuerpo de texto</div>
+                <div class="combo-leg-font">Sequel Sans Regular</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="type-scale">
+        <div class="scale-lbl">Escala tipográfica</div>
+
+        <div class="s-row">
+            <div class="s-meta">
+                <div class="s-tag">Display</div>
+                <div class="s-spec">96px · tracking -3px · serif</div>
+            </div>
+            <div style="font-family:var(--font-serif); font-size:60px; line-height:0.9; color:var(--black);">Automatizá tu empresa</div>
+        </div>
+        <div class="s-row">
+            <div class="s-meta">
+                <div class="s-tag">H1</div>
+                <div class="s-spec">56px · tracking -2px · serif</div>
+            </div>
+            <div style="font-family:var(--font-serif); font-size:40px; line-height:1; color:var(--black);">Servicios de IA para empresas</div>
+        </div>
+        <div class="s-row">
+            <div class="s-meta">
+                <div class="s-tag">H2</div>
+                <div class="s-spec">36px · tracking -1px · serif</div>
+            </div>
+            <div style="font-family:var(--font-serif); font-size:28px; line-height:1; color:var(--black);">Nuestro proceso de trabajo</div>
+        </div>
+        <div class="s-row">
+            <div class="s-meta">
+                <div class="s-tag">H3</div>
+                <div class="s-spec">24px · tracking -0.5px · sans</div>
+            </div>
+            <div style="font-family:var(--font-sans); font-size:20px; font-weight:700; color:var(--black);">Automatización de procesos</div>
+        </div>
+        <div class="s-row">
+            <div class="s-meta">
+                <div class="s-tag">Body</div>
+                <div class="s-spec">16px · lh 1.65 · sans</div>
+            </div>
+            <div style="font-family:var(--font-sans); font-size:15px; line-height:1.65; color:rgba(1,1,1,0.65); max-width:560px;">Implementamos flujos de trabajo con IA para empresas que quieren operar con más velocidad y menos fricción.</div>
+        </div>
+        <div class="s-row" style="border-bottom:none;">
+            <div class="s-meta">
+                <div class="s-tag">Label</div>
+                <div class="s-spec">10px · tracking +3px · uppercase</div>
+            </div>
+            <div style="font-family:var(--font-sans); font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(1,1,1,0.4);">Servicios · Casos · Contacto</div>
+        </div>
+    </div>
+</section>
+
+<div class="hr light"></div>
+
+<!-- ═══════════════════════════════════════════ 04 — SPACING -->
+<section class="sec">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">04 — Espaciado</div>
+            <div class="sec-h">Sistema de Espaciado</div>
+        </div>
+        <p class="sec-note">Base 8px. Todos los valores son múltiplos exactos.<br>No usar valores arbitrarios intermedios.</p>
+    </div>
+
+    <div class="space-track">
+        <div class="sp-col" style="width:56px;"><div class="sp-bar" style="height:8px;"></div><div class="sp-val">8</div><div class="sp-nm">xs</div></div>
+        <div class="sp-col" style="width:64px;"><div class="sp-bar" style="height:16px;"></div><div class="sp-val">16</div><div class="sp-nm">sm</div></div>
+        <div class="sp-col" style="width:72px;"><div class="sp-bar" style="height:24px;"></div><div class="sp-val">24</div><div class="sp-nm">md</div></div>
+        <div class="sp-col" style="width:80px;"><div class="sp-bar" style="height:32px;"></div><div class="sp-val">32</div><div class="sp-nm">lg</div></div>
+        <div class="sp-col" style="width:88px;"><div class="sp-bar" style="height:48px;"></div><div class="sp-val">48</div><div class="sp-nm">xl</div></div>
+        <div class="sp-col" style="width:96px;"><div class="sp-bar" style="height:64px;"></div><div class="sp-val">64</div><div class="sp-nm">2xl</div></div>
+        <div class="sp-col" style="width:104px;"><div class="sp-bar" style="height:96px;"></div><div class="sp-val">96</div><div class="sp-nm">3xl</div></div>
+        <div class="sp-col" style="width:112px;"><div class="sp-bar" style="height:128px;"></div><div class="sp-val">128</div><div class="sp-nm">4xl</div></div>
+    </div>
+</section>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 05 — CORNERS -->
+<section class="sec dim">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">05 — Contenedores</div>
+            <div class="sec-h">Bordes y Contenedores</div>
+        </div>
+        <div class="corner-badge">Opción B — 4px Sutil</div>
+    </div>
+
+    <div class="corner-demos">
+        <div class="corner-demo">
+            <div class="corner-box" style="border-radius:4px;">4px</div>
+            <div class="corner-name">Sutil — Global</div>
+            <div class="corner-desc">Redondeo apenas perceptible. Profesional sin ser frío.</div>
+        </div>
+        <div class="corner-demo">
+            <div class="corner-box" style="border-radius:4px; flex-direction:column; gap:10px; padding:16px;">
+                <div style="width:100%; height:34px; background:var(--green); border-radius:4px;"></div>
+                <div style="width:100%; height:34px; border:1px solid var(--green); border-radius:4px;"></div>
+            </div>
+            <div class="corner-name">Botones — 4px</div>
+            <div class="corner-desc">Primario y ghost con radio sutil.</div>
+        </div>
+        <div class="corner-demo">
+            <div class="corner-box" style="border-radius:4px; flex-direction:column; gap:8px; padding:16px;">
+                <div style="width:100%; height:30px; background:rgba(246,246,246,0.05); border:1px solid rgba(246,246,246,0.14); border-radius:4px; display:flex; align-items:center; padding:0 10px;">
+                    <div style="font-size:10px; opacity:0.3; font-family:var(--font-sans);">Email empresarial</div>
+                </div>
+                <div style="width:100%; height:30px; background:rgba(246,246,246,0.05); border:1px solid rgba(246,246,246,0.14); border-radius:4px;"></div>
+            </div>
+            <div class="corner-name">Inputs — 4px</div>
+            <div class="corner-desc">Campos de formulario. Radio 4px con 1px stroke.</div>
+        </div>
+        <div class="corner-demo">
+            <div class="corner-box" style="border-radius:4px; flex-direction:column; gap:8px; padding:16px;">
+                <div style="padding:5px 12px; background:rgba(202,254,91,0.1); border:1px solid rgba(202,254,91,0.3); border-radius:2px; font-size:10px; font-weight:400; letter-spacing:1px; color:var(--green); width:fit-content;">Activo</div>
+                <div style="padding:4px 12px; border:1px solid rgba(246,246,246,0.15); border-radius:2px; font-size:10px; font-weight:400; letter-spacing:1px; color:rgba(246,246,246,0.5); width:fit-content;">Pendiente</div>
+            </div>
+            <div class="corner-name">Estado — 2px</div>
+            <div class="corner-desc">Indicadores de estado con radio mínimo de 2px.</div>
+        </div>
+    </div>
+</section>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 06 — COMPONENTS -->
+<section class="sec" style="background:var(--black);">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">06 — Componentes</div>
+            <div class="sec-h">Sistema de Componentes</div>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Botones</div>
+        <div class="btn-shelf">
+            <button class="btn btn-p">Explorar servicios</button>
+            <button class="btn btn-g">Ver casos de uso</button>
+            <button class="btn btn-s">Contacto</button>
+            <button class="btn btn-d">Empezar ahora</button>
+        </div>
+        <div class="btn-shelf" style="margin-bottom:0;">
+            <button class="btn btn-p btn-sm">Empezar →</button>
+            <button class="btn btn-p">Explorar servicios</button>
+            <button class="btn btn-p btn-lg">Automatizá tu empresa →</button>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Cards</div>
+        <div class="cards-row">
+            <div class="card">
+                <div class="card-h">Automatización de procesos</div>
+                <div class="card-p">Implementamos flujos de trabajo con IA que reducen fricción operativa y aumentan velocidad de ejecución.</div>
+                <button class="btn btn-g btn-sm">Ver detalle →</button>
+            </div>
+            <div class="card" style="background:var(--green); color:var(--black);">
+                <div class="card-h" style="color:var(--black);">Agente de WhatsApp para automotoras</div>
+                <div class="card-p" style="color:rgba(1,1,1,0.6);">Atención automatizada 24/7. Consultas, turnos y seguimiento sin intervención humana.</div>
+                <button class="btn btn-d btn-sm">Ver caso →</button>
+            </div>
+            <div class="card" style="background:rgba(246,246,246,0.03); border:1px solid rgba(246,246,246,0.07);">
+                <div class="card-h">Diagnóstico de automatización</div>
+                <div class="card-p">Analizamos tus procesos e identificamos qué puede automatizarse y con qué impacto real en tu operación.</div>
+                <button class="btn btn-g btn-sm">Agendar →</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Bloques de datos</div>
+        <div class="stats-row">
+            <div class="stat-block">
+                <div class="stat-n" style="color:var(--green);">87%</div>
+                <div class="stat-l">reducción de tiempo operativo</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-n">40+</div>
+                <div class="stat-l">automatizaciones implementadas</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-n" style="color:var(--green);">3x</div>
+                <div class="stat-l">velocidad de respuesta al cliente</div>
+            </div>
+            <div class="stat-block" style="border:1px solid var(--green);">
+                <div class="stat-n">24/7</div>
+                <div class="stat-l">operación sin fricción</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Formularios</div>
+        <div class="form-cols">
+            <div class="form-stack">
+                <div class="fld">
+                    <label class="fld-lbl">Empresa</label>
+                    <input class="fld-input" type="text" placeholder="Nombre de tu empresa">
+                </div>
+                <div class="fld">
+                    <label class="fld-lbl">Email empresarial</label>
+                    <input class="fld-input" type="email" placeholder="vos@tuempresa.com">
+                </div>
+                <div class="fld">
+                    <label class="fld-lbl">¿Qué necesitás automatizar?</label>
+                    <select class="fld-select">
+                        <option>Atención al cliente</option>
+                        <option>Procesos internos</option>
+                        <option>Ventas y seguimiento</option>
+                    </select>
+                </div>
+                <button class="btn btn-p">Enviar consulta →</button>
+            </div>
+            <div class="form-stack">
+                <div class="fld" style="flex:1;">
+                    <label class="fld-lbl">Mensaje</label>
+                    <textarea class="fld-ta" rows="6" placeholder="Contanos sobre tu proceso actual..."></textarea>
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button class="btn btn-p" style="flex:1;">Enviar →</button>
+                    <button class="btn btn-s">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Navegación</div>
+        <div class="nav-mock">
+            <img src="6.png" class="nav-logo" alt="Polarist">
+            <ul class="nav-links">
+                <li><a href="#">Servicios</a></li>
+                <li><a href="#">Casos</a></li>
+                <li><a href="#">Proceso</a></li>
+                <li><a href="#" style="color:var(--white);">Nosotros</a></li>
+            </ul>
+            <button class="btn btn-s btn-sm">Iniciar sesión</button>
+        </div>
+    </div>
+
+    <div class="comp-group">
+        <div class="comp-title">Hero — Mockup de layout</div>
+        <div class="hero-mock">
+            <div>
+                <div class="hero-h">Automatizá tu empresa. <em style="color:var(--green); font-style:normal;">Sin fricciones.</em></div>
+                <div class="hero-sub">Conectamos ideas. Creamos soluciones. Impulsamos el cambio.</div>
+                <div class="hero-p">Implementamos flujos de trabajo con inteligencia artificial para que tu equipo opere con más velocidad y menos esfuerzo manual.</div>
+                <div style="display:flex; gap:14px;">
+                    <button class="btn btn-p">Explorar servicios →</button>
+                    <button class="btn btn-g">Ver casos de uso</button>
+                </div>
+            </div>
+            <div class="hero-img-placeholder">Imagen / Video</div>
+        </div>
+    </div>
+</section>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════════ 07 — RULES -->
+<section class="sec">
+    <div class="sec-head">
+        <div>
+            <div class="sec-num">07 — Uso</div>
+            <div class="sec-h">Reglas de Uso</div>
+        </div>
+    </div>
+
+    <div class="rules-grid">
+        <div class="rule-blk">
+            <div class="rule-blk-ttl ok">Hacer</div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Titulares editoriales en Arno Pro. Es la fuente de autoridad y visión.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Subtítulos, énfasis, CTAs y labels destacados en Sequel Sans Bold.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Todo el cuerpo de texto (párrafos, descripciones, notas) en Sequel Sans Regular.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">El verde como acento: CTAs, datos clave, highlights. Solo donde importa.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Espaciado generoso. El silencio visual comunica autoridad.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Radio consistente: 4px botones/inputs, 6px cards, 2px tags.</div></div>
+        </div>
+        <div class="rule-blk">
+            <div class="rule-blk-ttl no">No hacer</div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar el verde como fondo de secciones enteras ni de navegación.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar blanco puro (#FFF) — siempre #F6F6F6.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No agregar colores fuera de la paleta. Sin grises intermedios como fondos.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No distorsionar ni recolorear el isotipo.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar gradientes. La identidad es plana y directa.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No mezclar radios arbitrarios — respetar la escala de 2px / 4px / 6px.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar pesos intermedios de Sequel Sans (Light, Medium, Semibold) en el cuerpo. Solo Regular o Bold.</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ FOOTER -->
+<footer class="kit-footer">
+    <img src="6.png" class="footer-logo" alt="Polarist">
+    <div class="footer-meta">
+        <div class="label">Polarist — Brand Guidelines 2026</div>
+        <div class="label" style="margin-top:4px; color:rgba(246,246,246,0.15);">Opción B / 4px Sutil</div>
+    </div>
+</footer>
+
+</body>
+</html>
