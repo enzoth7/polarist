@@ -20,10 +20,7 @@ import {
 } from "@/hooks/useArtificialAnalysis";
 import { cn } from "@/lib/utils";
 
-const SERIF_TITLE_STYLE = {
-  fontFamily: '"Playfair Display", serif',
-  fontWeight: 600,
-};
+
 
 const CARD_CONFIG: Record<
   RadarMetricKey,
@@ -35,17 +32,17 @@ const CARD_CONFIG: Record<
 > = {
   intelligence: {
     title: "Inteligencia",
-    subtitle: "Índice de Inteligencia de Artificial Analysis; Más alto es mejor",
+    subtitle: "Más alto es mejor",
     accentClassName: "bg-violet-600",
   },
   speed: {
     title: "Velocidad",
-    subtitle: "Mediana de tokens de salida por segundo; Más alto es mejor",
+    subtitle: "Más alto es mejor",
     accentClassName: "bg-amber-400",
   },
   price: {
     title: "Precio",
-    subtitle: "3:1 entrada/salida ($/1M tokens); Más bajo es mejor",
+    subtitle: "Más bajo es mejor",
     accentClassName: "bg-orange-500",
   },
 };
@@ -226,11 +223,11 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
         <div className={cn("mt-[7px] h-3.5 w-3.5 shrink-0 rounded-[2px]", config.accentClassName)} />
         <div className="min-w-0">
           <h3
-            className="text-[2rem] leading-none tracking-[-0.02em] text-gray-900"
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '24px', letterSpacing: '-0.5px', lineHeight: 1.1, color: 'var(--polarist-black, #010101)' }}
           >
             {config.title}
           </h3>
-          <p className="mt-2 max-w-[320px] text-[12px] leading-5 text-gray-400">
+          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: 'rgba(1,1,1,0.55)' }} className="mt-1 whitespace-nowrap">
             {config.subtitle}
           </p>
         </div>
@@ -292,15 +289,20 @@ export function RadarMetricsBoard() {
 
   return (
     <section className="w-full space-y-10 pb-4 pt-4">
-      <div className="mx-auto w-full max-w-[1600px] space-y-10 px-8">
+      <div className="mx-auto w-full max-w-[2000px] space-y-10 px-4 md:px-10 lg:px-14 xl:px-16">
         <header className="space-y-3 text-center">
-          <h2 className="text-3xl font-semibold tracking-[-0.03em] text-white md:text-4xl">
+          <h2
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: 'var(--polarist-black, #010101)' }}
+          >
             Radar de modelos de IA
           </h2>
-          <p className="mx-auto max-w-3xl text-sm leading-relaxed text-white/62 md:text-base">
+          <p
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: 'rgba(1,1,1,0.55)' }}
+            className="mx-auto max-w-3xl"
+          >
             Benchmarks comparativos de inteligencia, velocidad y precio, con una lectura visual limpia.
           </p>
-          <p className="text-[12px] text-white/42">
+          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', color: 'rgba(1,1,1,0.35)', textTransform: 'uppercase' }} className="mt-4">
             Fuente: Artificial Analysis
             {updatedAtLabel ? ` | Actualizado ${updatedAtLabel}` : ""}
             {isFetching && !isLoading ? " | Actualizando" : ""}
@@ -320,7 +322,7 @@ export function RadarMetricsBoard() {
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
               <AlertTriangle className="h-5 w-5" />
             </div>
-            <h3 className="mt-4 text-2xl text-gray-900" style={SERIF_TITLE_STYLE}>
+            <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }} className="mt-4">
               Metrics unavailable
             </h3>
             <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-500">{errorMessage}</p>
@@ -345,8 +347,8 @@ export function RadarMetricsBoard() {
 
         {!isLoading && !isError && metricCards.length === 0 ? (
           <article className="mx-auto max-w-3xl rounded-[24px] border border-gray-100 bg-white p-8 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
-            <h3 className="text-2xl text-gray-900" style={SERIF_TITLE_STYLE}>
-              No hay metricas disponibles
+            <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }}>
+              No hay métricas disponibles
             </h3>
             <p className="mt-3 text-sm leading-6 text-gray-500">
               La API no devolvio suficientes datos para construir el radar en este momento.

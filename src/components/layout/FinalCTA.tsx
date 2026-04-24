@@ -15,21 +15,35 @@ export const FinalCTA = ({
   to = routes.login,
 }: FinalCTAProps) => {
   return (
-    <section className="relative z-30 flex w-full flex-col items-center justify-center bg-[#111113] px-6 py-24 md:py-32">
+    <section className="relative z-30 flex w-full flex-col items-center justify-center px-6 py-24 md:py-32" style={{ background: 'var(--polarist-black, #010101)' }}>
       <div className="flex flex-col items-center text-center">
         <h2
-          className="text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl"
-          style={{ letterSpacing: "-0.02em", lineHeight: 1.15 }}
+          className="text-3xl sm:text-4xl lg:text-5xl"
+          style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.05, color: 'var(--polarist-white, #F6F6F6)' }}
         >
           {title}
         </h2>
-        <p className="mt-6 max-w-xl text-lg font-medium leading-relaxed text-white/50">
+        <p className="mt-6 max-w-xl text-lg leading-relaxed" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, color: 'rgba(246,246,246,0.45)' }}>
           {description}
         </p>
         <div className="mt-10">
           <Link
             to={to}
-            className="inline-flex items-center rounded-[28px] border border-white/80 bg-gradient-to-b from-white to-[#f4f4f7] px-10 py-4 text-[17px] font-bold tracking-tight text-[#1a1a1a] shadow-[0_12px_24px_rgba(0,0,0,0.3),inset_0_2px_4px_rgba(255,255,255,1)] ring-1 ring-black/[0.04] transition-all duration-300 hover:scale-105 hover:shadow-[0_18px_36px_rgba(0,0,0,0.4),inset_0_2px_6px_rgba(255,255,255,1)] active:scale-95"
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '13px',
+              fontWeight: 500,
+              letterSpacing: '0.3px',
+              padding: '13px 26px',
+              background: 'var(--polarist-green, #CAFE5B)',
+              color: 'var(--polarist-black, #010101)',
+              borderRadius: 'var(--r-pill, 999px)',
+              display: 'inline-block',
+              textDecoration: 'none',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.opacity = '0.88'; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = '1'; }}
           >
             {buttonText}
           </Link>

@@ -4,7 +4,6 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { Link } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import { routes } from "@/lib/routes";
 
 const InferenceGlobeHero = () => {
@@ -213,7 +212,7 @@ const InferenceGlobeHero = () => {
         const starCount = isMobile ? 140 : 260;
 
         for (let index = 0; index < starCount; index += 1) {
-          const star = document.createElement("span");
+          const star = document.createElement("div");
           const x = Math.random() * width;
           const y = Math.random() * height;
           const deltaX = x - centerX;
@@ -438,7 +437,7 @@ const InferenceGlobeHero = () => {
   );
 
   return (
-    <div ref={rootRef} className="relative h-screen w-full overflow-hidden bg-[#111113]">
+    <div ref={rootRef} className="relative h-screen w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
       <div ref={backgroundStarsRef} className="pointer-events-none absolute inset-0 z-[1]" />
 
       <div className="relative z-20 flex h-full w-full flex-col items-center justify-center">
@@ -446,32 +445,51 @@ const InferenceGlobeHero = () => {
           <div className="mx-auto flex w-full max-w-[980px] -translate-y-[14vh] flex-col items-center text-center md:-translate-y-[12vh]">
           <h1
             ref={titleRef}
-            className="mx-auto max-w-full translate-y-6 text-center text-[clamp(1.8rem,5.2vw,3.5rem)] font-extrabold leading-[1.1] text-white opacity-0 md:whitespace-nowrap"
+            className="mx-auto max-w-full translate-y-6 text-center opacity-0"
+            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(1.8rem,5.2vw,3.5rem)', fontWeight: 700, letterSpacing: '-1.5px', lineHeight: 1.05, color: 'var(--polarist-white, #F6F6F6)' }}
           >
-            {"La forma más simple de "}
-            <span className="text-[#ccff00]">usar IA</span>
-            {" en tu vida"}
+            <div className="block">
+              {"La forma más simple de "}
+              <div style={{ display: 'inline', color: 'var(--polarist-green, #CAFE5B)' }}>usar IA</div>
+            </div>
+            <div className="block">{"en tu vida"}</div>
           </h1>
 
           <p
             ref={descriptionRef}
-            className="mx-auto mt-4 max-w-[760px] translate-y-6 text-[1.12rem] leading-[1.5] text-[#a1a1aa] opacity-0"
+            className="mx-auto mt-6 max-w-[760px] translate-y-6 opacity-0"
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: '#FFFFFF' }}
           >
-            <span className="block md:whitespace-nowrap">
+            <div className="block md:whitespace-nowrap">
               Polarist es una plataforma digital que conecta a las personas con herramientas e
-            </span>
-            <span className="block md:whitespace-nowrap">
+            </div>
+            <div className="block md:whitespace-nowrap">
               información clave para mejorar procesos a través de Inteligencia Artificial.
-            </span>
+            </div>
           </p>
 
           <div ref={ctaRef} className="pointer-events-auto mx-auto mt-8 translate-y-4 scale-[0.92] opacity-0">
-            <Button
-              asChild
-              className="rounded-full border border-white/10 bg-white px-12 py-7 text-lg font-bold text-black shadow-xl transition-all duration-300 hover:scale-105 hover:bg-white/90 hover:shadow-[0_0_35px_rgba(255,255,255,0.25)]"
+            <Link
+              to={routes.login}
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: '14px',
+                fontWeight: 600,
+                letterSpacing: '0.5px',
+                padding: '12px 28px',
+                background: 'var(--polarist-green, #CAFE5B)',
+                color: 'var(--polarist-black, #010101)',
+                borderRadius: 'var(--r-pill, 999px)',
+                display: 'inline-block',
+                textDecoration: 'none',
+                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+                border: 'none',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.opacity = '0.88'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = '1'; }}
             >
-              <Link to={routes.login}>Comenzar</Link>
-            </Button>
+              Comenzar
+            </Link>
           </div>
           </div>
         </div>

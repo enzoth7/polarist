@@ -157,9 +157,6 @@ const Header = () => {
             <div className="shrink-0" aria-label="Marca Polarist">
               <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
             </div>
-            <p className="text-base font-black tracking-tight text-[#1d1d1f] md:text-lg">
-              {desktopBrandLabel}
-            </p>
           </div>
         </div>
 
@@ -168,9 +165,6 @@ const Header = () => {
           <div className="shrink-0" aria-label="Marca Polarist">
             <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
           </div>
-          <p className="whitespace-nowrap text-[13px] font-normal tracking-[0.01em] text-[#6e6e73]">
-            {mobileGreetingLabel}
-          </p>
         </div>
 
         <nav className="hidden items-center justify-center gap-5 md:flex lg:gap-6">

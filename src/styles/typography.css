@@ -1,9 +1,26 @@
+/* ── Brand Kit Typography System ── */
+/* Titulares: 70% Sequel Sans Bold, 30% Arno Pro */
+/* Subtítulos: Sequel Sans Bold */
+/* Cuerpo: Sequel Sans Regular */
+
 .font-heading {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  font-weight: 600;
+  font-family: "Sequel Sans", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 700;
+}
+
+.font-heading-editorial {
+  font-family: "Arno Pro", Georgia, serif;
+  font-weight: 300;
 }
 
 .font-body {
-  font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: "Sequel Sans", "Helvetica Neue", Arial, sans-serif;
   font-weight: 400;
+}
+
+.font-label {
+  font-family: "Sequel Sans", "Helvetica Neue", Arial, sans-serif;
+  font-weight: 400;
+  font-size: 10px;
+  letter-spacing: 3px;
 }

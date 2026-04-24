@@ -68,6 +68,18 @@ const problemBlocks = [
   },
 ] as const;
 
+/* ── Estilos Brand Kit inline ── */
+const bk = {
+  fontSans: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif",
+  fontSerif: "'Arno Pro', Georgia, serif",
+  green: '#CAFE5B',
+  black: '#010101',
+  white: '#F6F6F6',
+  pureWhite: '#FFFFFF',
+  rLg: '24px',
+  rPill: '999px',
+};
+
 const Landing = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
@@ -147,7 +159,6 @@ const Landing = () => {
       }
 
       if (problemsSectionRef.current) {
-        // Título "¿Te suena familiar?" — bidireccional
         gsap.from(".section-title", {
           scrollTrigger: {
             trigger: problemsSectionRef.current,
@@ -160,7 +171,6 @@ const Landing = () => {
           ease: "power3.out",
         });
 
-        // Título "Las soluciones" — una sola vez
         gsap.from(".solutions-title", {
           scrollTrigger: {
             trigger: videoSectionRef.current,
@@ -173,41 +183,24 @@ const Landing = () => {
           ease: "power3.out",
         });
 
-        // Cards columna izquierda: entran y salen por la izquierda
-        gsap.utils.toArray<HTMLElement>(".problem-left").forEach((card) => {
-          gsap.from(card, {
+        gsap.utils.toArray<HTMLElement>(".problem-row").forEach((row, i) => {
+          const isEven = i % 2 === 0;
+          gsap.from(row, {
             scrollTrigger: {
-              trigger: card,
-              start: "top 88%",
+              trigger: row,
+              start: "top 85%",
               toggleActions: "play reverse play reverse",
             },
-            x: -100,
+            x: isEven ? -80 : 80,
             opacity: 0,
-            duration: 0.9,
-            ease: "power3.out",
-          });
-        });
-
-        // Cards columna derecha: entran y salen por la derecha
-        gsap.utils.toArray<HTMLElement>(".problem-right").forEach((card) => {
-          gsap.from(card, {
-            scrollTrigger: {
-              trigger: card,
-              start: "top 88%",
-              toggleActions: "play reverse play reverse",
-            },
-            x: 100,
-            opacity: 0,
-            duration: 0.9,
+            duration: 1.2,
             ease: "power3.out",
           });
         });
       }
 
-      // ─── Sección comparativa ¿Por qué Polarist? ───────────────────
       const whySection = document.querySelector(".why-section");
       if (whySection) {
-        // Título "¿Por qué usar Polarist?" — una sola vez
         gsap.from(".why-title", {
           scrollTrigger: {
             trigger: ".why-section",
@@ -251,11 +244,12 @@ const Landing = () => {
   );
 
   return (
-    <div ref={containerRef} className="w-full bg-background">
+    <div ref={containerRef} className="w-full" style={{ background: bk.black }}>
       <div className="relative z-10">
         <section
           ref={heroRef}
-          className="relative z-10 flex min-h-screen w-full flex-col items-center justify-start overflow-hidden bg-background"
+          className="relative z-10 flex min-h-screen w-full flex-col items-center justify-start overflow-hidden"
+          style={{ background: bk.black }}
         >
           <div className="relative z-10 w-full">
             <InferenceGlobeHero />
@@ -263,119 +257,97 @@ const Landing = () => {
         </section>
       </div>
 
-      <div ref={problemsSectionRef} className="relative z-[15] bg-[#F0F2F6] px-6 py-20 sm:px-10 lg:px-20">
-        {/* Título centrado, grande */}
+      {/* ─── PROBLEMAS ─── */}
+      <div ref={problemsSectionRef} className="relative z-[15] px-6 py-24 sm:px-10 lg:px-20" style={{ background: bk.pureWhite }}>
         <div className="mx-auto max-w-[1200px] mb-14 text-center">
-          <h2 className="section-title text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-zinc-900 leading-none">
+          <h2
+            className="section-title leading-none"
+            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
+          >
             ¿Te suena familiar?
           </h2>
         </div>
 
-        {/* Desktop: masonry offset — columna derecha desplazada abajo */}
-        <div className="mx-auto max-w-[1200px] hidden sm:flex gap-5 items-start">
-          {/* Columna Izquierda: problemas 1 y 3 */}
-          <div className="flex flex-col gap-5 flex-1">
-            {([problemBlocks[0], problemBlocks[2]] as const).map((problem, i) => (
-              <div key={problem.title} className="problem-left flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/70">
-                <div className="relative h-52 overflow-hidden bg-[#F8F9FB]">
-                  <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply" />
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-white to-transparent" />
-                  <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 font-semibold text-[10px] uppercase tracking-wider text-zinc-600 border border-zinc-200/60">{(problem as any).tag}</span>
-                </div>
-                <div className="flex flex-col flex-1 p-7 -mt-4 relative z-10 bg-white">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-3">Problema {i === 0 ? 1 : 3}</span>
-                  <h3 className="text-xl md:text-2xl font-black tracking-tight text-zinc-900 mb-3 leading-tight">{problem.title}</h3>
-                  <p className="text-sm leading-relaxed text-zinc-500 font-medium flex-1">{problem.description}</p>
-                  <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
-                    <span className="text-[12px] font-bold text-zinc-700">Pérdida estimada: {(problem as any).stat}</span>
+        {/* Filas alternadas (Full Width layout) */}
+        <div className="mx-auto max-w-[1200px] flex flex-col gap-24 sm:gap-32 mt-10">
+          {problemBlocks.map((problem, i) => {
+            const isEven = i % 2 === 0;
+            return (
+              <div 
+                key={problem.title} 
+                className={`problem-row flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16 w-full`}
+              >
+                {/* Contenedor de la Imagen */}
+                <div className="flex-1 w-full max-w-[600px] overflow-hidden" style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}>
+                  <div className="relative aspect-[4/3] w-full" style={{ background: '#F8F9FB' }}>
+                    <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply" />
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
 
-          {/* Columna Derecha: problemas 2 y 4 — desplazada hacia abajo */}
-          <div className="flex flex-col gap-5 flex-1 mt-20">
-            {([problemBlocks[1], problemBlocks[3]] as const).map((problem, i) => (
-              <div key={problem.title} className="problem-right flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/70">
-                <div className="relative h-52 overflow-hidden bg-[#F8F9FB]">
-                  <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply" />
-                  <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-white to-transparent" />
-                  <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 font-semibold text-[10px] uppercase tracking-wider text-zinc-600 border border-zinc-200/60">{(problem as any).tag}</span>
-                </div>
-                <div className="flex flex-col flex-1 p-7 -mt-4 relative z-10 bg-white">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-3">Problema {i === 0 ? 2 : 4}</span>
-                  <h3 className="text-xl md:text-2xl font-black tracking-tight text-zinc-900 mb-3 leading-tight">{problem.title}</h3>
-                  <p className="text-sm leading-relaxed text-zinc-500 font-medium flex-1">{problem.description}</p>
-                  <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center gap-2">
-                    <div className="h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
-                    <span className="text-[12px] font-bold text-zinc-700">Pérdida estimada: {(problem as any).stat}</span>
-                  </div>
+                {/* Contenido (Fuera del contenedor de la imagen) */}
+                <div className="flex-1 flex flex-col items-start text-left w-full justify-center">
+                  <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 40px)', letterSpacing: '-1px', lineHeight: 1.15, color: bk.black, marginBottom: '20px' }}>
+                    {problem.title}
+                  </h3>
+                  <p style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '18px', lineHeight: 1.6, color: 'rgba(1,1,1,0.6)' }}>
+                    {problem.description}
+                  </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Móvil: columna única */}
-        <div className="mx-auto max-w-[600px] flex flex-col sm:hidden gap-5">
-          {problemBlocks.map((problem, index) => (
-            <div key={problem.title} className="problem-item flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/70">
-              <div className="relative h-52 overflow-hidden bg-[#F8F9FB]">
-                <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover object-center mix-blend-multiply" />
-                <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-white to-transparent" />
-                <span className="absolute top-4 left-4 inline-flex items-center rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 font-semibold text-[10px] uppercase tracking-wider text-zinc-600 border border-zinc-200/60">{(problem as any).tag}</span>
-              </div>
-              <div className="flex flex-col flex-1 p-7 -mt-4 relative z-10 bg-white">
-                <span className="text-[11px] font-bold uppercase tracking-widest text-zinc-400 mb-3">Problema {index + 1}</span>
-                <h3 className="text-xl font-black tracking-tight text-zinc-900 mb-3 leading-tight">{problem.title}</h3>
-                <p className="text-sm leading-relaxed text-zinc-500 font-medium flex-1">{problem.description}</p>
-                <div className="mt-5 pt-4 border-t border-zinc-100 flex items-center gap-2">
-                  <div className="h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0" />
-                  <span className="text-[12px] font-bold text-zinc-700">Pérdida estimada: {(problem as any).stat}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
+      {/* ─── SOLUCIONES ─── */}
       <div
         ref={videoSectionRef}
-        className="relative z-20 overflow-hidden bg-background"
-        style={{ perspective: "1200px" }}
+        className="relative z-20 overflow-hidden"
+        style={{ perspective: "1200px", background: bk.black }}
       >
-        <section className="relative z-20 flex w-full flex-col items-center justify-center bg-[#F0F2F6] px-6 py-20 sm:px-10 lg:px-16">
-          {/* Título sección soluciones */}
-          <div className="w-full max-w-[95vw] xl:max-w-[85vw] mb-10 text-center">
-            <h2 className="solutions-title text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-zinc-900">Las soluciones</h2>
+        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 py-24 sm:px-10 lg:px-16" style={{ background: bk.black }}>
+          <div className="w-full max-w-[95vw] xl:max-w-[85vw] mb-14 text-center">
+            <h2
+              className="solutions-title"
+              style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.pureWhite }}
+            >
+              Las soluciones
+            </h2>
           </div>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <div
                 key={block.title}
-                className="feature-card flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-[0_15px_35px_rgba(0,0,0,0.04)] border border-white group transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,0,0,0.07)]"
+                className="feature-card flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-2"
+                style={{
+                  background: 'rgba(255,255,255,0.03)',
+                  borderRadius: bk.rLg,
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  boxShadow: '0 15px 35px rgba(0,0,0,0.4)',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.6)'; e.currentTarget.style.borderColor = `rgba(202,254,91,0.3)`; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
+                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
               >
-                {/* Image Area */}
-                <div className="relative h-52 overflow-hidden bg-[#F8F9FB]">
+                <div className="relative h-52 overflow-hidden" style={{ background: '#111' }}>
                   <img
                     src={(block as any).imgUrl}
                     alt={block.title}
                     className="absolute inset-0 w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
                   />
-                  <span className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-zinc-800 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full">
-                    {(block as any).tag}
-                  </span>
-                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-white to-transparent" />
-                </div>
 
-                {/* Content Area */}
-                <div className="p-7 -mt-6 relative z-10 bg-white flex flex-col flex-1">
-                  <h2 className="feature-title text-xl font-bold tracking-tight text-zinc-900 sm:text-2xl mb-3">
+                  <div className="absolute inset-x-0 bottom-0 h-1/2" style={{ background: `linear-gradient(to top, rgba(16,16,16,1), transparent)` }} />
+                </div>
+                <div className="p-7 -mt-6 relative z-10 flex flex-col flex-1" style={{ background: 'transparent' }}>
+                  <h2
+                    className="feature-title mb-3"
+                    style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', lineHeight: 1.2, color: bk.pureWhite }}
+                  >
                     {block.title}
                   </h2>
-                  <p className="feature-desc text-sm leading-relaxed text-zinc-500 font-medium">
+                  <p
+                    className="feature-desc"
+                    style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(255,255,255,0.55)' }}
+                  >
                     {block.description}
                   </p>
                 </div>
@@ -385,22 +357,23 @@ const Landing = () => {
         </section>
       </div>
 
-      {/* ─── SECCIÓN COMPARATIVA ─────────────────────────────────────── */}
-      <section className="why-section relative z-30 w-full bg-[#F0F2F6] px-6 py-20 sm:px-10 lg:px-20">
-        {/* Título */}
+      {/* ─── SECCIÓN COMPARATIVA ─── */}
+      <section className="why-section relative z-30 w-full px-6 py-24 sm:px-10 lg:px-20" style={{ background: bk.white }}>
         <div className="mx-auto max-w-[1200px] mb-16 text-center">
-          <h2 className="why-title text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-zinc-900 leading-none">
+          <h2
+            className="why-title leading-none"
+            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
+          >
             ¿Por qué usar Polarist?
           </h2>
         </div>
 
-        {/* Columnas */}
         <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Sin Polarist */}
-          <div className="why-left flex flex-col bg-white rounded-[2rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.04)] border border-white/70 p-8 md:p-10">
+          <div className="why-left flex flex-col overflow-hidden p-8 md:p-10" style={{ background: bk.pureWhite, borderRadius: bk.rLg, border: '1px solid rgba(1,1,1,0.06)' }}>
             <div className="flex items-center gap-3 mb-8">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-zinc-100 text-lg shrink-0">✕</span>
-              <h3 className="text-2xl font-black tracking-tight text-zinc-900">Sin usar Polarist</h3>
+              <div className="flex h-9 w-9 items-center justify-center shrink-0" style={{ borderRadius: '50%', background: 'rgba(1,1,1,0.06)', fontSize: '16px' }}>✕</div>
+              <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', color: bk.black }}>Sin usar Polarist</h3>
             </div>
             <ul className="flex flex-col gap-5">
               {[
@@ -411,18 +384,18 @@ const Landing = () => {
                 "Competidores más ágiles que avanzan mientras vos te quedás",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-400 text-xs font-bold">✕</span>
-                  <span className="text-sm font-medium leading-relaxed text-zinc-500">{item}</span>
+                  <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center" style={{ borderRadius: '50%', background: 'rgba(1,1,1,0.06)', color: 'rgba(1,1,1,0.35)', fontSize: '10px', fontWeight: 700 }}>✕</div>
+                  <div style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(1,1,1,0.55)' }}>{item}</div>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Con Polarist */}
-          <div className="why-right flex flex-col bg-[#111113] rounded-[2rem] overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.12)] p-8 md:p-10">
+          <div className="why-right flex flex-col overflow-hidden p-8 md:p-10" style={{ background: bk.black, borderRadius: bk.rLg, border: '1px solid rgba(255,255,255,0.06)' }}>
             <div className="flex items-center gap-3 mb-8">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#ccff00]/20 text-lg shrink-0">✓</span>
-              <h3 className="text-2xl font-black tracking-tight text-white">Con Polarist</h3>
+              <div className="flex h-9 w-9 items-center justify-center shrink-0" style={{ borderRadius: '50%', background: 'rgba(202,254,91,0.2)', fontSize: '16px', color: bk.green }}>✓</div>
+              <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', color: bk.white }}>Con Polarist</h3>
             </div>
             <ul className="flex flex-col gap-5">
               {[
@@ -433,8 +406,8 @@ const Landing = () => {
                 "Adelantás a tu competencia con tecnología que trabaja para vos",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-3">
-                  <span className="mt-0.5 h-5 w-5 shrink-0 rounded-full bg-[#ccff00]/20 flex items-center justify-center text-[#ccff00] text-xs font-bold">✓</span>
-                  <span className="text-sm font-medium leading-relaxed text-white/70">{item}</span>
+                  <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center" style={{ borderRadius: '50%', background: 'rgba(202,254,91,0.2)', color: bk.green, fontSize: '10px', fontWeight: 700 }}>✓</div>
+                  <div style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(246,246,246,0.55)' }}>{item}</div>
                 </li>
               ))}
             </ul>
@@ -442,7 +415,7 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ─── CTA FINAL OSCURO ─────────────────────────────────────────── */}
+      {/* ─── CTA FINAL ─── */}
       <FinalCTA />
     </div>
   );

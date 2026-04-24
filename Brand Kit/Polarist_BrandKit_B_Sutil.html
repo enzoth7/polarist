@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polarist — Brand Kit / Opción B: 4px Sutil</title>
+    <title>Polarist — brand kit / opción b: 4px sutil</title>
     <style>
         @font-face {
             font-family: 'Arno Pro';
@@ -77,11 +77,13 @@
             --green: #CAFE5B;
             --black: #010101;
             --white: #F6F6F6;
+            --pure-white: #FFFFFF;
 
-            /* OPCIÓN B — 4px SUTIL */
-            --r-sm: 2px;
-            --r:    4px;
-            --r-lg: 6px;
+            /* OPCIÓN BENTO / APPLE STYLE */
+            --r-sm: 8px;
+            --r:    14px;
+            --r-lg: 24px;
+            --r-pill: 999px;
 
             --font-serif: 'Arno Pro', Georgia, serif;
             --font-sans:  'Sequel Sans', 'Helvetica Neue', Arial, sans-serif;
@@ -103,20 +105,31 @@
             font-size: 10px;
             font-weight: 400;
             letter-spacing: 3px;
-            text-transform: uppercase;
             color: rgba(246,246,246,0.35);
         }
         .sec-num {
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 4px;
-            text-transform: uppercase;
             color: var(--green);
             margin-bottom: 14px;
         }
         .sec-num.dark { color: rgba(1,1,1,0.35); }
         .hr { width: 100%; height: 1px; background: rgba(255,255,255,0.07); }
         .hr.light { background: rgba(1,1,1,0.08); }
+
+        /* ── APPLE STYLE UTILS ── */
+        .glass {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .glass:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
 
         /* ── COVER ── */
         .cover {
@@ -148,7 +161,6 @@
             font-family: var(--font-sans);
             font-size: clamp(64px, 9vw, 130px);
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: -4px;
             line-height: 0.84;
         }
@@ -192,7 +204,6 @@
             font-family: var(--font-sans);
             font-size: 44px;
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: -1.5px;
             line-height: 1;
         }
@@ -209,7 +220,7 @@
         /* ── 01 COLORS ── */
         .color-strip {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
         }
         .swatch {
             padding: 48px 40px;
@@ -221,7 +232,6 @@
         .swatch-name {
             font-size: 22px;
             font-weight: 700;
-            text-transform: uppercase;
             letter-spacing: -0.5px;
         }
         .swatch-hex {
@@ -269,7 +279,6 @@
         .logo-cell-lbl {
             font-size: 9px;
             letter-spacing: 3px;
-            text-transform: uppercase;
             text-align: center;
         }
         .logo-cell.bg-black  { background: var(--black); }
@@ -320,7 +329,6 @@
             font-weight: 400;
             font-size: 10px;
             letter-spacing: 4px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.35);
             margin-bottom: 32px;
             padding-bottom: 16px;
@@ -353,7 +361,7 @@
         }
         .combo-legend {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 24px;
             padding-top: 28px;
             border-top: 1px solid rgba(1,1,1,0.08);
@@ -363,7 +371,6 @@
             font-weight: 400;
             font-size: 9px;
             letter-spacing: 3px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.35);
             margin-bottom: 6px;
         }
@@ -376,7 +383,6 @@
         .face-label {
             font-size: 10px;
             letter-spacing: 4px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.35);
             margin-bottom: 20px;
             padding-bottom: 16px;
@@ -406,7 +412,6 @@
         .w-lbl {
             font-size: 9px;
             letter-spacing: 2px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.3);
             min-width: 90px;
             font-family: var(--font-sans);
@@ -417,7 +422,6 @@
         .scale-lbl {
             font-size: 10px;
             letter-spacing: 3px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.3);
             margin-bottom: 24px;
         }
@@ -432,7 +436,6 @@
         .s-tag {
             font-size: 9px;
             letter-spacing: 2px;
-            text-transform: uppercase;
             color: rgba(1,1,1,0.3);
         }
         .s-spec {
@@ -452,7 +455,7 @@
         .sp-col { display: flex; flex-direction: column; align-items: center; gap: 10px; }
         .sp-bar { background: var(--green); width: 48px; }
         .sp-val { font-size: 13px; font-weight: 700; color: var(--green); }
-        .sp-nm { font-size: 9px; letter-spacing: 1px; opacity: 0.4; text-transform: uppercase; }
+        .sp-nm { font-size: 9px; letter-spacing: 1px; opacity: 0.4; }
 
         /* ── 05 CORNERS ── */
         .corner-badge {
@@ -463,7 +466,6 @@
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 3px;
-            text-transform: uppercase;
             border-radius: var(--r-sm);
         }
         .corner-demos {
@@ -475,18 +477,32 @@
         .corner-demo { display: flex; flex-direction: column; gap: 14px; }
         .corner-box {
             height: 110px;
-            border: 1px solid var(--green);
-            background: rgba(202,254,91,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 13px;
             font-weight: 600;
             letter-spacing: 2px;
-            color: var(--green);
+            color: var(--white);
         }
-        .corner-name { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); }
+        .corner-name { font-size: 10px; letter-spacing: 3px; color: var(--white); }
         .corner-desc { font-family: var(--font-sans); font-weight: 400; font-size: 13px; color: rgba(246,246,246,0.5); line-height: 1.55; }
+
+        /* Apple-style Edge-to-Edge Bands */
+        .band {
+            width: 100vw;
+            margin-left: calc(-50vw + 50%);
+            padding: 120px 64px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .band-dark { background: #0A0A0A; }
+        .band-light { background: var(--white); color: var(--black); }
 
         /* ── 06 COMPONENTS ── */
         .comp-group { margin-bottom: 72px; }
@@ -494,7 +510,6 @@
         .comp-title {
             font-size: 10px;
             letter-spacing: 4px;
-            text-transform: uppercase;
             color: var(--green);
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(202,254,91,0.2);
@@ -506,16 +521,19 @@
         .btn {
             font-family: var(--font-sans);
             font-size: 13px;
-            font-weight: 700;
+            font-weight: 500;
             letter-spacing: 0.3px;
             padding: 13px 26px;
-            border-radius: var(--r);
             border: none;
             cursor: pointer;
             display: inline-block;
             text-decoration: none;
             white-space: nowrap;
+            width: fit-content;
+            border-radius: var(--r-pill);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+        .btn:hover { transform: scale(1.02); opacity: 0.88; }
         .btn-sm  { font-size: 11px; padding: 9px 18px; }
         .btn-lg  { font-size: 15px; padding: 17px 38px; letter-spacing: 0.5px; }
         .btn-p   { background: var(--green); color: var(--black); }
@@ -523,18 +541,26 @@
         .btn-s   { background: transparent; color: var(--white); border: 1px solid rgba(246,246,246,0.28); }
         .btn-d   { background: var(--white); color: var(--black); }
 
-        /* Cards */
+        /* Cards - Bento Style */
         .cards-row {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
         }
         .card {
-            background: #111;
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             padding: 40px;
             border-radius: var(--r-lg);
             display: flex;
             flex-direction: column;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.4s;
+        }
+        .card:hover {
+            transform: scale(1.02);
+            border-color: rgba(202, 254, 91, 0.3);
         }
         .card-h {
             font-family: var(--font-serif);
@@ -572,7 +598,6 @@
             font-weight: 400;
             font-size: 11px;
             letter-spacing: 2px;
-            text-transform: uppercase;
             opacity: 0.35;
         }
 
@@ -583,7 +608,6 @@
         .fld-lbl {
             font-size: 10px;
             letter-spacing: 2px;
-            text-transform: uppercase;
             color: rgba(246,246,246,0.4);
         }
         .fld-input, .fld-select, .fld-ta {
@@ -604,30 +628,33 @@
 
         /* Nav */
         .nav-mock {
-            background: var(--black);
-            border: 1px solid rgba(255,255,255,0.07);
+            background: rgba(1, 1, 1, 0.6);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             padding: 18px 36px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-radius: var(--r);
+            border-radius: var(--r-pill);
         }
         .nav-brand-area { display: flex; align-items: center; gap: 10px; }
         .nav-logo { width: 28px; height: 28px; object-fit: contain; }
-        .nav-name { font-weight: 700; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+        .nav-name { font-weight: 700; font-size: 14px; letter-spacing: 2px; }
         .nav-links { display: flex; gap: 36px; list-style: none; }
         .nav-links a {
             font-size: 11px;
             letter-spacing: 1.5px;
-            text-transform: uppercase;
             color: rgba(246,246,246,0.5);
             text-decoration: none;
         }
 
         /* Hero mockup */
         .hero-mock {
-            background: var(--black);
-            border: 1px solid rgba(255,255,255,0.07);
+            background: rgba(255, 255, 255, 0.01);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             padding: 80px 64px;
             border-radius: var(--r-lg);
             display: grid;
@@ -669,7 +696,6 @@
             color: rgba(202,254,91,0.3);
             font-size: 11px;
             letter-spacing: 3px;
-            text-transform: uppercase;
         }
 
         /* ── 07 RULES ── */
@@ -685,7 +711,6 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 4px;
-            text-transform: uppercase;
             margin-bottom: 28px;
             padding-bottom: 16px;
             border-bottom: 1px solid rgba(255,255,255,0.07);
@@ -726,7 +751,6 @@
             font-size: 10px;
             font-weight: 700;
             letter-spacing: 3px;
-            text-transform: uppercase;
             padding: 8px 16px;
             border-radius: var(--r-sm);
             z-index: 999;
@@ -735,22 +759,22 @@
 </head>
 <body>
 
-<div class="opt-badge">Opción B — 4px Sutil</div>
+<div class="opt-badge">Opción b — bento & apple style</div>
 
 <!-- ═══════════════════════════════════════════ COVER -->
 <section class="cover">
     <div class="cover-top">
         <img src="6.png" alt="Polarist" class="cover-logo">
         <div style="text-align: right;">
-            <div class="label">Brand Guidelines</div>
-            <div class="label" style="margin-top:4px;color:rgba(246,246,246,0.2);">2026 / Identity System</div>
+            <div class="label">Brand guidelines</div>
+            <div class="label" style="margin-top:4px;color:rgba(246,246,246,0.2);">2026 / Identity system</div>
         </div>
     </div>
 
     <div class="cover-main">
         <div class="cover-title">
-            POLARIST
-            <em>BRAND KIT</em>
+            Polarist
+            <em>brand kit</em>
         </div>
     </div>
 
@@ -766,8 +790,8 @@
 <section class="sec" style="padding-bottom:0;">
     <div class="sec-head">
         <div>
-            <div class="sec-num">01 — Color</div>
-            <div class="sec-h">Paleta de Color</div>
+            <div class="sec-num">01 — color</div>
+            <div class="sec-h">Paleta de color</div>
         </div>
         <p class="sec-note">Tres colores. Sin excepciones.<br>El verde se usa como acento, nunca como fondo dominante.</p>
     </div>
@@ -776,7 +800,7 @@
 <div class="color-strip">
     <div class="swatch" style="background:#CAFE5B; color:#010101;">
         <div>
-            <div class="swatch-name">Polarist Green</div>
+            <div class="swatch-name">Polarist green</div>
             <div class="swatch-hex" style="color:rgba(1,1,1,0.5);">#CAFE5B</div>
         </div>
         <div class="swatch-use" style="color:rgba(1,1,1,0.6);">CTAs, highlights, acento de marca. Reservarlo para crear impacto.</div>
@@ -784,7 +808,7 @@
     </div>
     <div class="swatch" style="background:#010101; color:#F6F6F6; border-left:1px solid rgba(255,255,255,0.07); border-right:1px solid rgba(255,255,255,0.07);">
         <div>
-            <div class="swatch-name">Pure Black</div>
+            <div class="swatch-name">Pure black</div>
             <div class="swatch-hex">#010101</div>
         </div>
         <div class="swatch-use" style="color:rgba(246,246,246,0.5);">Fondo primario, texto sobre fondos claros. La base de toda la identidad.</div>
@@ -792,11 +816,19 @@
     </div>
     <div class="swatch" style="background:#F6F6F6; color:#010101;">
         <div>
-            <div class="swatch-name">Off White</div>
+            <div class="swatch-name">Off white</div>
             <div class="swatch-hex" style="color:rgba(1,1,1,0.5);">#F6F6F6</div>
         </div>
         <div class="swatch-use" style="color:rgba(1,1,1,0.55);">Texto sobre negro, fondos claros. Nunca blanco puro — siempre este tono.</div>
         <div class="swatch-rgb" style="color:rgba(1,1,1,0.3);">RGB 246 · 246 · 246</div>
+    </div>
+    <div class="swatch" style="background:#FFFFFF; color:#010101;">
+        <div>
+            <div class="swatch-name">Pure white</div>
+            <div class="swatch-hex" style="color:rgba(1,1,1,0.5);">#FFFFFF</div>
+        </div>
+        <div class="swatch-use" style="color:rgba(1,1,1,0.55);">Fondo absoluto o acentos de alto contraste.</div>
+        <div class="swatch-rgb" style="color:rgba(1,1,1,0.3);">RGB 255 · 255 · 255</div>
     </div>
 </div>
 
@@ -806,8 +838,8 @@
 <section class="sec" style="padding-bottom:0;">
     <div class="sec-head">
         <div>
-            <div class="sec-num">02 — Logo</div>
-            <div class="sec-h">Sistema de Logo</div>
+            <div class="sec-num">02 — logo</div>
+            <div class="sec-h">Sistema de logo</div>
         </div>
         <p class="sec-note">El isotipo funciona en tres fondos. No distorsionar, no recolorear, no cambiar proporciones.</p>
     </div>
@@ -855,7 +887,7 @@
     <div class="logo-rule-block">
         <div class="rule-mark no">✕</div>
         <div>
-            <div style="font-size:13px; font-weight:600; margin-bottom:6px; color:#FF4040;">Usos incorrectos</div>
+            <div style="font-size:13px; font-weight:600; margin-bottom:6px; color:var(--white);">Usos incorrectos</div>
             <div style="font-family:var(--font-sans); font-weight:400; font-size:14px; color:rgba(246,246,246,0.6); line-height:1.6;">No estirar, no rotar, no aplicar sombra, no usar sobre fondos de color que no sean los de la paleta.</div>
         </div>
     </div>
@@ -867,15 +899,15 @@
 <section class="sec light">
     <div class="sec-head">
         <div>
-            <div class="sec-num dark">03 — Tipografía</div>
-            <div class="sec-h" style="color:var(--black);">Sistema Tipográfico</div>
+            <div class="sec-num dark">03 — tipografía</div>
+            <div class="sec-h" style="color:var(--black);">Sistema tipográfico</div>
         </div>
-        <p class="sec-note dark">Titulares en Arno Pro. Subtítulos y énfasis en Sequel Sans Bold. Todo el cuerpo de texto en Sequel Sans Regular. Sin excepciones.</p>
+        <p class="sec-note dark">Titulares: 70% Sequel Sans Bold, 30% Arno Pro. Subtítulos y énfasis en Sequel Sans Bold. Todo el cuerpo de texto en Sequel Sans Regular.</p>
     </div>
 
     <div class="type-cols">
         <div>
-            <div class="face-label">Arno Pro — Serif / Editorial</div>
+            <div class="face-label">Arno pro — serif / editorial</div>
             <div class="face-big" style="font-family:var(--font-serif); color:var(--black);">Aa</div>
             <div class="face-quote">"La precisión es la forma más elevada de elegancia."</div>
             <div class="weight-rows">
@@ -899,10 +931,10 @@
         </div>
 
         <div>
-            <div class="face-label">Sequel Sans — Sans / Técnica</div>
+            <div class="face-label">Sequel sans — sans / técnica</div>
             <div class="face-big" style="font-family:var(--font-sans); font-weight:700; color:var(--black);">Aa</div>
-            <div style="font-family:var(--font-sans); font-size:13px; letter-spacing:4px; text-transform:uppercase; color:rgba(1,1,1,0.35); margin-bottom:32px;">
-                Precisión · Automatización · IA
+            <div style="font-family:var(--font-sans); font-size:13px; letter-spacing:4px; color:rgba(1,1,1,0.35); margin-bottom:32px;">
+                Precisión · automatización · ia
             </div>
             <div class="weight-rows">
                 <div class="w-row">
@@ -925,18 +957,21 @@
         </div>
     </div>
 
-    <div class="combo-block">
-        <div class="combo-lbl">Combinación Tipográfica</div>
-        <div class="combo-titular">Innovación que conecta el futuro.</div>
+    <div style="margin-top: 72px; padding-top: 40px; border-top: 1px solid rgba(1,1,1,0.08);">
+        <div class="combo-titular" style="margin-bottom: 20px;">Innovación que conecta el futuro.</div>
         <div class="combo-subtitular">Conectamos ideas. Creamos soluciones. Impulsamos el cambio.</div>
-        <div class="combo-cuerpo">Usamos Arno Pro para titulares que transmiten autoridad y visión. Combinada con Sequel Sans Bold para subtítulos y énfasis, y Sequel Sans Regular como base del cuerpo de texto, logramos jerarquía, claridad y un lenguaje visual moderno y funcional.</div>
+        <div class="combo-cuerpo">El 70% de los titulares usa Sequel Sans Bold para impacto directo y técnico. El 30% reservado a Arno Pro para piezas editoriales con autoridad y profundidad. Sequel Sans Regular en todo el cuerpo de texto.</div>
         <div class="combo-legend">
             <div class="combo-leg-item">
-                <div class="combo-leg-role">Titular</div>
+                <div class="combo-leg-role">Titular principal — 70%</div>
+                <div class="combo-leg-font">Sequel Sans Bold</div>
+            </div>
+            <div class="combo-leg-item">
+                <div class="combo-leg-role">Titular editorial — 30%</div>
                 <div class="combo-leg-font">Arno Pro</div>
             </div>
             <div class="combo-leg-item">
-                <div class="combo-leg-role">Subtitular / Énfasis</div>
+                <div class="combo-leg-role">Subtitular / énfasis</div>
                 <div class="combo-leg-font">Sequel Sans Bold</div>
             </div>
             <div class="combo-leg-item">
@@ -984,13 +1019,7 @@
             </div>
             <div style="font-family:var(--font-sans); font-size:15px; line-height:1.65; color:rgba(1,1,1,0.65); max-width:560px;">Implementamos flujos de trabajo con IA para empresas que quieren operar con más velocidad y menos fricción.</div>
         </div>
-        <div class="s-row" style="border-bottom:none;">
-            <div class="s-meta">
-                <div class="s-tag">Label</div>
-                <div class="s-spec">10px · tracking +3px · uppercase</div>
-            </div>
-            <div style="font-family:var(--font-sans); font-size:10px; letter-spacing:3px; text-transform:uppercase; color:rgba(1,1,1,0.4);">Servicios · Casos · Contacto</div>
-        </div>
+
     </div>
 </section>
 
@@ -1000,8 +1029,8 @@
 <section class="sec">
     <div class="sec-head">
         <div>
-            <div class="sec-num">04 — Espaciado</div>
-            <div class="sec-h">Sistema de Espaciado</div>
+            <div class="sec-num">04 — espaciado</div>
+            <div class="sec-h">Sistema de espaciado</div>
         </div>
         <p class="sec-note">Base 8px. Todos los valores son múltiplos exactos.<br>No usar valores arbitrarios intermedios.</p>
     </div>
@@ -1024,22 +1053,22 @@
 <section class="sec dim">
     <div class="sec-head">
         <div>
-            <div class="sec-num">05 — Contenedores</div>
-            <div class="sec-h">Bordes y Contenedores</div>
+            <div class="sec-num">05 — contenedores</div>
+            <div class="sec-h">Bordes y contenedores</div>
         </div>
-        <div class="corner-badge">Opción B — 4px Sutil</div>
+        <div class="corner-badge">Opción b — bento & apple style</div>
     </div>
 
     <div class="corner-demos">
         <div class="corner-demo">
             <div class="corner-box" style="border-radius:4px;">4px</div>
-            <div class="corner-name">Sutil — Global</div>
+            <div class="corner-name">Sutil — global</div>
             <div class="corner-desc">Redondeo apenas perceptible. Profesional sin ser frío.</div>
         </div>
         <div class="corner-demo">
             <div class="corner-box" style="border-radius:4px; flex-direction:column; gap:10px; padding:16px;">
-                <div style="width:100%; height:34px; background:var(--green); border-radius:4px;"></div>
-                <div style="width:100%; height:34px; border:1px solid var(--green); border-radius:4px;"></div>
+                <div style="width:100%; height:34px; background:rgba(255,255,255,0.05); border-radius:4px;"></div>
+                <div style="width:100%; height:34px; border:1px solid rgba(255,255,255,0.1); border-radius:4px;"></div>
             </div>
             <div class="corner-name">Botones — 4px</div>
             <div class="corner-desc">Primario y ghost con radio sutil.</div>
@@ -1056,7 +1085,7 @@
         </div>
         <div class="corner-demo">
             <div class="corner-box" style="border-radius:4px; flex-direction:column; gap:8px; padding:16px;">
-                <div style="padding:5px 12px; background:rgba(202,254,91,0.1); border:1px solid rgba(202,254,91,0.3); border-radius:2px; font-size:10px; font-weight:400; letter-spacing:1px; color:var(--green); width:fit-content;">Activo</div>
+                <div style="padding:5px 12px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15); border-radius:2px; font-size:10px; font-weight:400; letter-spacing:1px; color:var(--white); width:fit-content;">Activo</div>
                 <div style="padding:4px 12px; border:1px solid rgba(246,246,246,0.15); border-radius:2px; font-size:10px; font-weight:400; letter-spacing:1px; color:rgba(246,246,246,0.5); width:fit-content;">Pendiente</div>
             </div>
             <div class="corner-name">Estado — 2px</div>
@@ -1071,8 +1100,8 @@
 <section class="sec" style="background:var(--black);">
     <div class="sec-head">
         <div>
-            <div class="sec-num">06 — Componentes</div>
-            <div class="sec-h">Sistema de Componentes</div>
+            <div class="sec-num">06 — componentes</div>
+            <div class="sec-h">Sistema de componentes</div>
         </div>
     </div>
 
@@ -1085,9 +1114,9 @@
             <button class="btn btn-d">Empezar ahora</button>
         </div>
         <div class="btn-shelf" style="margin-bottom:0;">
-            <button class="btn btn-p btn-sm">Empezar →</button>
+            <button class="btn btn-p btn-sm">Empezar </button>
             <button class="btn btn-p">Explorar servicios</button>
-            <button class="btn btn-p btn-lg">Automatizá tu empresa →</button>
+            <button class="btn btn-p btn-lg">Automatizá tu empresa </button>
         </div>
     </div>
 
@@ -1097,40 +1126,38 @@
             <div class="card">
                 <div class="card-h">Automatización de procesos</div>
                 <div class="card-p">Implementamos flujos de trabajo con IA que reducen fricción operativa y aumentan velocidad de ejecución.</div>
-                <button class="btn btn-g btn-sm">Ver detalle →</button>
+                <button class="btn btn-g btn-sm">Ver detalle </button>
             </div>
-            <div class="card" style="background:var(--green); color:var(--black);">
+            <div class="card glass" style="background:var(--green); color:var(--black); border:none;">
                 <div class="card-h" style="color:var(--black);">Agente de WhatsApp para automotoras</div>
                 <div class="card-p" style="color:rgba(1,1,1,0.6);">Atención automatizada 24/7. Consultas, turnos y seguimiento sin intervención humana.</div>
-                <button class="btn btn-d btn-sm">Ver caso →</button>
+                <button class="btn btn-d btn-sm">Ver caso </button>
             </div>
             <div class="card" style="background:rgba(246,246,246,0.03); border:1px solid rgba(246,246,246,0.07);">
                 <div class="card-h">Diagnóstico de automatización</div>
                 <div class="card-p">Analizamos tus procesos e identificamos qué puede automatizarse y con qué impacto real en tu operación.</div>
-                <button class="btn btn-g btn-sm">Agendar →</button>
+                <button class="btn btn-g btn-sm">Agendar </button>
             </div>
         </div>
     </div>
 
-    <div class="comp-group">
-        <div class="comp-title">Bloques de datos</div>
-        <div class="stats-row">
-            <div class="stat-block">
-                <div class="stat-n" style="color:var(--green);">87%</div>
-                <div class="stat-l">reducción de tiempo operativo</div>
-            </div>
-            <div class="stat-block">
-                <div class="stat-n">40+</div>
-                <div class="stat-l">automatizaciones implementadas</div>
-            </div>
-            <div class="stat-block">
-                <div class="stat-n" style="color:var(--green);">3x</div>
-                <div class="stat-l">velocidad de respuesta al cliente</div>
-            </div>
-            <div class="stat-block" style="border:1px solid var(--green);">
-                <div class="stat-n">24/7</div>
-                <div class="stat-l">operación sin fricción</div>
-            </div>
+    <div class="comp-group" style="overflow-x: clip;">
+        <div class="comp-title">Franjas de ancho completo — paleta de fondos</div>
+        <div class="band" style="background: var(--black); margin-bottom:2px;">
+            <div class="stat-n" style="color:var(--white);">87%</div>
+            <div class="stat-l" style="font-size: 14px; opacity: 0.5; color:var(--white);">reducción de tiempo operativo</div>
+        </div>
+        <div class="band" style="background: #1A1A1A; margin-bottom:2px;">
+            <div class="stat-n" style="color:var(--white);">40+</div>
+            <div class="stat-l" style="font-size: 14px; opacity: 0.5; color:var(--white);">automatizaciones implementadas</div>
+        </div>
+        <div class="band" style="background: var(--white); margin-bottom:2px;">
+            <div class="stat-n" style="color:var(--black);">3×</div>
+            <div class="stat-l" style="font-size: 14px; opacity: 0.55; color:var(--black);">velocidad de respuesta al cliente</div>
+        </div>
+        <div class="band" style="background: #FFFFFF;">
+            <div class="stat-n" style="color:var(--black);">24/7</div>
+            <div class="stat-l" style="font-size: 14px; opacity: 0.55; color:var(--black);">operación sin fricción</div>
         </div>
     </div>
 
@@ -1154,7 +1181,7 @@
                         <option>Ventas y seguimiento</option>
                     </select>
                 </div>
-                <button class="btn btn-p">Enviar consulta →</button>
+                <button class="btn btn-p">Enviar consulta </button>
             </div>
             <div class="form-stack">
                 <div class="fld" style="flex:1;">
@@ -1162,7 +1189,7 @@
                     <textarea class="fld-ta" rows="6" placeholder="Contanos sobre tu proceso actual..."></textarea>
                 </div>
                 <div style="display:flex; gap:12px;">
-                    <button class="btn btn-p" style="flex:1;">Enviar →</button>
+                    <button class="btn btn-p" style="flex:1;">Enviar </button>
                     <button class="btn btn-s">Cancelar</button>
                 </div>
             </div>
@@ -1184,14 +1211,14 @@
     </div>
 
     <div class="comp-group">
-        <div class="comp-title">Hero — Mockup de layout</div>
+        <div class="comp-title">Hero — mockup de layout</div>
         <div class="hero-mock">
             <div>
-                <div class="hero-h">Automatizá tu empresa. <em style="color:var(--green); font-style:normal;">Sin fricciones.</em></div>
+                <div class="hero-h">Automatizá tu empresa. <em style="color:var(--green); font-style:normal;">sin fricciones.</em></div>
                 <div class="hero-sub">Conectamos ideas. Creamos soluciones. Impulsamos el cambio.</div>
                 <div class="hero-p">Implementamos flujos de trabajo con inteligencia artificial para que tu equipo opere con más velocidad y menos esfuerzo manual.</div>
                 <div style="display:flex; gap:14px;">
-                    <button class="btn btn-p">Explorar servicios →</button>
+                    <button class="btn btn-p">Explorar servicios </button>
                     <button class="btn btn-g">Ver casos de uso</button>
                 </div>
             </div>
@@ -1206,8 +1233,8 @@
 <section class="sec">
     <div class="sec-head">
         <div>
-            <div class="sec-num">07 — Uso</div>
-            <div class="sec-h">Reglas de Uso</div>
+            <div class="sec-num">07 — uso</div>
+            <div class="sec-h">Reglas de uso</div>
         </div>
     </div>
 
@@ -1219,16 +1246,15 @@
             <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Todo el cuerpo de texto (párrafos, descripciones, notas) en Sequel Sans Regular.</div></div>
             <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">El verde como acento: CTAs, datos clave, highlights. Solo donde importa.</div></div>
             <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Espaciado generoso. El silencio visual comunica autoridad.</div></div>
-            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Radio consistente: 4px botones/inputs, 6px cards, 2px tags.</div></div>
+            <div class="rule-item"><div class="rule-dot ok"></div><div class="rule-txt">Radio consistente: 14px botones, 24px cards, formato "pill" donde amerite fluidez.</div></div>
         </div>
         <div class="rule-blk">
             <div class="rule-blk-ttl no">No hacer</div>
             <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar el verde como fondo de secciones enteras ni de navegación.</div></div>
-            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar blanco puro (#FFF) — siempre #F6F6F6.</div></div>
             <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No agregar colores fuera de la paleta. Sin grises intermedios como fondos.</div></div>
             <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No distorsionar ni recolorear el isotipo.</div></div>
-            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar gradientes. La identidad es plana y directa.</div></div>
-            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No mezclar radios arbitrarios — respetar la escala de 2px / 4px / 6px.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar gradientes excesivos. El glassmorphism es sutil y limpio, nunca saturado.</div></div>
+            <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No mezclar radios arbitrarios — respetar la escala orgánica de la interfaz.</div></div>
             <div class="rule-item"><div class="rule-dot no"></div><div class="rule-txt">No usar pesos intermedios de Sequel Sans (Light, Medium, Semibold) en el cuerpo. Solo Regular o Bold.</div></div>
         </div>
     </div>
@@ -1238,8 +1264,8 @@
 <footer class="kit-footer">
     <img src="6.png" class="footer-logo" alt="Polarist">
     <div class="footer-meta">
-        <div class="label">Polarist — Brand Guidelines 2026</div>
-        <div class="label" style="margin-top:4px; color:rgba(246,246,246,0.15);">Opción B / 4px Sutil</div>
+        <div class="label">Polarist — Brand guidelines 2026</div>
+        <div class="label" style="margin-top:4px; color:rgba(246,246,246,0.15);">Opción b / bento & apple style</div>
     </div>
 </footer>
 

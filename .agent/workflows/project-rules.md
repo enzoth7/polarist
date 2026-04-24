@@ -17,3 +17,6 @@ description: Project-wide rules for Polarist
 - El estado local (React state) es solo un caché temporal del dato de Supabase
 - Al iniciar sesión, se hace `fetchProfile()` desde Supabase
 - Al cambiar de sesión (`onAuthStateChange`), se re-fetcha automáticamente
+
+## Elementos HTML Restringidos
+- **NUNCA usar `<span />`** ni contenedores inline similares en la página. Usa etiquetas estructurales como `<div>` o `<p>` y estiliza como `display: inline` si es absolutamente necesario.

@@ -289,10 +289,16 @@ export function CinematicSlider({ items }: CinematicSliderProps) {
                 <div className="absolute inset-0 bg-[linear-gradient(130deg,rgba(255,255,255,0.18)_0%,rgba(255,255,255,0.02)_30%,rgba(255,255,255,0)_66%)]" />
 
                 <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
-                  <h2 className="text-balance text-lg font-bold leading-tight tracking-tight text-white md:text-xl">
+                  <h2
+                    className="text-balance"
+                    style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', lineHeight: 1.2, color: '#FFFFFF' }}
+                  >
                     {item.title}
                   </h2>
-                  <p className="mt-3 line-clamp-3 text-[0.86rem] leading-relaxed text-white/78 md:text-[0.92rem]">
+                  <p
+                    className="mt-3 line-clamp-3"
+                    style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(255,255,255,0.78)' }}
+                  >
                     {item.description}
                   </p>
                 </div>
