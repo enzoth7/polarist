@@ -20,3 +20,8 @@ description: Project-wide rules for Polarist
 
 ## Elementos HTML Restringidos
 - **NUNCA usar `<span />`** ni contenedores inline similares en la página. Usa etiquetas estructurales como `<div>` o `<p>` y estiliza como `display: inline` si es absolutamente necesario.
+
+## ⛔ PROHIBIDO: Subir código a otras ramas (GitHub)
+- **ESTÁ TOTALMENTE PROHIBIDO crear o hacer `push` a ramas que no sean `main`.**
+- El desarrollo se realiza en equipo, por lo que para evitar desactualizaciones y mantener la sincronización con los socios, el comando `git push` SIEMPRE debe realizarse única y exclusivamente sobre la rama `main`.
+- Si estás en otra rama, debes cambiar a `main`, hacer pull, fusionar tus cambios, y luego hacer push a `main`.
