@@ -1,15 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useState } from "react";
-import { ChevronDown, LogIn, LogOut, Menu, MoreHorizontal, Settings } from "lucide-react";
+import { LogIn, LogOut, Menu, Settings, User } from "lucide-react";
 
 import BrandLogo from "@/components/BrandLogo";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -40,7 +38,7 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
 );
 
 const Header = () => {
-  const { avatarUrl, logout, profile, status, user } = useAuth();
+  const { logout, profile, status, user } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const today = new Date();
   const currentHour = today.getHours();
@@ -67,23 +65,6 @@ const Header = () => {
   const firstName = profile?.fullName?.trim().split(/\s+/)[0];
   const isAuthenticated = status === "authenticated";
   const desktopGreetingLabel = isAuthenticated ? (firstName ? `${greeting}, ${firstName}` : greeting) : "";
-  const desktopBrandLabel = "Polarist";
-  const mobileGreetingLabel = isAuthenticated ? greeting : "Polarist";
-  const providerAvatar =
-    typeof user?.user_metadata?.avatar_url === "string" && user.user_metadata.avatar_url.trim() ?
-      user.user_metadata.avatar_url.trim()
-    : typeof user?.user_metadata?.picture === "string" && user.user_metadata.picture.trim() ?
-      user.user_metadata.picture.trim()
-    : typeof user?.user_metadata?.photo_url === "string" && user.user_metadata.photo_url.trim() ?
-      user.user_metadata.photo_url.trim()
-    : "";
-  const configuredAvatar =
-    typeof profile?.avatarUrl === "string" &&
-    profile.avatarUrl.trim() &&
-    profile.avatarUrl.trim() !== "/avatar.jpg" ?
-      profile.avatarUrl.trim()
-    : "";
-  const rightAvatarSrc = configuredAvatar || providerAvatar || avatarUrl;
 
   const handleLogout = async () => {
     if (isSigningOut) return;
@@ -105,7 +86,7 @@ const Header = () => {
   ].filter(item => !(status === "authenticated" && !item.showAlways));
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/75 dark:bg-black/75 backdrop-blur-lg saturate-150 transition-all duration-300">
+    <header className="sticky top-0 z-40 w-full border-b border-black/5 bg-[#F6F6F6] backdrop-blur-lg saturate-150 transition-all duration-300">
       <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-2.5 md:max-w-[2000px] md:grid-cols-3 md:px-10 lg:px-14 xl:px-16">
         {/* Lado Izquierdo */}
         <div className="flex items-center justify-start">
@@ -114,7 +95,7 @@ const Header = () => {
               <Button
                 variant="outline"
                 size="icon"
-                className="h-8 w-8 rounded-full border-border/80 bg-background/75 text-foreground transition-colors hover:bg-muted md:hidden"
+                className="h-8 w-8 rounded-full border-black/10 bg-white text-[#1d1d1f] transition-colors hover:bg-black/[0.03] md:hidden"
                 title="Abrir menú"
               >
                 <Menu className="h-4 w-4" />
@@ -180,16 +161,15 @@ const Header = () => {
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="hidden items-center gap-3.5 whitespace-nowrap p-0 transition-all hover:opacity-80 md:inline-flex"
+                  className="hidden items-center gap-2 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex"
                   aria-label="Abrir menú de perfil"
                 >
-                  <span className="whitespace-nowrap text-base font-black tracking-tight text-[#1d1d1f] md:text-lg">
+                  <span className="whitespace-nowrap text-[15px] font-normal tracking-[-0.02em] text-[#1d1d1f] md:text-base">
                     {desktopGreetingLabel}
                   </span>
-                  <Avatar className="h-9 w-9 ring-[2.5px] ring-[#ccff00] ring-offset-[2.5px] ring-offset-white/75 dark:ring-offset-black/75 rounded-full overflow-hidden bg-transparent">
-                    <AvatarImage src={rightAvatarSrc} alt={profile?.fullName || "Perfil"} className="object-cover h-full w-full rounded-full" />
-                    <AvatarFallback className="bg-muted/60 rounded-full" />
-                  </Avatar>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
+                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                  </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -198,12 +178,11 @@ const Header = () => {
               >
                 {/* Cabecera con avatar + nombre */}
                 <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
-                  <Avatar className="h-9 w-9 ring-[2px] ring-[#ccff00] ring-offset-[2px] ring-offset-white rounded-full overflow-hidden bg-zinc-100 shrink-0">
-                    <AvatarImage src={rightAvatarSrc} alt={profile?.fullName || "Perfil"} className="object-cover h-full w-full rounded-full" />
-                    <AvatarFallback className="bg-zinc-100 rounded-full" />
-                  </Avatar>
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-[#f6f6f6] text-zinc-700">
+                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                  </div>
                   <div className="min-w-0">
-                    <p className="text-[13px] font-black tracking-tight text-zinc-900 truncate">
+                    <p className="truncate text-[13px] font-medium tracking-[-0.02em] text-zinc-900">
                       {profile?.fullName || "Mi perfil"}
                     </p>
                     <p className="text-[11px] font-medium text-zinc-400 truncate">

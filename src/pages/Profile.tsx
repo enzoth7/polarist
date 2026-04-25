@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bookmark, Sparkles, X } from "lucide-react";
+import { Settings, Sparkles, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/hooks/useAuth";
@@ -11,8 +11,8 @@ const Profile = () => {
   const { avatarUrl, profile, status } = useAuth();
   const [showImagePreview, setShowImagePreview] = useState(false);
 
-  const goToLibrary = () => {
-    navigate(routes.appLibrary);
+  const goToSettings = () => {
+    navigate(routes.appSettings);
   };
 
   const userInitial = profile?.fullName?.charAt(0)?.toUpperCase() || "P";
@@ -48,11 +48,11 @@ const Profile = () => {
       <div className="mt-auto flex flex-col gap-2 border-t border-border/30 pt-4">
         <button
           type="button"
-          onClick={goToLibrary}
+          onClick={goToSettings}
           className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition-colors hover:bg-secondary/50"
         >
-          <Bookmark className="h-5 w-5 text-foreground/70" />
-          <span className="text-[15px] font-medium text-foreground/90">Tu biblioteca</span>
+          <Settings className="h-5 w-5 text-foreground/70" />
+          <span className="text-[15px] font-medium text-foreground/90">Configuración</span>
         </button>
       </div>
 

@@ -2,6 +2,7 @@ import { useEffect, useRef, type TouchEvent } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 import Footer from "./Footer";
 import Header from "./Header";
@@ -12,6 +13,7 @@ const MobileLayout = () => {
   const swipeStartXRef = useRef<number | null>(null);
   const swipeStartYRef = useRef<number | null>(null);
   const mainScrollRef = useRef<HTMLElement | null>(null);
+  const shouldUseNaturalFooterFlow = location.pathname === routes.appGuides;
 
   useEffect(() => {
     mainScrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -61,7 +63,7 @@ const MobileLayout = () => {
     <div className="app-shell-backdrop min-h-screen">
       <div
         id="polarist-app-container"
-        className="relative flex h-screen w-full flex-col overflow-hidden bg-background"
+        className="relative flex h-screen w-full flex-col overflow-hidden bg-[#010101]"
         style={{ transform: "translateZ(0)" }}
       >
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -74,12 +76,12 @@ const MobileLayout = () => {
             onTouchEnd={handleAppTouchEnd}
             onTouchCancel={resetSwipeGesture}
           >
-            <div className="flex min-h-full flex-col">
-              <div className="flex-1">
+            <div className={cn("flex flex-col", shouldUseNaturalFooterFlow ? "min-h-fit" : "min-h-full")}>
+              <div className={cn(!shouldUseNaturalFooterFlow && "flex-1")}>
                 <Outlet />
               </div>
               <Footer 
-                className="mt-auto" 
+                className={cn(!shouldUseNaturalFooterFlow && "mt-auto")} 
                 dark={true} 
               />
             </div>

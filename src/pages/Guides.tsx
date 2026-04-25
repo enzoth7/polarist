@@ -1,4 +1,3 @@
-import { ArrowUpRight } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { conceptosBasicos } from "@/components/education/ConceptosBasicos";
@@ -14,21 +13,21 @@ const slatTransition = [
 ].join(", ");
 
 const folderTones = [
-  { fill: "#D8CCB5", ink: "#413F3E" },
-  { fill: "#C4C4C2", ink: "#413F3E" },
-  { fill: "#8C7F72", ink: "#F4EFE6" },
-  { fill: "#6A5E54", ink: "#F4EFE6" },
-  { fill: "#8C7F72", ink: "#F3EEE6" },
-  { fill: "#413F3E", ink: "#F2ECE3" },
+  { fill: "#1A1A1A", ink: "#F6F6F6" },
+  { fill: "#0A0A0A", ink: "#F6F6F6" },
+  { fill: "#141414", ink: "#F6F6F6" },
+  { fill: "#111111", ink: "#F6F6F6" },
+  { fill: "#121212", ink: "#F6F6F6" },
+  { fill: "#161616", ink: "#F6F6F6" },
 ] as const;
 
 const folderTexture = (isDark: boolean) =>
   `repeating-linear-gradient(
     180deg,
-    ${isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.14)"} 0px,
-    ${isDark ? "rgba(255,255,255,0.06)" : "rgba(255,255,255,0.14)"} 1px,
-    ${isDark ? "rgba(0,0,0,0.045)" : "rgba(0,0,0,0.03)"} 1px,
-    ${isDark ? "rgba(0,0,0,0.045)" : "rgba(0,0,0,0.03)"} 2px
+    ${isDark ? "rgba(255,255,255,0.018)" : "rgba(1,1,1,0.02)"} 0px,
+    ${isDark ? "rgba(255,255,255,0.018)" : "rgba(1,1,1,0.02)"} 1px,
+    ${isDark ? "rgba(0,0,0,0.012)" : "rgba(255,255,255,0.012)"} 1px,
+    ${isDark ? "rgba(0,0,0,0.012)" : "rgba(255,255,255,0.012)"} 2px
   )`;
 
 const Guides = () => {
@@ -58,10 +57,10 @@ const Guides = () => {
   }
 
   return (
-    <div className="min-h-full bg-[#F0F2F6] px-4 pb-24 pt-8 md:px-8 md:pb-16 md:pt-10">
+    <div className="min-h-fit bg-[#010101] px-4 pb-4 pt-6 md:px-8 md:pb-6 md:pt-8">
       <div className="mx-auto w-full max-w-[95vw] 2xl:max-w-[1400px]">
-        <div className="mb-10 flex flex-col items-center justify-center px-2 md:mb-14">
-          <h1 className="text-center text-4xl font-black tracking-tight text-[#1a1a1a] sm:text-5xl lg:text-7xl" style={{ letterSpacing: "-0.03em" }}>
+        <div className="mb-6 flex flex-col items-center justify-center px-2 md:mb-8">
+          <h1 className="text-center text-4xl font-black tracking-tight text-[#F6F6F6] sm:text-5xl lg:text-7xl" style={{ letterSpacing: "-0.04em", fontFamily: "var(--font-sequel, sans-serif)" }}>
             Recursos
           </h1>
         </div>
@@ -72,8 +71,9 @@ const Guides = () => {
         >
           {coverCards.map((card, index) => {
             const isExpanded = index === expandedIndex;
-            const tone = folderTones[index % folderTones.length];
-            const isDarkTone = tone.ink !== "#413F3E";
+            const baseTone = folderTones[index % folderTones.length];
+            const tone = isExpanded ? { fill: "#FFFFFF", ink: "#010101" } : baseTone;
+            const isDarkTone = tone.ink === "#F6F6F6";
             const tabPositionStyle = { left: "8%" };
             const tabClipPath = "polygon(0 0, 75% 0, 85% 26%, 100% 26%, 100% 100%, 0 100%)";
             const tabShapeStyle = {
@@ -88,10 +88,10 @@ const Guides = () => {
               backgroundColor: tone.fill,
               backgroundImage: folderTexture(isDarkTone),
             };
-            const mutedInk = isDarkTone ? "rgba(244,239,230,0.74)" : "rgba(65,63,62,0.74)";
-            const fadedInk = isDarkTone ? "rgba(244,239,230,0.55)" : "rgba(65,63,62,0.56)";
-            const ctaBackground = isDarkTone ? "rgba(244,239,230,0.16)" : "rgba(65,63,62,0.1)";
-            const ctaBorder = isDarkTone ? "rgba(244,239,230,0.34)" : "rgba(65,63,62,0.24)";
+            const mutedInk = isDarkTone ? "rgba(246,246,246,0.78)" : "rgba(1,1,1,0.74)";
+            const fadedInk = isDarkTone ? "rgba(246,246,246,0.58)" : "rgba(1,1,1,0.58)";
+            const ctaBackground = isDarkTone ? "rgba(246,246,246,0.03)" : "rgba(1,1,1,0.045)";
+            const ctaBorder = isDarkTone ? "rgba(246,246,246,0.14)" : "rgba(1,1,1,0.14)";
 
             return (
               <article
@@ -114,12 +114,12 @@ const Guides = () => {
                   className="pointer-events-none absolute inset-0 z-20"
                   style={{
                     filter: isExpanded ?
-                        "drop-shadow(0 32px 48px rgba(0,0,0,0.15)) drop-shadow(0 12px 24px rgba(0,0,0,0.08))"
-                      : "drop-shadow(0 16px 36px rgba(0,0,0,0.07)) drop-shadow(0 8px 16px rgba(0,0,0,0.04))",
+                        "drop-shadow(0 24px 44px rgba(0,0,0,0.42)) drop-shadow(0 10px 20px rgba(0,0,0,0.22))"
+                      : "drop-shadow(0 14px 28px rgba(0,0,0,0.28)) drop-shadow(0 6px 12px rgba(0,0,0,0.14))",
                   }}
                 >
                   <div
-                    className="absolute shadow-[inset_1.5px_2px_3px_rgba(255,255,255,0.5),inset_-1px_-1px_3px_rgba(0,0,0,0.08)]"
+                    className="absolute shadow-[inset_0_1px_0_rgba(255,255,255,0.018),inset_0_-1px_0_rgba(0,0,0,0.32)]"
                     style={{
                       ...tabShapeStyle,
                       ...paperSurfaceStyle,
@@ -128,7 +128,7 @@ const Guides = () => {
                     }}
                   />
                   <div
-                    className="absolute inset-x-0 bottom-0 shadow-[inset_1.5px_2px_3px_rgba(255,255,255,0.5),inset_-1.5px_-2.5px_4px_rgba(0,0,0,0.1)]"
+                    className="absolute inset-x-0 bottom-0 shadow-[inset_0_1px_0_rgba(255,255,255,0.016),inset_0_-1px_0_rgba(0,0,0,0.34)]"
                     style={{
                       top: bodyTop,
                       ...paperSurfaceStyle,
@@ -137,24 +137,16 @@ const Guides = () => {
                   />
                 </div>
 
-                <div className="relative z-40 flex h-full min-h-[170px] flex-col overflow-hidden p-5 pt-[4.9rem] md:min-h-0 md:p-6 md:pt-[5.25rem]">
-                  <span
-                    className={cn(
-                      "absolute left-5 top-[38px] md:left-6 md:top-[42px] text-[10.5px] font-semibold uppercase tracking-[0.18em]",
-                      isExpanded ? "opacity-100 delay-150 duration-300" : "opacity-0 duration-[50ms]"
-                    )}
-                    style={{ color: mutedInk }}
-                  >
-                    {card.eyebrow}
-                  </span>
+                <div className="relative z-40 flex h-full min-h-[170px] flex-col overflow-hidden p-5 pt-[4.2rem] md:min-h-0 md:p-6 md:pt-[4.5rem]">
                   <h2
                     className={cn(
-                      "pointer-events-none absolute bottom-6 left-8 hidden max-h-[80%] overflow-hidden whitespace-nowrap text-[0.82rem] font-semibold uppercase tracking-[0.22em] [text-orientation:mixed] [writing-mode:vertical-rl] md:block",
+                      "pointer-events-none absolute bottom-6 left-8 hidden max-h-[80%] overflow-hidden whitespace-nowrap text-[0.85rem] font-bold uppercase tracking-[0.25em] [text-orientation:mixed] [writing-mode:vertical-rl] md:block",
                       isExpanded ? "opacity-0" : "opacity-100",
                     )}
                     style={{
                       transition: isExpanded ? "opacity 0.05s ease" : "opacity 0.5s ease 0.4s",
                       color: mutedInk,
+                      fontFamily: "var(--font-sequel, sans-serif)"
                     }}
                   >
                     {card.title}
@@ -165,7 +157,7 @@ const Guides = () => {
                       "mt-3 text-balance text-[1.02rem] font-semibold leading-tight transition-[max-height,opacity] duration-300 md:hidden",
                       isExpanded ? "max-h-0 opacity-0" : "max-h-20 opacity-100",
                     )}
-                    style={{ color: tone.ink }}
+                    style={{ color: tone.ink, fontFamily: "var(--font-serif)", fontWeight: 700 }}
                   >
                     {card.title}
                   </h2>
@@ -177,10 +169,16 @@ const Guides = () => {
                     )}
                     style={{ transitionTimingFunction: "cubic-bezier(0.16, 1, 0.3, 1)" }}
                   >
-                    <h3 className="text-balance text-[1.12rem] font-semibold leading-[1.14] md:text-[1.5rem]" style={{ color: tone.ink }}>
+                    <h3
+                      className="text-balance text-[1.12rem] leading-[1.14] md:text-[1.5rem]"
+                      style={{ color: tone.ink, fontFamily: "var(--font-serif)", fontWeight: 700 }}
+                    >
                       {card.title}
                     </h3>
-                    <p className="mt-3 max-w-[38ch] text-pretty text-[0.84rem] leading-relaxed md:text-[0.93rem]" style={{ color: fadedInk }}>
+                    <p
+                      className="mt-3 max-w-[38ch] text-pretty text-[0.92rem] leading-relaxed md:text-[1rem]"
+                      style={{ color: fadedInk, fontFamily: "var(--font-display)", fontWeight: 400 }}
+                    >
                       {card.description}
                     </p>
 
@@ -189,15 +187,15 @@ const Guides = () => {
                         e.stopPropagation();
                         setOpenedFolderId(card.id);
                       }}
-                      className="mt-6 inline-flex items-center gap-2 rounded-full border px-7 py-3 text-[11.5px] font-bold uppercase tracking-[0.20em] transition-all hover:scale-105 active:scale-95 shadow-sm"
+                      className="mt-6 inline-flex items-center justify-center rounded-full border px-8 py-3 text-[11px] font-bold uppercase tracking-[0.25em] transition-all hover:scale-105 active:scale-95 shadow-sm"
                       style={{
                         borderColor: ctaBorder,
                         backgroundColor: ctaBackground,
                         color: mutedInk,
+                        fontFamily: "var(--font-sequel, sans-serif)"
                       }}
                     >
-                      Comenzar
-                      <ArrowUpRight className="h-4 w-4" />
+                      COMENZAR
                     </button>
                   </div>
                 </div>

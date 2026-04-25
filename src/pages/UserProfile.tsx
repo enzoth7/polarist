@@ -1,43 +1,22 @@
-import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import {
-  ArrowUpDown,
-  FolderOpen,
-  Search,
-  Sparkles,
-  Trash2,
-  X,
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
+import { useMemo, useState, type ReactNode } from "react";
+import { Link, useParams } from "react-router-dom";
+import { FolderOpen, User } from "lucide-react";
 
+import { FolderDetailView } from "@/components/guides/FolderDetailView";
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolLogo } from "@/components/tools/ToolLogo";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Skeleton } from "@/components/ui/skeleton";
-import { guideFoldersCatalog, type GuideFolderCard } from "@/data/guideFoldersCatalog";
+import { type GuideFolderCard, guideFoldersCatalog } from "@/data/guideFoldersCatalog";
+import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { usePublicUserProfile } from "@/hooks/usePublicUserProfile";
 import { useSavedGuideFolders } from "@/hooks/useSavedGuideFolders";
 import { useUserSavedTools } from "@/hooks/useUserSavedTools";
 import { type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 import { withSpanishAccents } from "@/lib/withSpanishAccents";
 
-const getInitials = (name?: string | null) => name?.trim().slice(0, 2).toUpperCase() || "PU";
-
-type SavedFilterKey =
-  | "all"
-  | "tools"
-  | "resources";
+type SavedFilterKey = "all" | "tools" | "resources";
 
 const savedFilterOptions: Array<{ id: SavedFilterKey; label: string }> = [
   { id: "all", label: "Todo" },
@@ -45,75 +24,45 @@ const savedFilterOptions: Array<{ id: SavedFilterKey; label: string }> = [
   { id: "resources", label: "Recursos" },
 ];
 
-type SavedFilterOption = (typeof savedFilterOptions)[number];
-type SavedFilterId = SavedFilterOption["id"];
-type SavedOrder = "recent" | "oldest";
-
-const sortOrderLabelMap: Record<SavedOrder, string> = {
-  recent: "Más reciente",
-  oldest: "Primero guardado",
+const guideKindLabelMap: Record<GuideFolderCard["kind"], string> = {
+  social: "Social Systems",
+  web: "Web Structures",
+  visual: "Visual Culture",
+  decision: "Decision Framework",
+  strategy: "Brand Strategy",
+  timeline: "AI Timeline",
+  terms: "Glossary",
+  prompts: "Prompt Archive",
+  memory: "Memory Systems",
 };
 
-const getToolClassifierText = (tool: ToolItem) =>
-  [
-    tool.name,
-    tool.category,
-    tool.kind,
-    tool.description ?? "",
-    tool.whoIsItFor ?? "",
-    tool.niches.join(" "),
-  ]
-    .join(" ")
-    .toLowerCase();
+const displayBlackStyle = {
+  fontFamily: "var(--font-display)",
+  fontWeight: 900,
+} as const;
 
-const normalizeForMatch = (value: string) =>
-  value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
+const displayBoldStyle = {
+  fontFamily: "var(--font-display)",
+  fontWeight: 700,
+} as const;
 
-const getToolSectionText = (tool: ToolItem) => normalizeForMatch(`${tool.category} ${tool.kind}`);
+const serifStyle = {
+  fontFamily: "var(--font-serif)",
+  fontWeight: 400,
+} as const;
 
-const isResourceTool = (tool: ToolItem) =>
-  /(recurso|resource|guia|guide|tutorial|curso|manual|playbook|framework|aprendizaje|learning|documentacion|historia|biblioteca)/.test(
-    getToolSectionText(tool),
-  );
+const serifBoldStyle = {
+  fontFamily: "var(--font-serif)",
+  fontWeight: 600,
+} as const;
 
-const toolMatchesFilter = (tool: ToolItem, filterId: SavedFilterId) => {
-  if (filterId === "all") {
-    return true;
-  }
-
-  if (filterId === "tools") {
-    return !isResourceTool(tool);
-  }
-
-  if (filterId === "resources") {
-    return isResourceTool(tool);
-  }
-
-  return false;
-};
-
-const toolMatchesSearch = (tool: ToolItem, term: string) => {
-  const normalizedSearch = term.trim().toLowerCase();
-
-  if (!normalizedSearch) {
-    return true;
-  }
-
-  const searchableText = [
-    tool.name,
-    tool.category,
-    tool.kind,
-    tool.description ?? "",
-    tool.whoIsItFor ?? "",
-  ]
-    .join(" ")
-    .toLowerCase();
-
-  return searchableText.includes(normalizedSearch);
-};
+const getInitials = (name?: string | null) =>
+  name
+    ?.trim()
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase() ?? "")
+    .join("") || "PU";
 
 const parseSavedTime = (value?: string) => {
   if (!value) {
@@ -124,472 +73,474 @@ const parseSavedTime = (value?: string) => {
   return Number.isFinite(timestamp) ? timestamp : 0;
 };
 
+const ProfileHeaderSkeleton = () => (
+  <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
+    <div className="w-fit rounded-[32px] border border-white/10 bg-white/[0.02] p-4">
+      <div className="h-[216px] w-[176px] animate-pulse rounded-[24px] bg-white/[0.05]" />
+    </div>
+
+    <div className="space-y-4">
+      <div className="h-14 w-72 animate-pulse rounded-full bg-white/[0.05]" />
+      <div className="h-6 w-full max-w-[520px] animate-pulse rounded-full bg-white/[0.05]" />
+      <div className="flex gap-4">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <div key={index} className="h-8 w-28 animate-pulse rounded-full bg-white/[0.05]" />
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const ToolPosterSkeleton = () => (
+  <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+    {Array.from({ length: 4 }).map((_, index) => (
+      <div
+        key={index}
+        className="h-[332px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.04]"
+      />
+    ))}
+  </div>
+);
+
+const ResourceGridSkeleton = () => (
+  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {Array.from({ length: 3 }).map((_, index) => (
+      <div
+        key={index}
+        className="h-[236px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.04]"
+      />
+    ))}
+  </div>
+);
+
+const EmptyState = ({
+  title,
+  description,
+  cta,
+}: {
+  title: string;
+  description: string;
+  cta?: ReactNode;
+}) => (
+  <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-5 py-10 text-center md:px-7">
+    <h3 className="text-[1.15rem] leading-tight text-[#F6F6F6]" style={displayBlackStyle}>
+      {title}
+    </h3>
+    <p className="mx-auto mt-3 max-w-[34rem] text-[1rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
+      {description}
+    </p>
+    {cta ? <div className="mt-6">{cta}</div> : null}
+  </div>
+);
+
+const SavedToolPoster = ({
+  tool,
+  onSelect,
+}: {
+  tool: ToolItem;
+  onSelect: (tool: ToolItem) => void;
+}) => {
+  const primaryNiche = tool.niches[0] ? withSpanishAccents(toolNicheMap[tool.niches[0]].label) : null;
+
+  return (
+    <article
+      role="button"
+      tabIndex={0}
+      onClick={() => onSelect(tool)}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onSelect(tool);
+        }
+      }}
+      className="group relative flex min-h-[332px] cursor-pointer flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(16,16,16,0.98)_36%,rgba(8,8,8,1)_100%)] p-5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]"
+    >
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent)]" />
+
+      <div className="relative flex flex-1 flex-col">
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[0.62rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={displayBoldStyle}>
+            {withSpanishAccents(tool.category)}
+          </span>
+          {tool.isBeta ? (
+            <span className="text-[0.62rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={serifStyle}>
+              Beta
+            </span>
+          ) : null}
+        </div>
+
+        <div className="mt-6 flex h-24 items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.03]">
+          <ToolLogo
+            name={tool.name}
+            domain={tool.domain}
+            className="h-[88px] w-[88px] border-none bg-transparent"
+            imageClassName="p-1"
+          />
+        </div>
+
+        <div className="mt-6 flex-1">
+          <h3 className="text-[1.34rem] leading-[1.04] text-[#F6F6F6]" style={serifBoldStyle}>
+            {tool.name}
+          </h3>
+          <p className="mt-3 max-h-[5.4rem] overflow-hidden text-[0.98rem] leading-[1.36] text-[#F6F6F6]" style={serifStyle}>
+            {tool.description?.trim() ||
+              tool.whoIsItFor?.trim() ||
+              "Herramienta guardada dentro de esta coleccion."}
+          </p>
+        </div>
+
+        <div className="mt-6 border-t border-white/10 pt-4">
+          <p className="text-[0.78rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
+            {withSpanishAccents(tool.kind)}
+            {primaryNiche ? ` / ${primaryNiche}` : ""}
+          </p>
+        </div>
+      </div>
+    </article>
+  );
+};
+
+const SavedResourceCard = ({
+  folder,
+  onOpen,
+}: {
+  folder: GuideFolderCard;
+  onOpen: (folderId: string) => void;
+}) => (
+  <article
+    role="button"
+    tabIndex={0}
+    onClick={() => onOpen(folder.id)}
+    onKeyDown={(event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onOpen(folder.id);
+      }
+    }}
+    className="group relative flex min-h-[236px] cursor-pointer flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#060606] p-5 transition-transform duration-300 hover:-translate-y-1"
+  >
+    <div className="flex items-start justify-between gap-4">
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
+        <FolderOpen className="h-5 w-5" />
+      </span>
+      <span className="text-[0.7rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={displayBoldStyle}>
+        Recurso
+      </span>
+    </div>
+
+    <div className="mt-8 flex-1">
+      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={displayBoldStyle}>
+        {guideKindLabelMap[folder.kind]}
+      </p>
+      <h3 className="mt-3 text-[1.3rem] leading-[1.05] text-[#F6F6F6]" style={serifBoldStyle}>
+        {folder.title}
+      </h3>
+      <p className="mt-4 text-[1rem] leading-[1.42] text-[#F6F6F6]" style={serifStyle}>
+        {folder.description}
+      </p>
+    </div>
+
+    <div className="mt-6 border-t border-white/10 pt-4">
+      <span className="text-[0.76rem] uppercase tracking-[0.2em] text-[#F6F6F6]" style={displayBoldStyle}>
+        Abrir carpeta
+      </span>
+    </div>
+  </article>
+);
+
 const UserProfile = () => {
   const { username } = useParams<{ username: string }>();
-  const navigate = useNavigate();
-  const { logout, user } = useAuth();
-  const { profile, loading: profileLoading } = usePublicUserProfile(username);
+  const { user } = useAuth();
+  const { profile, loading: profileLoading, error: profileError } = usePublicUserProfile(username);
   const {
     tools,
     savedToolCreatedAtById,
     loading: toolsLoading,
+    error: toolsError,
   } = useUserSavedTools(profile?.id);
-  const [isSigningOut, setIsSigningOut] = useState(false);
   const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
-  const [savedSearchTerm, setSavedSearchTerm] = useState("");
+  const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
   const [activeSavedFilter, setActiveSavedFilter] = useState<SavedFilterKey>("all");
-  const [toolsSortOrder, setToolsSortOrder] = useState<SavedOrder>("recent");
-  const [resourcesSortOrder, setResourcesSortOrder] = useState<SavedOrder>("recent");
-  const [showImagePreview, setShowImagePreview] = useState(false);
-
-  const goToSettings = () => {
-    navigate(routes.appSettings);
-  };
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
   const savedGuideOwnerId = isOwnProfile ? user?.id : "__disabled__";
   const { savedFolderIds } = useSavedGuideFolders(savedGuideOwnerId);
+
   const displayName = profile?.full_name?.trim() || "Usuario Polarist";
   const firstName = displayName.split(/\s+/)[0] || "Usuario";
-  const savedGuideFolders = useMemo(
-    () => {
-      if (!isOwnProfile) {
-        return [];
-      }
+  const avatarInitials = getInitials(profile?.full_name);
+  const profileMeta = [profile?.occupation?.trim(), profile?.country?.trim()].filter(Boolean);
 
-      const foldersById = new Map(guideFoldersCatalog.map((folder) => [folder.id, folder]));
-
-      return savedFolderIds
-        .map((folderId) => foldersById.get(folderId))
-        .filter((folder): folder is GuideFolderCard => Boolean(folder))
-        .map((folder) => ({
-          ...folder,
-          description:
-            folder.id === "recursos" ?
-              "Explorá conceptos prácticos para dominar IA desde cero."
-            : folder.description,
-        }));
-    },
-    [isOwnProfile, savedFolderIds],
-  );
-
-  const filteredSavedTools = useMemo(
-    () =>
-      tools
-        .filter((tool) => toolMatchesFilter(tool, activeSavedFilter))
-        .filter((tool) => toolMatchesSearch(tool, savedSearchTerm)),
-    [activeSavedFilter, savedSearchTerm, tools],
-  );
-  const filteredSavedGuideFolders = useMemo(() => {
-    if (activeSavedFilter === "tools") {
-      return [];
-    }
-
-    const normalizedSearch = savedSearchTerm.trim().toLowerCase();
-
-    return savedGuideFolders.filter((folder) => {
-      if (!normalizedSearch) {
-        return true;
-      }
-
-      return `${folder.eyebrow} ${folder.title} ${folder.description}`
-        .toLowerCase()
-        .includes(normalizedSearch);
-    });
-  }, [activeSavedFilter, savedGuideFolders, savedSearchTerm]);
   const orderedSavedTools = useMemo(() => {
-    const nextTools = [...filteredSavedTools];
+    const nextTools = [...tools];
 
     nextTools.sort((leftTool, rightTool) => {
       const leftSavedAt = parseSavedTime(savedToolCreatedAtById[leftTool.name]);
       const rightSavedAt = parseSavedTime(savedToolCreatedAtById[rightTool.name]);
-
-      return toolsSortOrder === "recent" ? rightSavedAt - leftSavedAt : leftSavedAt - rightSavedAt;
+      return rightSavedAt - leftSavedAt;
     });
 
     return nextTools;
-  }, [filteredSavedTools, savedToolCreatedAtById, toolsSortOrder]);
+  }, [savedToolCreatedAtById, tools]);
+
   const orderedSavedGuideFolders = useMemo(() => {
-    const nextFolders = [...filteredSavedGuideFolders];
-
-    if (resourcesSortOrder === "recent") {
-      nextFolders.reverse();
+    if (!isOwnProfile) {
+      return [];
     }
 
-    return nextFolders;
-  }, [filteredSavedGuideFolders, resourcesSortOrder]);
-  const hasSavedContent = filteredSavedTools.length > 0 || filteredSavedGuideFolders.length > 0;
-  const totalSavedEntries = tools.length + savedGuideFolders.length;
-  const showSavedToolsColumn = activeSavedFilter !== "resources";
-  const showSavedResourcesColumn = activeSavedFilter !== "tools";
+    const foldersById = new Map(guideFoldersCatalog.map((folder) => [folder.id, folder]));
 
-  const activeSavedFilterLabel =
-    savedFilterOptions.find((filterOption) => filterOption.id === activeSavedFilter)?.label ||
-    "Todo";
+    return [...savedFolderIds]
+      .reverse()
+      .map((folderId) => foldersById.get(folderId))
+      .filter((folder): folder is GuideFolderCard => Boolean(folder));
+  }, [isOwnProfile, savedFolderIds]);
 
-  const handleLogout = async () => {
-    try {
-      setIsSigningOut(true);
-      await logout();
-      navigate(routes.landing, { replace: true });
-    } catch (error) {
-      console.error("Error signing out from profile:", error);
-      toast.error("No se pudo cerrar sesión");
-    } finally {
-      setIsSigningOut(false);
-    }
-  };
+  const visibleTools = activeSavedFilter === "resources" ? [] : orderedSavedTools;
+  const visibleResources = activeSavedFilter === "tools" ? [] : orderedSavedGuideFolders;
+
+  const totalSavedEntries = orderedSavedTools.length + orderedSavedGuideFolders.length;
+  const hasAnyVisibleContent = visibleTools.length > 0 || visibleResources.length > 0;
+
+  if (openedFolderId) {
+    return <FolderDetailView folderId={openedFolderId} onClose={() => setOpenedFolderId(null)} />;
+  }
 
   if (!username) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-background p-6">
-        <p className="text-sm text-muted-foreground">No encontramos ese perfil.</p>
+      <div className="flex min-h-fit items-center justify-center bg-[#010101] px-4 py-20">
+        <p className="text-base text-[#F6F6F6]" style={serifStyle}>
+          No encontramos ese perfil.
+        </p>
       </div>
     );
   }
 
-
+  if (!profileLoading && (!profile || profileError)) {
+    return (
+      <div className="min-h-fit bg-[#010101] px-4 py-16 md:px-8">
+        <div className="mx-auto max-w-[980px]">
+          <EmptyState
+            title="Perfil no disponible"
+            description="No encontramos informacion publica para este usuario."
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-full bg-background px-4 pb-24 pt-5 md:px-6 md:pb-12">
-      <div className="relative mx-auto flex w-full max-w-[980px] flex-col gap-6">
-        <div className="pointer-events-none absolute inset-0 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_10%_6%,rgba(184,219,77,0.22),transparent_34%),radial-gradient(circle_at_88%_90%,rgba(145,198,171,0.2),transparent_40%),linear-gradient(180deg,rgba(255,255,255,0.82)_0%,rgba(246,244,239,0.95)_100%)] dark:bg-[radial-gradient(circle_at_10%_6%,rgba(204,255,0,0.12),transparent_34%),radial-gradient(circle_at_88%_90%,rgba(129,255,190,0.09),transparent_40%),linear-gradient(180deg,rgba(8,15,11,0.9)_0%,rgba(6,11,8,0.98)_100%)]" />
-
-        <section className="relative overflow-hidden rounded-[32px] border border-black/10 bg-white/60 px-5 py-6 text-foreground shadow-[0_22px_45px_-30px_rgba(9,15,12,0.75)] backdrop-blur-[18px] dark:border-white/20 dark:bg-white/[0.06] dark:text-white md:px-7 md:py-7">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.68)_0%,rgba(255,255,255,0.34)_26%,rgba(255,255,255,0.08)_52%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.16)_0%,rgba(255,255,255,0.07)_25%,rgba(255,255,255,0.02)_48%,rgba(8,14,10,0.34)_100%)]" />
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.54),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(177,215,66,0.2),transparent_46%)] dark:bg-[radial-gradient(circle_at_24%_-14%,rgba(255,255,255,0.14),transparent_48%),radial-gradient(circle_at_80%_96%,rgba(204,255,0,0.08),transparent_46%)]" />
-          <div className="pointer-events-none absolute left-6 right-6 top-0 h-px bg-black/10 dark:bg-white/30" />
-          <div className="relative flex flex-col gap-5">
-            {profileLoading ? (
-              <>
-                <div className="flex items-center justify-between gap-4">
-                  <Skeleton className="h-[74px] w-[74px] rounded-full bg-black/10 dark:bg-white/15" />
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-10 w-10 rounded-full bg-black/10 dark:bg-white/15" />
-                    <Skeleton className="h-10 w-10 rounded-full bg-black/10 dark:bg-white/15" />
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <Skeleton className="h-12 w-52 bg-black/10 dark:bg-white/15" />
-                  <Skeleton className="h-8 w-full rounded-full bg-black/10 dark:bg-white/15" />
-                </div>
-              </>
-            ) : profile ? (
-              <>
-                <div className="flex items-start justify-between gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowImagePreview(true)}
-                    className="group relative inline-flex items-center justify-center rounded-full text-left transition hover:opacity-95 active:scale-95"
-                  >
-                    <div className="flex h-[72px] w-[72px] items-center justify-center overflow-hidden rounded-full text-xl font-semibold text-white">
-                      {profile.avatar_url ? (
-                        <img
-                          src={profile.avatar_url}
-                          alt={profile.full_name || "Perfil"}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <span>{getInitials(profile.full_name)}</span>
-                      )}
-                    </div>
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-opacity group-hover:opacity-100">
-                      <Sparkles className="h-5 w-5 text-white/70" />
-                    </div>
-                  </button>
-
-                </div>
-
-                <div className="space-y-3">
-                  <h1 className="text-[42px] font-semibold tracking-tight text-foreground dark:text-white md:text-[44px]">
-                    Hola, {firstName}
-                  </h1>
-                  <div className="-mx-1 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                    <div className="flex w-max items-center gap-2 px-1">
-                      {savedFilterOptions.map((filterOption) => {
-                        const isActive = filterOption.id === activeSavedFilter;
-
-                        return (
-                          <button
-                            key={filterOption.id}
-                            type="button"
-                            onClick={() => setActiveSavedFilter(filterOption.id)}
-                            className={`rounded-full border px-3.5 py-1.5 text-xs font-semibold backdrop-blur-md transition ${
-                              isActive ?
-                                "border-[#CCFF00] bg-[#CCFF00] text-[#0d1204]"
-                              : "border-black/10 bg-white/45 text-foreground/85 hover:bg-white/65 dark:border-white/20 dark:bg-white/[0.08] dark:text-white/85 dark:hover:bg-white/[0.14]"
-                            }`}
-                          >
-                            {filterOption.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-
-              </>
-            ) : (
-              <div className="py-6 text-center">
-                <h1 className="text-xl font-semibold text-foreground dark:text-white">
-                  Perfil no disponible
-                </h1>
-                <p className="mt-2 text-sm text-foreground/70 dark:text-white/70">
-                  No encontramos información pública para este usuario.
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="relative overflow-hidden rounded-[30px] border border-black/10 bg-white/60 p-5 shadow-[0_18px_36px_-26px_rgba(0,0,0,0.62)] backdrop-blur-[18px] dark:border-white/20 dark:bg-white/[0.06] md:p-6">
-          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.56)_0%,rgba(255,255,255,0.28)_34%,rgba(255,255,255,0.06)_60%,rgba(8,13,10,0.08)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.12)_0%,rgba(255,255,255,0.05)_28%,rgba(255,255,255,0.02)_56%,rgba(8,14,10,0.32)_100%)]" />
-          <div className="pointer-events-none absolute left-5 right-5 top-0 h-px bg-black/10 dark:bg-white/30" />
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-              Últimas cosas guardadas
-            </h2>
-            <div
-              className="relative flex h-11 w-[min(68vw,620px)] min-w-[180px] shrink-0 items-center overflow-hidden rounded-full border border-black/10 bg-white/40 text-foreground backdrop-blur-md transition hover:bg-white/65 dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/20"
-            >
-              <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center">
-                <Search className="h-4 w-4" />
-              </span>
-              <input
-                value={savedSearchTerm}
-                onChange={(event) => setSavedSearchTerm(event.target.value)}
-                placeholder="Buscar..."
-                className="h-full min-w-0 flex-1 bg-transparent pr-3 text-sm text-foreground outline-none placeholder:text-foreground/55 dark:text-white dark:placeholder:text-white/55"
-                aria-label="Buscar en tus guardados"
-              />
-            </div>
-          </div>
-
-          {toolsLoading ? (
-            <div className="relative z-10 grid gap-3 sm:grid-cols-2">
-              {Array.from({ length: 4 }).map((_, index) => (
-                <div
-                  key={index}
-                  className="rounded-2xl border border-black/10 bg-white/45 p-4 dark:border-white/15 dark:bg-white/[0.06]"
-                >
-                  <div className="flex items-center gap-3">
-                    <Skeleton className="h-12 w-12 rounded-xl" />
-                    <div className="min-w-0 flex-1 space-y-2">
-                      <Skeleton className="h-4 w-32" />
-                      <Skeleton className="h-4 w-24" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : hasSavedContent ? (
-            <>
-              <div className={`grid gap-3 ${showSavedToolsColumn && showSavedResourcesColumn ? "md:grid-cols-2" : ""}`}>
-                {showSavedToolsColumn ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2 px-1">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/72 dark:text-white/70">
-                        Herramientas
-                      </p>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex h-8 items-center gap-1.5 px-1 text-[11px] font-semibold text-foreground/72 transition-colors hover:text-foreground dark:text-white/70 dark:hover:text-white"
-                          >
-                            <ArrowUpDown className="h-3.5 w-3.5" />
-                            {sortOrderLabelMap[toolsSortOrder]}
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="min-w-[170px] overflow-hidden rounded-[16px] border border-black/18 bg-[linear-gradient(165deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.68)_42%,rgba(235,244,239,0.58)_100%)] p-1.5 shadow-[0_22px_46px_-28px_rgba(0,0,0,0.76)] backdrop-blur-xl dark:border-white/24 dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.17)_0%,rgba(255,255,255,0.07)_42%,rgba(133,170,120,0.12)_100%)]"
-                        >
-                          <DropdownMenuRadioGroup
-                            value={toolsSortOrder}
-                            onValueChange={(value) => setToolsSortOrder(value as SavedOrder)}
-                          >
-                            <DropdownMenuRadioItem
-                              value="recent"
-                              className="rounded-[10px] border border-transparent px-2.5 py-2 text-[12px] font-semibold text-foreground/85 outline-none transition-colors data-[state=checked]:border-black/16 data-[state=checked]:bg-white/92 hover:bg-white/86 focus:bg-white/86 dark:text-white/85 dark:data-[state=checked]:border-white/24 dark:data-[state=checked]:bg-white/[0.16] dark:hover:bg-white/[0.12] dark:focus:bg-white/[0.12] [&>span]:hidden"
-                            >
-                              Más reciente
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="oldest"
-                              className="rounded-[10px] border border-transparent px-2.5 py-2 text-[12px] font-semibold text-foreground/85 outline-none transition-colors data-[state=checked]:border-black/16 data-[state=checked]:bg-white/92 hover:bg-white/86 focus:bg-white/86 dark:text-white/85 dark:data-[state=checked]:border-white/24 dark:data-[state=checked]:bg-white/[0.16] dark:hover:bg-white/[0.12] dark:focus:bg-white/[0.12] [&>span]:hidden"
-                            >
-                              Primero guardado
-                            </DropdownMenuRadioItem>
-                          </DropdownMenuRadioGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-
-                    {orderedSavedTools.length > 0 ? (
-                      orderedSavedTools.map((tool) => (
-                        <article
-                          key={tool.name}
-                          role="button"
-                          tabIndex={0}
-                          onClick={() => setSelectedTool(tool)}
-                          onKeyDown={(event) => {
-                            if (event.key === "Enter" || event.key === " ") {
-                              event.preventDefault();
-                              setSelectedTool(tool);
-                            }
-                          }}
-                          className="group relative cursor-pointer overflow-hidden rounded-[22px] border border-black/12 bg-white/55 p-3 shadow-[0_18px_34px_-24px_rgba(0,0,0,0.72)] backdrop-blur-[14px] transition-colors hover:bg-white/70 dark:border-white/18 dark:bg-white/[0.08] dark:hover:bg-white/[0.14]"
-                        >
-                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.66)_0%,rgba(255,255,255,0.34)_30%,rgba(255,255,255,0.08)_60%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.06)_30%,rgba(255,255,255,0.02)_58%,rgba(8,14,10,0.36)_100%)]" />
-                          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.56),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(177,215,66,0.16),transparent_42%)] dark:bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(204,255,0,0.09),transparent_42%)]" />
-                          <div className="pointer-events-none absolute left-4 right-4 top-0 h-px bg-black/12 dark:bg-white/30" />
-
-                          <div className="relative z-10 flex items-start gap-3">
-                            <ToolLogo
-                              name={tool.name}
-                              domain={tool.domain}
-                              className="h-12 w-12 border-none bg-transparent"
-                              imageClassName="p-0.5"
-                            />
-                            <div className="min-w-0 flex-1 space-y-1.5">
-                              <div className="flex flex-wrap items-center gap-2">
-                                <h3 className="truncate text-base font-semibold text-foreground">
-                                  {tool.name}
-                                </h3>
-                                <Badge
-                                  variant="outline"
-                                  className="rounded-full border-black/10 bg-white/75 px-2 py-0.5 text-[10px] font-semibold text-muted-foreground dark:border-white/20 dark:bg-white/10"
-                                >
-                                  {withSpanishAccents(tool.kind)}
-                                </Badge>
-                              </div>
-                              <p className="text-sm leading-5 text-muted-foreground">
-                                {tool.description?.trim() ||
-                                  tool.whoIsItFor?.trim() ||
-                                  "Herramienta guardada en tu biblioteca."}
-                              </p>
-                              <Badge
-                                variant="outline"
-                                className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[10px] font-semibold text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
-                              >
-                                {withSpanishAccents(tool.category)}
-                              </Badge>
-                            </div>
-                          </div>
-                        </article>
-                      ))
-                    ) : (
-                      <div className="relative overflow-hidden rounded-[22px] border border-black/12 bg-white/55 px-4 py-4 text-sm text-muted-foreground shadow-[0_18px_34px_-24px_rgba(0,0,0,0.72)] backdrop-blur-[14px] dark:border-white/18 dark:bg-white/[0.08]">
-                        Todavía no guardaste herramientas.
-                      </div>
-                    )}
-                  </div>
-                ) : null}
-
-                {showSavedResourcesColumn ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between gap-2 px-1">
-                      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-foreground/72 dark:text-white/70">
-                        Recursos
-                      </p>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            type="button"
-                            className="inline-flex h-8 items-center gap-1.5 px-1 text-[11px] font-semibold text-foreground/72 transition-colors hover:text-foreground dark:text-white/70 dark:hover:text-white"
-                          >
-                            <ArrowUpDown className="h-3.5 w-3.5" />
-                            {sortOrderLabelMap[resourcesSortOrder]}
-                          </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                          align="end"
-                          className="min-w-[170px] overflow-hidden rounded-[16px] border border-black/18 bg-[linear-gradient(165deg,rgba(255,255,255,0.92)_0%,rgba(255,255,255,0.68)_42%,rgba(235,244,239,0.58)_100%)] p-1.5 shadow-[0_22px_46px_-28px_rgba(0,0,0,0.76)] backdrop-blur-xl dark:border-white/24 dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.17)_0%,rgba(255,255,255,0.07)_42%,rgba(133,170,120,0.12)_100%)]"
-                        >
-                          <DropdownMenuRadioGroup
-                            value={resourcesSortOrder}
-                            onValueChange={(value) => setResourcesSortOrder(value as SavedOrder)}
-                          >
-                            <DropdownMenuRadioItem
-                              value="recent"
-                              className="rounded-[10px] border border-transparent px-2.5 py-2 text-[12px] font-semibold text-foreground/85 outline-none transition-colors data-[state=checked]:border-black/16 data-[state=checked]:bg-white/92 hover:bg-white/86 focus:bg-white/86 dark:text-white/85 dark:data-[state=checked]:border-white/24 dark:data-[state=checked]:bg-white/[0.16] dark:hover:bg-white/[0.12] dark:focus:bg-white/[0.12] [&>span]:hidden"
-                            >
-                              Más reciente
-                            </DropdownMenuRadioItem>
-                            <DropdownMenuRadioItem
-                              value="oldest"
-                              className="rounded-[10px] border border-transparent px-2.5 py-2 text-[12px] font-semibold text-foreground/85 outline-none transition-colors data-[state=checked]:border-black/16 data-[state=checked]:bg-white/92 hover:bg-white/86 focus:bg-white/86 dark:text-white/85 dark:data-[state=checked]:border-white/24 dark:data-[state=checked]:bg-white/[0.16] dark:hover:bg-white/[0.12] dark:focus:bg-white/[0.12] [&>span]:hidden"
-                            >
-                              Primero guardado
-                            </DropdownMenuRadioItem>
-                          </DropdownMenuRadioGroup>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </div>
-
-                    {orderedSavedGuideFolders.length > 0 ? (
-                      orderedSavedGuideFolders.map((folder) => (
-                        <article
-                          key={folder.id}
-                          className="relative overflow-hidden rounded-[22px] border border-black/12 bg-white/55 px-4 py-3 shadow-[0_18px_34px_-24px_rgba(0,0,0,0.72)] backdrop-blur-[14px] dark:border-white/18 dark:bg-white/[0.08]"
-                        >
-                          <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(165deg,rgba(255,255,255,0.66)_0%,rgba(255,255,255,0.34)_30%,rgba(255,255,255,0.08)_60%,rgba(9,15,12,0.1)_100%)] dark:bg-[linear-gradient(165deg,rgba(255,255,255,0.15)_0%,rgba(255,255,255,0.06)_30%,rgba(255,255,255,0.02)_58%,rgba(8,14,10,0.36)_100%)]" />
-                          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.56),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(177,215,66,0.16),transparent_42%)] dark:bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.2),transparent_44%),radial-gradient(circle_at_84%_100%,rgba(204,255,0,0.09),transparent_42%)]" />
-                          <div className="pointer-events-none absolute left-4 right-4 top-0 h-px bg-black/12 dark:bg-white/30" />
-
-                          <div className="relative z-10 flex items-start gap-3">
-                            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/12 bg-white/75 text-foreground/85 dark:border-white/20 dark:bg-white/12 dark:text-white/90">
-                              <FolderOpen className="h-4 w-4" />
-                            </span>
-                            <div className="min-w-0">
-                              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-primary/90">
-                                {folder.eyebrow}
-                              </p>
-                              <h3 className="mt-1 line-clamp-1 text-sm font-semibold text-foreground dark:text-white">
-                                {folder.title}
-                              </h3>
-                              <p className="mt-1 line-clamp-2 text-xs leading-5 text-muted-foreground">
-                                {folder.description}
-                              </p>
-                            </div>
-                          </div>
-                        </article>
-                      ))
-                    ) : (
-                      <div className="relative overflow-hidden rounded-[22px] border border-black/12 bg-white/55 px-4 py-4 text-sm text-muted-foreground shadow-[0_18px_34px_-24px_rgba(0,0,0,0.72)] backdrop-blur-[14px] dark:border-white/18 dark:bg-white/[0.08]">
-                        Todavía no guardaste recursos.
-                      </div>
-                    )}
-                  </div>
-                ) : null}
-              </div>
-            </>
-          ) : totalSavedEntries === 0 ? (
-            <div className="relative z-10 rounded-2xl border border-black/10 bg-white/45 px-5 py-8 text-center dark:border-white/15 dark:bg-white/[0.05]">
-              <p className="text-sm font-medium text-foreground">Aún no guardaste herramientas ni recursos.</p>
-            </div>
-          ) : savedSearchTerm.trim() ? (
-            <div className="relative z-10 rounded-2xl border border-black/10 bg-white/45 px-5 py-8 text-center dark:border-white/15 dark:bg-white/[0.05]">
-              <p className="text-sm font-medium text-foreground">
-                No encontramos resultados para esa búsqueda.
-              </p>
-            </div>
-          ) : activeSavedFilter !== "all" ? (
-            <div className="relative z-10 rounded-2xl border border-black/10 bg-white/45 px-5 py-8 text-center dark:border-white/15 dark:bg-white/[0.05]">
-              <p className="text-sm font-medium text-foreground">
-                Todavía no hay herramientas guardadas en {activeSavedFilterLabel}.
-              </p>
-            </div>
+    <div className="min-h-fit bg-[#010101] px-4 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10">
+        <header className="border-b border-white/10 pb-10">
+          {profileLoading ? (
+            <ProfileHeaderSkeleton />
           ) : (
-            <div className="relative z-10 rounded-2xl border border-black/10 bg-white/45 px-5 py-8 text-center dark:border-white/15 dark:bg-white/[0.05]">
-              <p className="text-sm font-medium text-foreground">
-                No encontramos resultados para esa búsqueda.
-              </p>
+            <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
+              <div className="w-fit rounded-[32px] border border-white/10 bg-white/[0.02] p-4">
+                <div className="flex h-[216px] w-[176px] items-center justify-center overflow-hidden rounded-[24px] bg-white/[0.04] text-[#F6F6F6]">
+                  {profile?.avatar_url ? (
+                    <img
+                      src={profile.avatar_url}
+                      alt={profile.full_name || "Perfil"}
+                      className="h-full w-full object-cover object-top"
+                    />
+                  ) : avatarInitials ? (
+                    <span className="text-[2rem] tracking-[-0.04em]" style={displayBlackStyle}>
+                      {avatarInitials}
+                    </span>
+                  ) : (
+                    <User className="h-10 w-10 text-white/54" />
+                  )}
+                </div>
+              </div>
+
+              <div className="min-w-0">
+                <h1
+                  className="text-[clamp(2.7rem,7vw,5.8rem)] leading-[0.92] tracking-[-0.06em] text-[#F6F6F6]"
+                  style={displayBlackStyle}
+                >
+                  Hola, {firstName}
+                </h1>
+
+                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.98rem] text-[#F6F6F6]" style={serifStyle}>
+                  {profile?.username ? <span>@{profile.username}</span> : null}
+                  {profileMeta.map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+
+                <div className="mt-7 flex flex-wrap items-center gap-6">
+                  {savedFilterOptions.map((filterOption) => {
+                    const isActive = filterOption.id === activeSavedFilter;
+                    const count =
+                      filterOption.id === "all" ?
+                        totalSavedEntries
+                      : filterOption.id === "tools" ?
+                        orderedSavedTools.length
+                      : orderedSavedGuideFolders.length;
+
+                    return (
+                      <button
+                        key={filterOption.id}
+                        type="button"
+                        onClick={() => setActiveSavedFilter(filterOption.id)}
+                        className={cn(
+                          "border-b pb-2 text-left text-sm tracking-[0.02em] transition-colors",
+                          isActive ?
+                            "border-[#F6F6F6] text-[#F6F6F6]"
+                          : "border-transparent text-[#F6F6F6] opacity-60 hover:opacity-100",
+                        )}
+                        style={
+                          isActive ? displayBoldStyle : { fontFamily: "var(--font-display)", fontWeight: 500 }
+                        }
+                      >
+                        {filterOption.label}
+                        <span className="ml-2 text-[#F6F6F6]" style={serifStyle}>
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           )}
-        </section>
+        </header>
 
+        <section className="flex flex-col gap-8">
+          <div>
+            <h2 className="text-[1.9rem] leading-none tracking-[-0.04em] text-[#F6F6F6] md:text-[2.45rem]" style={displayBoldStyle}>
+              Ultimas cosas guardadas
+            </h2>
+          </div>
+
+          {profileLoading ? (
+            <>
+              {activeSavedFilter !== "resources" ? <ToolPosterSkeleton /> : null}
+              {activeSavedFilter !== "tools" ? <ResourceGridSkeleton /> : null}
+            </>
+          ) : (
+            <>
+              {activeSavedFilter !== "resources" ? (
+                toolsLoading ? (
+                  <ToolPosterSkeleton />
+                ) : toolsError ? (
+                  activeSavedFilter === "tools" || !hasAnyVisibleContent ? (
+                    <EmptyState
+                      title="No pudimos cargar las herramientas guardadas"
+                      description="Intenta de nuevo en unos segundos."
+                    />
+                  ) : null
+                ) : visibleTools.length > 0 ? (
+                  <div className="space-y-5">
+                    {activeSavedFilter === "all" ? (
+                      <div className="flex items-center justify-between gap-4">
+                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                          Herramientas guardadas
+                        </h3>
+                        <span className="text-sm text-[#F6F6F6]" style={serifStyle}>
+                          {visibleTools.length}
+                        </span>
+                      </div>
+                    ) : null}
+
+                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                      {visibleTools.map((tool) => (
+                        <SavedToolPoster key={tool.name} tool={tool} onSelect={setSelectedTool} />
+                      ))}
+                    </div>
+                  </div>
+                ) : activeSavedFilter === "tools" ? (
+                  <EmptyState
+                    title={isOwnProfile ? "Todavia no guardaste herramientas" : "Este perfil no tiene herramientas visibles"}
+                    description={
+                      isOwnProfile ?
+                        "Guarda herramientas desde el catalogo para construir tu galeria privada."
+                      : "Cuando este perfil guarde herramientas visibles, apareceran aqui."
+                    }
+                    cta={
+                      isOwnProfile ? (
+                        <Link
+                          to={routes.appTools}
+                          className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
+                          style={displayBoldStyle}
+                        >
+                          Explorar herramientas
+                        </Link>
+                      ) : null
+                    }
+                  />
+                ) : null
+              ) : null}
+
+              {activeSavedFilter !== "tools" ? (
+                visibleResources.length > 0 ? (
+                  <div className="space-y-5">
+                    {activeSavedFilter === "all" ? (
+                      <div className="flex items-center justify-between gap-4">
+                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                          Recursos guardados
+                        </h3>
+                        <span className="text-sm text-[#F6F6F6]" style={serifStyle}>
+                          {visibleResources.length}
+                        </span>
+                      </div>
+                    ) : null}
+
+                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      {visibleResources.map((folder) => (
+                        <SavedResourceCard key={folder.id} folder={folder} onOpen={setOpenedFolderId} />
+                      ))}
+                    </div>
+                  </div>
+                ) : activeSavedFilter === "resources" ? (
+                  <EmptyState
+                    title={isOwnProfile ? "Todavia no guardaste recursos" : "Este perfil no tiene recursos visibles"}
+                    description={
+                      isOwnProfile ?
+                        "Las carpetas que guardes en Recursos apareceran en esta galeria."
+                      : "Los recursos guardados solo aparecen cuando este perfil los tiene disponibles."
+                    }
+                    cta={
+                      isOwnProfile ? (
+                        <Link
+                          to={routes.appGuides}
+                          className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
+                          style={displayBoldStyle}
+                        >
+                          Explorar recursos
+                        </Link>
+                      ) : null
+                    }
+                  />
+                ) : null
+              ) : null}
+
+              {!toolsLoading && !toolsError && !hasAnyVisibleContent ? (
+                <EmptyState
+                  title={isOwnProfile ? "Tu archivo todavia esta vacio" : "Este perfil aun no muestra colecciones"}
+                  description={
+                    isOwnProfile ?
+                      "Guarda herramientas o recursos para empezar a poblar esta pagina."
+                    : "Cuando este usuario tenga elementos guardados visibles, apareceran aqui."
+                  }
+                  cta={
+                    isOwnProfile ? (
+                      <Link
+                        to={routes.appTools}
+                        className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
+                        style={displayBoldStyle}
+                      >
+                        Ir al catalogo
+                      </Link>
+                    ) : null
+                  }
+                />
+              ) : null}
+            </>
+          )}
+        </section>
       </div>
 
       <ToolDetailsModal
@@ -597,46 +548,6 @@ const UserProfile = () => {
         isOpen={Boolean(selectedTool)}
         onClose={() => setSelectedTool(null)}
       />
-
-      {/* Modal de Imagen Grande */}
-      <AnimatePresence>
-        {showImagePreview && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-            onClick={() => setShowImagePreview(false)}
-          >
-            <motion.button
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              className="absolute right-6 top-6 rounded-full bg-white/10 p-2 text-white/70 hover:bg-white/20 hover:text-white"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowImagePreview(false);
-              }}
-            >
-              <X className="h-6 w-6" />
-            </motion.button>
-
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              className="relative aspect-square w-full max-w-2xl overflow-hidden rounded-3xl shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img
-                src={profile?.avatar_url || "/avatar.jpg"}
-                alt="Avatar grande"
-                className="h-full w-full object-cover"
-              />
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

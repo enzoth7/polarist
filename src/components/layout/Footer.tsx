@@ -20,7 +20,7 @@ const footerLinks = [
 const Footer = ({ className, dark }: FooterProps) => {
   return (
     <footer
-      className={cn("relative w-full overflow-hidden px-6 py-8", className)}
+      className={cn("relative w-full overflow-hidden px-6 py-6", className)}
       style={{ background: "var(--polarist-black, #010101)" }}
     >
       <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5 text-center">

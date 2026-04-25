@@ -12,25 +12,18 @@ import { getAppUserProfileRoute, legacyAppRoutes, routes } from "@/lib/routes";
 import Footer from "./components/layout/Footer";
 import Header from "./components/layout/Header";
 import MobileLayout from "./components/layout/MobileLayout";
-import MobileNav from "./components/layout/MobileNav";
-import ChatAssistant from "./components/ChatAssistant";
 import AboutUs from "./pages/legals/AboutUs";
 import Contact from "./pages/legals/Contact";
 import PrivacyPolicy from "./pages/legals/PrivacyPolicy";
 import TermsConditions from "./pages/legals/TermsConditions";
-import Community from "./pages/Community";
 import Guides from "./pages/Guides";
 import Landing from "./pages/Landing";
-import Library from "./pages/Library";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Radar from "./pages/Radar";
 import Settings from "./pages/Settings";
-import Shortcuts from "./pages/Shortcuts";
 import Tools from "./pages/Tools";
-import ToolsDiscoveries from "./pages/ToolsDiscoveries";
-import ToolsRanking from "./pages/ToolsRanking";
 import UserProfile from "./pages/UserProfile";
 
 const queryClient = new QueryClient();
@@ -100,20 +93,14 @@ const AppRoutes = () => {
 
       <Route path={routes.login} element={<Login />} />
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
-      <Route path="/onboarding" element={<Navigate to={routes.appRadar} replace />} />
 
       <Route path={routes.appRoot} element={<MobileLayout />}>
         <Route index element={<Navigate to={routes.appRadar} replace />} />
         <Route path="radar" element={<Radar />} />
-        <Route path="shortcuts" element={<Shortcuts />} />
         <Route path="tools" element={<Tools />} />
-        <Route path="tools/ranking" element={<ToolsRanking />} />
-        <Route path="tools/descubrimientos" element={<ToolsDiscoveries />} />
         <Route path="guides" element={<Guides />} />
-        <Route path="community" element={<Community />} />
         <Route path="profile" element={<ProfileRouteResolver />} />
         <Route path="profile/:username" element={<UserProfile />} />
-        <Route path="library" element={<Library />} />
         <Route element={<RequireAuthenticatedRoute />}>
           <Route path="settings" element={<Settings />} />
         </Route>
@@ -137,7 +124,6 @@ const App = () => (
           <Sonner position="top-center" />
           <BrowserRouter>
             <AppRoutes />
-            <ChatAssistant />
           </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>

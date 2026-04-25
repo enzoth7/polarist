@@ -63,6 +63,8 @@ const PROVIDER_BAR_COLORS: Record<string, string> = {
 
 const LOADING_CARD_KEYS: RadarMetricKey[] = ["intelligence", "speed", "price"];
 const LOADING_BAR_HEIGHTS = [26, 44, 58, 72, 84, 60, 42, 68, 52, 76] as const;
+const METRIC_CARD_CLASS =
+  "rounded-[24px] border border-black/8 bg-white p-6 shadow-[0_18px_42px_-30px_rgba(1,1,1,0.16)]";
 
 type ChartDatum = RadarMetricPoint & {
   color: string;
@@ -110,7 +112,7 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
     <g transform={`translate(${x - 5}, ${y + 2}) rotate(-50)`} overflow="visible">
       {/* Contra-rotación +50° sobre el centro del ícono (0, 9) → queda horizontal */}
       <g transform="rotate(50, 0, 9)">
-        <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#e5e7eb" />
+        <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#d4d4d8" />
         {point.visual.iconSrc ? (
           <image
             href={point.visual.iconSrc}
@@ -127,7 +129,7 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
             textAnchor="middle"
             fontSize={7}
             fontWeight={700}
-            fill="#666"
+            fill="#525252"
           >
             {point.visual.fallbackLabel.slice(0, 2)}
           </text>
@@ -141,7 +143,7 @@ function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
         textAnchor="end"
         fontSize={13}
         fontWeight={500}
-        fill="#666"
+        fill="#525252"
       >
         {point.tickLabel}
       </text>
@@ -153,12 +155,12 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
   const config = CARD_CONFIG[metricKey];
 
   return (
-    <article className="rounded-[24px] border border-gray-100 bg-white p-6 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+    <article className={METRIC_CARD_CLASS}>
       <div className="flex items-start gap-3">
         <div className={cn("mt-1 h-3.5 w-3.5 shrink-0 rounded-[2px]", config.accentClassName)} />
         <div className="space-y-2">
-          <Skeleton className="h-8 w-28 bg-gray-100" />
-          <Skeleton className="h-4 w-64 bg-gray-100" />
+          <Skeleton className="h-8 w-28 bg-black/6" />
+          <Skeleton className="h-4 w-64 bg-black/6" />
         </div>
       </div>
 
@@ -168,11 +170,11 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
             {[0, 1, 2, 3].map((line) => (
               <div
                 key={`${metricKey}-line-${line}`}
-                className="absolute inset-x-0 border-t border-gray-100"
+                className="absolute inset-x-0 border-t border-black/6"
                 style={{ top: `${line * 33.33}%` }}
               />
             ))}
-            <div className="absolute inset-x-0 bottom-0 border-t border-gray-200" />
+            <div className="absolute inset-x-0 bottom-0 border-t border-black/10" />
 
             <div className="grid h-full grid-cols-10 items-end gap-4">
               {LOADING_BAR_HEIGHTS.map((height, index) => (
@@ -180,9 +182,9 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
                   key={`${metricKey}-bar-${index}`}
                   className="relative flex h-full flex-col items-center justify-end"
                 >
-                  <Skeleton className="mb-3 h-3 w-8 bg-gray-100" />
+                  <Skeleton className="mb-3 h-3 w-8 bg-black/6" />
                   <Skeleton
-                    className="w-full max-w-[26px] rounded-[2px] bg-gray-200"
+                    className="w-full max-w-[26px] rounded-[2px] bg-black/10"
                     style={{ height: `${height}%` }}
                   />
                 </div>
@@ -197,8 +199,8 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
                   <div className="absolute left-1/2 top-5">
                     <div className="origin-top-left -rotate-[60deg]">
                       <div className="flex items-start gap-2">
-                        <Skeleton className="h-[14px] w-[14px] rounded-sm bg-gray-100" />
-                        <Skeleton className="mt-[2px] h-[10px] w-20 bg-gray-100" />
+                        <Skeleton className="h-[14px] w-[14px] rounded-sm bg-black/6" />
+                        <Skeleton className="mt-[2px] h-[10px] w-20 bg-black/6" />
                       </div>
                     </div>
                   </div>
@@ -218,7 +220,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
   const pointsBySlug = new Map(chartData.map((point) => [point.slug, point]));
 
   return (
-    <article className="rounded-[24px] border border-gray-100 bg-white p-6 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+    <article className={METRIC_CARD_CLASS}>
       <div className="flex items-start gap-3">
         <div className={cn("mt-[7px] h-3.5 w-3.5 shrink-0 rounded-[2px]", config.accentClassName)} />
         <div className="min-w-0">
@@ -240,12 +242,12 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
             margin={{ top: 20, left: 45, right: 25, bottom: 90 }}
             style={{ overflow: "visible" }}
           >
-            <CartesianGrid vertical={false} stroke="#f3f4f6" />
+            <CartesianGrid vertical={false} stroke="#ececec" />
             <XAxis
               dataKey="slug"
               interval={0}
               tickLine={false}
-              axisLine={{ stroke: "#d1d5db" }}
+              axisLine={{ stroke: "#d4d4d8" }}
               height={110}
               tickMargin={10}
               style={{ overflow: "visible" }}
@@ -256,7 +258,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
               <LabelList
                 dataKey="displayValue"
                 position="top"
-                fill="#6b7280"
+                fill="#525252"
                 fontSize={11}
                 fontWeight={500}
                 offset={8}
@@ -288,7 +290,7 @@ export function RadarMetricsBoard() {
     error instanceof Error ? error.message : "No se pudieron cargar las metricas de Artificial Analysis.";
 
   return (
-    <section className="w-full space-y-10 pb-4 pt-4">
+    <section className="w-full space-y-10 bg-[#F6F6F6] pb-4 pt-4">
       <div className="mx-auto w-full max-w-[2000px] space-y-10 px-4 md:px-10 lg:px-14 xl:px-16">
         <header className="space-y-3 text-center">
           <h2
@@ -318,18 +320,18 @@ export function RadarMetricsBoard() {
         ) : null}
 
         {!isLoading && isError ? (
-          <article className="mx-auto max-w-3xl rounded-[24px] border border-rose-100 bg-white p-8 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+          <article className="mx-auto max-w-3xl rounded-[24px] border border-rose-200 bg-white p-8 text-center shadow-[0_18px_42px_-30px_rgba(1,1,1,0.16)]">
             <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }} className="mt-4">
               Metrics unavailable
             </h3>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-gray-500">{errorMessage}</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-black/55">{errorMessage}</p>
             <Button
               onClick={() => void refetch()}
               variant="outline"
-              className="mt-6 rounded-full border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              className="mt-6 rounded-full border-black/10 bg-white text-black/70 hover:bg-black/[0.03]"
             >
               <RefreshCw className={cn("h-4 w-4", isFetching ? "animate-spin" : "")} />
               Reintentar
@@ -346,11 +348,11 @@ export function RadarMetricsBoard() {
         ) : null}
 
         {!isLoading && !isError && metricCards.length === 0 ? (
-          <article className="mx-auto max-w-3xl rounded-[24px] border border-gray-100 bg-white p-8 text-center shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+          <article className="mx-auto max-w-3xl rounded-[24px] border border-black/8 bg-white p-8 text-center shadow-[0_18px_42px_-30px_rgba(1,1,1,0.16)]">
             <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }}>
               No hay métricas disponibles
             </h3>
-            <p className="mt-3 text-sm leading-6 text-gray-500">
+            <p className="mt-3 text-sm leading-6 text-black/55">
               La API no devolvio suficientes datos para construir el radar en este momento.
             </p>
           </article>

@@ -8,16 +8,16 @@ const Radar = () => {
   const { data: trendItems = [], isLoading, error } = useTrends();
 
   return (
-    <div className="min-h-full bg-background pb-0 pt-0">
-      <div className="flex w-full flex-col gap-10">
+    <div className="min-h-full bg-[#F6F6F6] pb-0 pt-0 text-[#010101]">
+      <div className="flex w-full flex-col gap-10 pb-16 md:pb-24">
         <section className="space-y-4">
           {isLoading ? (
             <div className="flex h-[clamp(500px,85vh,900px)] items-center justify-center">
-              <span className="text-sm text-muted-foreground">Cargando tendencias...</span>
+              <span className="text-sm text-[#010101]/55">Cargando tendencias...</span>
             </div>
           ) : error ? (
             <div className="flex h-[clamp(500px,85vh,900px)] items-center justify-center">
-              <span className="text-sm text-muted-foreground">No se pudieron cargar las tendencias.</span>
+              <span className="text-sm text-[#010101]/55">No se pudieron cargar las tendencias.</span>
             </div>
           ) : (
             <CinematicSlider items={trendItems} />
