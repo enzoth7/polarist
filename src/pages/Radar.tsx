@@ -1,4 +1,4 @@
-import { CinematicSlider } from "@/components/radar/CinematicSlider";
+import { LuminaInteractiveList } from "@/components/ui/lumina-interactive-list";
 import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { useTrends } from "@/hooks/useTrends";
@@ -8,19 +8,23 @@ const Radar = () => {
   const { data: trendItems = [], isLoading, error } = useTrends();
 
   return (
-    <div className="min-h-full bg-[#F6F6F6] pb-0 pt-0 text-[#010101]">
+    <div className="min-h-full bg-[#010101] pb-0 pt-0 text-[#010101]">
       <div className="flex w-full flex-col gap-10 pb-16 md:pb-24">
         <section className="space-y-4">
           {isLoading ? (
             <div className="flex h-[clamp(500px,85vh,900px)] items-center justify-center">
-              <span className="text-sm text-[#010101]/55">Cargando tendencias...</span>
+              <span className="text-sm text-white/55">Cargando tendencias...</span>
             </div>
           ) : error ? (
             <div className="flex h-[clamp(500px,85vh,900px)] items-center justify-center">
-              <span className="text-sm text-[#010101]/55">No se pudieron cargar las tendencias.</span>
+              <span className="text-sm text-white/55">No se pudieron cargar las tendencias.</span>
             </div>
           ) : (
-            <CinematicSlider items={trendItems} />
+            <LuminaInteractiveList slides={trendItems.map(item => ({
+              title: item.title,
+              description: item.description,
+              media: item.image
+            }))} />
           )}
         </section>
 

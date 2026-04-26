@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
-import Footer from "./Footer";
+import { StickyFooter } from "@/components/ui/sticky-footer";
 import Header from "./Header";
 
 const MobileLayout = () => {
@@ -80,9 +80,8 @@ const MobileLayout = () => {
               <div className={cn(!shouldUseNaturalFooterFlow && "flex-1")}>
                 <Outlet />
               </div>
-              <Footer 
+              <StickyFooter 
                 className={cn(!shouldUseNaturalFooterFlow && "mt-auto")} 
-                dark={true} 
               />
             </div>
           </main>

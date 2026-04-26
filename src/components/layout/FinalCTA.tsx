@@ -15,7 +15,7 @@ export const FinalCTA = ({
   to = routes.login,
 }: FinalCTAProps) => {
   return (
-    <section className="relative z-30 flex w-full flex-col items-center justify-center px-6 py-24 md:py-32" style={{ background: 'var(--polarist-black, #010101)' }}>
+    <section className="relative z-30 flex w-full flex-col items-center justify-start px-6 pt-2 pb-48 md:pt-2 md:pb-64" style={{ background: 'var(--polarist-black, #010101)' }}>
       <div className="flex flex-col items-center text-center">
         <h2
           className="text-3xl sm:text-4xl lg:text-5xl"

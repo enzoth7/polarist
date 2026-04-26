@@ -121,22 +121,32 @@ const ScrollExpandMedia = ({
         {/* The Text split in the background */}
         <div
           ref={textContainerRef}
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between px-8 md:px-16"
+          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between"
         >
-          <h2
-            ref={textLeftRef}
-            className="text-3xl md:text-5xl lg:text-[4.5vw] font-bold tracking-tighter text-[#CAFE5B] opacity-90 max-w-[40%] text-left leading-none"
-            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
-          >
-            {titleLeft}
-          </h2>
-          <h2
-            ref={textRightRef}
-            className="text-3xl md:text-5xl lg:text-[4.5vw] font-bold tracking-tighter text-white opacity-90 max-w-[40%] text-right leading-none"
-            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
-          >
-            {titleRight}
-          </h2>
+          {/* Espacio Izquierdo (centrado en el hueco lateral) */}
+          <div className="flex-1 flex items-center justify-center h-full">
+            <h2
+              ref={textLeftRef}
+              className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
+              style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+            >
+              {titleLeft}
+            </h2>
+          </div>
+
+          {/* Espacio central reservado para la imagen (no texto aquí) */}
+          <div className="w-[24%] md:w-[24%] h-full shrink-0" />
+
+          {/* Espacio Derecho (centrado en el hueco lateral) */}
+          <div className="flex-1 flex items-center justify-center h-full">
+            <h2
+              ref={textRightRef}
+              className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
+              style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+            >
+              {titleRight}
+            </h2>
+          </div>
         </div>
 
         {/* The Expanding Media Container */}

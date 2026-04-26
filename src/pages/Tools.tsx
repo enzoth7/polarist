@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowLeft, ExternalLink, X } from "lucide-react";
 
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
+import Modal from "@/components/ui/modal-drop";
 
 // ── Paleta Brand Kit B ────────────────────────────────────────────────────
 const BK = { black: "#010101", white: "#F6F6F6", green: "#CAFE5B" } as const;
@@ -251,19 +252,20 @@ function ToolDetailView({
   return (
     <div
       style={{
-        position: "fixed",
+        position: "absolute",
         inset: 0,
         backgroundColor: "#FFFFFF",
-        zIndex: 100,
+        zIndex: 50,
         overflowY: "auto",
         display: "flex",
         flexDirection: "column",
+        minHeight: "100%",
       }}
     >
       <div style={{ maxWidth: 860, margin: "0 auto", width: "100%", padding: "48px 40px 96px" }}>
-        <button type="button" onClick={onClose} style={{ ...ghostNavStyle, marginBottom: 64 }}>
-          <X style={{ width: 13, height: 13 }} />
-          Cerrar
+        <button type="button" onClick={onClose} style={{ ...ghostNavStyle, marginBottom: 40 }}>
+          <ArrowLeft style={{ width: 13, height: 13 }} />
+          Volver
         </button>
 
         {/* Hero del producto */}
@@ -449,22 +451,7 @@ function CategoryDetail({
   }
 
   return (
-    <div style={{ minHeight: "100%", backgroundColor: BK.white }}>
-      <div style={{ maxWidth: 860, margin: "0 auto", padding: "48px 40px 80px" }}>
-
-        {/* Contenedor blanco */}
-        <div
-          style={{
-            backgroundColor: "#FFFFFF",
-            borderRadius: CARD_RADIUS,
-            border: "1px solid rgba(1,1,1,0.06)",
-            padding: "56px 48px",
-          }}
-        >
-          <button type="button" onClick={onBack} style={{ ...ghostNavStyle, marginBottom: 56 }}>
-            <ArrowLeft style={{ width: 13, height: 13 }} />
-            Herramientas
-          </button>
+    <div style={{ width: "100%", backgroundColor: "#FFFFFF", padding: "48px 40px" }}>
 
           <h1
             style={{
@@ -599,12 +586,10 @@ function CategoryDetail({
               </div>
             ))}
           </div>
-        </div>
-
-      </div>
     </div>
   );
 }
+
 
 // ── Grid de 6 categorías (vista principal) ────────────────────────────────
 const Tools = () => {
@@ -613,17 +598,24 @@ const Tools = () => {
 
   const selectedCategory = selectedId ? CATEGORIES.find((c) => c.id === selectedId) ?? null : null;
 
-  if (selectedCategory) {
-    return (
-      <CategoryDetail
-        category={selectedCategory}
-        officialTools={officialTools}
-        onBack={() => setSelectedId(null)}
-      />
-    );
-  }
-
   return (
+    <>
+      <Modal
+        isOpen={!!selectedCategory}
+        onClose={() => setSelectedId(null)}
+        type="blur"
+        animationType="scale"
+        disablePadding
+        showCloseButton={true}
+      >
+        {selectedCategory && (
+          <CategoryDetail
+            category={selectedCategory}
+            officialTools={officialTools}
+            onBack={() => setSelectedId(null)}
+          />
+        )}
+      </Modal>
     <div style={{ minHeight: "100%", backgroundColor: BK.white, padding: "64px 40px 40px" }}>
       <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
@@ -716,6 +708,7 @@ const Tools = () => {
 
       </div>
     </div>
+    </>
   );
 };
 

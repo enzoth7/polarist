@@ -30,7 +30,7 @@ const Footer = ({ className, dark }: FooterProps) => {
             <BrandLogo showLabel={false} imageClassName="h-6 w-6 rounded-md" />
           </div>
           <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '15px', color: 'rgba(255,255,255,0.8)' }} className="tracking-tight">
-            La forma más simple de usar IA en tu vida
+            Tu camino más fácil hacia la IA.
           </p>
         </div>
 

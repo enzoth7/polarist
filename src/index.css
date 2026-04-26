@@ -313,3 +313,10 @@
 .radar-swiper .swiper-slide-next {
   z-index: 10 !important;
 }
+
+/* ── Recharts overflow fix — permite que los labels del XAxis se muestren completos ── */
+.recharts-wrapper,
+.recharts-wrapper svg,
+.recharts-surface {
+  overflow: visible !important;
+}

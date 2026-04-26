@@ -53,10 +53,10 @@ export interface ProductData {
 const PRODUCT_DATA: Record<ProductId, ProductData> = {
   left: {
     id: 'left',
-    label: 'Sin Polarist',
+    label: 'Sin',
     title: 'Caos Operativo',
     description: 'Horas perdidas en tareas repetitivas, decisiones tomadas a ciegas sin métricas, y herramientas totalmente desconectadas entre sí.',
-    image: '/images/landing/logo_3d.png', // Usamos el mismo logo pero con filtro en CSS
+    image: '/images/landing/central_ai_core.png', // Nueva imagen del núcleo
     colors: {
       gradient: 'from-red-600 to-orange-900',
       glow: 'bg-red-500',
@@ -70,10 +70,10 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
   },
   right: {
     id: 'right',
-    label: 'Con Polarist',
-    title: 'Control Total',
+    label: 'Con',
+    title: 'Polarist',
     description: 'Automatizás procesos, tomás decisiones informadas y accedés a un ecosistema integrado donde la IA trabaja para vos 24/7.',
-    image: '/images/landing/logo_3d.png', // The AI core image we generated
+    image: '/images/landing/central_ai_core.png', // Nueva imagen del núcleo
     colors: {
       gradient: 'from-[#CAFE5B] to-emerald-900',
       glow: 'bg-[#CAFE5B]',
@@ -171,9 +171,9 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
     />
 
     {/* Image Container */}
-    <div className="relative h-72 w-72 md:h-[380px] md:w-[380px] rounded-full flex items-center justify-center overflow-hidden bg-transparent">
+    <div className="relative h-48 w-48 md:h-[280px] md:w-[280px] rounded-full flex items-center justify-center overflow-hidden bg-transparent">
       <motion.div
-        animate={{ y: [-10, 10, -10] }}
+        animate={{ y: [-8, 8, -8] }}
         transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
         className="relative z-10 w-full h-full flex items-center justify-center"
       >
@@ -193,16 +193,6 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
       </motion.div>
     </div>
 
-    {/* Status Label */}
-    <motion.div
-      layout="position"
-      className="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap z-20"
-    >
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-zinc-400 bg-zinc-950/90 px-4 py-2 rounded-full border border-white/10 backdrop-blur">
-        <span className={`h-1.5 w-1.5 rounded-full ${data.colors.glow} animate-pulse`} />
-        {data.stats.connectionStatus}
-      </div>
-    </motion.div>
   </motion.div>
 );
 
@@ -220,9 +210,7 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
       exit="exit"
       className={`flex flex-col ${alignClass}`}
     >
-      <motion.h2 variants={ANIMATIONS.item} className="text-sm font-bold uppercase tracking-[0.2em] text-zinc-500 mb-2">
-        {data.label}
-      </motion.h2>
+      {/* Label removido por petición del usuario */}
       <motion.h1 variants={ANIMATIONS.item} className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400">
         {data.title}
       </motion.h1>
@@ -230,33 +218,6 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
         {data.description}
       </motion.p>
 
-      {/* Feature Grid */}
-      <motion.div variants={ANIMATIONS.item} className="w-full space-y-6 bg-zinc-900/40 p-6 rounded-2xl border border-white/5 backdrop-blur-sm">
-        {data.features.map((feature, idx) => (
-          <div key={feature.label} className="group">
-            <div className={`flex items-center justify-between mb-3 text-sm ${flexDirClass}`}>
-              <div className={`flex items-center gap-2 ${feature.value > 50 ? 'text-zinc-200' : 'text-zinc-400'}`}>
-                <feature.icon size={16} /> <span>{feature.label}</span>
-              </div>
-              <span className="font-mono text-xs text-zinc-500">{feature.value}%</span>
-            </div>
-            <div className="relative h-2 w-full bg-zinc-800 rounded-full overflow-hidden">
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: `${feature.value}%` }}
-                transition={{ duration: 1, delay: 0.4 + idx * 0.15 }}
-                className={`absolute top-0 bottom-0 ${barColorClass} opacity-80`}
-              />
-            </div>
-          </div>
-        ))}
-
-        <div className={`pt-4 flex ${isLeft ? 'justify-start' : 'justify-end'}`}>
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-400">
-             {data.stats.statusText}
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   );
 };
@@ -271,14 +232,14 @@ const Switcher = ({
   const options = Object.values(PRODUCT_DATA).map(p => ({ id: p.id, label: p.label }));
 
   return (
-    <div className="absolute bottom-20 md:bottom-24 inset-x-0 flex justify-center z-50 pointer-events-none">
+    <div className="absolute bottom-48 md:bottom-56 inset-x-0 flex justify-center z-50 pointer-events-none">
       <motion.div layout className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-full bg-zinc-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
         {options.map((opt) => (
           <motion.button
             key={opt.id}
             onClick={() => onToggle(opt.id)}
             whileTap={{ scale: 0.96 }}
-            className="relative px-6 py-3 rounded-full flex items-center justify-center text-sm font-medium focus:outline-none"
+            className="relative px-4 py-2 rounded-full flex items-center justify-center text-xs font-bold uppercase tracking-widest focus:outline-none"
           >
             {activeId === opt.id && (
               <motion.div
@@ -330,7 +291,7 @@ export default function SpatialProductShowcase() {
         <motion.div
           layout
           transition={{ type: 'spring', bounce: 0, duration: 0.9 }}
-          className={`flex flex-col md:flex-row items-center justify-between gap-12 md:gap-20 lg:gap-40 w-full ${
+          className={`flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16 lg:gap-24 w-full ${
             isLeft ? 'md:flex-row-reverse' : 'md:flex-row'
           }`}
         >

@@ -1,14 +1,5 @@
+import { useRef, useState } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  LabelList,
-  ResponsiveContainer,
-  XAxis,
-  YAxis,
-} from "recharts";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -47,39 +38,16 @@ const CARD_CONFIG: Record<
   },
 };
 
-const PROVIDER_BAR_COLORS: Record<string, string> = {
-  openai: "#6b7280",
-  anthropic: "#d97757",
-  google: "#5cb85c",
-  deepseek: "#4f86f7",
-  xai: "#8b5cf6",
-  meta: "#2563eb",
-  nvidia: "#84cc16",
-  mistral: "#f59e0b",
-  alibaba: "#ef4444",
-  cohere: "#0f766e",
-  zhipu: "#60a5fa",
-};
+// Brand Kit B — único conjunto de colores para las barras
+const BAR_COLORS = ["#CAFE5B", "#F6F6F6", "#4a4a4a"] as const;
 
 const LOADING_CARD_KEYS: RadarMetricKey[] = ["intelligence", "speed", "price"];
 const LOADING_BAR_HEIGHTS = [26, 44, 58, 72, 84, 60, 42, 68, 52, 76] as const;
 const METRIC_CARD_CLASS =
-  "rounded-[24px] border border-black/8 bg-white p-6 shadow-[0_18px_42px_-30px_rgba(1,1,1,0.16)]";
+  "rounded-[24px] border border-white/10 bg-[#010101] p-6 shadow-[0_20px_48px_-24px_rgba(0,0,0,0.6)]";
 
 type ChartDatum = RadarMetricPoint & {
   color: string;
-  tickLabel: string;
-};
-
-type ModelTickPayload = {
-  value?: string | number;
-};
-
-type ModelTickProps = {
-  x?: number;
-  y?: number;
-  payload?: ModelTickPayload;
-  pointsBySlug: Map<string, ChartDatum>;
 };
 
 const formatUpdatedAt = (timestamp: number) =>
@@ -88,68 +56,145 @@ const formatUpdatedAt = (timestamp: number) =>
     minute: "2-digit",
   }).format(timestamp);
 
-const getBarColor = (point: RadarMetricPoint) =>
-  PROVIDER_BAR_COLORS[point.creatorSlug] ?? "#94a3b8";
-
-const truncateTickLabel = (label: string, maxLength = 18) =>
-  label.length <= maxLength ? label : `${label.slice(0, maxLength - 3)}...`;
+const getBarColor = (_point: RadarMetricPoint, index: number) =>
+  BAR_COLORS[index % BAR_COLORS.length];
 
 const buildChartData = (card: RadarMetricCard): ChartDatum[] =>
-  card.points.map((point) => ({
+  card.points.map((point, index) => ({
     ...point,
-    color: getBarColor(point),
-    tickLabel: truncateTickLabel(point.label),
+    color: getBarColor(point, index),
   }));
 
-function ModelTick({ x = 0, y = 0, payload, pointsBySlug }: ModelTickProps) {
-  const point = payload?.value ? pointsBySlug.get(String(payload.value)) : null;
-
-  if (!point) {
-    return null;
-  }
+// ── Gráfico custom HTML con hover ────────────────────────────────────────
+function MetricBarChart({ chartData }: { chartData: ChartDatum[] }) {
+  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const maxValue = Math.max(...chartData.map((d) => d.value), 1);
 
   return (
-    <g transform={`translate(${x - 5}, ${y + 2}) rotate(-50)`} overflow="visible">
-      {/* Contra-rotación +50° sobre el centro del ícono (0, 9) → queda horizontal */}
-      <g transform="rotate(50, 0, 9)">
-        <rect x={-9} y={0} width={18} height={18} rx={3} fill="#ffffff" stroke="#d4d4d8" />
-        {point.visual.iconSrc ? (
-          <image
-            href={point.visual.iconSrc}
-            x={-7}
-            y={2}
-            width={14}
-            height={14}
-            preserveAspectRatio="xMidYMid meet"
-          />
-        ) : (
-          <text
-            x={0}
-            y={13}
-            textAnchor="middle"
-            fontSize={7}
-            fontWeight={700}
-            fill="#525252"
-          >
-            {point.visual.fallbackLabel.slice(0, 2)}
-          </text>
-        )}
-      </g>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-      {/* El texto del modelo hereda rotate(-50) del padre → sigue inclinado */}
-      <text
-        x={-12}
-        y={28}
-        textAnchor="end"
-        fontSize={13}
-        fontWeight={500}
-        fill="#525252"
-      >
-        {point.tickLabel}
-      </text>
-    </g>
+      {/* ── Área de barras ── */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', gap: 4, position: 'relative', minHeight: 0 }}>
+        {/* Línea base */}
+        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'rgba(255,255,255,0.18)', zIndex: 0 }} />
+
+        {chartData.map((entry) => {
+          const isHovered = hoveredSlug === entry.slug;
+          const pct = (entry.value / maxValue) * 100;
+
+          return (
+            <div
+              key={entry.slug}
+              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', height: '100%', padding: '0 3px' }}
+            >
+              {/* Número encima — siempre visible */}
+              <span style={{
+                fontSize: 12,
+                fontWeight: 700,
+                color: 'rgba(246,246,246,0.6)',
+                fontFamily: 'var(--font-sans)',
+                marginBottom: 5,
+                whiteSpace: 'nowrap',
+                lineHeight: 1,
+              }}>
+                {entry.displayValue}
+              </span>
+
+              {/* Barra */}
+              <div 
+                onMouseEnter={() => setHoveredSlug(entry.slug)}
+                onMouseLeave={() => setHoveredSlug(null)}
+                style={{
+                  width: '100%',
+                  height: `${pct}%`,
+                  backgroundColor: entry.color,
+                  borderRadius: '5px 5px 0 0',
+                  cursor: 'pointer',
+                  transition: 'height 0.25s cubic-bezier(0.16,1,0.3,1)',
+                  opacity: 1,
+                  transform: 'scaleX(1)',
+                }} 
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Logos + nombre expandible ── */}
+      <div style={{ display: 'flex', gap: 4, paddingTop: 10, position: 'relative' }}>
+        {chartData.map((entry) => {
+          const isHovered = hoveredSlug === entry.slug;
+          return (
+            <div
+              key={entry.slug}
+              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', position: 'relative' }}
+            >
+              {/* Badge logo */}
+              <div 
+                onMouseEnter={() => setHoveredSlug(entry.slug)}
+                onMouseLeave={() => setHoveredSlug(null)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 7,
+                  background: '#ffffff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  overflow: 'hidden',
+                  padding: 4,
+                  flexShrink: 0,
+                  cursor: 'pointer',
+                  transition: 'none',
+                  transform: 'scale(1)',
+                  boxShadow: 'none',
+                }}
+              >
+                {entry.visual.iconSrc ? (
+                  <img src={entry.visual.iconSrc} alt={entry.label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                ) : (
+                  <span style={{ fontSize: 7, fontWeight: 700, color: '#010101' }}>
+                    {entry.visual.fallbackLabel.slice(0, 2)}
+                  </span>
+                )}
+              </div>
+
+              {/* Nombre — aparece en hover, se extiende horizontalmente sin límite */}
+              <div style={{
+                position: 'absolute',
+                top: '100%',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                marginTop: 6,
+                whiteSpace: 'nowrap',
+                background: '#ffffff',
+                border: 'none',
+                borderRadius: 6,
+                padding: '5px 12px',
+                fontSize: 12,
+                fontWeight: 600,
+                fontFamily: 'var(--font-sans)',
+                color: '#010101',
+                letterSpacing: '0.01em',
+                pointerEvents: 'none',
+                zIndex: 50,
+                opacity: isHovered ? 1 : 0,
+                transition: 'opacity 0.18s ease',
+                boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              }}>
+                {entry.label}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Espacio para el nombre expandido */}
+      <div style={{ height: 36 }} />
+    </div>
   );
 }
+
 
 function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
   const config = CARD_CONFIG[metricKey];
@@ -159,8 +204,8 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
       <div className="flex items-start gap-3">
         <div className={cn("mt-1 h-3.5 w-3.5 shrink-0 rounded-[2px]", config.accentClassName)} />
         <div className="space-y-2">
-          <Skeleton className="h-8 w-28 bg-black/6" />
-          <Skeleton className="h-4 w-64 bg-black/6" />
+          <Skeleton className="h-8 w-28 bg-white/8" />
+          <Skeleton className="h-4 w-64 bg-white/8" />
         </div>
       </div>
 
@@ -170,11 +215,11 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
             {[0, 1, 2, 3].map((line) => (
               <div
                 key={`${metricKey}-line-${line}`}
-                className="absolute inset-x-0 border-t border-black/6"
+                className="absolute inset-x-0 border-t border-white/8"
                 style={{ top: `${line * 33.33}%` }}
               />
             ))}
-            <div className="absolute inset-x-0 bottom-0 border-t border-black/10" />
+            <div className="absolute inset-x-0 bottom-0 border-t border-white/12" />
 
             <div className="grid h-full grid-cols-10 items-end gap-4">
               {LOADING_BAR_HEIGHTS.map((height, index) => (
@@ -182,9 +227,9 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
                   key={`${metricKey}-bar-${index}`}
                   className="relative flex h-full flex-col items-center justify-end"
                 >
-                  <Skeleton className="mb-3 h-3 w-8 bg-black/6" />
+                  <Skeleton className="mb-3 h-3 w-8 bg-white/8" />
                   <Skeleton
-                    className="w-full max-w-[26px] rounded-[2px] bg-black/10"
+                    className="w-full max-w-[26px] rounded-[2px] bg-white/12"
                     style={{ height: `${height}%` }}
                   />
                 </div>
@@ -199,8 +244,8 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
                   <div className="absolute left-1/2 top-5">
                     <div className="origin-top-left -rotate-[60deg]">
                       <div className="flex items-start gap-2">
-                        <Skeleton className="h-[14px] w-[14px] rounded-sm bg-black/6" />
-                        <Skeleton className="mt-[2px] h-[10px] w-20 bg-black/6" />
+                        <Skeleton className="h-[14px] w-[14px] rounded-sm bg-white/8" />
+                        <Skeleton className="mt-[2px] h-[10px] w-20 bg-white/8" />
                       </div>
                     </div>
                   </div>
@@ -217,58 +262,24 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
 function MetricCard({ card }: { card: RadarMetricCard }) {
   const config = CARD_CONFIG[card.key];
   const chartData = buildChartData(card);
-  const pointsBySlug = new Map(chartData.map((point) => [point.slug, point]));
 
   return (
-    <article className={METRIC_CARD_CLASS}>
-      <div className="flex items-start gap-3">
-        <div className={cn("mt-[7px] h-3.5 w-3.5 shrink-0 rounded-[2px]", config.accentClassName)} />
-        <div className="min-w-0">
-          <h3
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '24px', letterSpacing: '-0.5px', lineHeight: 1.1, color: 'var(--polarist-black, #010101)' }}
-          >
-            {config.title}
-          </h3>
-          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: 'rgba(1,1,1,0.55)' }} className="mt-1 whitespace-nowrap">
-            {config.subtitle}
-          </p>
-        </div>
+    <article
+      className={cn(METRIC_CARD_CLASS, "cursor-default transition-colors duration-300 hover:border-[#CAFE5B]/30")}
+    >
+      {/* Header centrado */}
+      <div className="flex flex-col items-center text-center gap-1">
+        <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '36px', letterSpacing: '-1px', lineHeight: 1.05, color: '#F6F6F6' }}>
+          {config.title}
+        </h3>
+        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: 'rgba(246,246,246,0.45)' }} className="mt-1">
+          {config.subtitle}
+        </p>
       </div>
 
-      <div className="mt-8 h-[320px] overflow-visible">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{ top: 20, left: 45, right: 25, bottom: 90 }}
-            style={{ overflow: "visible" }}
-          >
-            <CartesianGrid vertical={false} stroke="#ececec" />
-            <XAxis
-              dataKey="slug"
-              interval={0}
-              tickLine={false}
-              axisLine={{ stroke: "#d4d4d8" }}
-              height={110}
-              tickMargin={10}
-              style={{ overflow: "visible" }}
-              tick={(props) => <ModelTick {...props} pointsBySlug={pointsBySlug} />}
-            />
-            <YAxis hide domain={[0, "auto"]} />
-            <Bar dataKey="value" barSize={26} radius={[2, 2, 0, 0]} isAnimationActive={false}>
-              <LabelList
-                dataKey="displayValue"
-                position="top"
-                fill="#525252"
-                fontSize={11}
-                fontWeight={500}
-                offset={8}
-              />
-              {chartData.map((entry) => (
-                <Cell key={`${card.key}-${entry.slug}`} fill={entry.color} />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+      {/* Gráfico custom */}
+      <div className="mt-6" style={{ height: 340 }}>
+        <MetricBarChart chartData={chartData} />
       </div>
     </article>
   );
@@ -290,24 +301,19 @@ export function RadarMetricsBoard() {
     error instanceof Error ? error.message : "No se pudieron cargar las metricas de Artificial Analysis.";
 
   return (
-    <section className="w-full space-y-10 bg-[#F6F6F6] pb-4 pt-4">
+    <section className="w-full space-y-10 bg-[#010101] pb-16 pt-16" style={{ perspective: "1200px" }}>
       <div className="mx-auto w-full max-w-[2000px] space-y-10 px-4 md:px-10 lg:px-14 xl:px-16">
         <header className="space-y-3 text-center">
           <h2
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: 'var(--polarist-black, #010101)' }}
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: '#F6F6F6' }}
           >
             Radar de modelos de IA
           </h2>
           <p
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: 'rgba(1,1,1,0.55)' }}
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: 'rgba(246,246,246,0.55)' }}
             className="mx-auto max-w-3xl"
           >
             Benchmarks comparativos de inteligencia, velocidad y precio, con una lectura visual limpia.
-          </p>
-          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '11px', letterSpacing: '2px', color: 'rgba(1,1,1,0.35)', textTransform: 'uppercase' }} className="mt-4">
-            Fuente: Artificial Analysis
-            {updatedAtLabel ? ` | Actualizado ${updatedAtLabel}` : ""}
-            {isFetching && !isLoading ? " | Actualizando" : ""}
           </p>
         </header>
 
@@ -340,11 +346,22 @@ export function RadarMetricsBoard() {
         ) : null}
 
         {!isLoading && !isError && metricCards.length > 0 ? (
-          <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 xl:gap-7">
-            {metricCards.map((card) => (
-              <MetricCard key={card.key} card={card} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-3 xl:gap-7">
+              {metricCards.map((card) => (
+                <MetricCard key={card.key} card={card} />
+              ))}
+            </div>
+            {/* Fuente debajo de los cards */}
+            <p
+              className="text-center"
+              style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '10px', letterSpacing: '2px', color: 'rgba(246,246,246,0.5)', textTransform: 'uppercase' }}
+            >
+              Fuente: Artificial Analysis
+              {updatedAtLabel ? ` · Actualizado ${updatedAtLabel}` : ""}
+              {isFetching && !isLoading ? " · Actualizando" : ""}
+            </p>
+          </>
         ) : null}
 
         {!isLoading && !isError && metricCards.length === 0 ? (

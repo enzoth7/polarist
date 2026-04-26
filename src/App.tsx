@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from "@/hooks/useAuth";
 import { getAppUserProfileRoute, legacyAppRoutes, routes } from "@/lib/routes";
 
-import Footer from "./components/layout/Footer";
+import { StickyFooter } from "@/components/ui/sticky-footer";
 import Header from "./components/layout/Header";
 import MobileLayout from "./components/layout/MobileLayout";
 import AboutUs from "./pages/legals/AboutUs";
@@ -42,7 +42,7 @@ const PublicLayout = () => {
       <main className="min-h-0 flex-1">
         <Outlet />
       </main>
-      <Footer dark={true} />
+      <StickyFooter />
     </div>
   );
 };
