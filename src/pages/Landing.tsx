@@ -6,7 +6,10 @@ import { Link } from "react-router-dom";
 import InferenceGlobeHero from "@/components/landing/InferenceGlobeHero";
 import { routes } from "@/lib/routes";
 import { FinalCTA } from "@/components/layout/FinalCTA";
-
+import { GlowCard } from "@/components/ui/spotlight-card";
+import ScrollExpansionDemo from "@/components/landing/ScrollExpansionDemo";
+import SpatialProductShowcase from "@/components/ui/spatial-product-showcase";
+import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
@@ -199,44 +202,7 @@ const Landing = () => {
         });
       }
 
-      const whySection = document.querySelector(".why-section");
-      if (whySection) {
-        gsap.from(".why-title", {
-          scrollTrigger: {
-            trigger: ".why-section",
-            start: "top 85%",
-            once: true,
-          },
-          opacity: 0,
-          y: 40,
-          duration: 0.9,
-          ease: "power3.out",
-        });
-
-        gsap.from(".why-left", {
-          scrollTrigger: {
-            trigger: ".why-section",
-            start: "top 80%",
-            toggleActions: "play reverse play reverse",
-          },
-          x: -100,
-          opacity: 0,
-          duration: 1,
-          ease: "power3.out",
-        });
-
-        gsap.from(".why-right", {
-          scrollTrigger: {
-            trigger: ".why-section",
-            start: "top 80%",
-            toggleActions: "play reverse play reverse",
-          },
-          x: 100,
-          opacity: 0,
-          duration: 1,
-          ease: "power3.out",
-        });
-      }
+      // Removed obsolete GSAP why-section logic since it is replaced by SpatialProductShowcase
 
       ScrollTrigger.refresh();
     },
@@ -277,12 +243,17 @@ const Landing = () => {
                 key={problem.title} 
                 className={`problem-row flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16 w-full`}
               >
-                {/* Contenedor de la Imagen */}
-                <div className="flex-1 w-full max-w-[600px] overflow-hidden" style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}>
+                {/* Contenedor de la Imagen con Efecto Spotlight */}
+                <GlowCard 
+                  customSize 
+                  glowColor="polarist"
+                  className="flex-1 w-full max-w-[600px] !p-0 overflow-hidden cursor-pointer group" 
+                  style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}
+                >
                   <div className="relative aspect-[4/3] w-full" style={{ background: '#F8F9FB' }}>
-                    <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply" />
+                    <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105" />
                   </div>
-                </div>
+                </GlowCard>
 
                 {/* Contenido (Fuera del contenedor de la imagen) */}
                 <div className="flex-1 flex flex-col items-start text-left w-full justify-center">
@@ -298,6 +269,9 @@ const Landing = () => {
           })}
         </div>
       </div>
+
+      {/* ─── SCROLL EXPANSION HERO ─── */}
+      <ScrollExpansionDemo />
 
       {/* ─── SOLUCIONES ─── */}
       <div
@@ -316,103 +290,20 @@ const Landing = () => {
           </div>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
-              <div
+              <InteractiveFeatureCard
                 key={block.title}
-                className="feature-card flex flex-col overflow-hidden group transition-all duration-500 hover:-translate-y-2"
-                style={{
-                  background: 'rgba(255,255,255,0.03)',
-                  borderRadius: bk.rLg,
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  boxShadow: '0 15px 35px rgba(0,0,0,0.4)',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.boxShadow = '0 20px 50px rgba(0,0,0,0.6)'; e.currentTarget.style.borderColor = `rgba(202,254,91,0.3)`; e.currentTarget.style.background = 'rgba(255,255,255,0.06)'; }}
-                onMouseLeave={e => { e.currentTarget.style.boxShadow = '0 15px 35px rgba(0,0,0,0.4)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'; e.currentTarget.style.background = 'rgba(255,255,255,0.03)'; }}
-              >
-                <div className="relative h-52 overflow-hidden" style={{ background: '#111' }}>
-                  <img
-                    src={(block as any).imgUrl}
-                    alt={block.title}
-                    className="absolute inset-0 w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
-                  />
-
-                  <div className="absolute inset-x-0 bottom-0 h-1/2" style={{ background: `linear-gradient(to top, rgba(16,16,16,1), transparent)` }} />
-                </div>
-                <div className="p-7 -mt-6 relative z-10 flex flex-col flex-1" style={{ background: 'transparent' }}>
-                  <h2
-                    className="feature-title mb-3"
-                    style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', lineHeight: 1.2, color: bk.pureWhite }}
-                  >
-                    {block.title}
-                  </h2>
-                  <p
-                    className="feature-desc"
-                    style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(255,255,255,0.55)' }}
-                  >
-                    {block.description}
-                  </p>
-                </div>
-              </div>
+                title={block.title}
+                description={block.description}
+                imageUrl={(block as any).imgUrl}
+              />
             ))}
           </div>
         </section>
       </div>
 
       {/* ─── SECCIÓN COMPARATIVA ─── */}
-      <section className="why-section relative z-30 w-full px-6 py-24 sm:px-10 lg:px-20" style={{ background: bk.white }}>
-        <div className="mx-auto max-w-[1200px] mb-16 text-center">
-          <h2
-            className="why-title leading-none"
-            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
-          >
-            ¿Por qué usar Polarist?
-          </h2>
-        </div>
-
-        <div className="mx-auto max-w-[1200px] grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Sin Polarist */}
-          <div className="why-left flex flex-col overflow-hidden p-8 md:p-10" style={{ background: bk.pureWhite, borderRadius: bk.rLg, border: '1px solid rgba(1,1,1,0.06)' }}>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex h-9 w-9 items-center justify-center shrink-0" style={{ borderRadius: '50%', background: 'rgba(1,1,1,0.06)', fontSize: '16px' }}>✕</div>
-              <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', color: bk.black }}>Sin usar Polarist</h3>
-            </div>
-            <ul className="flex flex-col gap-5">
-              {[
-                "Horas perdidas en tareas repetitivas que podrías automatizar",
-                "Decisiones tomadas a ciegas, sin datos ni métricas reales",
-                "10 herramientas de IA sueltas que no hablán entre sí",
-                "Curva de aprendizaje larga y frustrante con la tecnología",
-                "Competidores más ágiles que avanzan mientras vos te quedás",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center" style={{ borderRadius: '50%', background: 'rgba(1,1,1,0.06)', color: 'rgba(1,1,1,0.35)', fontSize: '10px', fontWeight: 700 }}>✕</div>
-                  <div style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(1,1,1,0.55)' }}>{item}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Con Polarist */}
-          <div className="why-right flex flex-col overflow-hidden p-8 md:p-10" style={{ background: bk.black, borderRadius: bk.rLg, border: '1px solid rgba(255,255,255,0.06)' }}>
-            <div className="flex items-center gap-3 mb-8">
-              <div className="flex h-9 w-9 items-center justify-center shrink-0" style={{ borderRadius: '50%', background: 'rgba(202,254,91,0.2)', fontSize: '16px', color: bk.green }}>✓</div>
-              <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: '22px', letterSpacing: '-0.5px', color: bk.white }}>Con Polarist</h3>
-            </div>
-            <ul className="flex flex-col gap-5">
-              {[
-                "Automatizás procesos y recuperás horas reales de tu semana",
-                "Tomás decisiones informadas con datos centralizados",
-                "Acceso simple y curado a las mejores herramientas de IA",
-                "Aprendés a aplicar IA en minutos, no en meses",
-                "Adelantás a tu competencia con tecnología que trabaja para vos",
-              ].map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <div className="mt-0.5 h-5 w-5 shrink-0 flex items-center justify-center" style={{ borderRadius: '50%', background: 'rgba(202,254,91,0.2)', color: bk.green, fontSize: '10px', fontWeight: 700 }}>✓</div>
-                  <div style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '14px', lineHeight: 1.65, color: 'rgba(246,246,246,0.55)' }}>{item}</div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
+      <section className="why-section relative z-30 w-full" style={{ background: bk.black }}>
+        <SpatialProductShowcase />
       </section>
 
       {/* ─── CTA FINAL ─── */}
