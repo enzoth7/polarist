@@ -28,17 +28,18 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "px-4 py-2 text-[14px] font-medium tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
+        "px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
         isActive && "text-[#1d1d1f]",
       )
     }
+    style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
   >
     {label}
   </NavLink>
 );
 
 const Header = () => {
-  const { logout, profile, status, user } = useAuth();
+  const { logout, profile, status, user, avatarUrl } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const today = new Date();
   const currentHour = today.getHours();
@@ -62,7 +63,12 @@ const Header = () => {
     greeting = "Buenas noches";
   }
 
-  const firstName = profile?.fullName?.trim().split(/\s+/)[0];
+  const cleanFullName = profile?.fullName
+    ?.replace(/@/g, "")
+    ?.replace(/filmmaker/gi, "")
+    ?.replace(/uruguay/gi, "")
+    ?.trim();
+  const firstName = cleanFullName?.split(/\s+/)[0];
   const isAuthenticated = status === "authenticated";
   const desktopGreetingLabel = isAuthenticated ? (firstName ? `${greeting}, ${firstName}` : greeting) : "";
 
@@ -164,28 +170,53 @@ const Header = () => {
                   className="hidden items-center gap-2 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex"
                   aria-label="Abrir menú de perfil"
                 >
-                  <span className="whitespace-nowrap text-[15px] font-normal tracking-[-0.02em] text-[#1d1d1f] md:text-base">
+                  <span 
+                    className="whitespace-nowrap text-[15px] font-bold tracking-[-0.01em] text-[#1d1d1f] md:text-base"
+                    style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                  >
                     {desktopGreetingLabel}
                   </span>
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
-                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
+                    {avatarUrl ? (
+                      <img 
+                        src={avatarUrl} 
+                        alt={profile?.fullName || "Perfil"} 
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                    )}
                   </span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
                 align="end"
-                className="w-60 p-2 bg-white border border-zinc-100 rounded-2xl shadow-[0_16px_48px_rgba(0,0,0,0.10)] backdrop-blur-sm"
+                className="w-72 p-3 bg-white border border-zinc-100 rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] backdrop-blur-sm"
               >
                 {/* Cabecera con avatar + nombre */}
                 <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-black/10 bg-[#f6f6f6] text-zinc-700">
-                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-[#f6f6f6] text-zinc-700">
+                    {avatarUrl ? (
+                      <img 
+                        src={avatarUrl} 
+                        alt={profile?.fullName || "Perfil"} 
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-[13px] font-medium tracking-[-0.02em] text-zinc-900">
-                      {profile?.fullName || "Mi perfil"}
+                    <p 
+                      className="truncate text-[13px] font-bold tracking-[-0.02em] text-zinc-900"
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                    >
+                      {cleanFullName || "Mi perfil"}
                     </p>
-                    <p className="text-[11px] font-medium text-zinc-400 truncate">
+                    <p 
+                      className="text-[11px] font-medium text-zinc-400 truncate"
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                    >
                       {user?.email || ""}
                     </p>
                   </div>
@@ -193,7 +224,7 @@ const Header = () => {
 
                 <DropdownMenuSeparator className="bg-zinc-100 my-1" />
 
-                <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5">
+                <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>
                   <Link to={routes.appSettings}>
                     <Settings className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
                     Configuración
@@ -205,6 +236,7 @@ const Header = () => {
                     void handleLogout();
                   }}
                   className="cursor-pointer text-[13px] font-bold tracking-tight text-red-500 focus:bg-red-50 focus:text-red-600 py-2.5 px-3 rounded-xl gap-2.5"
+                  style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
                 >
                   <LogOut className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
                   {isSigningOut ? "Cerrando sesión..." : "Cerrar sesión"}

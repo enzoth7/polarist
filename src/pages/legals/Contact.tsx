@@ -14,6 +14,8 @@ const Contact = () => {
     message: "",
   });
 
+  const sequelStyle = { fontFamily: 'var(--font-sequel, sans-serif)' };
+
   return (
     <LegalPageLayout
       eyebrow="Contacto"
@@ -29,20 +31,29 @@ const Contact = () => {
       >
         <div className="grid gap-5 md:grid-cols-2">
           <div className="space-y-2">
-            <Label htmlFor="contact-name" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/70 dark:text-white/72">
+            <Label 
+              htmlFor="contact-name" 
+              style={sequelStyle}
+              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#F6F6F6]/70"
+            >
               Nombre
             </Label>
             <Input
               id="contact-name"
               value={form.name}
               onChange={(event) => setForm((prev) => ({ ...prev, name: event.target.value }))}
-              className="h-11 rounded-xl border-black/10 bg-white/70 text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.55)] placeholder:text-foreground/45 dark:border-white/15 dark:bg-white/[0.08] dark:text-white dark:placeholder:text-white/45"
+              style={sequelStyle}
+              className="h-11 rounded-xl border-white/15 bg-white/[0.03] text-[#F6F6F6] shadow-none placeholder:text-[#F6F6F6]/30 focus-visible:ring-1 focus-visible:ring-[#CAFE5B] focus-visible:border-[#CAFE5B]"
               placeholder="Tu nombre"
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="contact-email" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/70 dark:text-white/72">
+            <Label 
+              htmlFor="contact-email" 
+              style={sequelStyle}
+              className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#F6F6F6]/70"
+            >
               Email
             </Label>
             <Input
@@ -50,35 +61,54 @@ const Contact = () => {
               type="email"
               value={form.email}
               onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-              className="h-11 rounded-xl border-black/10 bg-white/70 text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.55)] placeholder:text-foreground/45 dark:border-white/15 dark:bg-white/[0.08] dark:text-white dark:placeholder:text-white/45"
+              style={sequelStyle}
+              className="h-11 rounded-xl border-white/15 bg-white/[0.03] text-[#F6F6F6] shadow-none placeholder:text-[#F6F6F6]/30 focus-visible:ring-1 focus-visible:ring-[#CAFE5B] focus-visible:border-[#CAFE5B]"
               placeholder="tu@email.com"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="contact-message" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/70 dark:text-white/72">
+          <Label 
+            htmlFor="contact-message" 
+            style={sequelStyle}
+            className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#F6F6F6]/70"
+          >
             Mensaje
           </Label>
           <Textarea
             id="contact-message"
             value={form.message}
             onChange={(event) => setForm((prev) => ({ ...prev, message: event.target.value }))}
-            className="min-h-[148px] rounded-xl border-black/10 bg-white/70 text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.55)] placeholder:text-foreground/45 dark:border-white/15 dark:bg-white/[0.08] dark:text-white dark:placeholder:text-white/45"
+            style={sequelStyle}
+            className="min-h-[148px] rounded-xl border-white/15 bg-white/[0.03] text-[#F6F6F6] shadow-none placeholder:text-[#F6F6F6]/30 focus-visible:ring-1 focus-visible:ring-[#CAFE5B] focus-visible:border-[#CAFE5B]"
             placeholder="Cuéntanos qué necesitas"
           />
         </div>
 
         <div className="flex justify-end pt-1">
-          <Button type="submit" className="h-12 rounded-full px-8 text-sm font-bold">
+          <Button 
+            type="submit" 
+            style={sequelStyle}
+            className="h-12 rounded-full px-8 text-sm font-bold bg-[#CAFE5B] text-[#010101] hover:bg-[#CAFE5B]/90"
+          >
             Enviar
           </Button>
         </div>
       </form>
 
       <div className="mt-8 space-y-2">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-foreground/70 dark:text-white/72">Mail de soporte</p>
-        <a href="mailto:soporte@polarist.uy" className="mt-2 inline-flex items-center rounded-full border border-black/10 bg-white/65 px-3.5 py-1.5 text-sm font-semibold text-foreground/82 transition-colors hover:bg-white/85 hover:text-foreground dark:border-white/15 dark:bg-white/[0.08] dark:text-white/82 dark:hover:bg-white/[0.14] dark:hover:text-white">
+        <p 
+          style={sequelStyle}
+          className="text-[11px] font-semibold uppercase tracking-[0.14em] text-[#F6F6F6]/70"
+        >
+          Mail de soporte
+        </p>
+        <a 
+          href="mailto:soporte@polarist.uy" 
+          style={sequelStyle}
+          className="mt-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-sm font-semibold text-[#F6F6F6]/80 transition-colors hover:bg-white/[0.08] hover:text-[#F6F6F6]"
+        >
           soporte@polarist.uy
         </a>
       </div>

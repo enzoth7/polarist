@@ -1,3 +1,9 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import LegalPageLayout from "./LegalPageLayout";
 
 const termsSections = [
@@ -29,6 +35,8 @@ const termsSections = [
 ] as const;
 
 const TermsConditions = () => {
+  const sequelStyle = { fontFamily: 'var(--font-sequel, sans-serif)' };
+
   return (
     <LegalPageLayout
       eyebrow="Condiciones"
@@ -36,18 +44,28 @@ const TermsConditions = () => {
       description="Estas condiciones regulan de manera general el uso de Polarist, incluyendo la navegación dentro de la aplicación y la participación en espacios de comunidad."
       showSecondaryGlow={false}
     >
-      <div className="space-y-4">
-        {termsSections.map((section) => (
-          <section key={section.title} className="space-y-3">
-            <h2 className="text-xl font-black tracking-tight text-foreground dark:text-white">
+      <Accordion type="single" collapsible className="w-full space-y-2">
+        {termsSections.map((section, idx) => (
+          <AccordionItem 
+            key={section.title} 
+            value={`item-${idx}`}
+            className="border-white/10"
+          >
+            <AccordionTrigger 
+              style={sequelStyle}
+              className="text-xl font-semibold tracking-tight text-[#F6F6F6] hover:no-underline hover:text-[#CAFE5B] transition-colors"
+            >
               {section.title}
-            </h2>
-            <p className="text-sm leading-7 text-muted-foreground dark:text-white/72">
+            </AccordionTrigger>
+            <AccordionContent 
+              style={sequelStyle}
+              className="text-sm leading-7 text-[#F6F6F6]/70 font-normal"
+            >
               {section.content}
-            </p>
-          </section>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </LegalPageLayout>
   );
 };

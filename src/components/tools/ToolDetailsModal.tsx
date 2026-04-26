@@ -52,7 +52,10 @@ export function ToolDetailsModal({
 
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <DialogTitle className="text-2xl font-black tracking-[-0.03em] text-foreground">
+                    <DialogTitle 
+                      className="text-2xl font-bold tracking-[-0.03em] text-foreground"
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                    >
                       {selectedTool.name}
                     </DialogTitle>
                   </div>
@@ -60,13 +63,15 @@ export function ToolDetailsModal({
                   <div className="mt-3 flex flex-wrap gap-2">
                     <Badge
                       variant="outline"
-                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
+                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-bold text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
                     >
                       {withSpanishAccents(selectedTool.category)}
                     </Badge>
                     <Badge
                       variant="outline"
-                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
+                      className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-bold text-foreground dark:border-white/20 dark:bg-white/10 dark:text-white"
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
                     >
                       {withSpanishAccents(selectedTool.kind)}
                     </Badge>
@@ -74,7 +79,10 @@ export function ToolDetailsModal({
                 </div>
               </div>
 
-              <DialogDescription className="text-sm leading-6 text-muted-foreground">
+              <DialogDescription 
+                className="text-sm leading-6 text-muted-foreground"
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+              >
                 {selectedTool.isBeta
                   ? "Exploración temprana, acceso cambiante y propuesta todavía en formación."
                   : "Ficha resumida de la herramienta dentro del catálogo oficial."}
@@ -82,7 +90,10 @@ export function ToolDetailsModal({
             </DialogHeader>
 
             <section className="space-y-2 rounded-2xl border border-black/10 bg-white/45 px-4 py-4 backdrop-blur-md dark:border-white/15 dark:bg-white/[0.05]">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
+              <h3 
+                className="text-sm font-bold uppercase tracking-[0.18em] text-foreground"
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+              >
                 ¿Qué es?
               </h3>
               <p
@@ -97,7 +108,10 @@ export function ToolDetailsModal({
             </section>
 
             <section className="space-y-2 rounded-2xl border border-black/10 bg-white/45 px-4 py-4 backdrop-blur-md dark:border-white/15 dark:bg-white/[0.05]">
-              <h3 className="text-sm font-semibold uppercase tracking-[0.18em] text-foreground">
+              <h3 
+                className="text-sm font-bold uppercase tracking-[0.18em] text-foreground"
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+              >
                 ¿Para quiénes sirve?
               </h3>
               <p
@@ -106,6 +120,7 @@ export function ToolDetailsModal({
                     "text-sm leading-7 text-muted-foreground"
                   : "text-sm leading-7 text-muted-foreground/60"
                 }
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
               >
                 {whoIsItFor ?? "Perfil ideal en redacción..."}
               </p>
@@ -128,7 +143,8 @@ export function ToolDetailsModal({
                 href={getToolHref(selectedTool)}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary px-3 py-1 text-sm font-semibold text-primary-foreground transition hover:bg-primary/90 dark:border-primary dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-primary bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition hover:bg-primary/90 dark:border-primary dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary/90"
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
               >
                 Visitar web
                 <ArrowUpRight className="h-4 w-4" />

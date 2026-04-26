@@ -38,33 +38,33 @@ const featureBlocks = [
 
 const problemBlocks = [
   {
-    title: "Perdés horas en tareas manuales",
+    title: "Repetimos día tras día la\u00A0misma\u00A0tarea",
     description:
-      "Copiar datos de un lado a otro, enviar los mismos mails, actualizar planillas. Tu tiempo vale más que eso.",
+      "Copiamos datos de un lado a otro, actualizamos las mismas planillas o hacemos el mismo proceso tedioso que no nos aporta nada de valor",
     imgUrl: "/images/placeholders/landing_prob_1_1776044770643.png",
     tag: "Organización",
     stat: "14 hrs"
   },
   {
-    title: "Tus datos están dispersos y desconectados",
+    title: "Sabemos que hacer pero no\u00A0sabemos\u00A0el\u00A0cómo",
     description:
-      "Tenés información en 10 plataformas distintas y no podés cruzar nada. Las decisiones se toman a ciegas.",
+      "Tenemos ideas y mejoras en nuestra cabeza, pero creemos que son caras, inaccesibles para nosotros o que si hay algo que puede ayudarte, crees que lleva mucho tiempo aprenderlo.",
     imgUrl: "/images/placeholders/landing_prob_2_1776044784698.png",
     tag: "Procesos",
     stat: "60% Riesgo"
   },
   {
-    title: "La IA parece compleja e inaccesible",
+    title: "Tenemos mucha información y no le damos uso",
     description:
-      "Sabés que la inteligencia artificial puede ayudarte, pero no sabés por dónde empezar ni cómo aplicarla.",
+      "Guardamos datos, tenemos información dispersa y la dejamos allí para usarla en el futuro, pero nunca lo terminamos haciendo porque no sabemos cómo organizarla y darle el valor correspondiente",
     imgUrl: "/images/placeholders/landing_prob_3_1776044798647.png",
     tag: "Adopción",
     stat: "Barrera AI"
   },
   {
-    title: "No tenés visibilidad de lo que funciona",
+    title: "Leemos de IA y colapsamos",
     description:
-      "Publicás, invertís, ejecutás. Pero sin métricas claras, no sabés qué está generando resultados y qué no.",
+      "Cuando escribimos IA en cualquier red social, automáticamente empezamos a saturarnos de noticias, aparece la sobreinformación y terminamos creyendo que debemos saber todo para empezar.",
     imgUrl: "/images/placeholders/landing_prob_1_1776044770643.png",
     tag: "Visibilidad",
     stat: "Sin métricas"
@@ -230,7 +230,7 @@ const Landing = () => {
             className="section-title leading-none"
             style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
           >
-            ¿Te suena familiar?
+            A todos nos ha pasado que...
           </h2>
         </div>
 

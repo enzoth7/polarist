@@ -272,7 +272,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
         <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '36px', letterSpacing: '-1px', lineHeight: 1.05, color: '#F6F6F6' }}>
           {config.title}
         </h3>
-        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: 'rgba(246,246,246,0.45)' }} className="mt-1">
+        <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: '#F6F6F6' }} className="mt-1">
           {config.subtitle}
         </p>
       </div>
@@ -299,21 +299,27 @@ export function RadarMetricsBoard() {
   const updatedAtLabel = dataUpdatedAt ? formatUpdatedAt(dataUpdatedAt) : null;
   const errorMessage =
     error instanceof Error ? error.message : "No se pudieron cargar las metricas de Artificial Analysis.";
-
   return (
-    <section className="w-full space-y-10 bg-[#010101] pb-16 pt-16" style={{ perspective: "1200px" }}>
-      <div className="mx-auto w-full max-w-[2000px] space-y-10 px-4 md:px-10 lg:px-14 xl:px-16">
+    <section className="w-full space-y-24 bg-[#010101] pb-16 pt-0" style={{ perspective: "1200px" }}>
+      <div className="mx-auto w-full max-w-[2000px] space-y-24 px-4 md:px-10 lg:px-14 xl:px-16">
         <header className="space-y-3 text-center">
           <h2
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: '#F6F6F6' }}
+            style={{ 
+              fontFamily: 'var(--font-sans)', 
+              fontWeight: 700, 
+              fontSize: 'clamp(28px, 4vw, 44px)', 
+              letterSpacing: '-1px', 
+              lineHeight: 1.1, 
+              color: '#F6F6F6' 
+            }}
           >
-            Radar de modelos de IA
+            Empresas tecnológicas que llevan el liderazgo
           </h2>
           <p
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: 'rgba(246,246,246,0.55)' }}
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: '#F6F6F6' }}
             className="mx-auto max-w-3xl"
           >
-            Benchmarks comparativos de inteligencia, velocidad y precio, con una lectura visual limpia.
+            Cuadros comparativos de inteligencia, velocidad y precio que ofrece cada motor de IA.
           </p>
         </header>
 

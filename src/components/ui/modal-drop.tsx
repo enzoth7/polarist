@@ -2,8 +2,8 @@
 
 import type React from "react"
 import { useEffect, useState } from "react"
-import { X } from "lucide-react"
-import { AnimatePresence, motion, type Variants } from "framer-motion"
+import { X } from "@phosphor-icons/react"
+import { AnimatePresence, motion, type Variants } from "motion/react"
 import { createPortal } from "react-dom"
 
 import { cn } from "@/lib/utils"
@@ -169,7 +169,7 @@ const Modal: React.FC<ModalProps> = ({
   const getOverlayClasses = () => {
     switch (type) {
       case "blur":
-        return "bg-background/60 backdrop-blur-[4px]"
+        return "bg-background/60 backdrop-blur-[2px]"
       case "overlay":
         return "bg-black/50"
       case "none":
@@ -181,7 +181,7 @@ const Modal: React.FC<ModalProps> = ({
 
   const getModalClasses = () => {
     const base =
-      "w-full bg-background border border-border text-card-foreground max-w-[90%] sm:max-w-2xl lg:max-w-4xl xl:max-w-5xl rounded-2xl shadow-lg m-4 relative overflow-hidden"
+      "w-auto bg-background border border-border text-card-foreground max-w-[90%] sm:max-w-xl rounded-2xl shadow-lg m-4 relative"
     return type === "overlay" ? base : `${base} border border-border`
   }
 
@@ -226,9 +226,17 @@ const Modal: React.FC<ModalProps> = ({
                 )}
               >
                 <div>
-                  <h2 className="text-xl font-semibold">{title}</h2>
+                  <h2 
+                    style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                    className="text-xl font-semibold text-[#F6F6F6]"
+                  >
+                    {title}
+                  </h2>
                   {subtitle && (
-                    <p className="text-sm text-muted-foreground mt-1">
+                    <p 
+                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+                      className="text-sm text-[#F6F6F6]/50 mt-1"
+                    >
                       {subtitle}
                     </p>
                   )}
@@ -240,42 +248,32 @@ const Modal: React.FC<ModalProps> = ({
                       subtitle && "absolute top-6 right-6"
                     )}
                   >
-                    {showEscText && (
-                      <span className="hidden lg:inline px-2 py-1 text-[11px] font-medium bg-muted text-muted-foreground rounded">
-                        ESC
-                      </span>
-                    )}
                     <button
-                      className="p-1 rounded-md hover:bg-muted transition-colors"
+                      className="p-1 rounded-md hover:bg-white/10 text-[#F6F6F6] transition-colors"
                       onClick={onClose}
                       aria-label="Close modal"
                     >
-                      <X size={20} strokeWidth={2.5} />
+                      <X size={20} weight="bold" />
                     </button>
                   </div>
                 )}
               </div>
             ) : (
               showCloseButton && (
-                <div className="absolute top-6 right-6 flex items-center gap-2 z-50">
-                  {showEscText && (
-                    <span className="hidden lg:inline px-2 py-1 text-xs font-medium bg-muted text-muted-foreground rounded">
-                      ESC
-                    </span>
-                  )}
+                <div className="absolute top-6 right-6 flex items-center gap-2">
                   <button
-                    className="p-1 rounded-md hover:bg-muted transition-colors"
+                    className="p-1 rounded-md hover:bg-white/10 text-[#F6F6F6] transition-colors"
                     onClick={onClose}
                     aria-label="Close modal"
                   >
-                    <X size={20} strokeWidth={2.5} />
+                    <X size={20} weight="bold" />
                   </button>
                 </div>
               )
             )}
 
             <div
-              className={cn("max-h-[85vh] overflow-y-auto", !disablePadding && (!title ? "p-6 pt-12" : "p-6"))}
+              className={cn(!disablePadding && (!title ? "p-6 pt-12" : "p-6"))}
             >
               {children}
             </div>

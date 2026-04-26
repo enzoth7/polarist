@@ -322,13 +322,13 @@ const InferenceGlobeHero = () => {
           <h1
             ref={titleRef}
             className="translate-y-6 opacity-0"
-            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.5rem,7vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.95, color: 'var(--polarist-white, #F6F6F6)' }}
+            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.5rem,7vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.88, color: 'var(--polarist-white, #F6F6F6)' }}
           >
             <div className="block text-left">
               <MaskedSlideReveal text="Tu camino más" delay={0.6} />
               <br />
               <div style={{ display: 'inline' }}>
-                <MaskedSlideReveal text="fácil " delay={0.6 + 2 * 0.08} />
+                <MaskedSlideReveal text="fácil" delay={0.6 + 2 * 0.08} />
               </div>
               <div style={{ display: 'inline', color: 'var(--polarist-green, #CAFE5B)' }}>
                 <MaskedSlideReveal text="hacia la IA." delay={0.6 + 4 * 0.08} />
@@ -341,7 +341,7 @@ const InferenceGlobeHero = () => {
             className="mt-8 max-w-[600px] translate-y-6 opacity-0 text-left"
             style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '18px', lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}
           >
-            Polarist es una plataforma digital que conecta a las personas con herramientas e información clave para mejorar procesos a través de Inteligencia Artificial.
+            Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.
           </p>
 
           <div ref={ctaRef} className="pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex justify-start">

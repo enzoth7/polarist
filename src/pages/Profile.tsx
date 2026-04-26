@@ -15,9 +15,13 @@ const Profile = () => {
     navigate(routes.appSettings);
   };
 
+  const cleanFullName = profile?.fullName
+    ?.replace(/@/g, "")
+    ?.replace(/filmmaker/gi, "")
+    ?.replace(/uruguay/gi, "")
+    ?.trim();
+  const firstName = cleanFullName?.split(/\s+/)[0];
   const userInitial = profile?.fullName?.charAt(0)?.toUpperCase() || "P";
-  const userSubtitle =
-    profile?.occupation || profile?.email || (status === "authenticated" ? "Miembro de Polarist" : "Visitante");
 
   return (
     <div className="flex min-h-full flex-col bg-background p-5 pb-24">
@@ -38,10 +42,9 @@ const Profile = () => {
         </button>
 
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[22px] font-bold leading-tight text-foreground">
-            {profile?.fullName || "Tu perfil"}
+          <h1 className="truncate text-[18px] font-bold leading-tight text-foreground">
+            {firstName ? `Hola ${firstName}` : "Hola"}
           </h1>
-          <p className="truncate text-[14px] font-medium text-muted-foreground">{userSubtitle}</p>
         </div>
       </div>
 

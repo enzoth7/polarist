@@ -37,23 +37,23 @@ const guideKindLabelMap: Record<GuideFolderCard["kind"], string> = {
 };
 
 const displayBlackStyle = {
-  fontFamily: "var(--font-display)",
-  fontWeight: 900,
+  fontFamily: "var(--font-sequel, sans-serif)",
+  fontWeight: 700,
 } as const;
 
 const displayBoldStyle = {
-  fontFamily: "var(--font-display)",
+  fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 700,
 } as const;
 
 const serifStyle = {
-  fontFamily: "var(--font-serif)",
+  fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 400,
 } as const;
 
 const serifBoldStyle = {
-  fontFamily: "var(--font-serif)",
-  fontWeight: 600,
+  fontFamily: "var(--font-sequel, sans-serif)",
+  fontWeight: 700,
 } as const;
 
 const getInitials = (name?: string | null) =>
@@ -126,9 +126,11 @@ const EmptyState = ({
     <h3 className="text-[1.15rem] leading-tight text-[#F6F6F6]" style={displayBlackStyle}>
       {title}
     </h3>
-    <p className="mx-auto mt-3 max-w-[34rem] text-[1rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
-      {description}
-    </p>
+    {description ? (
+      <p className="mx-auto mt-3 max-w-[34rem] text-[1rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
+        {description}
+      </p>
+    ) : null}
     {cta ? <div className="mt-6">{cta}</div> : null}
   </div>
 );
@@ -330,7 +332,7 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-fit bg-[#010101] px-4 pb-10 pt-6 md:px-8 md:pb-12 md:pt-8">
+    <div className="min-h-[102vh] bg-[#010101] px-4 pb-48 pt-6 md:px-8 md:pb-64 md:pt-8">
       <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10">
         <header className="border-b border-white/10 pb-10">
           {profileLoading ? (
@@ -357,18 +359,13 @@ const UserProfile = () => {
 
               <div className="min-w-0">
                 <h1
-                  className="text-[clamp(2.7rem,7vw,5.8rem)] leading-[0.92] tracking-[-0.06em] text-[#F6F6F6]"
+                  className="text-[clamp(2.2rem,6vw,4rem)] leading-[0.92] tracking-[-0.06em] text-[#F6F6F6]"
                   style={displayBlackStyle}
                 >
                   Hola, {firstName}
                 </h1>
 
-                <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 text-[0.98rem] text-[#F6F6F6]" style={serifStyle}>
-                  {profile?.username ? <span>@{profile.username}</span> : null}
-                  {profileMeta.map((item) => (
-                    <span key={item}>{item}</span>
-                  ))}
-                </div>
+
 
                 <div className="mt-7 flex flex-wrap items-center gap-6">
                   {savedFilterOptions.map((filterOption) => {
@@ -392,7 +389,7 @@ const UserProfile = () => {
                           : "border-transparent text-[#F6F6F6] opacity-60 hover:opacity-100",
                         )}
                         style={
-                          isActive ? displayBoldStyle : { fontFamily: "var(--font-display)", fontWeight: 500 }
+                          isActive ? displayBoldStyle : { fontFamily: "var(--font-sequel, sans-serif)", fontWeight: 400 }
                         }
                       >
                         {filterOption.label}
@@ -410,8 +407,17 @@ const UserProfile = () => {
 
         <section className="flex flex-col gap-8">
           <div>
-            <h2 className="text-[1.9rem] leading-none tracking-[-0.04em] text-[#F6F6F6] md:text-[2.45rem]" style={displayBoldStyle}>
-              Ultimas cosas guardadas
+            <h2 
+              style={{ 
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontWeight: 700,
+                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                lineHeight: "1",
+                letterSpacing: "-0.04em",
+                color: "#F6F6F6"
+              }}
+            >
+              Últimas cosas guardadas
             </h2>
           </div>
 
@@ -457,7 +463,7 @@ const UserProfile = () => {
                     description={
                       isOwnProfile ?
                         "Guarda herramientas desde el catalogo para construir tu galeria privada."
-                      : "Cuando este perfil guarde herramientas visibles, apareceran aqui."
+                      : ""
                     }
                     cta={
                       isOwnProfile ? (
@@ -500,7 +506,7 @@ const UserProfile = () => {
                     description={
                       isOwnProfile ?
                         "Las carpetas que guardes en Recursos apareceran en esta galeria."
-                      : "Los recursos guardados solo aparecen cuando este perfil los tiene disponibles."
+                      : ""
                     }
                     cta={
                       isOwnProfile ? (
@@ -523,7 +529,7 @@ const UserProfile = () => {
                   description={
                     isOwnProfile ?
                       "Guarda herramientas o recursos para empezar a poblar esta pagina."
-                    : "Cuando este usuario tenga elementos guardados visibles, apareceran aqui."
+                    : ""
                   }
                   cta={
                     isOwnProfile ? (

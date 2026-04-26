@@ -21,13 +21,8 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
   useEffect(() => {
     if (!slides || slides.length === 0) return;
 
-    // Add font
-    const fontLink = document.createElement('link');
-    fontLink.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap';
-    fontLink.rel = 'stylesheet';
-    if (!document.querySelector('link[href*="Playfair+Display"]')) {
-      document.head.appendChild(fontLink);
-    }
+    // Add fonts if needed (Sequel and Arno are local)
+    if (!slides || slides.length === 0) return;
 
     // --- DYNAMIC SCRIPT LOADING ---
     const loadScripts = async () => {
@@ -152,7 +147,13 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
         };
 
         const splitText = (text: string) => {
-            return (text || '').split('').map((char: string) => `<span style="display: inline-block; opacity: 0;">${char === ' ' ? '&nbsp;' : char}</span>`).join('');
+            if (!text) return '';
+            return text.split(' ').map(word => {
+                const chars = word.split('').map(char => 
+                    `<span style="display: inline-block; opacity: 0;">${char}</span>`
+                ).join('');
+                return `<span style="display: inline-block; white-space: nowrap;">${chars}</span>`;
+            }).join('&nbsp;');
         };
 
         const updateContent = (idx: number) => {
@@ -403,24 +404,35 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
         <div className="absolute inset-0 z-[5] bg-black/50 bg-[radial-gradient(circle_at_center,rgba(0,0,0,0.2)_0%,rgba(0,0,0,0.7)_100%)] pointer-events-none"></div>
 
 
-        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-6 md:px-14 z-30 pointer-events-none">
-          <button 
-            onClick={() => apiRef.current?.prev()}
-            className="p-2 md:p-3 rounded-full bg-white/5 hover:bg-white/10 transition-all pointer-events-auto group backdrop-blur-sm border border-white/5"
-          >
-            <ChevronLeft className="text-white/40 group-hover:text-white w-5 h-5 md:w-6 md:h-6 transition-colors" />
-          </button>
-          <button 
-            onClick={() => apiRef.current?.next()}
-            className="p-2 md:p-3 rounded-full bg-white/5 hover:bg-white/10 transition-all pointer-events-auto group backdrop-blur-sm border border-white/5"
-          >
-            <ChevronRight className="text-white/40 group-hover:text-white w-5 h-5 md:w-6 md:h-6 transition-colors" />
-          </button>
-        </div>
 
-        <div className="slide-content absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none px-6 drop-shadow-2xl w-full">
-            <h1 className="slide-title text-3xl md:text-5xl lg:text-6xl text-white mb-6 text-center leading-tight tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)] whitespace-nowrap px-4" style={{ fontFamily: '"Playfair Display", serif', fontWeight: 700 }} id="mainTitle"></h1>
-            <p className="slide-description text-base md:text-lg lg:text-xl text-white/90 max-w-4xl text-center leading-relaxed drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] px-4" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400 }} id="mainDesc"></p>
+
+        <div className="slide-content absolute inset-0 flex flex-col items-start justify-start z-10 pointer-events-none px-8 md:px-16 lg:px-24 pt-28 md:pt-32 lg:pt-36 drop-shadow-2xl w-full max-w-7xl mx-auto">
+            <h1 
+              className="slide-title text-5xl md:text-7xl lg:text-8xl text-white mb-6 text-left leading-[1.05] tracking-[-0.03em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]" 
+              style={{ 
+                fontFamily: '"Arno Pro", serif',
+                fontWeight: 400,
+                textWrap: 'wrap',
+                maxWidth: '1000px',
+                hyphens: 'none',
+                wordBreak: 'keep-all',
+                overflowWrap: 'normal',
+                whiteSpace: 'normal'
+              }} 
+              id="mainTitle"
+            >
+            </h1>
+            <p 
+              className="slide-description text-base md:text-lg lg:text-xl text-white max-w-2xl text-left leading-[1.6] drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]" 
+              style={{ 
+                fontFamily: 'var(--font-sequel, sans-serif)', 
+                fontWeight: 400,
+                letterSpacing: '0.01em',
+                opacity: 0.98
+              }} 
+              id="mainDesc"
+            >
+            </p>
         </div>
       </main>
 

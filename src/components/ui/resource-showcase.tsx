@@ -25,53 +25,10 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
   const col3 = items.filter((_, i) => i % 3 === 2);
 
   return (
-    <div className="flex flex-col md:flex-row items-start gap-8 md:gap-10 lg:gap-16 select-none w-full max-w-5xl mx-auto py-8 px-4 md:px-6">
+    <div className="flex flex-col md:flex-row items-start gap-8 md:gap-16 lg:gap-32 select-none w-full max-w-7xl mx-auto py-8 px-4 md:px-6">
 
-      {/* ── Izquierda: grid de fotos ── */}
-      <div className="flex gap-2 md:gap-3 flex-shrink-0 overflow-x-auto pb-1 md:pb-0">
-
-        {/* Columna 1 */}
-        <div className="flex flex-col gap-2 md:gap-3">
-          {col1.map((item) => (
-            <PhotoCard
-              key={item.id}
-              item={item}
-              className="w-[110px] h-[120px] sm:w-[130px] sm:h-[140px] md:w-[155px] md:h-[165px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
-        </div>
-
-        {/* Columna 2 — con offset vertical */}
-        <div className="flex flex-col gap-2 md:gap-3 mt-[48px] sm:mt-[56px] md:mt-[68px]">
-          {col2.map((item) => (
-            <PhotoCard
-              key={item.id}
-              item={item}
-              className="w-[122px] h-[132px] sm:w-[145px] sm:h-[155px] md:w-[172px] md:h-[182px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
-        </div>
-
-        {/* Columna 3 — con offset medio */}
-        <div className="flex flex-col gap-2 md:gap-3 mt-[22px] sm:mt-[26px] md:mt-[32px]">
-          {col3.map((item) => (
-            <PhotoCard
-              key={item.id}
-              item={item}
-              className="w-[115px] h-[125px] sm:w-[136px] sm:h-[146px] md:w-[162px] md:h-[172px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
-        </div>
-      </div>
-
-      {/* ── Derecha: lista de títulos ── */}
-      <div className="flex flex-col sm:grid sm:grid-cols-2 md:flex md:flex-col gap-4 md:gap-5 pt-0 md:pt-2 flex-1 w-full">
+      {/* ── Izquierda: lista de títulos ── */}
+      <div className="flex flex-col sm:grid sm:grid-cols-2 md:flex md:flex-col gap-6 md:gap-8 flex-1 w-full order-2 md:order-1">
         {items.map((item) => (
           <ItemRow
             key={item.id}
@@ -80,6 +37,48 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
             onHover={setHoveredId}
           />
         ))}
+      </div>
+
+      {/* ── Derecha: grid de fotos ── */}
+      <div className="flex gap-2 md:gap-3 flex-shrink-0 overflow-visible p-4 md:p-6 order-1 md:order-2 mt-0">
+        {/* Columna 1 — Desplazada para alinear el medio con el gap de las otras */}
+        <div className="flex flex-col gap-2 md:gap-3 -mt-[98px]">
+          {col1.map((item) => (
+            <PhotoCard
+              key={item.id}
+              item={item}
+              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
+              hoveredId={hoveredId}
+              onHover={setHoveredId}
+            />
+          ))}
+        </div>
+
+        {/* Columna 2 */}
+        <div className="flex flex-col gap-2 md:gap-3">
+          {col2.map((item) => (
+            <PhotoCard
+              key={item.id}
+              item={item}
+              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
+              hoveredId={hoveredId}
+              onHover={setHoveredId}
+            />
+          ))}
+        </div>
+
+        {/* Columna 3 */}
+        <div className="flex flex-col gap-2 md:gap-3">
+          {col3.map((item) => (
+            <PhotoCard
+              key={item.id}
+              item={item}
+              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
+              hoveredId={hoveredId}
+              onHover={setHoveredId}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -135,7 +134,7 @@ function PhotoCard({
       >
         <span
           className="text-[#CAFE5B] text-[9px] font-bold uppercase tracking-[0.2em] leading-none mb-1"
-          style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+          style={{ fontFamily: 'var(--font-serif)' }}
         >
           {item.eyebrow}
         </span>
@@ -167,47 +166,53 @@ function ItemRow({
       onMouseEnter={() => onHover(item.id)}
       onMouseLeave={() => onHover(null)}
     >
-      {/* Título + indicador */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start gap-4">
+        {/* Indicador lateral (el "punto") */}
         <span
           className={cn(
-            'rounded-[5px] flex-shrink-0 transition-all duration-400',
-            isActive ? 'w-5 h-3 bg-[#CAFE5B]' : 'w-4 h-3 bg-white/20',
+            'rounded-[5px] flex-shrink-0 transition-all duration-400 mt-1.5',
+            isActive ? 'w-5 h-2.5 bg-[#CAFE5B]' : 'w-4 h-2.5 bg-white/20',
           )}
         />
-        <span
-          className={cn(
-            'text-base md:text-[18px] font-semibold leading-none tracking-tight transition-colors duration-300',
-            isActive ? 'text-white' : 'text-white/70',
-          )}
-          style={{ fontFamily: 'var(--font-serif)' }}
-        >
-          {item.title}
-        </span>
+        
+        <div className="flex flex-col">
+          {/* Título */}
+          <div className="flex items-center gap-3">
+            <span
+              className={cn(
+                'text-base md:text-[18px] font-semibold leading-none tracking-tight transition-colors duration-300 whitespace-nowrap',
+                isActive ? 'text-white' : 'text-white/70',
+              )}
+              style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+            >
+              {item.title}
+            </span>
 
-        {/* Flecha al hacer hover */}
-        <span
-          className={cn(
-            'ml-auto text-[#CAFE5B] text-xs font-bold uppercase tracking-wider transition-all duration-200',
-            isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none',
-          )}
-          style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
-        >
-          →
-        </span>
+            {/* Flecha al hacer hover */}
+            <span
+              className={cn(
+                'ml-auto text-[#CAFE5B] text-xs font-bold uppercase tracking-wider transition-all duration-200',
+                isActive ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none',
+              )}
+              style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+            >
+              →
+            </span>
+          </div>
+
+          {/* Eyebrow / categoría */}
+          <p
+            className="mt-2 text-[9px] md:text-[10px] font-medium uppercase tracking-[0.22em]"
+            style={{
+              fontFamily: 'var(--font-serif)',
+              color: isActive ? 'rgba(202,254,91,0.7)' : 'rgba(246,246,246,0.35)',
+              transition: 'color 0.3s ease',
+            }}
+          >
+            {item.eyebrow}
+          </p>
+        </div>
       </div>
-
-      {/* Eyebrow / categoría */}
-      <p
-        className="mt-1.5 pl-[28px] text-[9px] md:text-[10px] font-medium uppercase tracking-[0.22em]"
-        style={{
-          fontFamily: 'var(--font-sequel, sans-serif)',
-          color: isActive ? 'rgba(202,254,91,0.7)' : 'rgba(246,246,246,0.35)',
-          transition: 'color 0.3s ease',
-        }}
-      >
-        {item.eyebrow}
-      </p>
     </div>
   );
 }

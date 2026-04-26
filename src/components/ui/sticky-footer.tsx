@@ -49,7 +49,7 @@ export function StickyFooter({ className, ...props }: StickyFooterProps) {
 						<AnimatedContainer className="w-full max-w-sm min-w-[280px] space-y-4">
 							<BrandLogo showLabel={false} imageClassName="h-10 w-10 rounded-md" />
 							<p className="mt-6 text-sm text-black/70 md:mt-0 font-medium">
-								Polarist es una plataforma digital que conecta a las personas con herramientas e información clave para mejorar procesos a través de Inteligencia Artificial.
+								Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.
 							</p>
 							<div className="flex gap-2 pt-2">
 								{socialLinks.map((link) => (

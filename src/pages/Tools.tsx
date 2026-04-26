@@ -1,12 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ExternalLink, X } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
 import Modal from "@/components/ui/modal-drop";
 
-// ── Paleta Brand Kit B ────────────────────────────────────────────────────
-const BK = { black: "#010101", white: "#F6F6F6", green: "#CAFE5B" } as const;
-const CARD_RADIUS = 24;
+// ── Paleta Brand Kit B (Dark Theme) ──────────────────────────────────────
+const BK = { 
+  black: "#010101", 
+  white: "#F6F6F6", 
+  green: "#CAFE5B",
+  cardBg: "rgba(255,255,255,0.03)",
+  cardBorder: "rgba(255,255,255,0.08)"
+} as const;
+
+const CARD_RADIUS = 32;
 
 // ── Floating logo ─────────────────────────────────────────────────────────
 const SPECIAL_SRCS: Record<string, string> = {
@@ -57,14 +64,29 @@ function FloatingLogo({ name, domain, size = 40 }: { name: string; domain: strin
     );
 
   return (
-    <img
-      src={src}
-      alt={name}
-      loading="lazy"
-      referrerPolicy="no-referrer"
-      style={{ width: size, height: size, objectFit: "contain", flexShrink: 0 }}
-      onError={() => setIdx((i) => i + 1)}
-    />
+    <div
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: "#FFFFFF",
+        borderRadius: size * 0.25,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        padding: size * 0.15,
+        flexShrink: 0,
+      }}
+    >
+      <img
+        src={src}
+        alt={name}
+        loading="lazy"
+        referrerPolicy="no-referrer"
+        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+        onError={() => setIdx((i) => i + 1)}
+      />
+    </div>
   );
 }
 
@@ -210,7 +232,7 @@ const detailLabelStyle: React.CSSProperties = {
   fontSize: 10,
   letterSpacing: "0.2em",
   textTransform: "uppercase",
-  color: "rgba(1,1,1,0.3)",
+  color: "rgba(246,246,246,0.35)",
   margin: "0 0 10px",
 };
 
@@ -219,7 +241,7 @@ const detailTextStyle: React.CSSProperties = {
   fontWeight: 400,
   fontSize: 15,
   lineHeight: 1.65,
-  color: "rgba(1,1,1,0.72)",
+  color: BK.white,
   margin: 0,
 };
 
@@ -235,201 +257,22 @@ const ghostNavStyle: React.CSSProperties = {
   fontSize: 12,
   letterSpacing: "0.12em",
   textTransform: "uppercase",
-  color: "rgba(1,1,1,0.35)",
+  color: "rgba(246,246,246,0.45)",
   padding: 0,
 };
-
-// ── Vista de detalle de herramienta ──────────────────────────────────────
-function ToolDetailView({
-  tool,
-  categoryTitle,
-  onClose,
-}: {
-  tool: ResolvedTool;
-  categoryTitle: string;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      style={{
-        position: "absolute",
-        inset: 0,
-        backgroundColor: "#FFFFFF",
-        zIndex: 50,
-        overflowY: "auto",
-        display: "flex",
-        flexDirection: "column",
-        minHeight: "100%",
-      }}
-    >
-      <div style={{ maxWidth: 860, margin: "0 auto", width: "100%", padding: "48px 40px 96px" }}>
-        <button type="button" onClick={onClose} style={{ ...ghostNavStyle, marginBottom: 40 }}>
-          <ArrowLeft style={{ width: 13, height: 13 }} />
-          Volver
-        </button>
-
-        {/* Hero del producto */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 48, alignItems: "flex-start" }}>
-          <div
-            style={{
-              width: 112,
-              height: 112,
-              backgroundColor: "rgba(1,1,1,0.04)",
-              border: "1px solid rgba(1,1,1,0.07)",
-              borderRadius: 28,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            {tool.domain ? (
-              <FloatingLogo name={tool.label} domain={tool.domain} size={72} />
-            ) : (
-              <span style={{ fontSize: 28, fontWeight: 800, opacity: 0.15 }}>{tool.label[0]}</span>
-            )}
-          </div>
-
-          <div style={{ flex: 1, minWidth: 280 }}>
-            <h2
-              style={{
-                fontFamily: "var(--font-serif)",
-                fontWeight: 700,
-                fontSize: "clamp(2.4rem, 6vw, 3.8rem)",
-                lineHeight: 0.92,
-                letterSpacing: "-0.03em",
-                color: BK.black,
-                margin: "0 0 20px",
-              }}
-            >
-              {tool.label}
-            </h2>
-            <p
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                fontWeight: 600,
-                fontSize: 13,
-                color: BK.green,
-                backgroundColor: BK.black,
-                display: "inline-block",
-                padding: "5px 12px",
-                borderRadius: 4,
-              }}
-            >
-              {tool.domain || "sin-dominio.com"}
-            </p>
-          </div>
-        </div>
-
-        {/* Contenido en grid */}
-        <div
-          style={{
-            marginTop: 72,
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-            gap: 56,
-            borderTop: "1px solid rgba(1,1,1,0.07)",
-            paddingTop: 56,
-          }}
-        >
-          <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
-            <section>
-              <h3 style={detailLabelStyle}>Descripción</h3>
-              <p style={detailTextStyle}>
-                {tool.tool?.description ||
-                  "Una herramienta avanzada diseñada para potenciar la productividad mediante el uso de inteligencia artificial de última generación."}
-              </p>
-            </section>
-            <section>
-              <h3 style={detailLabelStyle}>Para qué sirve realmente</h3>
-              <p style={detailTextStyle}>
-                Permite optimizar flujos de trabajo complejos, reduciendo tiempos de ejecución y elevando la calidad del resultado final en tareas críticas.
-              </p>
-            </section>
-            <section>
-              <h3 style={detailLabelStyle}>Quién debería usarla</h3>
-              <p style={detailTextStyle}>
-                {tool.tool?.whoIsItFor ||
-                  "Profesionales, equipos creativos y desarrolladores que buscan escalar su impacto sin aumentar la carga operativa."}
-              </p>
-            </section>
-          </div>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
-            <section>
-              <h3 style={detailLabelStyle}>Cuándo usarla</h3>
-              <p style={detailTextStyle}>
-                Ideal para momentos donde la velocidad de iteración es clave y se requiere un nivel de precisión superior al estándar.
-              </p>
-            </section>
-            <section>
-              <h3 style={detailLabelStyle}>Cuándo no usarla</h3>
-              <p style={detailTextStyle}>
-                No recomendada para procesos extremadamente simples que no requieren análisis de datos o donde la intervención humana debe ser total.
-              </p>
-            </section>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 8 }}>
-              <section>
-                <h3 style={detailLabelStyle}>Categoría</h3>
-                <p style={{ ...detailTextStyle, fontWeight: 700, color: BK.black }}>{categoryTitle}</p>
-              </section>
-              <section>
-                <h3 style={detailLabelStyle}>Tipo</h3>
-                <p style={{ ...detailTextStyle, fontWeight: 700, color: BK.black }}>
-                  {tool.tool?.kind || "Plataforma"}
-                </p>
-              </section>
-            </div>
-
-            {tool.href && (
-              <a
-                href={tool.href}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  marginTop: 16,
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 10,
-                  padding: "17px 38px",
-                  backgroundColor: BK.green,
-                  color: BK.black,
-                  fontFamily: "var(--font-sequel, sans-serif)",
-                  fontWeight: 700,
-                  fontSize: 14,
-                  letterSpacing: "0.3px",
-                  textDecoration: "none",
-                  borderRadius: 999,
-                  transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                }}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}
-              >
-                Visitar sitio oficial
-                <ExternalLink style={{ width: 15, height: 15 }} />
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 // ── Vista de lista ────────────────────────────────────────────────────────
 function CategoryDetail({
   category,
   officialTools,
   onBack,
+  onViewTool,
 }: {
   category: CategoryDef;
   officialTools: ToolItem[];
   onBack: () => void;
+  onViewTool: (tool: ResolvedTool) => void;
 }) {
-  const [viewingTool, setViewingTool] = useState<ResolvedTool | null>(null);
-
   const toolsByName = useMemo(
     () => new Map(officialTools.map((t) => [normalizeText(t.name), t] as const)),
     [officialTools],
@@ -440,152 +283,173 @@ function CategoryDetail({
     [category.tools, toolsByName],
   );
 
-  if (viewingTool) {
-    return (
-      <ToolDetailView
-        tool={viewingTool}
-        categoryTitle={category.title}
-        onClose={() => setViewingTool(null)}
-      />
-    );
-  }
-
   return (
-    <div style={{ width: "100%", backgroundColor: "#FFFFFF", padding: "48px 40px" }}>
+    <div style={{ width: "100%", backgroundColor: BK.black, padding: "48px 40px" }}>
+      <h1
+        style={{
+          fontFamily: "var(--font-sequel, sans-serif)",
+          fontWeight: 700,
+          fontSize: "clamp(2rem, 5vw, 3.2rem)",
+          lineHeight: 0.95,
+          letterSpacing: "-0.03em",
+          color: BK.white,
+          marginBottom: 48,
+        }}
+      >
+        {category.title}
+      </h1>
 
-          <h1
+      <div>
+        {tools.map((tool, i) => (
+          <div
+            key={`${tool.label}-${i}`}
             style={{
-              fontFamily: "var(--font-serif)",
-              fontWeight: 700,
-              fontSize: "clamp(2rem, 5vw, 3.2rem)",
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              color: BK.black,
-              marginBottom: 16,
+              display: "flex",
+              alignItems: "center",
+              gap: 20,
+              padding: "20px 0",
+              borderBottom: "1px solid rgba(255,255,255,0.08)",
             }}
           >
-            {category.title}
-          </h1>
-          <p
-            style={{
-              fontFamily: "var(--font-sequel, sans-serif)",
-              fontWeight: 400,
-              fontSize: 15,
-              lineHeight: 1.65,
-              color: "rgba(1,1,1,0.42)",
-              marginBottom: 48,
-            }}
-          >
-            {category.description}
-          </p>
-
-          <div>
-            {tools.map((tool, i) => (
-              <div
-                key={`${tool.label}-${i}`}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 20,
-                  padding: "20px 0",
-                  borderBottom: "1px solid rgba(1,1,1,0.07)",
-                }}
-              >
-                <button
-                  type="button"
-                  onClick={() => setViewingTool(tool)}
+            <button
+              type="button"
+              onClick={() => onViewTool(tool)}
+              style={{
+                width: 44,
+                flexShrink: 0,
+                display: "flex",
+                justifyContent: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: 0,
+              }}
+            >
+              {tool.domain ? (
+                <FloatingLogo name={tool.label} domain={tool.domain} size={40} />
+              ) : (
+                <span
                   style={{
-                    width: 44,
-                    flexShrink: 0,
+                    width: 40,
+                    height: 40,
                     display: "flex",
+                    alignItems: "center",
                     justifyContent: "center",
-                    background: "none",
-                    border: "none",
-                    cursor: "pointer",
-                    padding: 0,
+                    fontFamily: "var(--font-sequel, sans-serif)",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    color: "rgba(246,246,246,0.25)",
                   }}
                 >
-                  {tool.domain ? (
-                    <FloatingLogo name={tool.label} domain={tool.domain} size={40} />
-                  ) : (
-                    <span
-                      style={{
-                        width: 40,
-                        height: 40,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontFamily: "var(--font-sequel, sans-serif)",
-                        fontWeight: 700,
-                        fontSize: 14,
-                        color: "rgba(1,1,1,0.2)",
-                      }}
-                    >
-                      {tool.label.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
-                    </span>
-                  )}
-                </button>
+                  {tool.label.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+                </span>
+              )}
+            </button>
 
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-sequel, sans-serif)",
-                      fontWeight: 700,
-                      fontSize: 15,
-                      letterSpacing: "-0.01em",
-                      color: BK.black,
-                      margin: 0,
-                    }}
-                  >
-                    {tool.label}
-                  </p>
-                  {tool.tool?.description && (
-                    <p
-                      style={{
-                        fontFamily: "var(--font-sequel, sans-serif)",
-                        fontWeight: 400,
-                        fontSize: 13,
-                        color: "rgba(1,1,1,0.42)",
-                        marginTop: 3,
-                        marginBottom: 0,
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {tool.tool.description}
-                    </p>
-                  )}
-                </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p
+                style={{
+                  fontFamily: "var(--font-sequel, sans-serif)",
+                  fontWeight: 700,
+                  fontSize: 15,
+                  letterSpacing: "-0.01em",
+                  color: BK.white,
+                  margin: 0,
+                }}
+              >
+                {tool.label}
+              </p>
+            </div>
 
-                {tool.href && (
-                  <a
-                    href={tool.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 6,
-                      fontFamily: "var(--font-sequel, sans-serif)",
-                      fontWeight: 700,
-                      fontSize: 11,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      color: BK.black,
-                      backgroundColor: BK.green,
-                      borderRadius: 999,
-                      padding: "7px 14px",
-                      textDecoration: "none",
-                      flexShrink: 0,
-                      transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-                    }}
-                  >
-                    Abrir
-                    <ExternalLink style={{ width: 11, height: 11 }} />
-                  </a>
-                )}
-              </div>
-            ))}
+            <button
+              onClick={() => onViewTool(tool)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontWeight: 700,
+                fontSize: 11,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: BK.black,
+                backgroundColor: BK.green,
+                borderRadius: 999,
+                padding: "7px 14px",
+                border: "none",
+                cursor: "pointer",
+                flexShrink: 0,
+                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+              }}
+            >
+              Detalles
+            </button>
           </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ToolDetailContent({ 
+  viewingTool, 
+  onClose 
+}: { 
+  viewingTool: ResolvedTool; 
+  onClose: () => void;
+}) {
+  return (
+    <div className="space-y-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <section className="space-y-3">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#F6F6F6]/40" style={{ fontFamily: 'var(--font-sequel)' }}>
+            Para qué sirve
+          </h3>
+          <p className="text-sm leading-relaxed text-[#F6F6F6]" style={{ fontFamily: 'var(--font-sequel)' }}>
+            {viewingTool.tool?.description || "Optimiza flujos de trabajo complejos mediante IA avanzada."}
+          </p>
+        </section>
+
+        <section className="space-y-3">
+          <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#F6F6F6]/40" style={{ fontFamily: 'var(--font-sequel)' }}>
+            Para quién
+          </h3>
+          <p className="text-sm leading-relaxed text-[#F6F6F6]" style={{ fontFamily: 'var(--font-sequel)' }}>
+            {viewingTool.tool?.whoIsItFor || "Profesionales y equipos que buscan escalar su impacto digital."}
+          </p>
+        </section>
+      </div>
+
+      <section className="space-y-3">
+        <h3 className="text-[11px] font-bold uppercase tracking-widest text-[#F6F6F6]/40" style={{ fontFamily: 'var(--font-sequel)' }}>
+          Para qué no
+        </h3>
+        <p className="text-sm leading-relaxed text-[#F6F6F6]" style={{ fontFamily: 'var(--font-sequel)' }}>
+          No recomendada para procesos manuales simples que no requieren análisis de datos o automatización inteligente.
+        </p>
+      </section>
+
+      <div className="pt-4 flex justify-end gap-3">
+        <button
+          onClick={onClose}
+          className="px-6 py-3 rounded-full text-sm font-bold text-[#F6F6F6] hover:bg-white/5 transition-colors"
+          style={{ fontFamily: 'var(--font-sequel)' }}
+        >
+          Cerrar
+        </button>
+        {viewingTool.href && (
+          <a
+            href={viewingTool.href}
+            target="_blank"
+            rel="noreferrer"
+            className="px-8 py-3 rounded-full text-sm font-bold bg-[#CAFE5B] text-[#010101] hover:bg-[#CAFE5B]/90 transition-colors inline-flex items-center gap-2"
+            style={{ fontFamily: 'var(--font-sequel)' }}
+          >
+            Visitar sitio
+            <ExternalLink size={16} />
+          </a>
+        )}
+      </div>
     </div>
   );
 }
@@ -594,56 +458,93 @@ function CategoryDetail({
 // ── Grid de 6 categorías (vista principal) ────────────────────────────────
 const Tools = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [viewingTool, setViewingTool] = useState<ResolvedTool | null>(null);
   const { data: officialTools = [] } = useToolsQuery({ isBeta: false });
 
   const selectedCategory = selectedId ? CATEGORIES.find((c) => c.id === selectedId) ?? null : null;
 
   return (
     <>
+      {/* Modal de Categoría (Lista de herramientas) */}
       <Modal
-        isOpen={!!selectedCategory}
+        isOpen={!!selectedCategory && !viewingTool}
         onClose={() => setSelectedId(null)}
         type="blur"
         animationType="scale"
         disablePadding
         showCloseButton={true}
+        className="dark border-white/10"
       >
         {selectedCategory && (
           <CategoryDetail
             category={selectedCategory}
             officialTools={officialTools}
             onBack={() => setSelectedId(null)}
+            onViewTool={(tool) => setViewingTool(tool)}
           />
         )}
       </Modal>
-    <div style={{ minHeight: "100%", backgroundColor: BK.white, padding: "64px 40px 40px" }}>
-      <div style={{ maxWidth: 1100, margin: "0 auto" }}>
 
-        {/* Contenedor blanco */}
+      {/* Modal de Detalle de Herramienta */}
+      <Modal
+        isOpen={!!viewingTool}
+        onClose={() => setViewingTool(null)}
+        title={viewingTool?.label}
+        subtitle={viewingTool?.domain || ""}
+        type="blur"
+        animationType="scale"
+        className="dark border-white/10"
+      >
+        {viewingTool && (
+          <ToolDetailContent 
+            viewingTool={viewingTool} 
+            onClose={() => setViewingTool(null)} 
+          />
+        )}
+      </Modal>
+    <div style={{ minHeight: "100vh", backgroundColor: BK.black, padding: "120px 40px 120px" }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+
+        {/* Contenedor oscuro */}
         <div
           style={{
-            backgroundColor: "#FFFFFF",
+            backgroundColor: "transparent",
             borderRadius: CARD_RADIUS,
-            border: "1px solid rgba(1,1,1,0.06)",
-            padding: "56px 48px",
+            padding: "0",
           }}
         >
           <h1
             style={{
-              fontFamily: "var(--font-serif)",
+              fontFamily: "var(--font-sequel, sans-serif)",
               fontWeight: 700,
-              fontSize: "clamp(2rem, 4vw, 3rem)",
-              lineHeight: 0.95,
-              letterSpacing: "-0.03em",
-              color: BK.black,
-              marginBottom: 48,
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              lineHeight: 1.05,
+              letterSpacing: "-0.04em",
+              color: BK.white,
+              marginBottom: 20,
               textAlign: "center",
+              whiteSpace: "nowrap"
             }}
           >
-            Catálogo de IA
+            Las herramientas más útiles del Mercado
           </h1>
+          <p
+            style={{
+              fontFamily: "var(--font-sequel, sans-serif)",
+              fontWeight: 400,
+              fontSize: "18px",
+              lineHeight: 1.6,
+              color: BK.white,
+              marginBottom: 120,
+              textAlign: "center",
+              maxWidth: "800px",
+              marginInline: "auto"
+            }}
+          >
+            Explorá las tecnologías que dominan cada área del mundo digital, organizadas para vos.
+          </p>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.id}
@@ -652,7 +553,7 @@ const Tools = () => {
                 className="group relative aspect-[16/10] w-full overflow-hidden text-left transition-transform duration-500 hover:-translate-y-1"
                 style={{
                   borderRadius: CARD_RADIUS,
-                  boxShadow: "0 2px 16px rgba(0,0,0,0.10)",
+                  border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
                 {isVideoAsset(cat.image) ? (
@@ -671,35 +572,22 @@ const Tools = () => {
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
-                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04),rgba(0,0,0,0.14)_40%,rgba(0,0,0,0.72)_100%)]" />
+                <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.2)_40%,rgba(0,0,0,0.85)_100%)]" />
 
-                <div className="absolute inset-x-0 bottom-0 p-6 md:p-7">
+                <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
                   <h2
                     style={{
-                      fontFamily: "var(--font-serif)",
+                      fontFamily: "var(--font-sequel, sans-serif)",
                       fontWeight: 700,
-                      fontSize: "clamp(1.3rem, 2vw, 1.85rem)",
+                      fontSize: "clamp(1.4rem, 2.5vw, 2.2rem)",
                       lineHeight: 1,
-                      letterSpacing: "-0.02em",
-                      color: "#FFFFFF",
+                      letterSpacing: "-0.03em",
+                      color: BK.white,
                       margin: 0,
                     }}
                   >
                     {cat.title}
                   </h2>
-                  <p
-                    style={{
-                      fontFamily: "var(--font-sequel, sans-serif)",
-                      fontWeight: 400,
-                      fontSize: 13,
-                      lineHeight: 1.6,
-                      color: "rgba(255,255,255,0.62)",
-                      margin: "10px 0 0",
-                      maxWidth: 420,
-                    }}
-                  >
-                    {cat.description}
-                  </p>
                 </div>
               </button>
             ))}

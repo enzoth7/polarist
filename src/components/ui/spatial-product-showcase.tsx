@@ -33,57 +33,58 @@ export interface FeatureMetric {
 
 export interface ProductData {
   id: ProductId;
-  label: string; // Display name for the switcher
+  label: string; 
   title: string;
-  description: string;
+  points: string[];
   image: string;
   colors: {
-    gradient: string; // Tailwind gradient classes
-    glow: string;     // Tailwind color class for accents
-    ring: string;     // Tailwind border color for rings
+    gradient: string; 
+    glow: string;     
+    ring: string;     
   };
   stats: {
     connectionStatus: string;
     batteryLevel: number;
     statusText: string;
   };
-  features: FeatureMetric[];
 }
 
 const PRODUCT_DATA: Record<ProductId, ProductData> = {
   left: {
     id: 'left',
-    label: 'Sin',
-    title: 'Caos Operativo',
-    description: 'Horas perdidas en tareas repetitivas, decisiones tomadas a ciegas sin métricas, y herramientas totalmente desconectadas entre sí.',
-    image: '/images/landing/central_ai_core.png', // Nueva imagen del núcleo
+    label: 'No es para vos',
+    title: 'Polarist NO es para vos si:',
+    points: [
+      "Buscás un curso técnico profundo. No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. Vamos 100% a la práctica.",
+      "Ya sos un experto en IA. Si te pasás todo el día probando herramientas nuevas, armando automatizaciones complejas y estás al tanto de todas las novedades del mercado, probablemente no nos necesites.",
+      "Querés seguir haciendo las cosas a la vieja escuela. Si no tenés interés en cambiar tus procesos, ahorrar tiempo o delegarle tareas a la tecnología, lo que ofrecemos no te va a servir.",
+      "Esperás que la herramienta haga literalmente todo por arte de magia. Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos."
+    ],
+    image: '/images/landing/central_ai_core.png',
     colors: {
       gradient: 'from-red-600 to-orange-900',
       glow: 'bg-red-500',
       ring: 'border-l-red-500/50',
     },
     stats: { connectionStatus: 'Desconectado', batteryLevel: 12, statusText: 'Riesgo Crítico' },
-    features: [
-      { label: 'Carga Manual', value: 85, icon: Clock },
-      { label: 'Riesgo de Error', value: 90, icon: AlertTriangle },
-    ],
   },
   right: {
     id: 'right',
-    label: 'Con',
-    title: 'Polarist',
-    description: 'Automatizás procesos, tomás decisiones informadas y accedés a un ecosistema integrado donde la IA trabaja para vos 24/7.',
-    image: '/images/landing/central_ai_core.png', // Nueva imagen del núcleo
+    label: 'Es para vos',
+    title: 'Polarist ES para vos si:',
+    points: [
+      "Sabés que la IA te puede ayudar, pero estás mareado con tanta información. Querés usarla, pero no tenés idea por dónde arrancar ni qué herramienta elegir.",
+      "Buscás atajos prácticos, no teoría aburrida. Querés soluciones rápidas para tu estudio, trabajo o emprendimiento, sin tener que fumarte cursos de 40 horas ni aprender conceptos técnicos.",
+      "Tenés una empresa y querés optimizar procesos, pero no tenés el tiempo ni el equipo para hacerlo. Querés que alguien analice tu negocio, te diga qué usar y te lo deje instalado y funcionando.",
+      "Valorás tu tiempo. Preferís que alguien te muestre el camino directo (\"usá esto para aquello\") en lugar de pasarte semanas investigando por tu cuenta."
+    ],
+    image: '/images/landing/central_ai_core.png',
     colors: {
       gradient: 'from-[#CAFE5B] to-emerald-900',
       glow: 'bg-[#CAFE5B]',
       ring: 'border-r-[#CAFE5B]/50',
     },
     stats: { connectionStatus: 'Sincronizado', batteryLevel: 100, statusText: 'Eficiencia Máxima' },
-    features: [
-      { label: 'Automatización', value: 98, icon: ZapIcon },
-      { label: 'Integración', value: 100, icon: LayoutGrid },
-    ],
   },
 };
 
@@ -208,16 +209,26 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
       initial="hidden"
       animate="visible"
       exit="exit"
-      className={`flex flex-col ${alignClass}`}
+      className={`flex flex-col ${alignClass} w-full`}
     >
-      {/* Label removido por petición del usuario */}
-      <motion.h1 variants={ANIMATIONS.item} className="text-4xl md:text-5xl font-bold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400">
+      <motion.h1 variants={ANIMATIONS.item} className="text-3xl md:text-4xl font-bold tracking-tight mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400">
         {data.title}
       </motion.h1>
-      <motion.p variants={ANIMATIONS.item} className={`text-zinc-400 mb-8 max-w-sm leading-relaxed ${isLeft ? 'mr-auto' : 'ml-auto'}`}>
-        {data.description}
-      </motion.p>
-
+      
+      <div className="space-y-6">
+        {data.points.map((point, index) => (
+          <motion.div 
+            key={index}
+            variants={ANIMATIONS.item}
+            className={`flex items-start gap-4 ${isLeft ? 'flex-row' : 'flex-row-reverse text-right'}`}
+          >
+            <div className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${isLeft ? 'bg-red-500' : 'bg-[#CAFE5B]'}`} />
+            <p className="text-sm md:text-base text-zinc-400 leading-relaxed max-w-md">
+              {point}
+            </p>
+          </motion.div>
+        ))}
+      </div>
     </motion.div>
   );
 };
@@ -283,7 +294,7 @@ export default function SpatialProductShowcase() {
       {/* Header */}
       <div className="absolute top-28 md:top-32 w-full text-center z-20 px-4">
          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-            ¿Por qué usar Polarist?
+            Polarist para vos
          </h2>
       </div>
 
@@ -299,7 +310,7 @@ export default function SpatialProductShowcase() {
           <ProductVisual data={currentData} isLeft={isLeft} />
 
           {/* Content Column */}
-          <motion.div layout="position" className="w-full max-w-md">
+          <motion.div layout="position" className="w-full max-w-2xl">
             <AnimatePresence mode="wait">
               <ProductDetails 
                 key={activeSide}

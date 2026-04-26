@@ -29,7 +29,7 @@ const Footer = ({ className, dark }: FooterProps) => {
           <div className="flex items-center justify-center gap-1.5">
             <BrandLogo showLabel={false} imageClassName="h-6 w-6 rounded-md" />
           </div>
-          <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '15px', color: 'rgba(255,255,255,0.8)' }} className="tracking-tight">
+          <p style={{ fontFamily: 'var(--font-sequel, sans-serif)', fontWeight: 400, fontSize: '15px', color: 'rgba(255,255,255,0.8)' }} className="tracking-tight">
             Tu camino más fácil hacia la IA.
           </p>
         </div>
@@ -41,7 +41,7 @@ const Footer = ({ className, dark }: FooterProps) => {
               key={link.label}
               to={link.to}
               className="inline-flex items-center px-1 py-1 transition-colors hover:text-white"
-              style={{ fontFamily: 'var(--font-sans)', fontWeight: 600, fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}
+              style={{ fontFamily: 'var(--font-sequel, sans-serif)', fontWeight: 400, fontSize: '14px', color: 'rgba(255,255,255,0.5)' }}
             >
               {link.label}
             </Link>
@@ -51,7 +51,7 @@ const Footer = ({ className, dark }: FooterProps) => {
         {/* LÍNEA 3: Derechos e Instagram */}
         <div
           className="flex w-full flex-row items-center justify-center gap-3 px-2 py-1"
-          style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}
+          style={{ fontFamily: 'var(--font-sequel, sans-serif)', fontWeight: 300, fontSize: '13px', color: 'rgba(255,255,255,0.4)' }}
         >
           <span>© 2026 Polarist. Todos los derechos reservados.</span>
           <a

@@ -42,16 +42,16 @@ const showBubbleToast = ({
   tone?: BubbleToastTone;
 }) => {
   const toneClasses: Record<BubbleToastTone, string> = {
-    neutral: "border-black/12 bg-white/75 text-foreground dark:border-white/20 dark:bg-[#0d1219]/88 dark:text-white",
-    success: "border-primary/45 bg-primary text-primary-foreground dark:border-primary/45 dark:bg-primary dark:text-primary-foreground",
-    danger: "border-red-500/35 bg-[linear-gradient(145deg,rgba(255,225,225,0.9),rgba(255,194,194,0.74))] text-[#401212]",
+    neutral: "border-white/10 bg-[#0d1219]/88 text-white",
+    success: "border-[#CAFE5B]/45 bg-[#CAFE5B] text-[#010101]",
+    danger: "border-red-500/35 bg-red-500 text-white",
   };
 
   toast.custom(
     () => (
       <div className={cn("pointer-events-auto mr-3 w-[min(92vw,360px)] rounded-[18px] border px-4 py-3 shadow-[0_18px_38px_-28px_rgba(0,0,0,0.75)] backdrop-blur-xl md:mr-5", toneClasses[tone])}>
-        <p className="text-sm font-semibold tracking-tight">{title}</p>
-        {description ? <p className="mt-1 text-xs leading-5 opacity-85">{description}</p> : null}
+        <p className="text-sm font-bold tracking-tight" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>{title}</p>
+        {description ? <p className="mt-1 text-xs leading-5 opacity-85" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>{description}</p> : null}
       </div>
     ),
     { duration: 2200, position: "top-right" },
@@ -122,6 +122,8 @@ const Settings = () => {
     if (!normalizedEmail) { toast.error("El email es obligatorio"); return; }
     try {
       setIsSaving(true);
+      
+      // 1. Actualizar Auth si es necesario
       const shouldUpdateAuth = normalizedEmail !== profile.email || normalizedPassword.length > 0;
       if (shouldUpdateAuth) {
         const { error: authError } = await supabase.auth.updateUser({
@@ -130,23 +132,39 @@ const Settings = () => {
         });
         if (authError) throw authError;
       }
+      
+      // 2. Actualizar Perfil en la tabla (usamos update para evitar conflictos de upsert)
       const { error: profileError } = await supabase
         .from("polarist_usuarios")
-        .upsert({ id: profile.id, full_name: normalizedFullName, username: normalizedUsername, occupation: normalizedOccupation, country: normalizedCountry || null, email: normalizedEmail, avatar_url: localAvatarUrl }, { onConflict: "id" })
-        .select("id").single();
+        .update({ 
+          full_name: normalizedFullName, 
+          username: normalizedUsername, 
+          occupation: normalizedOccupation, 
+          country: normalizedCountry || null, 
+          email: normalizedEmail, 
+          avatar_url: localAvatarUrl 
+        })
+        .eq("id", profile.id);
+
       if (profileError) throw profileError;
+      
       await refreshProfile();
       setPassword("");
+      
       showBubbleToast({
         title: "Cambios guardados",
         description: normalizedEmail !== profile.email ? "Revisá tu correo para confirmar el nuevo email." : "Tu perfil se actualizó correctamente.",
         tone: "success",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error updating settings:", error);
-      const message = error instanceof Error ? error.message : "";
-      if (message.toLowerCase().includes("username") || message.toLowerCase().includes("duplicate")) {
+      
+      // Reportar error al usuario de forma legible
+      const message = error.message || "";
+      if (message.includes("unique_idx") || message.includes("duplicate")) {
         toast.error("Ese nombre de usuario ya está en uso");
+      } else if (message.includes("email")) {
+        toast.error("Hubo un problema con el email");
       } else {
         toast.error("No se pudieron guardar los cambios");
       }
@@ -155,85 +173,91 @@ const Settings = () => {
     }
   };
 
-  // ─── Clases del sistema de diseño ───────────────────────────────────
-  const cardClass = "relative overflow-hidden rounded-[28px] bg-white border border-zinc-100 shadow-[0_8px_30px_rgba(0,0,0,0.05)] p-6 md:p-8";
-  const inputClass = "h-11 rounded-xl border-zinc-200 bg-zinc-50 text-zinc-900 placeholder:text-zinc-400 focus:bg-white focus:border-zinc-300 transition-colors";
-  const labelClass = "text-[12px] font-bold uppercase tracking-[0.12em] text-zinc-500";
+  // ─── Clases del sistema de diseño (Brand Kit B Sutil) ─────────────────
+  const cardClass = "relative overflow-hidden rounded-[32px] bg-white/[0.03] border border-white/10 p-6 md:p-8 backdrop-blur-md";
+  const inputClass = "h-12 rounded-2xl border-white/10 bg-white/[0.05] text-[#F6F6F6] placeholder:text-[#F6F6F6]/30 focus:bg-white/[0.08] focus:border-[#CAFE5B]/50 focus-visible:ring-1 focus-visible:ring-[#CAFE5B] focus-visible:ring-offset-0 transition-all duration-300";
+  const labelClass = "text-[11px] font-bold uppercase tracking-[0.2em] text-[#F6F6F6]/40";
+  const sequelStyle = { fontFamily: 'var(--font-sequel, sans-serif)' };
 
   // ─── Estados de carga ────────────────────────────────────────────────
   if (status === "loading" && !profile) {
     return (
-      <div className="flex min-h-full items-center justify-center bg-[#F0F2F6] p-6">
-        <p className="text-sm font-bold text-zinc-400">Cargando configuración...</p>
+      <div className="flex min-h-full items-center justify-center bg-[#010101] p-6">
+        <p className="text-sm font-bold text-[#F6F6F6]/40" style={sequelStyle}>Cargando configuración...</p>
       </div>
     );
   }
 
   if (status !== "authenticated" || !profile) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-4 bg-[#F0F2F6] p-6 text-center">
-        <h1 className="text-2xl font-black tracking-tight text-zinc-900">Necesitás iniciar sesión</h1>
-        <p className="max-w-sm text-sm font-medium text-zinc-500">
-          Iniciá sesión con Google para editar tu perfil y la configuración de tu cuenta.
+      <div className="flex min-h-full flex-col items-center justify-center gap-6 bg-[#010101] p-6 text-center">
+        <h1 className="text-3xl font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Necesitás iniciar sesión</h1>
+        <p className="max-w-sm text-sm font-medium text-[#F6F6F6]/60" style={sequelStyle}>
+          Iniciá sesión con tu cuenta para editar tu perfil y la configuración.
         </p>
-        <Button onClick={() => navigate(routes.login)}>Ir al login</Button>
+        <Button onClick={() => navigate(routes.login)} className="rounded-full px-8 py-6 bg-[#CAFE5B] text-[#010101] hover:bg-[#CAFE5B]/90 font-bold" style={sequelStyle}>Ir al login</Button>
       </div>
     );
   }
 
   return (
-    <div className="min-h-full bg-[#F0F2F6] px-5 pb-24 pt-6 md:px-8 md:pb-16 md:pt-10">
-      <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-5">
+    <div className="min-h-full bg-[#010101] px-5 pb-32 pt-10 md:px-8 md:pt-16">
+      <div className="relative mx-auto flex w-full max-w-2xl flex-col gap-6">
 
         {/* ─── Header ─────────────────────────────────────────────── */}
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex items-end justify-between mb-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-400">Cuenta</span>
-            <h1 className="text-[clamp(2rem,4vw,3rem)] font-black tracking-tight leading-none text-zinc-900 mt-0.5">
+            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#F6F6F6]/30" style={sequelStyle}>Cuenta</span>
+            <h1 
+              className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-tight leading-none text-[#F6F6F6] mt-2"
+              style={{ ...sequelStyle, letterSpacing: '-0.04em' }}
+            >
               Configuración
             </h1>
           </div>
           <Link
             to={profileRoute}
-            className="flex items-center gap-1.5 rounded-full border border-zinc-200 bg-white px-4 py-2 text-[13px] font-bold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50 hover:scale-105 active:scale-95"
+            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-[12px] font-bold text-[#F6F6F6]/80 backdrop-blur-xl transition-all hover:bg-white/[0.1] hover:scale-105 active:scale-95"
+            style={sequelStyle}
           >
             <ArrowLeft className="h-4 w-4" />
             Volver
           </Link>
         </div>
 
-        <form onSubmit={handleSave} className="flex flex-col gap-4">
+        <form onSubmit={handleSave} className="flex flex-col gap-6">
 
           {/* ─── Foto de perfil ──────────────────────────────────── */}
           <section className={cardClass}>
-            <div className="flex items-center gap-5">
+            <div className="flex items-center gap-6">
               {/* Avatar */}
               <div className="group relative shrink-0">
-                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-zinc-100 bg-zinc-50">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.05]">
                   {isUploadingAvatar ? (
-                    <Loader2 className="h-6 w-6 animate-spin text-zinc-400" />
+                    <Loader2 className="h-7 w-7 animate-spin text-[#CAFE5B]" />
                   ) : (
                     <img src={localAvatarUrl} alt={profile.fullName} className="h-full w-full object-cover" />
                   )}
                 </div>
                 <label
                   htmlFor="avatar-upload"
-                  className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border border-zinc-200 bg-white text-zinc-600 shadow-sm transition-colors hover:bg-zinc-50"
+                  className="absolute -bottom-1 -right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-[#CAFE5B] text-[#010101] shadow-lg transition-all hover:scale-110 active:scale-90"
                 >
-                  <Camera className="h-3.5 w-3.5" />
+                  <Camera className="h-4 w-4" />
                   <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
                 </label>
               </div>
 
               {/* Info */}
-              <div>
-                <h2 className="text-base font-black tracking-tight text-zinc-900">Foto de perfil</h2>
-                <p className="text-sm font-medium text-zinc-400 mt-0.5">Máximo 5 MB. JPG, PNG o WebP.</p>
+              <div className="flex-1">
+                <h2 className="text-lg font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Foto de perfil</h2>
+                <p className="text-[13px] font-medium text-[#F6F6F6]/40 mt-1" style={sequelStyle}>JPG, PNG o WebP. Máximo 5 MB.</p>
                 <label
                   htmlFor="avatar-upload"
-                  className="mt-3 inline-flex cursor-pointer items-center rounded-full border border-zinc-200 bg-white px-3.5 py-1.5 text-[12px] font-bold text-zinc-700 shadow-sm transition-all hover:bg-zinc-50"
+                  className="mt-4 inline-flex cursor-pointer items-center rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-bold text-[#F6F6F6]/80 transition-all hover:bg-white/[0.1]"
+                  style={sequelStyle}
                 >
-                  {isUploadingAvatar ? "Subiendo..." : "Cambiar foto"}
+                  {isUploadingAvatar ? "Subiendo..." : "Actualizar foto"}
                 </label>
               </div>
             </div>
@@ -241,32 +265,32 @@ const Settings = () => {
 
           {/* ─── Perfil ──────────────────────────────────────────── */}
           <section className={cardClass}>
-            <div className="flex items-center gap-2 mb-5">
-              <UserRound className="h-4 w-4 text-zinc-400" />
-              <h2 className="text-base font-black tracking-tight text-zinc-900">Perfil</h2>
+            <div className="flex items-center gap-2.5 mb-8">
+              <UserRound className="h-4 w-4 text-[#CAFE5B]" />
+              <h2 className="text-base font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Perfil</h2>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-1.5">
-                <Label htmlFor="fullName" className={labelClass}>Nombre completo</Label>
-                <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Tu nombre" autoComplete="name" className={inputClass} />
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="fullName" className={labelClass} style={sequelStyle}>Nombre completo</Label>
+                <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} placeholder="Tu nombre" className={cn(inputClass, "px-4")} style={sequelStyle} />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="occupation" className={labelClass}>Ocupación</Label>
-                <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} placeholder="Tu ocupación" className={inputClass} />
+              <div className="space-y-2">
+                <Label htmlFor="occupation" className={labelClass} style={sequelStyle}>Ocupación</Label>
+                <Input id="occupation" value={occupation} onChange={(e) => setOccupation(e.target.value)} placeholder="Tu ocupación" className={cn(inputClass, "px-4")} style={sequelStyle} />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="username" className={labelClass}>Nombre de usuario</Label>
-                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="tuusuario" autoCapitalize="none" autoCorrect="off" className={inputClass} />
+              <div className="space-y-2">
+                <Label htmlFor="username" className={labelClass} style={sequelStyle}>Nombre de usuario</Label>
+                <Input id="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="tuusuario" className={cn(inputClass, "px-4")} style={sequelStyle} />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="country" className={labelClass}>País</Label>
+              <div className="space-y-2">
+                <Label htmlFor="country" className={labelClass} style={sequelStyle}>País</Label>
                 <div className="relative">
-                  <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Ej: Uruguay" list="country-options" autoComplete="off" className={`pl-9 ${inputClass}`} />
+                  <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#F6F6F6]/20" />
+                  <Input id="country" value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Ej: Uruguay" list="country-options" className={cn(inputClass, "pl-11 pr-4")} style={sequelStyle} />
                   <datalist id="country-options">
                     {WORLD_COUNTRIES.map((countryName) => (
                       <option key={countryName} value={countryName} />
@@ -279,34 +303,35 @@ const Settings = () => {
 
           {/* ─── Cuenta ──────────────────────────────────────────── */}
           <section className={cardClass}>
-            <div className="flex items-center gap-2 mb-5">
-              <Mail className="h-4 w-4 text-zinc-400" />
-              <h2 className="text-base font-black tracking-tight text-zinc-900">Gestión de cuenta</h2>
+            <div className="flex items-center gap-2.5 mb-8">
+              <Mail className="h-4 w-4 text-[#CAFE5B]" />
+              <h2 className="text-base font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Gestión de cuenta</h2>
             </div>
 
-            <div className="grid gap-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email" className={labelClass}>Email</Label>
-                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" autoComplete="email" className={inputClass} />
+            <div className="grid gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="email" className={labelClass} style={sequelStyle}>Email</Label>
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="tu@email.com" className={cn(inputClass, "px-4")} style={sequelStyle} />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="password" className={labelClass}>Contraseña</Label>
+              <div className="space-y-2">
+                <Label htmlFor="password" className={labelClass} style={sequelStyle}>Contraseña</Label>
                 <div className="relative">
-                  <LockKeyhole className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-zinc-400" />
-                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nueva contraseña" autoComplete="new-password" className={`pl-9 ${inputClass}`} />
+                  <LockKeyhole className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#F6F6F6]/20" />
+                  <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Nueva contraseña" className={cn(inputClass, "pl-11 pr-4")} style={sequelStyle} />
                 </div>
-                <p className="text-xs font-medium text-zinc-400">Dejalo vacío si no querés cambiar la contraseña.</p>
+                <p className="text-[11px] font-medium text-[#F6F6F6]/30 mt-2" style={sequelStyle}>Dejalo vacío si no querés cambiar la contraseña.</p>
               </div>
             </div>
           </section>
 
           {/* ─── Guardar ─────────────────────────────────────────── */}
-          <div className="flex justify-end pt-1">
+          <div className="flex justify-end pt-4">
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex items-center rounded-[28px] border border-white/80 bg-gradient-to-b from-white to-[#f4f4f7] px-8 py-3.5 text-[15px] font-bold tracking-tight text-[#1a1a1a] shadow-[0_8px_20px_rgba(0,0,0,0.08),inset_0_2px_4px_rgba(255,255,255,1)] ring-1 ring-black/[0.04] transition-all duration-300 hover:scale-105 hover:shadow-[0_12px_28px_rgba(0,0,0,0.12)] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center min-w-[180px] rounded-full bg-[#CAFE5B] px-10 py-4 text-[14px] font-bold tracking-tight text-[#010101] shadow-[0_20px_40px_-10px_rgba(202,254,91,0.3)] transition-all duration-300 hover:scale-105 hover:bg-[#CAFE5B]/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              style={sequelStyle}
             >
               {isSaving ? "Guardando..." : "Guardar cambios"}
             </button>

@@ -1,3 +1,9 @@
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import LegalPageLayout from "./LegalPageLayout";
 
 const privacySections = [
@@ -19,7 +25,7 @@ const privacySections = [
   {
     title: "Almacenamiento y seguridad",
     content:
-      "La información se almacena mediante servicios de infraestructura y autenticación, incluyendo Supabase, con medidas razonables de seguridad para proteger los datos contra accesos no autorizados, pérdidas o usos indebidos.",
+      "La información se almacena mediante servicios de infraestructura y autenticación, incluyendo Supabase, con medidas razonables de seguridad para proteger los datos contra accesos no autorizados, pérdidas o usos indeis.",
   },
   {
     title: "Comunidad y contenido compartido",
@@ -34,6 +40,8 @@ const privacySections = [
 ] as const;
 
 const PrivacyPolicy = () => {
+  const sequelStyle = { fontFamily: 'var(--font-sequel, sans-serif)' };
+
   return (
     <LegalPageLayout
       eyebrow="Privacidad"
@@ -41,18 +49,28 @@ const PrivacyPolicy = () => {
       description="Esta política explica de forma general qué datos usamos, por qué los usamos y cómo cuidamos la información dentro de Polarist."
       showSecondaryGlow={false}
     >
-      <div className="space-y-4">
-        {privacySections.map((section) => (
-          <section key={section.title} className="space-y-3">
-            <h2 className="text-xl font-black tracking-tight text-foreground dark:text-white">
+      <Accordion type="single" collapsible className="w-full space-y-2">
+        {privacySections.map((section, idx) => (
+          <AccordionItem 
+            key={section.title} 
+            value={`item-${idx}`}
+            className="border-white/10"
+          >
+            <AccordionTrigger 
+              style={sequelStyle}
+              className="text-xl font-semibold tracking-tight text-[#F6F6F6] hover:no-underline hover:text-[#CAFE5B] transition-colors"
+            >
               {section.title}
-            </h2>
-            <p className="text-sm leading-7 text-muted-foreground dark:text-white/72">
+            </AccordionTrigger>
+            <AccordionContent 
+              style={sequelStyle}
+              className="text-sm leading-7 text-[#F6F6F6]/70 font-normal"
+            >
               {section.content}
-            </p>
-          </section>
+            </AccordionContent>
+          </AccordionItem>
         ))}
-      </div>
+      </Accordion>
     </LegalPageLayout>
   );
 };

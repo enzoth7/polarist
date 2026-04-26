@@ -4,8 +4,8 @@ const mediaContent = {
   video: {
     src: '/images/landing/scroll_media.png',
     background: '/images/landing/scroll_bg.png',
-    titleLeft: '¿Nuestra',
-    titleRight: 'Solución?',
+    titleLeft: 'Finalmente',
+    titleRight: 'Creamos',
   },
 };
 

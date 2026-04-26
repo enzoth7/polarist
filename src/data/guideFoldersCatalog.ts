@@ -1,4 +1,4 @@
-export type GuideFolderKind = "social" | "web" | "visual" | "decision" | "strategy" | "timeline" | "terms" | "prompts" | "memory";
+export type GuideFolderKind = "social" | "web" | "visual" | "decision" | "strategy" | "timeline" | "terms" | "prompts" | "memory" | "business";
 
 export type GuideFolderCard = {
   id: string;
@@ -10,67 +10,52 @@ export type GuideFolderCard = {
 
 export const guideFoldersCatalog: GuideFolderCard[] = [
   {
-    id: "social",
-    eyebrow: "Social Media",
-    title: "Bases de Redes Sociales",
-    description: "Patrones de atención, jerarquía algorítmica y los principios inmutables para el contenido orgánico.",
-    kind: "social",
+    id: "timeline",
+    eyebrow: "Historia",
+    title: "El inicio de la Inteligencia Artificial",
+    description: "Desde los primeros algoritmos hasta la revolución actual de los modelos de lenguaje.",
+    kind: "timeline",
   },
   {
-    id: "web",
-    eyebrow: "Desarrollo Web",
-    title: "Estructuras de Internet",
-    description: "Cómo funciona la web, frameworks básicos y la lógica elemental para entender software sin programar.",
-    kind: "web",
+    id: "terms",
+    eyebrow: "Glosario",
+    title: "Términos esenciales de Inteligencia Artificial",
+    description: "Los conceptos clave que necesitás entender para hablar el mismo idioma que la tecnología.",
+    kind: "terms",
   },
   {
     id: "visual",
-    eyebrow: "Arte & Diseño",
-    title: "Conceptos Visuales",
-    description: "Composición espacial, teoría de jerarquías y estéticas premium sin necesidad de ser diseñador.",
+    eyebrow: "Comunicación",
+    title: "Fundamentos de Comunicación y Conceptos Visuales",
+    description: "Principios de diseño y narrativa visual para destacar en un mundo saturado de imágenes.",
     kind: "visual",
   },
   {
+    id: "social",
+    eyebrow: "Estrategia",
+    title: "Datos fundamentales para negocios, marcas y emprendedores",
+    description: "Información crítica para aplicar la IA en el crecimiento real de tu proyecto o empresa.",
+    kind: "social",
+  },
+  {
+    id: "prompts",
+    eyebrow: "Ingeniería",
+    title: "Prompts estratégicos según cada herramienta",
+    description: "Estructuras maestras para obtener los mejores resultados de ChatGPT, Claude, Gemini y más.",
+    kind: "prompts",
+  },
+  {
     id: "decision",
-    eyebrow: "Criterio Tecnológico",
-    title: "Cuándo Usar IA (y Cuándo No)",
-    description: "Un marco de decisión sólido para delegar lo correcto y mantener el trabajo manual donde aporta valor.",
+    eyebrow: "Criterio",
+    title: "Cuándo usar Inteligencia Artificial y cuándo no",
+    description: "Aprendé a distinguir dónde la IA suma valor y dónde el toque humano sigue siendo insustituible.",
     kind: "decision",
   },
   {
     id: "strategy",
     eyebrow: "Diferenciación",
-    title: "Destruye la Homogeneidad",
-    description: "La IA estandariza. Descubre los pilares tácticos para que tu marca evada el tono robótico y predomine.",
+    title: "Cómo diferenciarte en un mercado donde la IA iguala todo",
+    description: "Estrategias para mantener tu autenticidad y ventaja competitiva cuando la tecnología se vuelve masiva.",
     kind: "strategy",
   },
-  {
-    id: "timeline",
-    eyebrow: "Historia de la IA",
-    title: "Origen de las Máquinas",
-    description: "El linaje directo: desde el hardware básico hasta los cerebros sintéticos que levantan mundos.",
-    kind: "timeline",
-  },
-  {
-    id: "terms",
-    eyebrow: "Glosario Oficial",
-    title: "Términos Básicos de IA",
-    description: "Inferencia, Tokens, Perceptrones. La guía de léxico definitiva para hablar de tecnología con autoridad.",
-    kind: "terms",
-  },
-  {
-    id: "prompts",
-    eyebrow: "Ingeniería Prompt",
-    title: "Prompts Validados",
-    description: "Fórmulas calificadas de alta precisión. Listas para inyectar y explotar algoritmos de cualquier motor.",
-    kind: "prompts",
-  },
-  {
-    id: "memory",
-    eyebrow: "Context Molding",
-    title: "Inyectando Memoria",
-    description: "La técnica maestra para nutrir LLMs. Archivos base para guiar la personalidad de GPTs y Gems.",
-    kind: "memory",
-  },
 ];
-

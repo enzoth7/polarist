@@ -9,8 +9,8 @@ interface FinalCTAProps {
 }
 
 export const FinalCTA = ({
-  title = "¿Listo para transformar tu negocio?",
-  description = "Unite a los que ya están usando inteligencia artificial para trabajar mejor.",
+  title = "¿Listo para dejarte guiar y usar la inteligencia artificial a tu favor?",
+  description = "Unite a Polarist y empezá a aprovechar la tecnología a tu favor hoy mismo. Descubrí tu atajo y hacé que la IA trabaje para vos.",
   buttonText = "Empezar ahora",
   to = routes.login,
 }: FinalCTAProps) => {
@@ -18,12 +18,12 @@ export const FinalCTA = ({
     <section className="relative z-30 flex w-full flex-col items-center justify-start px-6 pt-2 pb-48 md:pt-2 md:pb-64" style={{ background: 'var(--polarist-black, #010101)' }}>
       <div className="flex flex-col items-center text-center">
         <h2
-          className="text-3xl sm:text-4xl lg:text-5xl"
+          className="text-4xl sm:text-5xl lg:text-6xl"
           style={{ fontFamily: 'var(--font-serif)', fontWeight: 300, letterSpacing: '-0.02em', lineHeight: 1.05, color: 'var(--polarist-white, #F6F6F6)' }}
         >
           {title}
         </h2>
-        <p className="mt-6 max-w-xl text-lg leading-relaxed" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, color: 'rgba(246,246,246,0.45)' }}>
+        <p className="mt-6 max-w-none text-lg leading-relaxed whitespace-nowrap" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, color: '#F6F6F6' }}>
           {description}
         </p>
         <div className="mt-10">
@@ -31,10 +31,10 @@ export const FinalCTA = ({
             to={to}
             style={{
               fontFamily: 'var(--font-sans)',
-              fontSize: '13px',
-              fontWeight: 500,
-              letterSpacing: '0.3px',
-              padding: '13px 26px',
+              fontSize: '16px',
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              padding: '18px 42px',
               background: 'var(--polarist-green, #CAFE5B)',
               color: 'var(--polarist-black, #010101)',
               borderRadius: 'var(--r-pill, 999px)',
