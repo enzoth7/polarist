@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { ArrowLeft, ExternalLink } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowLeft, ArrowUpRight, ExternalLink } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
+import { BubbleText } from "@/components/ui/bubble-text";
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
 import Modal from "@/components/ui/modal-drop";
 
@@ -98,6 +101,9 @@ type CategoryDef = {
   title: string;
   description: string;
   image: string;
+  mediaPosition?: string;
+  mediaFit?: "cover" | "contain";
+  mediaScale?: number;
   tools: RequestedTool[];
 };
 
@@ -114,9 +120,9 @@ const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".m
 const CATEGORIES: CategoryDef[] = [
   {
     id: "conversacional",
-    title: "IA Conversacional",
+    title: "Chatbot",
     description: "Asistentes de lenguaje para consultas, redacción y análisis.",
-    image: "/images/tools/A_hyper_detailed_composite_bio.mp4",
+    image: "/images/tools/chatbot-pattern-storage.mp4",
     tools: [
       { label: "Claude", fallbackHref: "https://claude.ai" },
       { label: "ChatGPT", fallbackHref: "https://chatgpt.com" },
@@ -129,8 +135,7 @@ const CATEGORIES: CategoryDef[] = [
     id: "creacion",
     title: "Creación de Contenido",
     description: "Imágenes, video, música y presentaciones generadas con IA.",
-    image:
-      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/tools/creacion-contenido-entryway.mp4",
     tools: [
       { label: "MidJourney", aliases: ["Midjourney"], fallbackHref: "https://www.midjourney.com" },
       { label: "Canva", aliases: ["Canva IA"], fallbackHref: "https://www.canva.com" },
@@ -146,8 +151,8 @@ const CATEGORIES: CategoryDef[] = [
     id: "automatizaciones",
     title: "Automatizaciones",
     description: "Conectá apps y procesos sin código. El stack operativo moderno.",
-    image:
-      "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/tools/automatizaciones-shelf-styling.mp4",
+    mediaPosition: "center 38%",
     tools: [
       { label: "n8n", aliases: ["n8n"], fallbackHref: "https://n8n.io" },
       { label: "Make", fallbackHref: "https://www.make.com" },
@@ -160,8 +165,7 @@ const CATEGORIES: CategoryDef[] = [
     id: "desarrollo",
     title: "Desarrollo y Web",
     description: "Construí más rápido con IA, desde el diseño hasta el deploy.",
-    image:
-      "https://images.unsplash.com/photo-1515879218367-8466d910aaa4?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/tools/desarrollo-web-coastal.mp4",
     tools: [
       { label: "Lovable", fallbackHref: "https://lovable.dev" },
       { label: "Bolt.new", aliases: ["Bolt.new"], fallbackHref: "https://bolt.new" },
@@ -175,8 +179,7 @@ const CATEGORIES: CategoryDef[] = [
     id: "marketing",
     title: "Marketing y Ventas",
     description: "Captá leads, automatizá comunicaciones y escalá campañas.",
-    image:
-      "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/tools/marketing-ventas-craft-project.mp4",
     tools: [
       { label: "Typeform", fallbackHref: "https://www.typeform.com" },
       { label: "Kommo", fallbackHref: "https://kommo.com" },
@@ -188,8 +191,7 @@ const CATEGORIES: CategoryDef[] = [
     id: "productividad",
     title: "Productividad",
     description: "Organizá, resumí y agilizá el trabajo diario.",
-    image:
-      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=1600&q=80",
+    image: "/images/tools/productividad-cozy-corner.mp4",
     tools: [
       { label: "Notion AI", aliases: ["Notion AI"], fallbackHref: "https://www.notion.so/product/ai" },
       { label: "NotebookLM", fallbackHref: "https://notebooklm.google.com" },
@@ -284,110 +286,151 @@ function CategoryDetail({
   );
 
   return (
-    <div style={{ width: "100%", backgroundColor: BK.black, padding: "48px 40px" }}>
-      <h1
-        style={{
-          fontFamily: "var(--font-sequel, sans-serif)",
-          fontWeight: 700,
-          fontSize: "clamp(2rem, 5vw, 3.2rem)",
-          lineHeight: 0.95,
-          letterSpacing: "-0.03em",
-          color: BK.white,
-          marginBottom: 48,
-        }}
-      >
-        {category.title}
-      </h1>
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: "easeOut" }}
+      className="relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-[#010101]/65 p-6 text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] backdrop-blur-2xl md:p-9"
+      style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+    >
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(246,246,246,0.08),transparent_35%,rgba(202,254,91,0.06))]" />
+      <div className="pointer-events-none absolute -right-24 top-0 h-72 w-72 rounded-full bg-[#CAFE5B]/12 blur-3xl" />
 
-      <div>
-        {tools.map((tool, i) => (
-          <div
-            key={`${tool.label}-${i}`}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 20,
-              padding: "20px 0",
-              borderBottom: "1px solid rgba(255,255,255,0.08)",
-            }}
-          >
+      <div className="relative grid gap-8 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="space-y-6">
+          <div className="flex items-start justify-between gap-5">
+            <div className="space-y-4">
+              <Badge
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/8 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.3em] text-[#F6F6F6]/60 backdrop-blur"
+              >
+                Herramientas
+              </Badge>
+              <div>
+                <h1 className="text-[clamp(2rem,5vw,3.35rem)] font-bold leading-[0.95] tracking-[-0.04em] text-[#F6F6F6]">
+                  {category.title}
+                </h1>
+                <p className="mt-4 max-w-xl text-sm leading-6 text-[#F6F6F6]/62">
+                  {category.description}
+                </p>
+              </div>
+            </div>
             <button
               type="button"
-              onClick={() => onViewTool(tool)}
-              style={{
-                width: 44,
-                flexShrink: 0,
-                display: "flex",
-                justifyContent: "center",
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                padding: 0,
-              }}
+              onClick={onBack}
+              className="hidden items-center gap-2 rounded-full border border-white/10 bg-white/7 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.22em] text-[#F6F6F6]/55 transition hover:border-[#CAFE5B]/30 hover:text-[#CAFE5B] sm:inline-flex"
             >
-              {tool.domain ? (
-                <FloatingLogo name={tool.label} domain={tool.domain} size={40} />
-              ) : (
-                <span
-                  style={{
-                    width: 40,
-                    height: 40,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontWeight: 700,
-                    fontSize: 14,
-                    color: "rgba(246,246,246,0.25)",
-                  }}
-                >
-                  {tool.label.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
-                </span>
-              )}
-            </button>
-
-            <div style={{ flex: 1, minWidth: 0 }}>
-              <p
-                style={{
-                  fontFamily: "var(--font-sequel, sans-serif)",
-                  fontWeight: 700,
-                  fontSize: 15,
-                  letterSpacing: "-0.01em",
-                  color: BK.white,
-                  margin: 0,
-                }}
-              >
-                {tool.label}
-              </p>
-            </div>
-
-            <button
-              onClick={() => onViewTool(tool)}
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 6,
-                fontFamily: "var(--font-sequel, sans-serif)",
-                fontWeight: 700,
-                fontSize: 11,
-                letterSpacing: "0.08em",
-                textTransform: "uppercase",
-                color: BK.black,
-                backgroundColor: BK.green,
-                borderRadius: 999,
-                padding: "7px 14px",
-                border: "none",
-                cursor: "pointer",
-                flexShrink: 0,
-                transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-              }}
-            >
-              Detalles
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Volver
             </button>
           </div>
-        ))}
+
+          <div className="grid gap-3">
+            {tools.map((tool, i) => (
+              <motion.div
+                key={`${tool.label}-${i}`}
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.04 * i }}
+                whileHover={{ y: -3 }}
+                className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/[0.055] p-4 backdrop-blur transition-all hover:border-[#CAFE5B]/28 hover:bg-white/[0.075] hover:shadow-[0_18px_48px_rgba(0,0,0,0.25)]"
+              >
+                <div className="absolute inset-0 -z-10 bg-[linear-gradient(135deg,rgba(202,254,91,0.09),transparent_45%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                <div className="flex items-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => onViewTool(tool)}
+                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/80 shadow-[0_12px_34px_rgba(0,0,0,0.22)] transition group-hover:border-[#CAFE5B]/40"
+                  >
+                    {tool.domain ? (
+                      <FloatingLogo name={tool.label} domain={tool.domain} size={36} />
+                    ) : (
+                      <span className="text-xs font-bold text-[#010101]/55">
+                        {tool.label.split(/\s+/).slice(0, 2).map((p) => p[0]).join("").toUpperCase()}
+                      </span>
+                    )}
+                  </button>
+
+                  <div className="min-w-0 flex-1">
+                    <p className="m-0 text-base font-bold tracking-[-0.01em] text-[#F6F6F6]">
+                      {tool.label}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-[#F6F6F6]/42">
+                      {tool.domain ?? "Recurso recomendado"}
+                    </p>
+                  </div>
+
+                  <button
+                    onClick={() => onViewTool(tool)}
+                    className="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#CAFE5B] px-4 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#010101] transition hover:scale-[1.03] hover:bg-[#d8ff77]"
+                  >
+                    Detalles
+                    <ArrowUpRight className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        <div className="relative min-h-[360px]">
+          <div className="absolute inset-0 rounded-[28px] bg-gradient-to-b from-[#CAFE5B]/18 via-transparent to-transparent blur-3xl" />
+          <div className="relative flex h-full min-h-[360px] flex-col justify-between overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.055] p-5 backdrop-blur-xl">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-[22px] border border-white/10 bg-[#010101]">
+              {category.mediaFit === "contain" ? (
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(202,254,91,0.08),rgba(1,1,1,0.96)_72%)]" />
+              ) : null}
+              {isVideoAsset(category.image) ? (
+                <video
+                  src={category.image}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="absolute inset-0 h-full w-full"
+                  style={{
+                    objectFit: category.mediaFit ?? "cover",
+                    objectPosition: category.mediaPosition ?? "center",
+                    transform: category.mediaScale ? `scale(${category.mediaScale})` : undefined,
+                  }}
+                />
+              ) : (
+                <img
+                  src={category.image}
+                  alt={category.title}
+                  className="absolute inset-0 h-full w-full"
+                  style={{
+                    objectFit: category.mediaFit ?? "cover",
+                    objectPosition: category.mediaPosition ?? "center",
+                    transform: category.mediaScale ? `scale(${category.mediaScale})` : undefined,
+                  }}
+                />
+              )}
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent,rgba(1,1,1,0.42))]" />
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              <div className="rounded-2xl border border-white/10 bg-[#010101]/45 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#F6F6F6]/35">
+                  Selección
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[#F6F6F6]/68">
+                  {tools.length} herramientas curadas para explorar esta categoría.
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-[#010101]/45 p-4">
+                <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#F6F6F6]/35">
+                  Siguiente paso
+                </p>
+                <p className="mt-2 text-sm leading-6 text-[#F6F6F6]/68">
+                  Tocá “Detalles” para ver una ficha breve de cada herramienta.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -473,7 +516,7 @@ const Tools = () => {
         animationType="scale"
         disablePadding
         showCloseButton={true}
-        className="dark border-white/10"
+        className="dark !max-w-5xl border-0 !bg-transparent shadow-none"
       >
         {selectedCategory && (
           <CategoryDetail
@@ -526,7 +569,7 @@ const Tools = () => {
               whiteSpace: "nowrap"
             }}
           >
-            Las herramientas más útiles del Mercado
+            <BubbleText text="Las herramientas más útiles del Mercado" />
           </h1>
           <p
             style={{
@@ -556,6 +599,9 @@ const Tools = () => {
                   border: "1px solid rgba(255,255,255,0.08)",
                 }}
               >
+                {cat.mediaFit === "contain" ? (
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(202,254,91,0.08),rgba(1,1,1,0.96)_72%)]" />
+                ) : null}
                 {isVideoAsset(cat.image) ? (
                   <video
                     src={cat.image}
@@ -563,13 +609,25 @@ const Tools = () => {
                     loop
                     muted
                     playsInline
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
+                    style={{
+                      objectFit: cat.mediaFit ?? "cover",
+                      objectPosition: cat.mediaPosition ?? "center",
+                      transform: cat.mediaScale ? `scale(${cat.mediaScale})` : undefined,
+                      borderRadius: cat.mediaFit === "contain" ? 22 : undefined,
+                    }}
                   />
                 ) : (
                   <img
                     src={cat.image}
                     alt={cat.title}
-                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
+                    style={{
+                      objectFit: cat.mediaFit ?? "cover",
+                      objectPosition: cat.mediaPosition ?? "center",
+                      transform: cat.mediaScale ? `scale(${cat.mediaScale})` : undefined,
+                      borderRadius: cat.mediaFit === "contain" ? 22 : undefined,
+                    }}
                   />
                 )}
                 <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.05),rgba(0,0,0,0.2)_40%,rgba(0,0,0,0.85)_100%)]" />

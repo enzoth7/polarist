@@ -10,6 +10,7 @@ import { GlowCard } from "@/components/ui/spotlight-card";
 import ScrollExpansionDemo from "@/components/landing/ScrollExpansionDemo";
 import SpatialProductShowcase from "@/components/ui/spatial-product-showcase";
 import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card";
+import FlipHover from "@/components/ui/flip-hover";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
@@ -244,16 +245,18 @@ const Landing = () => {
                 className={`problem-row flex flex-col ${isEven ? 'md:flex-row' : 'md:flex-row-reverse'} items-center gap-10 md:gap-16 w-full`}
               >
                 {/* Contenedor de la Imagen con Efecto Spotlight */}
-                <GlowCard 
-                  customSize 
-                  glowColor="polarist"
-                  className="flex-1 w-full max-w-[600px] !p-0 overflow-hidden cursor-pointer group" 
-                  style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}
-                >
-                  <div className="relative aspect-[4/3] w-full" style={{ background: '#F8F9FB' }}>
-                    <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105" />
-                  </div>
-                </GlowCard>
+                <FlipHover className="flex-1 aspect-[4/3] w-full max-w-[600px]" style={{ borderRadius: bk.rLg }}>
+                  <GlowCard 
+                    customSize 
+                    glowColor="polarist"
+                    className="h-full w-full !p-0 overflow-hidden cursor-pointer group" 
+                    style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}
+                  >
+                    <div className="relative aspect-[4/3] w-full" style={{ background: '#F8F9FB' }}>
+                      <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105" />
+                    </div>
+                  </GlowCard>
+                </FlipHover>
 
                 {/* Contenido (Fuera del contenedor de la imagen) */}
                 <div className="flex-1 flex flex-col items-start text-left w-full justify-center">

@@ -146,15 +146,44 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
              u.uEffectType.value = getEffectIndex(s.currentEffect);
         };
 
-        const splitText = (text: string) => {
-            if (!text) return '';
-            return text.split(' ').map(word => {
+        const splitTextLine = (words: string[]) => {
+            return words.map(word => {
                 const chars = word.split('').map(char => 
-                    `<span style="display: inline-block; opacity: 0;">${char}</span>`
+                    `<span data-title-char style="display: inline-block; opacity: 0;">${char}</span>`
                 ).join('');
                 return `<span style="display: inline-block; white-space: nowrap;">${chars}</span>`;
             }).join('&nbsp;');
         };
+
+        const splitText = (text: string) => {
+            const words = text.trim().split(/\s+/).filter(Boolean);
+            if (words.length === 0) return '';
+            if (words.length === 1) return splitTextLine(words);
+
+            let bestSplit = 1;
+            let bestScore = Number.POSITIVE_INFINITY;
+            const targetFirstLineWeight = 0.4;
+            const totalTextLength = words.join(' ').length;
+
+            for (let i = 1; i < words.length; i += 1) {
+                const firstLineLength = words.slice(0, i).join(' ').length;
+                const secondLineLength = words.slice(i).join(' ').length;
+                if (firstLineLength >= secondLineLength) continue;
+
+                const score = Math.abs(firstLineLength / totalTextLength - targetFirstLineWeight);
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestSplit = i;
+                }
+            }
+
+            return [
+                `<span class="title-line">${splitTextLine(words.slice(0, bestSplit))}</span>`,
+                `<span class="title-line">${splitTextLine(words.slice(bestSplit))}</span>`,
+            ].join('');
+        };
+
+        const getTitleChars = (titleEl: Element) => titleEl.querySelectorAll('[data-title-char]');
 
         const updateContent = (idx: number) => {
             const container = containerRef.current;
@@ -163,7 +192,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
             const descEl = container.querySelector('#mainDesc');
             if (titleEl && descEl) {
                  // Universal animate out (fade up)
-                 gsap.to(titleEl.children, { y: -20, opacity: 0, duration: 0.5, stagger: 0.02, ease: "power2.in" });
+                 gsap.to(getTitleChars(titleEl), { y: -20, opacity: 0, duration: 0.5, stagger: 0.02, ease: "power2.in" });
                  gsap.to(descEl, { y: -10, opacity: 0, duration: 0.4, ease: "power2.in" });
                  
                  setTimeout(() => {
@@ -172,13 +201,13 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
                      descEl.textContent = slides[idx].description; 
                      
                      // Reset state (general reset, specific animations might override)
-                     gsap.set(titleEl.children, { opacity: 0 });
+                     const titleChars = getTitleChars(titleEl);
+                     gsap.set(titleChars, { opacity: 0 });
                      gsap.set(descEl, { y: 20, opacity: 0 });
 
                      // Stagger Up (Original)
-                    const children = titleEl.children;
-                    gsap.set(children, { y: 20 });
-                    gsap.to(children, { y: 0, opacity: 1, duration: 0.8, stagger: 0.03, ease: "power3.out" });
+                    gsap.set(titleChars, { y: 20 });
+                    gsap.to(titleChars, { y: 0, opacity: 1, duration: 0.8, stagger: 0.03, ease: "power3.out" });
                     gsap.to(descEl, { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: "power3.out" });
                  }, 500); 
             }
@@ -341,7 +370,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
                 tEl.innerHTML = splitText(slides[0].title);
                 dEl.textContent = slides[0].description;
                 // animate initial in
-                gsap.fromTo(tEl.children, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.03, ease: "power3.out", delay: 0.5 });
+                gsap.fromTo(getTitleChars(tEl), { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, stagger: 0.03, ease: "power3.out", delay: 0.5 });
                 gsap.fromTo(dEl, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: "power3.out", delay: 0.8 });
             }
         }
@@ -377,7 +406,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
             if (shaderMaterial) gsap.killTweensOf(shaderMaterial.uniforms.uProgress);
             const tEl = containerRef.current?.querySelector('#mainTitle');
             const dEl = containerRef.current?.querySelector('#mainDesc');
-            if (tEl) gsap.killTweensOf(tEl.children);
+            if (tEl) gsap.killTweensOf(getTitleChars(tEl));
             if (dEl) gsap.killTweensOf(dEl);
             if (renderer) renderer.dispose();
             if (scene) scene.clear();
@@ -442,6 +471,10 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
         .slide-progress-fill { width: 0%; height: 100%; background: #CAFE5B; opacity: 0; }
         .slide-nav-title { font-size: 13px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; transition: color 0.3s; white-space: nowrap; }
         .slide-nav-item.active .slide-nav-title { color: #fff; }
+        .title-line {
+          display: block;
+          white-space: nowrap;
+        }
       `}</style>
     </>
   );

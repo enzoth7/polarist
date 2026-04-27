@@ -1,4 +1,5 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,8 +39,9 @@ const CARD_CONFIG: Record<
   },
 };
 
-// Brand Kit B — único conjunto de colores para las barras
-const BAR_COLORS = ["#CAFE5B", "#F6F6F6", "#4a4a4a"] as const;
+const BAR_COLOR = "#CAFE5B";
+const DEFAULT_BAR_COLOR = "rgba(202,254,91,0.24)";
+const ADJACENT_BAR_COLOR = "rgba(202,254,91,0.56)";
 
 const LOADING_CARD_KEYS: RadarMetricKey[] = ["intelligence", "speed", "price"];
 const LOADING_BAR_HEIGHTS = [26, 44, 58, 72, 84, 60, 42, 68, 52, 76] as const;
@@ -56,8 +58,7 @@ const formatUpdatedAt = (timestamp: number) =>
     minute: "2-digit",
   }).format(timestamp);
 
-const getBarColor = (_point: RadarMetricPoint, index: number) =>
-  BAR_COLORS[index % BAR_COLORS.length];
+const getBarColor = () => BAR_COLOR;
 
 const buildChartData = (card: RadarMetricCard): ChartDatum[] =>
   card.points.map((point, index) => ({
@@ -66,9 +67,17 @@ const buildChartData = (card: RadarMetricCard): ChartDatum[] =>
   }));
 
 // ── Gráfico custom HTML con hover ────────────────────────────────────────
-function MetricBarChart({ chartData }: { chartData: ChartDatum[] }) {
-  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+function MetricBarChart({
+  chartData,
+  hoveredSlug,
+  setHoveredSlug,
+}: {
+  chartData: ChartDatum[];
+  hoveredSlug: string | null;
+  setHoveredSlug: (slug: string | null) => void;
+}) {
   const maxValue = Math.max(...chartData.map((d) => d.value), 1);
+  const hoveredIndex = chartData.findIndex((entry) => entry.slug === hoveredSlug);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -78,8 +87,9 @@ function MetricBarChart({ chartData }: { chartData: ChartDatum[] }) {
         {/* Línea base */}
         <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 1, background: 'rgba(255,255,255,0.18)', zIndex: 0 }} />
 
-        {chartData.map((entry) => {
+        {chartData.map((entry, index) => {
           const isHovered = hoveredSlug === entry.slug;
+          const isAdjacent = hoveredIndex !== -1 && Math.abs(hoveredIndex - index) === 1;
           const pct = (entry.value / maxValue) * 100;
 
           return (
@@ -87,33 +97,26 @@ function MetricBarChart({ chartData }: { chartData: ChartDatum[] }) {
               key={entry.slug}
               style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', height: '100%', padding: '0 3px' }}
             >
-              {/* Número encima — siempre visible */}
-              <span style={{
-                fontSize: 12,
-                fontWeight: 700,
-                color: 'rgba(246,246,246,0.6)',
-                fontFamily: 'var(--font-sans)',
-                marginBottom: 5,
-                whiteSpace: 'nowrap',
-                lineHeight: 1,
-              }}>
-                {entry.displayValue}
-              </span>
-
               {/* Barra */}
-              <div 
+              <motion.div 
                 onMouseEnter={() => setHoveredSlug(entry.slug)}
                 onMouseLeave={() => setHoveredSlug(null)}
                 style={{
                   width: '100%',
                   height: `${pct}%`,
-                  backgroundColor: entry.color,
                   borderRadius: '5px 5px 0 0',
                   cursor: 'pointer',
-                  transition: 'height 0.25s cubic-bezier(0.16,1,0.3,1)',
-                  opacity: 1,
-                  transform: 'scaleX(1)',
                 }} 
+                initial={{ backgroundColor: "rgba(246,246,246,0.16)", scaleX: 1 }}
+                animate={{
+                  backgroundColor: isHovered
+                    ? entry.color
+                    : isAdjacent
+                      ? ADJACENT_BAR_COLOR
+                      : DEFAULT_BAR_COLOR,
+                  scaleX: isHovered ? 1.08 : 1,
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
               />
             </div>
           );
@@ -262,11 +265,41 @@ function MetricCardSkeleton({ metricKey }: { metricKey: RadarMetricKey }) {
 function MetricCard({ card }: { card: RadarMetricCard }) {
   const config = CARD_CONFIG[card.key];
   const chartData = buildChartData(card);
+  const [hoveredSlug, setHoveredSlug] = useState<string | null>(null);
+  const hoveredEntry = chartData.find((entry) => entry.slug === hoveredSlug);
 
   return (
     <article
-      className={cn(METRIC_CARD_CLASS, "cursor-default transition-colors duration-300 hover:border-[#CAFE5B]/30")}
+      className={cn(METRIC_CARD_CLASS, "relative cursor-default transition-colors duration-300 hover:border-[#CAFE5B]/30")}
     >
+      <div
+        style={{
+          position: 'absolute',
+          top: 24,
+          right: 24,
+          minWidth: 56,
+          height: 30,
+          borderRadius: 8,
+          border: '1px solid rgba(202,254,91,0.24)',
+          background: 'rgba(1,1,1,0.72)',
+          color: hoveredEntry ? '#CAFE5B' : 'rgba(246,246,246,0.42)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: 12,
+          fontWeight: 800,
+          fontFamily: 'var(--font-sans)',
+          lineHeight: 1,
+          letterSpacing: '0.02em',
+          pointerEvents: 'none',
+          zIndex: 3,
+          boxShadow: hoveredEntry ? '0 10px 28px rgba(202,254,91,0.14)' : 'none',
+          transition: 'color 0.18s ease, box-shadow 0.18s ease',
+        }}
+      >
+        {hoveredEntry?.displayValue ?? '—'}
+      </div>
+
       {/* Header centrado */}
       <div className="flex flex-col items-center text-center gap-1">
         <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '36px', letterSpacing: '-1px', lineHeight: 1.05, color: '#F6F6F6' }}>
@@ -279,7 +312,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
 
       {/* Gráfico custom */}
       <div className="mt-6" style={{ height: 340 }}>
-        <MetricBarChart chartData={chartData} />
+        <MetricBarChart chartData={chartData} hoveredSlug={hoveredSlug} setHoveredSlug={setHoveredSlug} />
       </div>
     </article>
   );
