@@ -13,6 +13,7 @@ para mejorar negocios. Socio: Cristian.
   - **Colores:** Verde `#CAFE5B` (solo acento/CTA), Negro `#010101` (fondo/texto), Off-white `#F6F6F6`.  
   - **Fuentes:** `Arno Pro` (Titulares editoriales 30%) · `Sequel Sans Bold` (Impacto 70% + Subtítulos) · `Sequel Sans Regular` (Cuerpo).  
   - **Estilo:** Bento/Apple Sutil. Radios: 4px (global/btns), 24px (cards), Pills (fluidez). Espaciado base 8px.  
+  - **Agente de Diseño:** Para cambios de UI, layouts, componentes visuales, estética, jerarquía, microinteracciones o pulido premium, activar `skills/design/polarist_design_guardian/SKILL.md` y consultar `agente_diseno/`.
 **Skills antes que inventar:** Antes de cualquier tarea técnica o de diseño, revisar `skills/tech/` (supabase_manager, web_design_differential). Antes de cualquier decisión de features, verificar en `memory/memory.md` qué ya acordó Cristian.
 
 ---

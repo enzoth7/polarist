@@ -75,8 +75,8 @@ const parseSavedTime = (value?: string) => {
 
 const ProfileHeaderSkeleton = () => (
   <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
-    <div className="w-fit rounded-[32px] border border-white/10 bg-white/[0.02] p-4">
-      <div className="h-[216px] w-[176px] animate-pulse rounded-[24px] bg-white/[0.05]" />
+    <div className="w-fit">
+      <div className="h-[216px] w-[176px] animate-pulse rounded-[24px] border border-white/[0.08] bg-white/[0.05]" />
     </div>
 
     <div className="space-y-4">
@@ -339,8 +339,8 @@ const UserProfile = () => {
             <ProfileHeaderSkeleton />
           ) : (
             <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
-              <div className="w-fit rounded-[32px] border border-white/10 bg-white/[0.02] p-4">
-                <div className="flex h-[216px] w-[176px] items-center justify-center overflow-hidden rounded-[24px] bg-white/[0.04] text-[#F6F6F6]">
+              <div className="w-fit">
+                <div className="flex h-[216px] w-[176px] items-center justify-center overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.04] text-[#F6F6F6]">
                   {profile?.avatar_url ? (
                     <img
                       src={profile.avatar_url}

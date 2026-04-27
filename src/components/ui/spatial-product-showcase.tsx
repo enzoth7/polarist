@@ -52,24 +52,6 @@ export interface ProductData {
 const PRODUCT_DATA: Record<ProductId, ProductData> = {
   left: {
     id: 'left',
-    label: 'No es para vos',
-    title: 'Polarist NO es para vos si:',
-    points: [
-      "Buscás un curso técnico profundo. No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. Vamos 100% a la práctica.",
-      "Ya sos un experto en IA. Si te pasás todo el día probando herramientas nuevas, armando automatizaciones complejas y estás al tanto de todas las novedades del mercado, probablemente no nos necesites.",
-      "Querés seguir haciendo las cosas a la vieja escuela. Si no tenés interés en cambiar tus procesos, ahorrar tiempo o delegarle tareas a la tecnología, lo que ofrecemos no te va a servir.",
-      "Esperás que la herramienta haga literalmente todo por arte de magia. Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos."
-    ],
-    image: '/images/landing/central_ai_core.png',
-    colors: {
-      gradient: 'from-red-600 to-orange-900',
-      glow: 'bg-red-500',
-      ring: 'border-l-red-500/50',
-    },
-    stats: { connectionStatus: 'Desconectado', batteryLevel: 12, statusText: 'Riesgo Crítico' },
-  },
-  right: {
-    id: 'right',
     label: 'Es para vos',
     title: 'Polarist ES para vos si:',
     points: [
@@ -82,9 +64,27 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
     colors: {
       gradient: 'from-[#CAFE5B] to-emerald-900',
       glow: 'bg-[#CAFE5B]',
-      ring: 'border-r-[#CAFE5B]/50',
+      ring: 'border-l-[#CAFE5B]/50',
     },
     stats: { connectionStatus: 'Sincronizado', batteryLevel: 100, statusText: 'Eficiencia Máxima' },
+  },
+  right: {
+    id: 'right',
+    label: 'No es para vos',
+    title: 'Polarist NO es para vos si:',
+    points: [
+      "Buscás un curso técnico profundo. No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. Vamos 100% a la práctica.",
+      "Ya sos un experto en IA. Si te pasás todo el día probando herramientas nuevas, armando automatizaciones complejas y estás al tanto de todas las novedades del mercado, probablemente no nos necesites.",
+      "Querés seguir haciendo las cosas a la vieja escuela. Si no tenés interés en cambiar tus procesos, ahorrar tiempo o delegarle tareas a la tecnología, lo que ofrecemos no te va a servir.",
+      "Esperás que la herramienta haga literalmente todo por arte de magia. Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos."
+    ],
+    image: '/images/landing/central_ai_core.png',
+    colors: {
+      gradient: 'from-red-600 to-orange-900',
+      glow: 'bg-red-500',
+      ring: 'border-r-red-500/50',
+    },
+    stats: { connectionStatus: 'Desconectado', batteryLevel: 12, statusText: 'Riesgo Crítico' },
   },
 };
 
@@ -143,34 +143,8 @@ const ANIMATIONS = {
 // 3. SUB-COMPONENTS
 // =========================================
 
-const BackgroundGradient = ({ isLeft }: { isLeft: boolean }) => (
-  <div className="absolute inset-0 pointer-events-none overflow-hidden">
-    <motion.div
-      animate={{
-        background: isLeft
-          ? 'radial-gradient(circle at 0% 50%, rgba(220, 38, 38, 0.1), transparent 50%)'
-          : 'radial-gradient(circle at 100% 50%, rgba(202, 254, 91, 0.1), transparent 50%)',
-      }}
-      transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-0"
-    />
-  </div>
-);
-
 const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean }) => (
   <motion.div layout="position" className="relative group shrink-0">
-    {/* Animated Rings */}
-    <motion.div
-      animate={{ rotate: 360 }}
-      transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-      className={`absolute inset-[-20%] rounded-full border border-dashed border-white/10 ${data.colors.ring}`}
-    />
-    <motion.div
-      animate={{ scale: [1, 1.05, 1] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-      className={`absolute inset-0 rounded-full bg-gradient-to-br ${data.colors.gradient} blur-2xl opacity-20`}
-    />
-
     {/* Image Container */}
     <div className="relative h-48 w-48 md:h-[280px] md:w-[280px] rounded-full flex items-center justify-center overflow-hidden bg-transparent">
       <motion.div
@@ -200,8 +174,6 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
 const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }) => {
   // If isLeft (Sin Polarist), the text should be on the left visually, meaning text-left alignment.
   const alignClass = isLeft ? 'items-start text-left' : 'items-end text-right';
-  const flexDirClass = isLeft ? 'flex-row' : 'flex-row-reverse';
-  const barColorClass = isLeft ? 'left-0 bg-red-500' : 'right-0 bg-[#CAFE5B]';
 
   return (
     <motion.div
@@ -210,8 +182,9 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
       animate="visible"
       exit="exit"
       className={`flex flex-col ${alignClass} w-full`}
+      style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
     >
-      <motion.h1 variants={ANIMATIONS.item} className="text-3xl md:text-4xl font-bold tracking-tight mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white to-zinc-400">
+      <motion.h1 variants={ANIMATIONS.item} className="mb-8 text-3xl font-bold tracking-tight text-[#F6F6F6] md:text-4xl">
         {data.title}
       </motion.h1>
       
@@ -222,8 +195,8 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
             variants={ANIMATIONS.item}
             className={`flex items-start gap-4 ${isLeft ? 'flex-row' : 'flex-row-reverse text-right'}`}
           >
-            <div className={`mt-1.5 h-1.5 w-1.5 rounded-full shrink-0 ${isLeft ? 'bg-red-500' : 'bg-[#CAFE5B]'}`} />
-            <p className="text-sm md:text-base text-zinc-400 leading-relaxed max-w-md">
+            <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/36" />
+            <p className="max-w-md text-sm leading-relaxed text-zinc-400 md:text-base" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
               {point}
             </p>
           </motion.div>
@@ -243,22 +216,16 @@ const Switcher = ({
   const options = Object.values(PRODUCT_DATA).map(p => ({ id: p.id, label: p.label }));
 
   return (
-    <div className="absolute bottom-48 md:bottom-56 inset-x-0 flex justify-center z-50 pointer-events-none">
-      <motion.div layout className="pointer-events-auto flex items-center gap-1 p-1.5 rounded-full bg-zinc-900/80 backdrop-blur-2xl border border-white/10 shadow-[0_20px_60px_rgba(0,0,0,0.6)] ring-1 ring-white/5">
+    <div className="pointer-events-none absolute inset-x-0 bottom-28 z-50 flex justify-center md:bottom-32">
+      <motion.div layout className="pointer-events-auto flex items-center gap-7">
         {options.map((opt) => (
           <motion.button
             key={opt.id}
             onClick={() => onToggle(opt.id)}
             whileTap={{ scale: 0.96 }}
-            className="relative px-4 py-2 rounded-full flex items-center justify-center text-xs font-bold uppercase tracking-widest focus:outline-none"
+            className="relative flex items-center justify-center px-1 py-2 text-xs font-bold uppercase tracking-widest focus:outline-none"
+            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
           >
-            {activeId === opt.id && (
-              <motion.div
-                layoutId="island-surface"
-                className="absolute inset-0 rounded-full bg-gradient-to-b from-white/10 to-white/5 shadow-inner"
-                transition={{ type: 'spring', stiffness: 220, damping: 22 }}
-              />
-            )}
             <span className={`relative z-10 transition-colors duration-300 ${activeId === opt.id ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>
               {opt.label}
             </span>
@@ -266,7 +233,7 @@ const Switcher = ({
               <motion.span
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="absolute -bottom-1 h-1 w-6 rounded-full bg-gradient-to-r from-transparent via-white/60 to-transparent"
+                className="absolute -bottom-1 h-1 w-6 rounded-full bg-white/45"
               />
             )}
           </motion.button>
@@ -287,14 +254,11 @@ export default function SpatialProductShowcase() {
   const isLeft = activeSide === 'left';
 
   return (
-    <div className="relative min-h-screen w-full bg-[#010101] text-zinc-100 overflow-hidden selection:bg-zinc-800 flex flex-col items-center justify-center py-24">
-      
-      <BackgroundGradient isLeft={isLeft} />
-
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#010101] pb-24 pt-16 text-zinc-100 selection:bg-zinc-800" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
       {/* Header */}
-      <div className="absolute top-28 md:top-32 w-full text-center z-20 px-4">
+      <div className="absolute top-16 z-20 w-full px-4 text-center md:top-20">
          <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-            Polarist para vos
+            ¿Para quién es Polarist?
          </h2>
       </div>
 

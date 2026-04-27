@@ -17,60 +17,103 @@ const LoginGlobe = () => {
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 5.8;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(container.clientWidth, container.clientHeight);
     container.appendChild(renderer.domElement);
 
-    const shellGeometry = new THREE.BufferGeometry();
-    const shellPositions = new Float32Array(2600 * 3);
-    for (let i = 0; i < 2600 * 3; i += 3) {
-      const radius = 2.6 + Math.random() * 0.4;
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      shellPositions[i] = radius * Math.sin(phi) * Math.cos(theta);
-      shellPositions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      shellPositions[i + 2] = radius * Math.cos(phi);
-    }
-    shellGeometry.setAttribute("position", new THREE.BufferAttribute(shellPositions, 3));
-    const shellMaterial = new THREE.PointsMaterial({ size: 0.013, color: 0xffffff, transparent: true, opacity: 0.62, blending: THREE.NormalBlending, depthWrite: false });
-    const shell = new THREE.Points(shellGeometry, shellMaterial);
-    scene.add(shell);
+    const particleCount = 18000;
+    const positions = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
 
-    const coreGeometry = new THREE.BufferGeometry();
-    const corePositions = new Float32Array(1400 * 3);
-    for (let i = 0; i < 1400 * 3; i += 3) {
-      const radius = Math.random() * 1.3;
+    for (let i = 0; i < particleCount; i++) {
+      const radius = 2.2 + (Math.random() - 0.5) * 0.4;
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      corePositions[i] = radius * Math.sin(phi) * Math.cos(theta);
-      corePositions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
-      corePositions[i + 2] = radius * Math.cos(phi);
+
+      positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
+      positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
+      positions[i * 3 + 2] = radius * Math.cos(phi);
+
+      const color = new THREE.Color();
+      const rand = Math.random();
+      if (rand < 0.2) {
+        color.setHex(0xCAFE5B);
+      } else if (rand < 0.8) {
+        color.setHex(0xFFFFFF);
+      } else {
+        color.setHex(0xAAAAAA);
+      }
+
+      colors[i * 3] = color.r;
+      colors[i * 3 + 1] = color.g;
+      colors[i * 3 + 2] = color.b;
     }
-    coreGeometry.setAttribute("position", new THREE.BufferAttribute(corePositions, 3));
-    const coreMaterial = new THREE.PointsMaterial({ size: 0.022, color: 0xCAFE5B, transparent: true, opacity: 0.9, blending: THREE.NormalBlending, depthWrite: false });
-    const core = new THREE.Points(coreGeometry, coreMaterial);
-    scene.add(core);
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute("color", new THREE.BufferAttribute(colors, 3));
+
+    const canvas = document.createElement("canvas");
+    canvas.width = 32;
+    canvas.height = 32;
+    const context = canvas.getContext("2d");
+    if (context) {
+      context.beginPath();
+      context.arc(16, 16, 16, 0, Math.PI * 2);
+      context.fillStyle = "white";
+      context.fill();
+    }
+    const texture = new THREE.CanvasTexture(canvas);
+
+    const material = new THREE.PointsMaterial({
+      size: 0.011,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      opacity: 0.8,
+      depthWrite: false,
+      map: texture,
+      alphaTest: 0.1,
+    });
+
+    const wovenPoints = new THREE.Points(geometry, material);
+    scene.add(wovenPoints);
+
+    const fitRenderer = () => {
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      if (width === 0 || height === 0) {
+        return;
+      }
+
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height);
+    };
+
+    fitRenderer();
+    window.addEventListener("resize", fitRenderer);
+
+    const clock = new THREE.Clock();
 
     let frameId = 0;
     const animate = () => {
       frameId = window.requestAnimationFrame(animate);
-      shell.rotation.y += 0.0012;
-      core.rotation.y -= 0.0018;
-      const pulse = 1 + Math.sin(Date.now() * 0.002) * 0.04;
-      core.scale.set(pulse, pulse, pulse);
+      const elapsedTime = clock.getElapsedTime();
+      wovenPoints.rotation.y = elapsedTime * 0.05;
       renderer.render(scene, camera);
     };
     animate();
 
     return () => {
       window.cancelAnimationFrame(frameId);
-      shellGeometry.dispose();
-      coreGeometry.dispose();
-      shellMaterial.dispose();
-      coreMaterial.dispose();
+      window.removeEventListener("resize", fitRenderer);
+      geometry.dispose();
+      material.dispose();
+      texture.dispose();
       renderer.dispose();
       if (container.contains(renderer.domElement)) {
         container.removeChild(renderer.domElement);
@@ -78,7 +121,7 @@ const LoginGlobe = () => {
     };
   }, []);
 
-  return <div ref={containerRef} style={{ width: 280, height: 280 }} />;
+  return <div ref={containerRef} style={{ width: 340, height: 340 }} />;
 };
 
 const GoogleIcon = () => (
@@ -109,7 +152,7 @@ const Login = () => {
 
   useEffect(() => {
     if (status === "authenticated") {
-      navigate(routes.appRadar, { replace: true });
+      navigate(routes.appProfile, { replace: true });
     }
   }, [navigate, status]);
 

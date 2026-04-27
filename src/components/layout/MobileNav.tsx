@@ -33,10 +33,11 @@ const MobileNav = () => {
           <NavItem to={profileRoute} label="Biblioteca" />
         </div>
       ) : (
-        <div className="grid w-full grid-cols-3 items-center">
+        <div className="grid w-full grid-cols-4 items-center">
           <NavItem to={routes.landing} label="Inicio" />
           <NavItem to={routes.appRadar} label="Tendencias" />
           <NavItem to={routes.appTools} label="Herramientas" />
+          <NavItem to={routes.login} label="Recursos" />
         </div>
       )}
     </nav>

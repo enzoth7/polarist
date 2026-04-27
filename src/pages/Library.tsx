@@ -391,7 +391,7 @@ const Library = () => {
                             ) : null}
                           </div>
 
-                          <div className="mt-6 flex h-24 items-center justify-center rounded-[20px] border border-white/8 bg-white/[0.03]">
+                          <div className="mt-6 flex h-24 items-center justify-center">
                             <ToolLogo
                               name={tool.name}
                               domain={tool.domain}

@@ -1,4 +1,4 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { LogIn, LogOut, Menu, Settings, User } from "lucide-react";
 
@@ -39,19 +39,25 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
 );
 
 const Header = () => {
+  const navigate = useNavigate();
   const { logout, profile, status, user, avatarUrl } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const today = new Date();
   const currentHour = today.getHours();
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
-  const navItems = [
-    { label: "Inicio", to: routes.landing, showAlways: false },
+  const isAuthenticated = status === "authenticated";
+  const navItems = isAuthenticated ? [
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: status === "authenticated" ? routes.appGuides : routes.login, showAlways: true },
-    { label: "Biblioteca", to: status === "authenticated" ? profileRoute : routes.login, showAlways: true }
-  ].filter(item => !(status === "authenticated" && !item.showAlways));
+    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Biblioteca", to: profileRoute, showAlways: true },
+  ] : [
+    { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Herramientas", to: routes.appTools, showAlways: true },
+    { label: "Recursos", to: routes.login, showAlways: true },
+  ];
 
   let greeting = "Hola";
 
@@ -69,7 +75,6 @@ const Header = () => {
     ?.replace(/uruguay/gi, "")
     ?.trim();
   const firstName = cleanFullName?.split(/\s+/)[0];
-  const isAuthenticated = status === "authenticated";
   const desktopGreetingLabel = isAuthenticated ? (firstName ? `${greeting}, ${firstName}` : greeting) : "";
 
   const handleLogout = async () => {
@@ -78,18 +83,23 @@ const Header = () => {
     setIsSigningOut(true);
     try {
       await logout();
+      navigate(routes.landing, { replace: true });
     } finally {
       setIsSigningOut(false);
     }
   };
 
-  const mobileNavItems = [
-    { label: "Inicio", to: routes.landing, showAlways: false },
+  const mobileNavItems = isAuthenticated ? [
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: status === "authenticated" ? routes.appGuides : routes.login, showAlways: true },
-    { label: "Biblioteca", to: status === "authenticated" ? profileRoute : routes.login, showAlways: true }
-  ].filter(item => !(status === "authenticated" && !item.showAlways));
+    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Biblioteca", to: profileRoute, showAlways: true },
+  ] : [
+    { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Herramientas", to: routes.appTools, showAlways: true },
+    { label: "Recursos", to: routes.login, showAlways: true },
+  ];
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-black/5 bg-[#F6F6F6] backdrop-blur-lg saturate-150 transition-all duration-300">

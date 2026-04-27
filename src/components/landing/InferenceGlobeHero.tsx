@@ -4,6 +4,7 @@ import gsap from "gsap";
 import * as THREE from "three";
 import { Link } from "react-router-dom";
 import { MaskedSlideReveal } from "@/components/ui/masked-slide-reveal";
+import { ShinyButton } from "@/components/ui/shiny-button";
 
 import { routes } from "@/lib/routes";
 
@@ -345,27 +346,13 @@ const InferenceGlobeHero = () => {
           </p>
 
           <div ref={ctaRef} className="pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex justify-start">
-            <Link
-              to={routes.login}
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '16px',
-                fontWeight: 600,
-                letterSpacing: '0.5px',
-                padding: '16px 40px',
-                background: 'var(--polarist-green, #CAFE5B)',
-                color: 'var(--polarist-black, #010101)',
-                borderRadius: 'var(--r-pill, 999px)',
-                display: 'inline-block',
-                textDecoration: 'none',
-                transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
-                border: 'none',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.05)'; e.currentTarget.style.opacity = '0.88'; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.opacity = '1'; }}
+            <ShinyButton
+              asChild
+              className="inline-flex px-10 py-4 text-[16px] font-semibold tracking-[0.5px] no-underline"
+              style={{ fontFamily: "var(--font-sans)" }}
             >
-              Comenzar
-            </Link>
+              <Link to={routes.login}>Comenzar</Link>
+            </ShinyButton>
           </div>
         </div>
       </div>

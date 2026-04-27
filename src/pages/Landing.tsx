@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -11,27 +11,28 @@ import ScrollExpansionDemo from "@/components/landing/ScrollExpansionDemo";
 import SpatialProductShowcase from "@/components/ui/spatial-product-showcase";
 import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card";
 import FlipHover from "@/components/ui/flip-hover";
+import Preloader from "@/components/ui/preloader";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
   {
-    title: "Automatizá lo repetitivo",
+    title: "Delega lo repetitivo",
     description:
-      "Dejá que la IA se encargue de las tareas que te roban tiempo. Configuralo una vez, olvidate para siempre.",
+      "Automatiza procesos y dejá que la IA se encargue de las tareas que te roban tiempo y no te aportan valor.",
     imgUrl: "/images/placeholders/feat_automatiza_1776045412125.png",
     tag: "Automatización",
   },
   {
-    title: "Decisiones con datos reales",
+    title: "Traé a la realidad tus ideas",
     description:
-      "Accedé a insights en tiempo real que te ayudan a tomar mejores decisiones para tu negocio.",
+      "El límite técnico bajó y lo que antes era inaccesible ahora está al alcance. Nunca fue tan fácil darle vida a tus ideas.",
     imgUrl: "/images/placeholders/feat_datos_1776045426648.png",
     tag: "Analytics",
   },
   {
-    title: "Todo integrado en un lugar",
+    title: "Elegí que aprender de IA",
     description:
-      "Herramientas, tendencias y recursos conectados. Sin saltar entre plataformas.",
+      "No es aprenderlo todo sobre herramientas o tendencias, sino lo que a vos te aporte valor.",
     imgUrl: "/images/placeholders/feat_integrado_1776045444997.png",
     tag: "Integración",
   },
@@ -84,11 +85,26 @@ const bk = {
   rPill: '999px',
 };
 
+let hasShownLandingPreloader = false;
+
 const Landing = () => {
+  const [showPreloader, setShowPreloader] = useState(!hasShownLandingPreloader);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const problemsSectionRef = useRef<HTMLDivElement>(null);
   const videoSectionRef = useRef<HTMLDivElement>(null);
+  const handlePreloaderComplete = useCallback(() => {
+    hasShownLandingPreloader = true;
+    setShowPreloader(false);
+  }, []);
+
+  useEffect(() => {
+    if ("scrollRestoration" in window.history) {
+      window.history.scrollRestoration = "manual";
+    }
+
+    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, []);
 
   useGSAP(
     () => {
@@ -175,18 +191,6 @@ const Landing = () => {
           ease: "power3.out",
         });
 
-        gsap.from(".solutions-title", {
-          scrollTrigger: {
-            trigger: videoSectionRef.current,
-            start: "top 85%",
-            once: true,
-          },
-          opacity: 0,
-          y: 40,
-          duration: 0.9,
-          ease: "power3.out",
-        });
-
         gsap.utils.toArray<HTMLElement>(".problem-row").forEach((row, i) => {
           const isEven = i % 2 === 0;
           gsap.from(row, {
@@ -212,6 +216,7 @@ const Landing = () => {
 
   return (
     <div ref={containerRef} className="w-full" style={{ background: bk.black }}>
+      {showPreloader ? <Preloader onComplete={handlePreloaderComplete} /> : null}
       <div className="relative z-10">
         <section
           ref={heroRef}
@@ -219,7 +224,7 @@ const Landing = () => {
           style={{ background: bk.black }}
         >
           <div className="relative z-10 w-full">
-            <InferenceGlobeHero />
+            {!showPreloader ? <InferenceGlobeHero /> : null}
           </div>
         </section>
       </div>
@@ -282,15 +287,7 @@ const Landing = () => {
         className="relative z-20 overflow-hidden"
         style={{ perspective: "1200px", background: bk.black }}
       >
-        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 py-24 sm:px-10 lg:px-16" style={{ background: bk.black }}>
-          <div className="w-full max-w-[95vw] xl:max-w-[85vw] mb-14 text-center">
-            <h2
-              className="solutions-title"
-              style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.pureWhite }}
-            >
-              Las soluciones
-            </h2>
-          </div>
+        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-8 pt-24 sm:px-10 lg:px-16" style={{ background: bk.black }}>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <InteractiveFeatureCard

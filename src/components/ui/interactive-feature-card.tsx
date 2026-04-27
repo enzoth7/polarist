@@ -65,11 +65,10 @@ export function InteractiveFeatureCard({
 
       {/* Main Content with 3D Pop Effect */}
       <div
-        className="absolute inset-0 p-6 flex flex-col justify-end pointer-events-none"
+        className="absolute inset-0 flex flex-col justify-end px-8 pb-14 pt-8 pointer-events-none md:px-9 md:pb-16"
         style={{ transform: "translateZ(50px)" }}
       >
-        {/* Glassmorphism Details Box */}
-        <div className="flex flex-col gap-2 rounded-xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl shadow-xl transition-colors duration-300 group-hover:border-[#CAFE5B]/30 group-hover:bg-white/10">
+        <div className="flex flex-col gap-2">
           <h3 className="feature-title text-2xl font-bold text-white tracking-tight" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             {title}
           </h3>

@@ -33,7 +33,7 @@ const PublicLayout = () => {
   const { status } = useAuth();
   
   if (status === "authenticated" && location.pathname === routes.landing) {
-    return <Navigate to={routes.appRadar} replace />;
+    return <Navigate to={routes.appProfile} replace />;
   }
 
   return (
@@ -55,7 +55,7 @@ const ProfileRouteResolver = () => {
   }
 
   if (status !== "authenticated") {
-    return <Navigate to={routes.login} replace />;
+    return <Navigate to={routes.landing} replace />;
   }
 
   if (status === "authenticated" && profile?.username?.trim()) {
@@ -74,7 +74,7 @@ const RequireAuthenticatedRoute = () => {
   }
 
   if (status !== "authenticated") {
-    return <Navigate to={routes.login} replace state={{ from: location.pathname }} />;
+    return <Navigate to={routes.landing} replace state={{ from: location.pathname }} />;
   }
 
   return <Outlet />;
@@ -95,7 +95,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
 
       <Route path={routes.appRoot} element={<MobileLayout />}>
-        <Route index element={<Navigate to={routes.appRadar} replace />} />
+        <Route index element={<Navigate to={routes.appProfile} replace />} />
         <Route path="radar" element={<Radar />} />
         <Route path="tools" element={<Tools />} />
         <Route path="guides" element={<Guides />} />

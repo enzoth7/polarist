@@ -12,6 +12,17 @@ interface ScrollExpandMediaProps {
   titleRight?: string;
 }
 
+const renderAnimatedTitle = (text: string) =>
+  text.split('').map((char, index) => (
+    <span
+      key={`${char}-${index}`}
+      data-scroll-title-char
+      className="inline-block"
+    >
+      {char === ' ' ? '\u00A0' : char}
+    </span>
+  ));
+
 const ScrollExpandMedia = ({
   mediaSrc,
   bgImageSrc,
@@ -29,6 +40,25 @@ const ScrollExpandMedia = ({
 
   useGSAP(() => {
     if (!containerRef.current) return;
+
+    const titleChars = containerRef.current.querySelectorAll('[data-scroll-title-char]');
+
+    gsap.fromTo(
+      titleChars,
+      { y: 20, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        stagger: 0.03,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: 'top 75%',
+          once: true,
+        },
+      },
+    );
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -130,7 +160,7 @@ const ScrollExpandMedia = ({
               className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
               style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
             >
-              {titleLeft}
+              {renderAnimatedTitle(titleLeft)}
             </h2>
           </div>
 
@@ -144,7 +174,7 @@ const ScrollExpandMedia = ({
               className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
               style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
             >
-              {titleRight}
+              {renderAnimatedTitle(titleRight)}
             </h2>
           </div>
         </div>
