@@ -19,21 +19,21 @@ const featureBlocks = [
     title: "Delega lo repetitivo",
     description:
       "Automatiza procesos y dejá que la IA se encargue de las tareas que te roban tiempo y no te aportan valor.",
-    imgUrl: "/images/placeholders/feat_automatiza_1776045412125.png",
+    imgUrl: "/images/landing/delega-lo-repetitivo.mp4",
     tag: "Automatización",
   },
   {
     title: "Traé a la realidad tus ideas",
     description:
       "El límite técnico bajó y lo que antes era inaccesible ahora está al alcance. Nunca fue tan fácil darle vida a tus ideas.",
-    imgUrl: "/images/placeholders/feat_datos_1776045426648.png",
+    imgUrl: "/images/landing/trae-a-la-realidad-tus-ideas.mp4",
     tag: "Analytics",
   },
   {
     title: "Elegí que aprender de IA",
     description:
       "No es aprenderlo todo sobre herramientas o tendencias, sino lo que a vos te aporte valor.",
-    imgUrl: "/images/placeholders/feat_integrado_1776045444997.png",
+    imgUrl: "/images/landing/elegi-que-aprender.mp4",
     tag: "Integración",
   },
 ] as const;
@@ -43,7 +43,7 @@ const problemBlocks = [
     title: "Repetimos día tras día la\u00A0misma\u00A0tarea",
     description:
       "Copiamos datos de un lado a otro, actualizamos las mismas planillas o hacemos el mismo proceso tedioso que no nos aporta nada de valor",
-    imgUrl: "/images/placeholders/landing_prob_1_1776044770643.png",
+    imgUrl: "/images/landing/repetimos-misma-tarea.mp4",
     tag: "Organización",
     stat: "14 hrs"
   },
@@ -51,7 +51,7 @@ const problemBlocks = [
     title: "Sabemos que hacer pero no\u00A0sabemos\u00A0el\u00A0cómo",
     description:
       "Tenemos ideas y mejoras en nuestra cabeza, pero creemos que son caras, inaccesibles para nosotros o que si hay algo que puede ayudarte, crees que lleva mucho tiempo aprenderlo.",
-    imgUrl: "/images/placeholders/landing_prob_2_1776044784698.png",
+    imgUrl: "/images/landing/sabemos-que-hacer.mp4",
     tag: "Procesos",
     stat: "60% Riesgo"
   },
@@ -59,7 +59,7 @@ const problemBlocks = [
     title: "Tenemos mucha información y no le damos uso",
     description:
       "Guardamos datos, tenemos información dispersa y la dejamos allí para usarla en el futuro, pero nunca lo terminamos haciendo porque no sabemos cómo organizarla y darle el valor correspondiente",
-    imgUrl: "/images/placeholders/landing_prob_3_1776044798647.png",
+    imgUrl: "/images/landing/tenemos-mucha-informacion.mp4",
     tag: "Adopción",
     stat: "Barrera AI"
   },
@@ -67,7 +67,7 @@ const problemBlocks = [
     title: "Leemos de IA y colapsamos",
     description:
       "Cuando escribimos IA en cualquier red social, automáticamente empezamos a saturarnos de noticias, aparece la sobreinformación y terminamos creyendo que debemos saber todo para empezar.",
-    imgUrl: "/images/placeholders/landing_prob_1_1776044770643.png",
+    imgUrl: "/images/landing/leemos-de-ia-y-colapsamos.mp4",
     tag: "Visibilidad",
     stat: "Sin métricas"
   },
@@ -84,6 +84,8 @@ const bk = {
   rLg: '24px',
   rPill: '999px',
 };
+
+const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
 
 let hasShownLandingPreloader = false;
 
@@ -258,7 +260,19 @@ const Landing = () => {
                     style={{ borderRadius: bk.rLg, boxShadow: '0 20px 40px rgba(1,1,1,0.06)' }}
                   >
                     <div className="relative aspect-[4/3] w-full" style={{ background: '#F8F9FB' }}>
-                      <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105" />
+                      {isVideoAsset((problem as any).imgUrl) ? (
+                        <video
+                          src={(problem as any).imgUrl}
+                          autoPlay
+                          loop
+                          muted
+                          playsInline
+                          className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          aria-label={problem.title}
+                        />
+                      ) : (
+                        <img src={(problem as any).imgUrl} alt={problem.title} className="absolute inset-0 w-full h-full object-cover mix-blend-multiply transition-transform duration-700 group-hover:scale-105" />
+                      )}
                     </div>
                   </GlowCard>
                 </FlipHover>

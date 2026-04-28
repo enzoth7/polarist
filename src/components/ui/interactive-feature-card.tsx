@@ -9,6 +9,8 @@ interface InteractiveFeatureCardProps extends React.HTMLAttributes<HTMLDivElemen
   description: string;
 }
 
+const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
+
 export function InteractiveFeatureCard({
   className,
   imageUrl,
@@ -53,12 +55,25 @@ export function InteractiveFeatureCard({
       >
       {/* Background Container - clipped */}
       <div className="absolute inset-0 rounded-[24px] overflow-hidden" style={{ transform: "translateZ(0px)" }}>
-         <img
-           src={imageUrl}
-           alt={title}
-           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-50 mix-blend-screen"
-           style={{ transform: "scale(1.05)" }}
-         />
+         {isVideoAsset(imageUrl) ? (
+           <video
+             src={imageUrl}
+             autoPlay
+             loop
+             muted
+             playsInline
+             className="h-full w-full object-cover opacity-50 transition-transform duration-700 group-hover:scale-110 mix-blend-screen"
+             style={{ transform: "scale(1.05)" }}
+             aria-label={title}
+           />
+         ) : (
+           <img
+             src={imageUrl}
+             alt={title}
+             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-50 mix-blend-screen"
+             style={{ transform: "scale(1.05)" }}
+           />
+         )}
          {/* Gradient Overlay to ensure text readability */}
          <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/60 to-transparent rounded-[24px]" />
       </div>

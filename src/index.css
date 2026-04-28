@@ -209,6 +209,11 @@
 }
 
 @layer utilities {
+  .tools-modal-sequel,
+  .tools-modal-sequel * {
+    font-family: "Sequel Sans" !important;
+  }
+
   @keyframes float-gentle {
     0%,
     100% {

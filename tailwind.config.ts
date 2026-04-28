@@ -14,6 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
+        sequel: ["Sequel Sans"],
         sans: ["Sequel Sans", "Helvetica Neue", "Arial", "sans-serif"],
         serif: ["Arno Pro", "Georgia", "serif"],
       },

@@ -15,11 +15,11 @@ const opacity = {
 
 const slideUp = {
   initial: {
-    top: 0,
+    y: 0,
   },
   exit: {
-    top: "-100vh",
-    transition: { duration: 0.8, ease: [0.76, 0, 0.24, 1], delay: 0.2 },
+    y: "-118vh",
+    transition: { duration: 1.05, ease: [0.83, 0, 0.17, 1], delay: 0.12 },
   },
 };
 
@@ -50,7 +50,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       }, 850);
       const completeTimer = window.setTimeout(() => {
         onComplete?.();
-      }, 1850);
+      }, 2100);
 
       return () => {
         window.clearTimeout(exitTimer);
@@ -69,17 +69,17 @@ export default function Preloader({ onComplete }: PreloaderProps) {
   }, [index, onComplete]);
 
   const curve = useMemo(() => {
-    const initial = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + 300} 0 ${dimension.height} L0 0`;
-    const target = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height} 0 ${dimension.height} L0 0`;
+    const initial = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width / 2} ${dimension.height + 180} 0 ${dimension.height} L0 0`;
+    const exit = `M0 0 L${dimension.width} 0 L${dimension.width} ${dimension.height} Q${dimension.width * 0.58} ${dimension.height + 360} 0 ${dimension.height} L0 0`;
 
     return {
       initial: {
         d: initial,
-        transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1] },
+        transition: { duration: 0.8, ease: [0.83, 0, 0.17, 1] },
       },
       exit: {
-        d: target,
-        transition: { duration: 0.7, ease: [0.76, 0, 0.24, 1], delay: 0.3 },
+        d: exit,
+        transition: { duration: 1, ease: [0.83, 0, 0.17, 1], delay: 0.08 },
       },
     };
   }, [dimension.height, dimension.width]);
@@ -89,11 +89,20 @@ export default function Preloader({ onComplete }: PreloaderProps) {
       variants={slideUp}
       initial="initial"
       animate={isExiting ? "exit" : "initial"}
-      className="fixed inset-0 z-[999999] flex h-screen w-screen items-center justify-center overflow-hidden bg-[var(--polarist-black,#010101)]"
+      className="fixed inset-0 z-[999999] flex h-screen w-screen items-center justify-center overflow-visible"
       aria-label="Cargando Polarist"
     >
       {dimension.width > 0 ? (
         <>
+          <svg className="absolute left-0 top-0 z-0 h-[calc(100%+380px)] w-full" aria-hidden="true">
+            <motion.path
+              variants={curve}
+              initial="initial"
+              animate={isExiting ? "exit" : "initial"}
+              fill="var(--polarist-black, #010101)"
+            />
+          </svg>
+
           <motion.p
             variants={opacity}
             initial="initial"
@@ -108,15 +117,6 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           >
             {words[index]}
           </motion.p>
-
-          <svg className="absolute top-0 h-[calc(100%+300px)] w-full" aria-hidden="true">
-            <motion.path
-              variants={curve}
-              initial="initial"
-              animate={isExiting ? "exit" : "initial"}
-              fill="var(--polarist-black, #010101)"
-            />
-          </svg>
 
           <span className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-[0.62rem] uppercase tracking-[0.42em] text-[#F6F6F6]/34">
             Polarist

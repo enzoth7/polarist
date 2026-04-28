@@ -523,27 +523,6 @@ const UserProfile = () => {
                 ) : null
               ) : null}
 
-              {!toolsLoading && !toolsError && !hasAnyVisibleContent ? (
-                <EmptyState
-                  title={isOwnProfile ? "Tu archivo todavia esta vacio" : "Este perfil aun no muestra colecciones"}
-                  description={
-                    isOwnProfile ?
-                      "Guarda herramientas o recursos para empezar a poblar esta pagina."
-                    : ""
-                  }
-                  cta={
-                    isOwnProfile ? (
-                      <Link
-                        to={routes.appTools}
-                        className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
-                        style={displayBoldStyle}
-                      >
-                        Ir al catalogo
-                      </Link>
-                    ) : null
-                  }
-                />
-              ) : null}
             </>
           )}
         </section>

@@ -260,7 +260,7 @@ const Modal: React.FC<ModalProps> = ({
               </div>
             ) : (
               showCloseButton && (
-                <div className="absolute top-6 right-6 flex items-center gap-2">
+                <div className="absolute right-6 top-6 z-30 flex items-center gap-2">
                   <button
                     className="p-1 rounded-md hover:bg-white/10 text-[#F6F6F6] transition-colors"
                     onClick={onClose}

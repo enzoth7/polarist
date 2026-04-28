@@ -463,6 +463,24 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
             >
             </p>
         </div>
+
+        <button
+          type="button"
+          aria-label="Noticia anterior"
+          onClick={() => apiRef.current?.prev()}
+          className="absolute left-10 top-1/2 z-20 flex h-14 w-14 -translate-y-1/2 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:left-14 md:h-16 md:w-16"
+        >
+          <ChevronLeft className="h-[1.7rem] w-[1.7rem]" strokeWidth={2.3} />
+        </button>
+
+        <button
+          type="button"
+          aria-label="Siguiente noticia"
+          onClick={() => apiRef.current?.next()}
+          className="absolute right-10 top-1/2 z-20 flex h-14 w-14 -translate-y-1/2 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:right-14 md:h-16 md:w-16"
+        >
+          <ChevronRight className="h-[1.7rem] w-[1.7rem]" strokeWidth={2.3} />
+        </button>
       </main>
 
       <style>{`
