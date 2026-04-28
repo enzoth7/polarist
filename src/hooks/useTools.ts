@@ -10,12 +10,13 @@ type ToolRow = {
   url: string | null;
   category: string;
   kind: string;
-  niches: string[] | null;
-  niche_tags: Record<string, unknown> | null;
   description: string | null;
   who_is_it_for: string | null;
+  what_is_it_really_for: string | null;
+  otros_usos: string | null;
   is_beta: boolean;
   created_at: string;
+  logo_filename: string | null;
 };
 
 export type ToolItem = {
@@ -25,12 +26,13 @@ export type ToolItem = {
   url: string | null;
   category: string;
   kind: string;
-  niches: ToolNicheKey[];
-  nicheTags: Partial<Record<ToolNicheKey, string>>;
   description: string | null;
   whoIsItFor: string | null;
+  whatIsItReallyFor: string | null;
+  otrosUsos: string | null;
   isBeta: boolean;
   createdAt: string;
+  logoFilename: string | null;
 };
 
 type FetchToolsOptions = {
@@ -51,12 +53,13 @@ const TOOL_SELECT_COLUMNS = `
   url,
   category,
   kind,
-  niches,
-  niche_tags,
   description,
   who_is_it_for,
+  what_is_it_really_for,
+  otros_usos,
   is_beta,
-  created_at
+  created_at,
+  logo_filename
 `;
 
 const isToolNicheKey = (value: string): value is ToolNicheKey => value in toolNicheMap;
@@ -90,12 +93,13 @@ const mapToolRow = (row: ToolRow): ToolItem => ({
   url: row.url,
   category: row.category,
   kind: row.kind,
-  niches: (row.niches ?? []).filter(isToolNicheKey),
-  nicheTags: mapNicheTags(row.niche_tags),
   description: row.description,
   whoIsItFor: row.who_is_it_for,
+  whatIsItReallyFor: row.what_is_it_really_for,
+  otrosUsos: row.otros_usos,
   isBeta: row.is_beta,
   createdAt: row.created_at,
+  logoFilename: row.logo_filename,
 });
 
 export const getToolHref = (tool: Pick<ToolItem, "url" | "domain">) => {
