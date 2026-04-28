@@ -174,6 +174,7 @@ const ToolsDiscoveries = () => {
                         <ToolLogo
                           name={tool.name}
                           domain={tool.domain}
+                          logoFilename={tool.logoFilename}
                           className="h-12 w-12 border-none bg-transparent"
                           imageClassName="p-0.5"
                         />
@@ -262,6 +263,7 @@ const ToolsDiscoveries = () => {
                                 <ToolLogo
                                   name={tool.name}
                                   domain={tool.domain}
+                                  logoFilename={tool.logoFilename}
                                   className="h-12 w-12 border-none bg-transparent"
                                   imageClassName="p-0.5"
                                 />

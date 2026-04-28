@@ -335,6 +335,7 @@ function CategoryDetail({
                       <ToolLogo
                         name={tool.label}
                         domain={tool.domain}
+                        logoFilename={tool.tool?.logoFilename}
                         className="h-32 w-32 rounded-[2rem] border-0 bg-transparent sm:h-36 sm:w-36"
                         imageClassName="p-0 object-contain"
                       />

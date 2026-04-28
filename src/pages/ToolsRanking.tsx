@@ -315,6 +315,7 @@ const ToolsRanking = () => {
                       <ToolLogo
                         name={tool.name}
                         domain={tool.domain}
+                        logoFilename={tool.logoFilename}
                         className="h-11 w-11 border-none bg-transparent"
                         imageClassName="p-0.5"
                       />

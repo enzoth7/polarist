@@ -46,6 +46,7 @@ export function ToolDetailsModal({
                 <ToolLogo
                   name={selectedTool.name}
                   domain={selectedTool.domain}
+                  logoFilename={selectedTool.logoFilename}
                   className="h-14 w-14 border-none bg-transparent"
                   imageClassName="p-0.5"
                 />

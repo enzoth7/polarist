@@ -395,6 +395,7 @@ const Library = () => {
                             <ToolLogo
                               name={tool.name}
                               domain={tool.domain}
+                              logoFilename={tool.logoFilename}
                               className="h-[84px] w-[84px] border-none bg-transparent"
                               imageClassName="p-1"
                             />

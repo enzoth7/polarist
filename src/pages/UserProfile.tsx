@@ -175,6 +175,7 @@ const SavedToolPoster = ({
           <ToolLogo
             name={tool.name}
             domain={tool.domain}
+            logoFilename={tool.logoFilename}
             className="h-[88px] w-[88px] border-none bg-transparent"
             imageClassName="p-1"
           />

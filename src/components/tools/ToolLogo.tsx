@@ -38,15 +38,24 @@ const specialLogoByName: Record<string, LogoSource> = {
 type ToolLogoProps = {
   name: string;
   domain: string;
+  logoFilename?: string | null;
   className?: string;
   imageClassName?: string;
 };
 
-export function ToolLogo({ name, domain, className, imageClassName }: ToolLogoProps) {
+export function ToolLogo({ name, domain, logoFilename, className, imageClassName }: ToolLogoProps) {
   const [sourceIndex, setSourceIndex] = useState(0);
 
   const logoSources = useMemo(() => {
     const sources: LogoSource[] = [];
+
+    if (logoFilename) {
+      sources.push({
+        src: `/logos/${logoFilename}`,
+        imageClassName: "object-contain p-1.5",
+      });
+    }
+
     const specialLogo = specialLogoByName[name];
 
     if (specialLogo) {
@@ -67,7 +76,7 @@ export function ToolLogo({ name, domain, className, imageClassName }: ToolLogoPr
       (source, index, allSources) =>
         allSources.findIndex((candidate) => candidate.src === source.src) === index,
     );
-  }, [domain, name]);
+  }, [domain, name, logoFilename]);
 
   useEffect(() => {
     setSourceIndex(0);
