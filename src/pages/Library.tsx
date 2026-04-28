@@ -157,9 +157,7 @@ const Library = () => {
     toggleFavorite,
     toggleSave,
   } = useToolInteractions(allToolIds);
-  const { savedFolderIds, toggleSavedFolder } = useSavedGuideFolders(
-    status === "authenticated" ? user?.id : undefined,
-  );
+  const { savedFolderIds, toggleSavedFolder } = useSavedGuideFolders();
 
   const savedTools = useMemo(
     () => allTools.filter((tool) => savedToolIdSet.has(tool.name)),
@@ -394,7 +392,6 @@ const Library = () => {
                           <div className="mt-6 flex h-24 items-center justify-center">
                             <ToolLogo
                               name={tool.name}
-                              domain={tool.domain}
                               logoFilename={tool.logoFilename}
                               className="h-[84px] w-[84px] border-none bg-transparent"
                               imageClassName="p-1"
@@ -514,7 +511,16 @@ const Library = () => {
                       type="button"
                       onClick={(event) => {
                         event.stopPropagation();
-                        toggleSavedFolder(folder.id);
+                        if (status !== "authenticated") {
+                          showAuthToast();
+                          return;
+                        }
+                        void toggleSavedFolder(folder.id).catch(() => {
+                          toast({
+                            title: "No pudimos actualizar tu biblioteca",
+                            description: "Intenta de nuevo en unos segundos.",
+                          });
+                        });
                       }}
                       className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-white/56 transition-colors hover:border-white/18 hover:text-white/76"
                       aria-label={`Quitar ${folder.title} de la biblioteca`}

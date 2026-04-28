@@ -6,7 +6,6 @@ import { supabase } from "@/lib/supabase";
 type ToolRow = {
   id: string;
   name: string;
-  domain: string;
   url: string | null;
   category: string;
   kind: string;
@@ -22,7 +21,6 @@ type ToolRow = {
 export type ToolItem = {
   id: string;
   name: string;
-  domain: string;
   url: string | null;
   category: string;
   kind: string;
@@ -49,7 +47,6 @@ type UseToolsQueryOptions = FetchToolsOptions & {
 const TOOL_SELECT_COLUMNS = `
   id,
   name,
-  domain,
   url,
   category,
   kind,
@@ -89,7 +86,6 @@ const mapNicheTags = (value: ToolRow["niche_tags"]): Partial<Record<ToolNicheKey
 const mapToolRow = (row: ToolRow): ToolItem => ({
   id: row.id,
   name: row.name,
-  domain: row.domain,
   url: row.url,
   category: row.category,
   kind: row.kind,
@@ -102,11 +98,11 @@ const mapToolRow = (row: ToolRow): ToolItem => ({
   logoFilename: row.logo_filename,
 });
 
-export const getToolHref = (tool: Pick<ToolItem, "url" | "domain">) => {
+export const getToolHref = (tool: Pick<ToolItem, "url">) => {
   const rawUrl = tool.url?.trim();
 
   if (!rawUrl) {
-    return `https://${tool.domain}`;
+    return "#";
   }
 
   return /^https?:\/\//i.test(rawUrl) ? rawUrl : `https://${rawUrl}`;

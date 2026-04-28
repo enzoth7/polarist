@@ -45,7 +45,6 @@ export function ToolDetailsModal({
               <div className="flex items-start gap-4">
                 <ToolLogo
                   name={selectedTool.name}
-                  domain={selectedTool.domain}
                   logoFilename={selectedTool.logoFilename}
                   className="h-14 w-14 border-none bg-transparent"
                   imageClassName="p-0.5"
@@ -126,17 +125,7 @@ export function ToolDetailsModal({
                 {whoIsItFor ?? "Perfil ideal en redacción..."}
               </p>
 
-              <div className="flex flex-wrap gap-2 pt-2">
-                {selectedTool.niches.map((niche) => (
-                  <Badge
-                    key={`${selectedTool.name}-${niche}`}
-                    variant="outline"
-                    className="rounded-full border-black/10 bg-white/75 px-3 py-1 text-[11px] font-medium text-muted-foreground dark:border-white/20 dark:bg-white/10 dark:text-white/75"
-                  >
-                    {withSpanishAccents(toolNicheMap[niche].label)}
-                  </Badge>
-                ))}
-              </div>
+
             </section>
 
             <DialogFooter className="pt-1">

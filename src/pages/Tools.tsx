@@ -6,6 +6,7 @@ import Modal from "@/components/ui/modal-drop";
 import { BubbleText } from "@/components/ui/bubble-text";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
+
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
 
 const BK = {
@@ -36,7 +37,6 @@ type CategoryDef = {
 
 type ResolvedTool = {
   label: string;
-  domain: string | null;
   href: string | null;
   tool: ToolItem | null;
   preview: string;
@@ -174,14 +174,26 @@ const CATEGORIES: CategoryDef[] = [
     coverImage: CATEGORY_IMAGES.creacion,
     image: "/images/tools/creacion-contenido-entryway.mp4",
     tools: [
-      { label: "MidJourney", aliases: ["Midjourney"], fallbackHref: "https://www.midjourney.com" },
-      { label: "Canva", aliases: ["Canva IA"], fallbackHref: "https://www.canva.com" },
+      { label: "Midjourney", aliases: ["MidJourney"], fallbackHref: "https://www.midjourney.com" },
+      { label: "Adobe Firefly", aliases: ["Firefly"], fallbackHref: "https://www.adobe.com/products/firefly.html" },
       { label: "Higgsfield", fallbackHref: "https://higgsfield.ai" },
       { label: "Genspark", fallbackHref: "https://genspark.ai" },
+      { label: "Runway", fallbackHref: "https://runwayml.com" },
+      { label: "ElevenLabs", fallbackHref: "https://elevenlabs.io" },
+      { label: "Retell", aliases: ["Retell AI"], fallbackHref: "https://www.retellai.com" },
+      { label: "Ideogram", fallbackHref: "https://ideogram.ai" },
+      { label: "HeyGen", fallbackHref: "https://www.heygen.com" },
+      { label: "Jasper", fallbackHref: "https://www.jasper.ai" },
+      { label: "Descript", fallbackHref: "https://www.descript.com" },
       { label: "Freepik", fallbackHref: "https://www.freepik.com" },
+      { label: "Opus Clip", fallbackHref: "https://www.opus.pro" },
+      { label: "Canva", aliases: ["Canva IA"], fallbackHref: "https://www.canva.com" },
+      { label: "Odysser", fallbackHref: "https://odysser.com" },
       { label: "Submagic", fallbackHref: "https://www.submagic.co" },
+      { label: "Magnific", aliases: ["Magnific AI"], fallbackHref: "https://magnific.ai" },
+      { label: "Beeble", fallbackHref: "https://beeble.ai" },
       { label: "Suno", fallbackHref: "https://suno.com" },
-      { label: "Gamma", fallbackHref: "https://gamma.app" },
+      { label: "Moises", fallbackHref: "https://moises.ai" },
     ],
   },
   {
@@ -192,7 +204,7 @@ const CATEGORIES: CategoryDef[] = [
     image: "/images/tools/automatizaciones-shelf-styling.mp4",
     mediaPosition: "center 38%",
     tools: [
-      { label: "n8n", aliases: ["n8n"], fallbackHref: "https://n8n.io" },
+      { label: "n8n", fallbackHref: "https://n8n.io" },
       { label: "Make", fallbackHref: "https://www.make.com" },
       { label: "Zapier", fallbackHref: "https://zapier.com" },
       { label: "Apify", fallbackHref: "https://apify.com" },
@@ -207,11 +219,14 @@ const CATEGORIES: CategoryDef[] = [
     image: "/images/tools/desarrollo-web-coastal.mp4",
     tools: [
       { label: "Lovable", fallbackHref: "https://lovable.dev" },
-      { label: "Bolt.new", aliases: ["Bolt.new"], fallbackHref: "https://bolt.new" },
-      { label: "Cursor", fallbackHref: "https://cursor.com" },
-      { label: "Figma", fallbackHref: "https://www.figma.com" },
-      { label: "Vercel", fallbackHref: "https://vercel.com" },
       { label: "Supabase", fallbackHref: "https://supabase.com" },
+      { label: "Vercel", fallbackHref: "https://vercel.com" },
+      { label: "Framer AI", aliases: ["Framer"], fallbackHref: "https://www.framer.com/ai" },
+      { label: "VS Code", fallbackHref: "https://code.visualstudio.com" },
+      { label: "Cursor", fallbackHref: "https://cursor.com" },
+      { label: "Bolt.new", fallbackHref: "https://bolt.new" },
+      { label: "Stitch", aliases: ["Stitch AI"], fallbackHref: "https://stitch.withgoogle.com" },
+      { label: "Figma", fallbackHref: "https://www.figma.com" },
     ],
   },
   {
@@ -221,10 +236,12 @@ const CATEGORIES: CategoryDef[] = [
     coverImage: CATEGORY_IMAGES.marketing,
     image: "/images/tools/marketing-ventas-replacement.mp4",
     tools: [
+      { label: "AdCreative", aliases: ["AdCreative.ai"], fallbackHref: "https://www.adcreative.ai" },
+      { label: "Pomelli", fallbackHref: "https://labs.google.com/u/0/pomelli" },
+      { label: "Surfer SEO", fallbackHref: "https://surferseo.com" },
       { label: "Typeform", fallbackHref: "https://www.typeform.com" },
       { label: "Kommo", fallbackHref: "https://kommo.com" },
-      { label: "Manychat", fallbackHref: "https://manychat.com" },
-      { label: "ElevenLabs", fallbackHref: "https://elevenlabs.io" },
+      { label: "Manychat", aliases: ["ManyChat"], fallbackHref: "https://manychat.com" },
     ],
   },
   {
@@ -234,11 +251,14 @@ const CATEGORIES: CategoryDef[] = [
     coverImage: CATEGORY_IMAGES.productividad,
     image: "/images/tools/productividad-cozy-corner.mp4",
     tools: [
-      { label: "Notion AI", aliases: ["Notion AI"], fallbackHref: "https://www.notion.so/product/ai" },
+      { label: "Notion AI", aliases: ["Notion"], fallbackHref: "https://www.notion.so/product/ai" },
       { label: "NotebookLM", fallbackHref: "https://notebooklm.google.com" },
-      { label: "Wispr", fallbackHref: "https://wisprflow.ai" },
-      { label: "Fireflies", fallbackHref: "https://fireflies.ai" },
       { label: "Loom", fallbackHref: "https://www.loom.com" },
+      { label: "Antigravity", fallbackHref: "https://antigravity.google" },
+      { label: "Wispr", fallbackHref: "https://wisprflow.ai" },
+      { label: "Gamma", fallbackHref: "https://gamma.app" },
+      { label: "Slack", fallbackHref: "https://slack.com" },
+      { label: "Fireflies", aliases: ["Fireflies.ai"], fallbackHref: "https://fireflies.ai" },
     ],
   },
 ];
@@ -246,15 +266,6 @@ const CATEGORIES: CategoryDef[] = [
 const normalizeText = (value: string) =>
   value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
-const getDomainFromHref = (href: string | null | undefined) => {
-  if (!href) return null;
-
-  try {
-    return new URL(href).hostname.replace(/^www\./i, "");
-  } catch {
-    return null;
-  }
-};
 
 const resolveTool = (
   req: RequestedTool,
@@ -270,7 +281,6 @@ const resolveTool = (
 
   return {
     label: req.label,
-    domain: match ? match.domain : getDomainFromHref(req.fallbackHref),
     href: match ? getToolHref(match) : (req.fallbackHref ?? null),
     tool: match,
     preview: playbook.preview,
@@ -326,105 +336,113 @@ function CategoryDetail({
               <ExpandableCard
                 title={tool.label}
                 src=""
-                description={tool.domain ?? ""}
+                description={""}
                 className="aspect-square w-full"
                 classNameExpanded="[&_h4]:text-white [&_h4]:font-semibold"
                 media={
                   <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-[#ffffff] px-8 py-8">
-                    {tool.domain ? (
                       <ToolLogo
                         name={tool.label}
-                        domain={tool.domain}
                         logoFilename={tool.tool?.logoFilename}
                         className="h-32 w-32 rounded-[2rem] border-0 bg-transparent sm:h-36 sm:w-36"
                         imageClassName="p-0 object-contain"
                       />
-                    ) : (
-                      <div className="flex h-32 w-32 items-center justify-center rounded-[2rem] bg-white text-center text-sm font-semibold text-black sm:h-36 sm:w-36">
-                        {tool.label}
-                      </div>
-                    )}
                   </div>
                 }
               >
-                <div className="grid gap-6" style={sequelTextStyle}>
-                  <section className="space-y-2">
-                    <h4 className="text-base uppercase tracking-[0.18em] text-[#CAFE5B]" style={sequelTextStyle}>
-                      Para qué sirve
-                    </h4>
-                    <p style={sequelTextStyle}>
-                      {tool.tool?.description?.trim() ||
-                        `${tool.label} te ayuda a ejecutar mejor tareas clave dentro de ${category.title.toLowerCase()}.`}
-                    </p>
-                  </section>
+                <div className="relative h-[65vh] w-full overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar" style={sequelTextStyle}>
+                  <div className="pb-[30vh] space-y-4">
+                    
+                    {/* Card 1: Nombre, Categoria, Tipo */}
+                    <div
+                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
+                    >
+                      <h3 className="text-xl font-bold text-white mb-4">IDENTIDAD</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Nombre</span>
+                          <span className="text-lg font-semibold text-white">{tool.label}</span>
+                        </div>
+                        {tool.tool?.category && (
+                          <div>
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Categoría</span>
+                            <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-[11px] text-white">{tool.tool.category}</span>
+                          </div>
+                        )}
+                        {tool.tool?.kind && (
+                          <div>
+                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Tipo</span>
+                            <span className="inline-block rounded-full bg-[#CAFE5B]/20 text-[#CAFE5B] px-3 py-1 text-[11px]">{tool.tool.kind}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
 
-                  <section className="space-y-2">
-                    <h4 className="text-base uppercase tracking-[0.18em] text-[#CAFE5B]" style={sequelTextStyle}>
-                      Para quién
-                    </h4>
-                    <p style={sequelTextStyle}>
-                      {tool.tool?.whoIsItFor?.trim() ||
-                        "Equipos, freelancers y negocios que quieren ganar velocidad sin perder criterio."}
-                    </p>
-                  </section>
+                    {/* Card 2: Descripción */}
+                    <div
+                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
+                    >
+                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
+                        Descripción
+                      </h4>
+                      <p className="text-white/80 leading-relaxed text-sm">
+                        {tool.tool?.description?.trim() ||
+                          `${tool.label} te ayuda a ejecutar mejor tareas clave dentro de ${category.title.toLowerCase()}.`}
+                      </p>
+                    </div>
 
-                  <section className="space-y-2">
-                    <h4 className="text-base uppercase tracking-[0.18em] text-[#CAFE5B]" style={sequelTextStyle}>
-                      Por qué importa
-                    </h4>
-                    <p style={sequelTextStyle}>{tool.whyItMatters}</p>
-                  </section>
+                    {/* Card 3: Para quiénes sirve realmente */}
+                    <div
+                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
+                    >
+                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
+                        Para quiénes sirve realmente
+                      </h4>
+                      <p className="text-white/80 leading-relaxed text-sm">
+                        {tool.tool?.whatIsItReallyFor?.trim() || tool.whyItMatters || "En redacción..."}
+                      </p>
+                    </div>
 
-                  <section className="space-y-2">
-                    <h4 className="text-base uppercase tracking-[0.18em] text-[#CAFE5B]" style={sequelTextStyle}>
-                      Casos de uso
-                    </h4>
-                    <ul className="space-y-2 text-white/72" style={sequelTextStyle}>
-                      {tool.useCases.map((item) => (
-                        <li key={item} className="flex items-start gap-3">
-                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-[#CAFE5B]" />
-                          <span style={sequelTextStyle}>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
+                    {/* Card 4: Quiénes deberían usarla */}
+                    <div
+                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
+                    >
+                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
+                        Quiénes deberían usarla
+                      </h4>
+                      <p className="text-white/80 leading-relaxed text-sm">
+                        {tool.tool?.whoIsItFor?.trim() || "Equipos, freelancers y negocios que quieren ganar velocidad."}
+                      </p>
+                    </div>
 
-                  <section className="space-y-2">
-                    <h4 className="text-base uppercase tracking-[0.18em] text-[#CAFE5B]" style={sequelTextStyle}>
-                      Qué mirar antes de usarla
-                    </h4>
-                    <ul className="space-y-2 text-white/72" style={sequelTextStyle}>
-                      {tool.cautions.map((item) => (
-                        <li key={item} className="flex items-start gap-3">
-                          <span className="mt-2 h-1.5 w-1.5 rounded-full bg-white/35" />
-                          <span style={sequelTextStyle}>{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </section>
+                    {/* Card 5: Otros Usos */}
+                    <div
+                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl flex flex-col justify-between"
+                    >
+                      <div>
+                        <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
+                          Otros usos
+                        </h4>
+                        <p className="text-white/80 leading-relaxed text-sm">
+                          {tool.tool?.otrosUsos?.trim() || (tool.useCases && tool.useCases.length > 0 ? tool.useCases.join(" • ") : "En redacción...")}
+                        </p>
+                      </div>
+                      
+                      <div className="flex flex-wrap items-center gap-3 pt-6 mt-auto">
+                        {tool.href ? (
+                          <a
+                            href={tool.href}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full bg-[#CAFE5B] px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#010101] transition hover:scale-[1.03] hover:bg-[#d8ff77]"
+                          >
+                            Visitar sitio
+                            <ExternalLink className="h-3.5 w-3.5" />
+                          </a>
+                        ) : null}
+                      </div>
+                    </div>
 
-                  <div className="flex flex-wrap items-center gap-3 pt-2">
-                    {tool.domain ? (
-                      <span
-                        className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.16em] text-white/60"
-                        style={sequelTextStyle}
-                      >
-                        {tool.domain}
-                      </span>
-                    ) : null}
-
-                    {tool.href ? (
-                      <a
-                        href={tool.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-full bg-[#CAFE5B] px-5 py-2.5 text-xs font-black uppercase tracking-[0.16em] text-[#010101] transition hover:scale-[1.03] hover:bg-[#d8ff77]"
-                        style={sequelTextStyle}
-                      >
-                        Visitar sitio
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </a>
-                    ) : null}
                   </div>
                 </div>
               </ExpandableCard>

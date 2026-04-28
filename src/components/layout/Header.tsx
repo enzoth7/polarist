@@ -151,17 +151,17 @@ const Header = () => {
           </Sheet>
 
           <div className="hidden min-w-0 items-center gap-2 md:flex">
-            <div className="shrink-0" aria-label="Marca Polarist">
+            <Link to={routes.landing} className="shrink-0" aria-label="Marca Polarist">
               <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
-            </div>
+            </Link>
           </div>
         </div>
 
         {/* Centro */}
         <div className="flex min-w-0 items-center justify-center gap-2 md:hidden">
-          <div className="shrink-0" aria-label="Marca Polarist">
+          <Link to={routes.landing} className="shrink-0" aria-label="Marca Polarist">
             <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
-          </div>
+          </Link>
         </div>
 
         <nav className="hidden items-center justify-center gap-5 md:flex lg:gap-6">

@@ -174,7 +174,6 @@ const SavedToolPoster = ({
         <div className="mt-6 flex h-24 items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.03]">
           <ToolLogo
             name={tool.name}
-            domain={tool.domain}
             logoFilename={tool.logoFilename}
             className="h-[88px] w-[88px] border-none bg-transparent"
             imageClassName="p-1"
@@ -266,8 +265,7 @@ const UserProfile = () => {
   const [activeSavedFilter, setActiveSavedFilter] = useState<SavedFilterKey>("all");
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
-  const savedGuideOwnerId = isOwnProfile ? user?.id : "__disabled__";
-  const { savedFolderIds } = useSavedGuideFolders(savedGuideOwnerId);
+  const { savedFolderIds } = useSavedGuideFolders();
 
   const displayName = profile?.full_name?.trim() || "Usuario Polarist";
   const firstName = displayName.split(/\s+/)[0] || "Usuario";

@@ -105,11 +105,11 @@ const Contact = () => {
           Mail de soporte
         </p>
         <a 
-          href="mailto:soporte@polarist.uy" 
+          href="mailto:contacto@polarist.app" 
           style={sequelStyle}
           className="mt-2 inline-flex items-center rounded-full border border-white/10 bg-white/[0.03] px-3.5 py-1.5 text-sm font-semibold text-[#F6F6F6]/80 transition-colors hover:bg-white/[0.08] hover:text-[#F6F6F6]"
         >
-          soporte@polarist.uy
+          contacto@polarist.app
         </a>
       </div>
     </LegalPageLayout>

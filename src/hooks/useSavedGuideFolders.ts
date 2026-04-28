@@ -1,77 +1,88 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-const STORAGE_KEY_PREFIX = "polarist_saved_guide_folders_v1";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/lib/supabase";
 
-const getStorageKey = (ownerId?: string | null) =>
-  `${STORAGE_KEY_PREFIX}:${ownerId?.trim() || "guest"}`;
+export function useSavedGuideFolders() {
+  const { status, user } = useAuth();
+  const [savedFolderIds, setSavedFolderIds] = useState<string[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const readSavedFolderIds = (storageKey: string) => {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  try {
-    const rawValue = window.localStorage.getItem(storageKey);
-
-    if (!rawValue) {
-      return [];
+  const loadSaves = useCallback(async () => {
+    if (status !== "authenticated" || !user) {
+      setSavedFolderIds([]);
+      setLoading(false);
+      return;
     }
 
-    const parsedValue = JSON.parse(rawValue);
+    setLoading(true);
+    try {
+      const { data, error: fetchError } = await supabase
+        .from("resource_saves")
+        .select("resource_id")
+        .eq("user_id", user.id);
 
-    if (!Array.isArray(parsedValue)) {
-      return [];
-    }
-
-    return parsedValue
-      .filter((value): value is string => typeof value === "string")
-      .map((value) => value.trim())
-      .filter(Boolean);
-  } catch (error) {
-    console.error("Error reading saved guide folders:", error);
-    return [];
-  }
-};
-
-const writeSavedFolderIds = (storageKey: string, folderIds: string[]) => {
-  if (typeof window === "undefined") {
-    return;
-  }
-
-  try {
-    window.localStorage.setItem(storageKey, JSON.stringify(folderIds));
-  } catch (error) {
-    console.error("Error writing saved guide folders:", error);
-  }
-};
-
-export function useSavedGuideFolders(ownerId?: string | null) {
-  const storageKey = useMemo(() => getStorageKey(ownerId), [ownerId]);
-  const [savedFolderIds, setSavedFolderIds] = useState<string[]>(() => readSavedFolderIds(storageKey));
-
-  useEffect(() => {
-    setSavedFolderIds(readSavedFolderIds(storageKey));
-  }, [storageKey]);
-
-  const savedFolderIdSet = useMemo(() => new Set(savedFolderIds), [savedFolderIds]);
-
-  const isSaved = (folderId: string) => savedFolderIdSet.has(folderId);
-
-  const toggleSavedFolder = (folderId: string) => {
-    let nextFolderIds: string[] = [];
-
-    setSavedFolderIds((currentFolderIds) => {
-      if (currentFolderIds.includes(folderId)) {
-        nextFolderIds = currentFolderIds.filter((currentId) => currentId !== folderId);
-      } else {
-        nextFolderIds = [...currentFolderIds, folderId];
+      if (fetchError) {
+        throw fetchError;
       }
 
-      writeSavedFolderIds(storageKey, nextFolderIds);
-      return nextFolderIds;
-    });
+      setSavedFolderIds((data ?? []).map((row) => row.resource_id));
+    } catch (nextError) {
+      console.error("Error loading saved guide folders:", nextError);
+      setError(nextError instanceof Error ? nextError.message : "Error cargando recursos guardados.");
+    } finally {
+      setLoading(false);
+    }
+  }, [status, user]);
 
-    return !savedFolderIdSet.has(folderId);
+  useEffect(() => {
+    void loadSaves();
+  }, [loadSaves]);
+
+  const savedFolderIdSet = useMemo(() => new Set(savedFolderIds), [savedFolderIds]);
+  const isSaved = (folderId: string) => savedFolderIdSet.has(folderId);
+
+  const toggleSavedFolder = async (folderId: string) => {
+    if (status !== "authenticated" || !user) {
+      throw new Error("AUTH_REQUIRED");
+    }
+
+    const wasSaved = savedFolderIdSet.has(folderId);
+    
+    // Optimistic UI update
+    setSavedFolderIds((current) =>
+      wasSaved ? current.filter((id) => id !== folderId) : [...current, folderId]
+    );
+
+    try {
+      if (wasSaved) {
+        const { error: deleteError } = await supabase
+          .from("resource_saves")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("resource_id", folderId);
+
+        if (deleteError) {
+          throw deleteError;
+        }
+      } else {
+        const { error: insertError } = await supabase
+          .from("resource_saves")
+          .insert({ user_id: user.id, resource_id: folderId });
+
+        if (insertError) {
+          throw insertError;
+        }
+      }
+      return !wasSaved;
+    } catch (nextError) {
+      // Revert optimistic update
+      setSavedFolderIds((current) =>
+        wasSaved ? [...current, folderId] : current.filter((id) => id !== folderId)
+      );
+      throw nextError;
+    }
   };
 
   return {
@@ -79,5 +90,7 @@ export function useSavedGuideFolders(ownerId?: string | null) {
     savedFolderIdSet,
     isSaved,
     toggleSavedFolder,
+    loading,
+    error,
   };
 }
