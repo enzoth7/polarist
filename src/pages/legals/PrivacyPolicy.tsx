@@ -2,8 +2,9 @@ import {
   Accordion,
   AccordionContent,
   AccordionItem,
-  AccordionTrigger,
 } from "@/components/ui/accordion";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
+import { Plus } from "lucide-react";
 import LegalPageLayout from "./LegalPageLayout";
 
 const privacySections = [
@@ -56,12 +57,20 @@ const PrivacyPolicy = () => {
             value={`item-${idx}`}
             className="border-white/10"
           >
-            <AccordionTrigger 
-              style={sequelStyle}
-              className="text-xl font-semibold tracking-tight text-[#F6F6F6] hover:no-underline hover:text-[#CAFE5B] transition-colors"
-            >
-              {section.title}
-            </AccordionTrigger>
+            <AccordionPrimitive.Header className="flex">
+              <AccordionPrimitive.Trigger
+                style={sequelStyle}
+                className="flex flex-1 items-center justify-between gap-4 py-4 text-left text-xl font-semibold tracking-tight text-[#F6F6F6] transition-colors hover:text-[#CAFE5B] [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180"
+              >
+                <span>{section.title}</span>
+                <Plus
+                  size={18}
+                  strokeWidth={2}
+                  className="shrink-0 opacity-70 transition-transform duration-200"
+                  aria-hidden="true"
+                />
+              </AccordionPrimitive.Trigger>
+            </AccordionPrimitive.Header>
             <AccordionContent 
               style={sequelStyle}
               className="text-sm leading-7 text-[#F6F6F6]/70 font-normal"

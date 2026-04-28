@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 
+import { ShinyButton } from "@/components/ui/shiny-button";
 import { useAuth } from "@/hooks/useAuth";
 import { routes } from "@/lib/routes";
 
@@ -145,16 +146,84 @@ const GoogleIcon = () => (
   </svg>
 );
 
+const RESOURCES_COUNTDOWN_TARGET = new Date("2026-05-04T20:00:00-03:00").getTime();
+
+const getTimeRemaining = () => {
+  const diff = Math.max(RESOURCES_COUNTDOWN_TARGET - Date.now(), 0);
+
+  return {
+    days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+    hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+    minutes: Math.floor((diff / (1000 * 60)) % 60),
+    seconds: Math.floor((diff / 1000) % 60),
+  };
+};
+
+const countdownItems = [
+  { key: "days", label: "DÍAS" },
+  { key: "hours", label: "HORAS" },
+  { key: "minutes", label: "MINUTOS" },
+  { key: "seconds", label: "SEGUNDOS" },
+] as const;
+
+const CountdownValue = ({ value }: { value: string }) => {
+  return (
+    <div
+      className="relative overflow-hidden"
+      style={{
+        minWidth: "clamp(86px, 19vw, 220px)",
+        height: "clamp(62px, 12vw, 126px)",
+      }}
+    >
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.span
+          key={value}
+          initial={{ opacity: 0, y: -22, filter: "blur(7px)" }}
+          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          exit={{ opacity: 0, y: 18, filter: "blur(5px)" }}
+          transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0 flex items-center justify-center"
+          style={{
+            fontFamily: "var(--font-sequel, sans-serif)",
+            fontSize: "clamp(52px, 12vw, 126px)",
+            fontWeight: 400,
+            letterSpacing: "-0.06em",
+            lineHeight: 0.9,
+            color: "#F6F6F6",
+            textShadow: "0 0 18px rgba(255,255,255,0.08)",
+          }}
+        >
+          {value}
+        </motion.span>
+      </AnimatePresence>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 h-8"
+        style={{ background: "linear-gradient(to bottom, rgba(1,1,1,0.42), transparent)" }}
+      />
+    </div>
+  );
+};
+
 const Login = () => {
   const navigate = useNavigate();
   const { loginAsGoogle, status } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(getTimeRemaining);
 
   useEffect(() => {
     if (status === "authenticated") {
       navigate(routes.appProfile, { replace: true });
     }
   }, [navigate, status]);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setTimeRemaining(getTimeRemaining());
+    }, 1000);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   const handleGoogleLogin = async () => {
     try {
@@ -199,103 +268,62 @@ const Login = () => {
         )}
       </AnimatePresence>
 
-      <div className="flex flex-1 flex-col items-center justify-center w-full max-w-lg relative z-10">
-        <div className="mb-10 flex items-center justify-center">
-          <LoginGlobe />
-        </div>
-
-        <div className="w-full text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mb-5"
-            style={{
-              fontFamily: "var(--font-sequel, sans-serif)",
-              fontSize: "clamp(48px, 12vw, 72px)",
-              fontWeight: 700,
-              letterSpacing: "-2px",
-              lineHeight: 1,
-              color: "#F6F6F6",
-            }}
-          >
-            Bienvenidos
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="mx-auto max-w-sm"
-            style={{
-              fontFamily: "var(--font-sequel, sans-serif)",
-              fontSize: "16px",
-              fontWeight: 400,
-              lineHeight: 1.55,
-              color: "rgba(246,246,246,0.45)",
-            }}
-          >
-            Tu punto de partida para{" "}
-            <strong style={{ color: "#F6F6F6", fontWeight: 700 }}>dominar la IA.</strong>
-          </motion.p>
-        </div>
-      </div>
-
-      <div className="mt-8 flex w-full max-w-sm flex-col gap-4 z-10 px-4">
-        <button
-          onClick={handleGoogleLogin}
-          disabled={isLoading}
-          className="w-full flex items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.97] disabled:opacity-60"
-          style={{
-            fontFamily: "var(--font-sequel, sans-serif)",
-            fontSize: "15px",
-            fontWeight: 600,
-            letterSpacing: "0.3px",
-            padding: "17px 38px",
-            backgroundColor: "#FFFFFF",
-            color: "#010101",
-            borderRadius: "999px",
-            border: "none",
-            cursor: "pointer",
-            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
+      <div className="relative z-10 flex w-full max-w-6xl flex-1 flex-col items-center justify-center">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-6xl text-center"
         >
-          <GoogleIcon />
-          Continuar con Google
-        </button>
+          <div className="mb-6 flex justify-center md:mb-8">
+            <ShinyButton
+              onClick={() => navigate(routes.landing)}
+              className="px-8 py-4 text-sm font-medium"
+            >
+              Volver al inicio
+            </ShinyButton>
+          </div>
 
-        <Link
-          to={routes.landing}
-          className="group w-full flex items-center justify-center transition-all hover:scale-[1.02] active:scale-[0.97]"
-          style={{
-            fontFamily: "var(--font-sequel, sans-serif)",
-            fontSize: "13px",
-            fontWeight: 500,
-            letterSpacing: "0.3px",
-            padding: "15px 38px",
-            backgroundColor: "transparent",
-            color: "rgba(246,246,246,0.65)",
-            borderRadius: "999px",
-            border: "1px solid rgba(246,246,246,0.18)",
-            textDecoration: "none",
-            transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
-          }}
-        >
-          <ArrowLeft className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Volver al inicio
-        </Link>
+          <div className="flex items-start justify-center gap-1 sm:gap-3 md:gap-5">
+            {countdownItems.map((item, index) => {
+              const value = String(timeRemaining[item.key]).padStart(2, "0");
 
-        <p
-          className="mt-4 text-center whitespace-nowrap"
-          style={{
-            fontFamily: "var(--font-sequel, sans-serif)",
-            fontSize: "10px",
-            fontWeight: 400,
-            letterSpacing: "3px",
-            color: "rgba(246,246,246,0.35)",
-          }}
-        >
-          Privacidad garantizada • Polarist 2026
-        </p>
+              return (
+                <div key={item.label} className="flex items-start gap-1 sm:gap-3 md:gap-5">
+                  <div className="flex min-w-0 flex-col items-center">
+                    <CountdownValue value={value} />
+                    <span
+                      className="mt-2"
+                      style={{
+                        fontFamily: "var(--font-sequel, sans-serif)",
+                        fontSize: "clamp(10px, 1.6vw, 18px)",
+                        fontWeight: 500,
+                        letterSpacing: "0.18em",
+                        color: "rgba(246,246,246,0.7)",
+                      }}
+                    >
+                      {item.label}
+                    </span>
+                  </div>
+                  {index < countdownItems.length - 1 ? (
+                    <span
+                      aria-hidden="true"
+                      className="translate-y-[0.08em]"
+                      style={{
+                        fontFamily: "var(--font-sequel, sans-serif)",
+                        fontSize: "clamp(44px, 10vw, 110px)",
+                        fontWeight: 300,
+                        lineHeight: 0.9,
+                        color: "#F6F6F6",
+                      }}
+                    >
+                      :
+                    </span>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
 
       <div

@@ -2,22 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import {
-  Battery,
-  Sliders,
-  ChevronRight,
-  Zap,
-  Bluetooth,
-  Wifi,
-  Music,
   LucideIcon,
   AlertTriangle,
-  Clock,
   LayoutGrid,
-  TrendingUp,
   ShieldCheck,
-  Zap as ZapIcon,
+  Plus,
+  Sparkles,
 } from 'lucide-react';
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 
 // =========================================
 // 1. CONFIGURATION & DATA TYPES
@@ -31,12 +25,18 @@ export interface FeatureMetric {
   icon: LucideIcon;
 }
 
+interface ProductPoint {
+  id: string;
+  title: string;
+  content: string;
+}
+
 export interface ProductData {
   id: ProductId;
   label: string; 
   title: string;
-  points: string[];
-  image: string;
+  points: ProductPoint[];
+  media: string;
   colors: {
     gradient: string; 
     glow: string;     
@@ -53,14 +53,34 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
   left: {
     id: 'left',
     label: 'Es para vos',
-    title: 'Polarist ES para vos si:',
+    title: 'Polarist es para vos:',
     points: [
-      "Sabés que la IA te puede ayudar, pero estás mareado con tanta información. Querés usarla, pero no tenés idea por dónde arrancar ni qué herramienta elegir.",
-      "Buscás atajos prácticos, no teoría aburrida. Querés soluciones rápidas para tu estudio, trabajo o emprendimiento, sin tener que fumarte cursos de 40 horas ni aprender conceptos técnicos.",
-      "Tenés una empresa y querés optimizar procesos, pero no tenés el tiempo ni el equipo para hacerlo. Querés que alguien analice tu negocio, te diga qué usar y te lo deje instalado y funcionando.",
-      "Valorás tu tiempo. Preferís que alguien te muestre el camino directo (\"usá esto para aquello\") en lugar de pasarte semanas investigando por tu cuenta."
+      {
+        id: "left-1",
+        title: "Sí querés arrancar sin marearte",
+        content:
+          "Sabés que la IA te puede ayudar, pero estás mareado con tanta información. Querés usarla, pero no tenés idea por dónde arrancar ni qué herramienta elegir.",
+      },
+      {
+        id: "left-2",
+        title: "Sí buscás atajos prácticos",
+        content:
+          "Querés soluciones rápidas para tu estudio, trabajo o emprendimiento, sin tener que aprender conceptos técnicos que no vas a usar hoy.",
+      },
+      {
+        id: "left-3",
+        title: "Sí querés optimizar tu empresa",
+        content:
+          "Tenés una empresa y querés optimizar procesos, pero no tenés el tiempo ni el equipo para hacerlo. Querés que alguien analice tu negocio, te diga qué usar y te lo deje instalado y funcionando.",
+      },
+      {
+        id: "left-4",
+        title: "Sí valorás tu tiempo",
+        content:
+          "Preferís que alguien te muestre el camino directo, qué usar y para qué, en lugar de pasarte semanas investigando por tu cuenta.",
+      },
     ],
-    image: '/images/landing/central_ai_core.png',
+    media: '/videos/p-verde-lista.mp4',
     colors: {
       gradient: 'from-[#CAFE5B] to-emerald-900',
       glow: 'bg-[#CAFE5B]',
@@ -71,14 +91,34 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
   right: {
     id: 'right',
     label: 'No es para vos',
-    title: 'Polarist NO es para vos si:',
+    title: 'Polarist no es para vos:',
     points: [
-      "Buscás un curso técnico profundo. No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. Vamos 100% a la práctica.",
-      "Ya sos un experto en IA. Si te pasás todo el día probando herramientas nuevas, armando automatizaciones complejas y estás al tanto de todas las novedades del mercado, probablemente no nos necesites.",
-      "Querés seguir haciendo las cosas a la vieja escuela. Si no tenés interés en cambiar tus procesos, ahorrar tiempo o delegarle tareas a la tecnología, lo que ofrecemos no te va a servir.",
-      "Esperás que la herramienta haga literalmente todo por arte de magia. Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos."
+      {
+        id: "right-1",
+        title: "Sí buscás un curso técnico profundo",
+        content:
+          "No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. El enfoque está en aplicar, no en teorizar.",
+      },
+      {
+        id: "right-2",
+        title: "Sí ya sos experto en IA",
+        content:
+          "Si te pasás todo el día probando herramientas nuevas, armando automatizaciones complejas y estás al tanto de todas las novedades del mercado, probablemente no nos necesites.",
+      },
+      {
+        id: "right-3",
+        title: "Sí querés seguir igual",
+        content:
+          "Si no tenés interés en cambiar tus procesos, ahorrar tiempo o delegarle tareas a la tecnología, lo que ofrecemos no te va a servir.",
+      },
+      {
+        id: "right-4",
+        title: "Sí esperás magia sin involucrarte",
+        content:
+          "Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos.",
+      },
     ],
-    image: '/images/landing/central_ai_core.png',
+    media: '/videos/p-roja-lista.mp4',
     colors: {
       gradient: 'from-red-600 to-orange-900',
       glow: 'bg-red-500',
@@ -87,6 +127,8 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
     stats: { connectionStatus: 'Desconectado', batteryLevel: 12, statusText: 'Riesgo Crítico' },
   },
 };
+
+const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith('.mp4');
 
 // =========================================
 // 2. ANIMATION VARIANTS
@@ -146,24 +188,46 @@ const ANIMATIONS = {
 const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean }) => (
   <motion.div layout="position" className="relative group shrink-0">
     {/* Image Container */}
-    <div className="relative h-48 w-48 md:h-[280px] md:w-[280px] rounded-full flex items-center justify-center overflow-hidden bg-transparent">
+    <div
+      className={`relative flex items-center justify-center overflow-hidden rounded-full bg-transparent ${
+        isVideoAsset(data.media)
+          ? "h-64 w-64 md:h-[390px] md:w-[390px]"
+          : "h-56 w-56 md:h-[320px] md:w-[320px]"
+      }`}
+    >
       <motion.div
         animate={{ y: [-8, 8, -8] }}
         transition={{ repeat: Infinity, duration: 6, ease: 'easeInOut' }}
         className="relative z-10 w-full h-full flex items-center justify-center"
       >
         <AnimatePresence mode="wait">
-          <motion.img
-            key={data.id}
-            src={data.image}
-            alt={`${data.title}`}
-            variants={ANIMATIONS.image(isLeft)}
-            initial="initial"
-            animate="animate"
-            exit="exit"
-            className={`w-full h-full object-cover p-0 mix-blend-screen transition-all duration-700 ${isLeft ? 'grayscale opacity-40' : ''}`}
-            draggable={false}
-          />
+          {isVideoAsset(data.media) ? (
+            <motion.video
+              key={data.id}
+              src={data.media}
+              initial={false}
+              animate={{ opacity: 1, scale: 1, x: 0, rotate: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, scale: 0.98, filter: 'blur(4px)' }}
+              transition={{ duration: 0.2, ease: 'easeOut' }}
+              className={`h-full w-full object-cover p-0 mix-blend-screen transition-all duration-700 ${isLeft ? 'grayscale opacity-40' : ''}`}
+              autoPlay
+              loop
+              muted
+              playsInline
+            />
+          ) : (
+            <motion.img
+              key={data.id}
+              src={data.media}
+              alt={`${data.title}`}
+              variants={ANIMATIONS.image(isLeft)}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className={`w-full h-full object-cover p-0 mix-blend-screen transition-all duration-700 ${isLeft ? 'grayscale opacity-40' : ''}`}
+              draggable={false}
+            />
+          )}
         </AnimatePresence>
       </motion.div>
     </div>
@@ -174,6 +238,9 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
 const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }) => {
   // If isLeft (Sin Polarist), the text should be on the left visually, meaning text-left alignment.
   const alignClass = isLeft ? 'items-start text-left' : 'items-end text-right';
+  const triggerAlignClass = isLeft ? 'text-left' : 'text-right';
+  const rowAlignClass = isLeft ? 'flex-row' : 'flex-row-reverse';
+  const contentAlignClass = isLeft ? 'text-left' : 'text-right';
 
   return (
     <motion.div
@@ -184,24 +251,50 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
       className={`flex flex-col ${alignClass} w-full`}
       style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
     >
-      <motion.h1 variants={ANIMATIONS.item} className="mb-8 text-3xl font-bold tracking-tight text-[#F6F6F6] md:text-4xl">
+      <motion.h1 variants={ANIMATIONS.item} className="mb-5 text-[2rem] font-bold tracking-tight text-[#F6F6F6] md:mb-6 md:text-[2.6rem]">
         {data.title}
       </motion.h1>
       
-      <div className="space-y-6">
-        {data.points.map((point, index) => (
-          <motion.div 
-            key={index}
-            variants={ANIMATIONS.item}
-            className={`flex items-start gap-4 ${isLeft ? 'flex-row' : 'flex-row-reverse text-right'}`}
-          >
-            <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-white/36" />
-            <p className="max-w-md text-sm leading-relaxed text-zinc-400 md:text-base" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-              {point}
-            </p>
-          </motion.div>
-        ))}
-      </div>
+      <motion.div variants={ANIMATIONS.item} className="w-full max-w-[820px]">
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full"
+          defaultValue={data.points[0]?.id}
+        >
+          {data.points.map((point) => (
+            <AccordionItem
+              value={point.id}
+              key={point.id}
+              className="border-white/10 py-2"
+            >
+              <AccordionPrimitive.Header className="flex">
+                <AccordionPrimitive.Trigger
+                  className={`flex flex-1 items-center justify-between gap-4 py-4 text-[20px] font-semibold leading-7 transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 md:text-[24px] ${triggerAlignClass}`}
+                >
+                  <span className={`flex items-center ${rowAlignClass}`}>
+                    <span className={`flex flex-col ${contentAlignClass}`}>
+                      <span className="text-white">{point.title}</span>
+                    </span>
+                  </span>
+                  <Plus
+                    size={20}
+                    strokeWidth={2}
+                    className="shrink-0 opacity-60 transition-transform duration-200"
+                    aria-hidden="true"
+                  />
+                </AccordionPrimitive.Trigger>
+              </AccordionPrimitive.Header>
+              <AccordionContent
+                className={`max-w-[74ch] pb-4 text-[13.5px] leading-6 text-white/88 md:text-[14px] md:leading-6 ${isLeft ? 'text-left' : 'ml-auto text-right'}`}
+                style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+              >
+                {point.content}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </motion.div>
     </motion.div>
   );
 };
@@ -216,7 +309,7 @@ const Switcher = ({
   const options = Object.values(PRODUCT_DATA).map(p => ({ id: p.id, label: p.label }));
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-28 z-50 flex justify-center md:bottom-32">
+    <div className="pointer-events-none absolute inset-x-0 bottom-44 z-50 flex justify-center md:bottom-48">
       <motion.div layout className="pointer-events-auto flex items-center gap-7">
         {options.map((opt) => (
           <motion.button
@@ -254,19 +347,19 @@ export default function SpatialProductShowcase() {
   const isLeft = activeSide === 'left';
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#010101] pb-24 pt-16 text-zinc-100 selection:bg-zinc-800" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#010101] pb-20 pt-10 text-zinc-100 selection:bg-zinc-800 md:pb-24 md:pt-12" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
       {/* Header */}
-      <div className="absolute top-16 z-20 w-full px-4 text-center md:top-20">
-         <h2 className="text-3xl md:text-5xl font-bold text-white tracking-tight" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+      <div className="absolute top-10 z-20 w-full px-4 text-center md:top-12">
+         <h2 className="text-4xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             ¿Para quién es Polarist?
          </h2>
       </div>
 
-      <main className="relative z-10 w-full px-8 md:px-20 lg:px-32 flex flex-col justify-center max-w-[1600px] mx-auto mt-8 pb-10">
+      <main className="relative z-10 mx-auto mt-2 flex w-full max-w-[1720px] flex-col justify-center px-8 pb-8 md:mt-4 md:px-20 lg:px-28">
         <motion.div
           layout
           transition={{ type: 'spring', bounce: 0, duration: 0.9 }}
-          className={`flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16 lg:gap-24 w-full ${
+          className={`flex w-full flex-col items-center justify-center gap-8 md:flex-row md:gap-10 lg:gap-14 ${
             isLeft ? 'md:flex-row-reverse' : 'md:flex-row'
           }`}
         >

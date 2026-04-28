@@ -75,7 +75,7 @@ export function InteractiveFeatureCard({
            />
          )}
          {/* Gradient Overlay to ensure text readability */}
-         <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/60 to-transparent rounded-[24px]" />
+         <div className="absolute inset-0 rounded-[24px] bg-gradient-to-t from-[#010101]/94 via-[#010101]/52 via-32% to-transparent" />
       </div>
 
       {/* Main Content with 3D Pop Effect */}

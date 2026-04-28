@@ -301,7 +301,7 @@ const Landing = () => {
         className="relative z-20 overflow-hidden"
         style={{ perspective: "1200px", background: bk.black }}
       >
-        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-8 pt-24 sm:px-10 lg:px-16" style={{ background: bk.black }}>
+        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-14 pt-32 sm:px-10 lg:px-16 lg:pb-16 lg:pt-36" style={{ background: bk.black }}>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <InteractiveFeatureCard

@@ -2,12 +2,8 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'framer-motion';
 import {
-	FacebookIcon,
 	InstagramIcon,
-	LinkedinIcon,
-	YoutubeIcon,
 } from 'lucide-react';
-import { Button } from './button';
 import BrandLogo from '@/components/BrandLogo';
 import { Link } from 'react-router-dom';
 import { routes } from '@/lib/routes';
