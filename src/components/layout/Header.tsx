@@ -1,9 +1,10 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LogIn, LogOut, Menu, Settings, User } from "lucide-react";
 
 import BrandLogo from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
+import { CommunityCalendar } from "@/components/ui/community-calendar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,6 +23,12 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { usePageFocusOverlay } from "@/hooks/usePageFocusOverlay";
 
 const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
   <NavLink
@@ -37,6 +44,44 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
     {label}
   </NavLink>
 );
+
+const DesktopCommunityItem = () => {
+  const [open, setOpen] = useState(false);
+  const { isPageFocusOverlayOpen, setPageFocusOverlayOpen } =
+    usePageFocusOverlay();
+
+  useEffect(() => {
+    if (!isPageFocusOverlayOpen) {
+      setOpen(false);
+    }
+  }, [isPageFocusOverlayOpen]);
+
+  const handleOpenChange = (nextOpen: boolean) => {
+    setOpen(nextOpen);
+    setPageFocusOverlayOpen(nextOpen);
+  };
+
+  return (
+    <Popover open={open} onOpenChange={handleOpenChange}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="relative z-40 px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]"
+          style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+        >
+          Comunidad
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="center"
+        sideOffset={16}
+        className="z-[70] w-auto border-0 bg-transparent p-0 shadow-none"
+      >
+        <CommunityCalendar />
+      </PopoverContent>
+    </Popover>
+  );
+};
 
 const Header = () => {
   const navigate = useNavigate();
@@ -93,12 +138,14 @@ const Header = () => {
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.login, showAlways: true },
+    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Comunidad", to: routes.appCommunity, showAlways: true },
   ];
 
   return (
@@ -166,7 +213,10 @@ const Header = () => {
 
         <nav className="hidden items-center justify-center gap-5 md:flex lg:gap-6">
           {navItems.map((item) => (
-            <DesktopNavItem key={item.label} {...item} />
+            <div key={item.label} className="contents">
+              <DesktopNavItem {...item} />
+              {item.label === "Recursos" ? <DesktopCommunityItem /> : null}
+            </div>
           ))}
         </nav>
 

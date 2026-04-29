@@ -5,6 +5,7 @@ import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
 import { StickyFooter } from "@/components/ui/sticky-footer";
+import { PageFocusOverlay } from "@/hooks/usePageFocusOverlay";
 import Header from "./Header";
 
 const MobileLayout = () => {
@@ -84,6 +85,7 @@ const MobileLayout = () => {
                 className={cn(!shouldUseNaturalFooterFlow && "mt-auto")} 
               />
             </div>
+            <PageFocusOverlay />
           </main>
         </div>
       </div>

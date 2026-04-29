@@ -335,37 +335,42 @@ const buildToolDetailSections = (tool: ResolvedTool, category: CategoryDef): Cla
   },
 ];
 
+const splitTitleKeepingLastWords = (value: string, wordCount = 2) => {
+  const words = value.trim().split(/\s+/);
+
+  if (words.length <= wordCount) {
+    return { head: "", tail: value };
+  }
+
+  const head = words.slice(0, -wordCount).join(" ");
+  const tail = words.slice(-wordCount).join(" ");
+
+  return { head, tail };
+};
+
 function ToolEditorialDetail({ tool, category }: { tool: ResolvedTool; category: CategoryDef }) {
   const detailSections = buildToolDetailSections(tool, category);
+  const categoryTitle = splitTitleKeepingLastWords(category.title);
 
   return (
     <div className="space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(340px,0.78fr)_minmax(720px,1.22fr)] lg:gap-14">
         <div className="flex h-full flex-col space-y-8 lg:self-start">
-          <div className="space-y-7">
-            <div className="flex items-center justify-start">
-              <div className="flex items-center gap-4 rounded-[28px] border border-white/10 bg-white px-5 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
-                <ToolLogo
-                  name={tool.label}
-                  logoFilename={tool.tool?.logoFilename}
-                  className="h-16 w-16 rounded-[1.4rem] border-0 bg-transparent"
-                  imageClassName="p-0 object-contain"
-                />
-                <div className="space-y-1">
-                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[#010101]/50">
-                    Herramienta
-                  </p>
-                  <p className="text-lg font-semibold tracking-[-0.03em] text-[#010101]">
-                    {tool.label}
-                  </p>
-                </div>
-              </div>
-            </div>
+          <div className="space-y-5">
             <h2
-              className="max-w-[12ch] text-[clamp(2rem,4.8vw,4.2rem)] font-bold leading-[0.98] tracking-[-0.055em] text-[#F6F6F6]"
+              className="max-w-[16ch] text-[clamp(1.5rem,3.5vw,3rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6] lg:max-w-[11ch]"
               style={sequelTextStyle}
             >
-              <span className="text-[#CAFE5B]">{category.title}</span>
+              <span className="text-[#CAFE5B]">
+                {categoryTitle.head ? (
+                  <>
+                    {categoryTitle.head}{" "}
+                    <span className="whitespace-nowrap">{categoryTitle.tail}</span>
+                  </>
+                ) : (
+                  categoryTitle.tail
+                )}
+              </span>
             </h2>
             <p className="max-w-[34ch] text-[1.05rem] leading-8 text-white/72" style={sequelTextStyle}>
               {tool.whyItMatters} Dentro de {category.title}, {tool.label} funciona como una puerta de entrada muy fuerte para pensar, ejecutar y resolver mejor.
@@ -387,18 +392,18 @@ function ToolEditorialDetail({ tool, category }: { tool: ResolvedTool; category:
           </div>
         </div>
 
-        <div className="ml-auto w-full max-w-[880px]">
+        <div className="mx-auto flex w-full max-w-[980px] justify-center pb-10 lg:max-w-[920px] lg:pb-12">
           <Accordion type="single" collapsible className="w-full space-y-8">
             {detailSections.map((section) => (
               <AccordionItem
                 key={section.id}
                 value={section.id}
-                className="rounded-[1.6rem] border border-white/10 bg-[#010101] px-7 py-1 shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+                className="rounded-[1.6rem] border border-white/10 bg-[#010101] px-8 py-2 shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
               >
                 <AccordionPrimitive.Header className="flex">
                   <AccordionPrimitive.Trigger
                     style={sequelTextStyle}
-                    className="flex w-full items-start justify-between gap-5 py-4 text-left [&>div>svg>path:last-child]:origin-center [&>div>svg>path:last-child]:transition-all [&>div>svg>path:last-child]:duration-200 [&[data-state=open]>div>svg>path:last-child]:rotate-90 [&[data-state=open]>div>svg>path:last-child]:opacity-0"
+                    className="flex w-full items-center justify-between gap-5 py-6 text-left [&>div>svg>path:last-child]:origin-center [&>div>svg>path:last-child]:transition-all [&>div>svg>path:last-child]:duration-200 [&[data-state=open]>div>svg>path:last-child]:rotate-90 [&[data-state=open]>div>svg>path:last-child]:opacity-0"
                   >
                     <h3
                       className="text-[clamp(1.45rem,2.4vw,2.2rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6]"
@@ -455,25 +460,27 @@ function CategoryDetail({
   );
   const desktopColumns = useMemo(() => {
     if (tools.length <= 1) return tools.length || 1;
+    if (tools.length >= 18) return 7;
+    if (tools.length >= 15) return 6;
     if (tools.length % 4 === 0) return 4;
     if (tools.length % 3 === 0) return 3;
     if (tools.length % 2 === 0) return 2;
     return tools.length;
   }, [tools.length]);
-  const usesSingleDesktopRow = tools.length > 1 && tools.length % 2 === 1;
+  const hasOddMobileItem = tools.length % 2 === 1;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="tools-modal-sequel relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] p-5 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-7"
+      className="tools-modal-sequel relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
       style={sequelTextStyle}
     >
-      <div className="relative space-y-6">
-        <div className="flex items-center justify-center px-4 py-5 md:px-6 md:py-7">
-          <div className="space-y-4 text-center">
-            <h1 className="text-[clamp(1.7rem,3.8vw,2.85rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
+      <div className="relative space-y-4">
+        <div className="flex items-center justify-center px-2 py-2 md:px-3 md:py-3">
+          <div className="space-y-2 text-center">
+            <h1 className="text-[clamp(1.35rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
               {category.title}
             </h1>
           </div>
@@ -481,7 +488,7 @@ function CategoryDetail({
 
         <div
           className={cn(
-            "grid grid-cols-2 gap-4",
+            "grid grid-cols-2 gap-2",
             "lg:grid-cols-none lg:[grid-template-columns:repeat(var(--desktop-cols),minmax(0,1fr))]",
           )}
           style={{ ["--desktop-cols" as string]: desktopColumns }}
@@ -492,7 +499,10 @@ function CategoryDetail({
               initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.04 * index }}
-              className="w-full"
+              className={cn(
+                "w-full",
+                hasOddMobileItem && index === tools.length - 1 && "col-span-2 mx-auto max-w-[calc(50%-0.25rem)] lg:col-span-1 lg:max-w-none",
+              )}
             >
               <ExpandableCard
                 title={tool.label}
@@ -500,15 +510,16 @@ function CategoryDetail({
                 description=""
                 className={cn("w-full", "aspect-square")}
                 disableSharedLayout
+                hideExpandedMedia
                 classNameExpanded={
                   "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-h-[860px] !max-w-[1320px] !bg-[#010101] !border-white/10"
                 }
                 media={
-                  <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-[#ffffff] px-8 py-8">
+                  <div className="flex h-full w-full items-center justify-center px-4 py-4 md:px-5 md:py-5">
                     <ToolLogo
                       name={tool.label}
                       logoFilename={tool.tool?.logoFilename}
-                      className="h-32 w-32 rounded-[2rem] border-0 bg-transparent sm:h-36 sm:w-36"
+                      className="h-16 w-16 translate-y-[13%] rounded-[1.5rem] border-0 bg-transparent sm:h-20 sm:w-20 md:h-24 md:w-24"
                       imageClassName="p-0 object-contain"
                     />
                   </div>

@@ -13,6 +13,13 @@ interface GlowCardProps {
   style?: React.CSSProperties;
 }
 
+interface SpotlightBorderProps {
+  children: ReactNode;
+  className?: string;
+  radius?: number;
+  glowColor?: 'blue' | 'purple' | 'green' | 'red' | 'orange' | 'polarist';
+}
+
 const glowColorMap = {
   blue: { base: 220, spread: 200 },
   purple: { base: 280, spread: 300 },
@@ -21,6 +28,46 @@ const glowColorMap = {
   orange: { base: 30, spread: 200 },
   polarist: { base: 74, spread: 10 } // Neon green for Polarist
 };
+
+const spotlightBorderStyles = `
+  [data-spotlight-border]::before,
+  [data-spotlight-border]::after {
+    pointer-events: none;
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    border: 1px solid transparent;
+    border-radius: inherit;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    background-size: calc(100% + 2px) calc(100% + 2px);
+    mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
+    mask-clip: padding-box, border-box;
+    mask-composite: intersect;
+  }
+
+  [data-spotlight-border]::before {
+    background-image: radial-gradient(
+      var(--spotlight-size, 220px) var(--spotlight-size, 220px) at
+      calc(var(--x, 0) * 1px)
+      calc(var(--y, 0) * 1px),
+      hsl(var(--hue, 74) 100% 58% / 0.95), transparent 72%
+    );
+    filter: brightness(1.35);
+  }
+
+  [data-spotlight-border]::after {
+    background-image: radial-gradient(
+      calc(var(--spotlight-size, 220px) * 0.48)
+      calc(var(--spotlight-size, 220px) * 0.48) at
+      calc(var(--x, 0) * 1px)
+      calc(var(--y, 0) * 1px),
+      hsl(0 0% 100% / 0.78), transparent 76%
+    );
+  }
+`;
 
 const sizeMap = {
   sm: 'w-48 h-64',
@@ -184,4 +231,54 @@ const GlowCard: React.FC<GlowCardProps> = ({
   );
 };
 
-export { GlowCard };
+const SpotlightBorder: React.FC<SpotlightBorderProps> = ({
+  children,
+  className = "",
+  radius = 24,
+  glowColor = "polarist",
+}) => {
+  const borderRef = useRef<HTMLDivElement>(null);
+  const { base, spread } = glowColorMap[glowColor];
+
+  useEffect(() => {
+    const syncPointer = (event: PointerEvent) => {
+      if (!borderRef.current) {
+        return;
+      }
+
+      borderRef.current.style.setProperty("--x", event.clientX.toFixed(2));
+      borderRef.current.style.setProperty("--y", event.clientY.toFixed(2));
+      borderRef.current.style.setProperty(
+        "--xp",
+        (event.clientX / window.innerWidth).toFixed(2),
+      );
+    };
+
+    document.addEventListener("pointermove", syncPointer);
+    return () => document.removeEventListener("pointermove", syncPointer);
+  }, []);
+
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{ __html: spotlightBorderStyles }} />
+      <div
+        ref={borderRef}
+        data-spotlight-border
+        className={`relative ${className}`}
+        style={
+          {
+            "--base": base,
+            "--spread": spread,
+            "--hue": "calc(var(--base) + (var(--xp, 0) * var(--spread, 0)))",
+            "--spotlight-size": "220px",
+            borderRadius: radius,
+          } as React.CSSProperties
+        }
+      >
+        {children}
+      </div>
+    </>
+  );
+};
+
+export { GlowCard, SpotlightBorder };

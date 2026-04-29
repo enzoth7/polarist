@@ -26,18 +26,20 @@ const MobileNav = () => {
   return (
     <nav className="flex h-[calc(env(safe-area-inset-bottom,16px)+56px)] w-full items-center justify-center border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom,0px)] backdrop-blur-md">
       {status === "authenticated" ? (
-        <div className="grid w-full grid-cols-4 items-center">
+        <div className="grid w-full grid-cols-5 items-center">
           <NavItem to={routes.appRadar} label="Tendencias" />
           <NavItem to={routes.appTools} label="Herramientas" />
           <NavItem to={routes.appGuides} label="Recursos" />
+          <NavItem to={routes.appCommunity} label="Comunidad" />
           <NavItem to={profileRoute} label="Biblioteca" />
         </div>
       ) : (
-        <div className="grid w-full grid-cols-4 items-center">
+        <div className="grid w-full grid-cols-5 items-center">
           <NavItem to={routes.landing} label="Inicio" />
           <NavItem to={routes.appRadar} label="Tendencias" />
           <NavItem to={routes.appTools} label="Herramientas" />
-          <NavItem to={routes.login} label="Recursos" />
+          <NavItem to={routes.appGuides} label="Recursos" />
+          <NavItem to={routes.appCommunity} label="Comunidad" />
         </div>
       )}
     </nav>
