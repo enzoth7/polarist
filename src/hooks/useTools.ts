@@ -1,6 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { type ToolNicheKey, toolNicheMap } from "@/data/aiToolsCatalog";
 import { supabase } from "@/lib/supabase";
 
 type ToolRow = {
@@ -59,8 +58,6 @@ const TOOL_SELECT_COLUMNS = `
   logo_filename
 `;
 
-const isToolNicheKey = (value: string): value is ToolNicheKey => value in toolNicheMap;
-
 const normalizeToolNames = (names?: string[]) =>
   Array.from(
     new Set(
@@ -69,19 +66,6 @@ const normalizeToolNames = (names?: string[]) =>
         .filter(Boolean),
     ),
   );
-
-const mapNicheTags = (value: ToolRow["niche_tags"]): Partial<Record<ToolNicheKey, string>> => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
-    return {};
-  }
-
-  return Object.fromEntries(
-    Object.entries(value).filter(
-      (entry): entry is [ToolNicheKey, string] =>
-        isToolNicheKey(entry[0]) && typeof entry[1] === "string",
-    ),
-  );
-};
 
 const mapToolRow = (row: ToolRow): ToolItem => ({
   id: row.id,

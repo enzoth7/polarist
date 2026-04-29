@@ -260,7 +260,6 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
           type="single"
           collapsible
           className="w-full"
-          defaultValue={data.points[0]?.id}
         >
           {data.points.map((point) => (
             <AccordionItem

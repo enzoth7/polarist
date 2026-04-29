@@ -68,7 +68,7 @@ const HistoriaIA = () => {
           <div className="relative pl-5">
             <div className="absolute bottom-0 left-2 top-0 w-[2px] rounded-full bg-gradient-to-b from-primary via-secondary to-accent" />
 
-            <Accordion type="single" collapsible defaultValue="historia-1" className="space-y-3">
+            <Accordion type="single" collapsible className="space-y-3">
               {historiaIATimeline.map((item, index) => (
                 <AccordionItem
                   key={`${item.year}-${item.title}`}

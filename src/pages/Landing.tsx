@@ -12,6 +12,7 @@ import SpatialProductShowcase from "@/components/ui/spatial-product-showcase";
 import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card";
 import FlipHover from "@/components/ui/flip-hover";
 import Preloader from "@/components/ui/preloader";
+import { PolaristInterstitialReveal } from "@/components/ui/polarist-interstitial-reveal";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
@@ -295,13 +296,18 @@ const Landing = () => {
       {/* ─── SCROLL EXPANSION HERO ─── */}
       <ScrollExpansionDemo />
 
+      <PolaristInterstitialReveal
+        title="Polarist"
+        description="Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología."
+      />
+
       {/* ─── SOLUCIONES ─── */}
       <div
         ref={videoSectionRef}
         className="relative z-20 overflow-hidden"
         style={{ perspective: "1200px", background: bk.black }}
       >
-        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-14 pt-32 sm:px-10 lg:px-16 lg:pb-16 lg:pt-36" style={{ background: bk.black }}>
+        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-24 pt-14 sm:px-10 sm:pb-28 sm:pt-18 lg:px-16 lg:pb-32 lg:pt-20" style={{ background: bk.black }}>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <InteractiveFeatureCard

@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ExternalLink } from "lucide-react";
+import { ArrowUpRight, ExternalLink, Plus } from "lucide-react";
 
 import Modal from "@/components/ui/modal-drop";
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { BubbleText } from "@/components/ui/bubble-text";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
+import { cn } from "@/lib/utils";
 
 const BK = {
   black: "#010101",
@@ -43,6 +46,13 @@ type ResolvedTool = {
   whyItMatters: string;
   useCases: string[];
   cautions: string[];
+};
+
+type ClaudeDetailSection = {
+  id: string;
+  number: string;
+  title: string;
+  description: string;
 };
 
 const CATEGORY_IMAGES: Record<string, string> = {
@@ -290,6 +300,143 @@ const resolveTool = (
   };
 };
 
+const buildToolDetailSections = (tool: ResolvedTool, category: CategoryDef): ClaudeDetailSection[] => [
+  {
+    id: `${normalizeText(tool.label)}-what`,
+    number: "01",
+    title: "Qué es",
+    description:
+      `${tool.label} es una herramienta de ${category.title.toLowerCase()} pensada para ${tool.preview.toLowerCase()}.`,
+  },
+  {
+    id: `${normalizeText(tool.label)}-practice`,
+    number: "02",
+    title: "Qué resuelve en la práctica",
+    description:
+      tool.tool?.whatIsItReallyFor?.trim() ||
+      tool.tool?.description?.trim() ||
+      `${tool.label} te ayuda a ejecutar mejor tareas clave dentro de ${category.title.toLowerCase()}.`,
+  },
+  {
+    id: `${normalizeText(tool.label)}-who`,
+    number: "03",
+    title: "Para quién es",
+    description:
+      tool.tool?.whoIsItFor?.trim() ||
+      "Ideal para equipos, freelancers y negocios que quieren ganar velocidad sin perder criterio.",
+  },
+  {
+    id: `${normalizeText(tool.label)}-uses`,
+    number: "04",
+    title: "Otros usos",
+    description:
+      tool.tool?.otrosUsos?.trim() ||
+      tool.useCases.join(" • "),
+  },
+];
+
+function ToolEditorialDetail({ tool, category }: { tool: ResolvedTool; category: CategoryDef }) {
+  const detailSections = buildToolDetailSections(tool, category);
+
+  return (
+    <div className="space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
+      <div className="grid items-start gap-10 lg:grid-cols-[minmax(340px,0.78fr)_minmax(720px,1.22fr)] lg:gap-14">
+        <div className="flex h-full flex-col space-y-8 lg:self-start">
+          <div className="space-y-7">
+            <div className="flex items-center justify-start">
+              <div className="flex items-center gap-4 rounded-[28px] border border-white/10 bg-white px-5 py-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
+                <ToolLogo
+                  name={tool.label}
+                  logoFilename={tool.tool?.logoFilename}
+                  className="h-16 w-16 rounded-[1.4rem] border-0 bg-transparent"
+                  imageClassName="p-0 object-contain"
+                />
+                <div className="space-y-1">
+                  <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[#010101]/50">
+                    Herramienta
+                  </p>
+                  <p className="text-lg font-semibold tracking-[-0.03em] text-[#010101]">
+                    {tool.label}
+                  </p>
+                </div>
+              </div>
+            </div>
+            <h2
+              className="max-w-[12ch] text-[clamp(2rem,4.8vw,4.2rem)] font-bold leading-[0.98] tracking-[-0.055em] text-[#F6F6F6]"
+              style={sequelTextStyle}
+            >
+              <span className="text-[#CAFE5B]">{category.title}</span>
+            </h2>
+            <p className="max-w-[34ch] text-[1.05rem] leading-8 text-white/72" style={sequelTextStyle}>
+              {tool.whyItMatters} Dentro de {category.title}, {tool.label} funciona como una puerta de entrada muy fuerte para pensar, ejecutar y resolver mejor.
+            </p>
+          </div>
+
+          <div className="flex justify-start pt-0">
+            {tool.href ? (
+              <a
+                href={tool.href}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-[#010101] px-6 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#F6F6F6] transition hover:scale-[1.03] hover:bg-[#1b1b1b]"
+              >
+                Página oficial
+                <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="ml-auto w-full max-w-[880px]">
+          <Accordion type="single" collapsible className="w-full space-y-8">
+            {detailSections.map((section) => (
+              <AccordionItem
+                key={section.id}
+                value={section.id}
+                className="rounded-[1.6rem] border border-white/10 bg-[#010101] px-7 py-1 shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+              >
+                <AccordionPrimitive.Header className="flex">
+                  <AccordionPrimitive.Trigger
+                    style={sequelTextStyle}
+                    className="flex w-full items-start justify-between gap-5 py-4 text-left [&>div>svg>path:last-child]:origin-center [&>div>svg>path:last-child]:transition-all [&>div>svg>path:last-child]:duration-200 [&[data-state=open]>div>svg>path:last-child]:rotate-90 [&[data-state=open]>div>svg>path:last-child]:opacity-0"
+                  >
+                    <h3
+                      className="text-[clamp(1.45rem,2.4vw,2.2rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6]"
+                      style={sequelTextStyle}
+                    >
+                      {section.title}
+                    </h3>
+                    <div className="flex items-center gap-5">
+                      <span
+                        className="shrink-0 text-[1.6rem] font-bold tracking-[-0.05em] text-[#CAFE5B]"
+                        style={sequelTextStyle}
+                      >
+                        {section.number}
+                      </span>
+                      <Plus
+                        size={18}
+                        strokeWidth={2}
+                        className="shrink-0 text-[#F6F6F6]/80"
+                        aria-hidden="true"
+                      />
+                    </div>
+                  </AccordionPrimitive.Trigger>
+                </AccordionPrimitive.Header>
+                <AccordionContent style={sequelTextStyle} className="pb-5 pt-0">
+                  <p className="max-w-[52ch] text-[0.94rem] leading-[1.65] text-white/72" style={sequelTextStyle}>
+                    {section.description}
+                  </p>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
 function CategoryDetail({
   category,
   officialTools,
@@ -306,6 +453,14 @@ function CategoryDetail({
     () => category.tools.map((req) => resolveTool(req, category, toolsByName)),
     [category, toolsByName],
   );
+  const desktopColumns = useMemo(() => {
+    if (tools.length <= 1) return tools.length || 1;
+    if (tools.length % 4 === 0) return 4;
+    if (tools.length % 3 === 0) return 3;
+    if (tools.length % 2 === 0) return 2;
+    return tools.length;
+  }, [tools.length]);
+  const usesSingleDesktopRow = tools.length > 1 && tools.length % 2 === 1;
 
   return (
     <motion.div
@@ -316,15 +471,21 @@ function CategoryDetail({
       style={sequelTextStyle}
     >
       <div className="relative space-y-6">
-        <div className="flex items-start justify-between gap-5">
-          <div className="space-y-4">
-            <h1 className="text-[clamp(2rem,5vw,3.35rem)] font-bold leading-[0.95] tracking-[-0.04em] text-[#F6F6F6]">
+        <div className="flex items-center justify-center px-4 py-5 md:px-6 md:py-7">
+          <div className="space-y-4 text-center">
+            <h1 className="text-[clamp(1.7rem,3.8vw,2.85rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
               {category.title}
             </h1>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-4">
+        <div
+          className={cn(
+            "grid grid-cols-2 gap-4",
+            "lg:grid-cols-none lg:[grid-template-columns:repeat(var(--desktop-cols),minmax(0,1fr))]",
+          )}
+          style={{ ["--desktop-cols" as string]: desktopColumns }}
+        >
           {tools.map((tool, index) => (
             <motion.div
               key={`${tool.label}-${index}`}
@@ -336,115 +497,24 @@ function CategoryDetail({
               <ExpandableCard
                 title={tool.label}
                 src=""
-                description={""}
-                className="aspect-square w-full"
-                classNameExpanded="[&_h4]:text-white [&_h4]:font-semibold"
+                description=""
+                className={cn("w-full", "aspect-square")}
+                disableSharedLayout
+                classNameExpanded={
+                  "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-h-[860px] !max-w-[1320px] !bg-[#010101] !border-white/10"
+                }
                 media={
                   <div className="flex h-full w-full items-center justify-center rounded-[1.5rem] bg-[#ffffff] px-8 py-8">
-                      <ToolLogo
-                        name={tool.label}
-                        logoFilename={tool.tool?.logoFilename}
-                        className="h-32 w-32 rounded-[2rem] border-0 bg-transparent sm:h-36 sm:w-36"
-                        imageClassName="p-0 object-contain"
-                      />
+                    <ToolLogo
+                      name={tool.label}
+                      logoFilename={tool.tool?.logoFilename}
+                      className="h-32 w-32 rounded-[2rem] border-0 bg-transparent sm:h-36 sm:w-36"
+                      imageClassName="p-0 object-contain"
+                    />
                   </div>
                 }
               >
-                <div className="relative h-[65vh] w-full overflow-y-auto overflow-x-hidden pr-2 custom-scrollbar" style={sequelTextStyle}>
-                  <div className="pb-[30vh] space-y-4">
-                    
-                    {/* Card 1: Nombre, Categoria, Tipo */}
-                    <div
-                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
-                    >
-                      <h3 className="text-xl font-bold text-white mb-4">IDENTIDAD</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Nombre</span>
-                          <span className="text-lg font-semibold text-white">{tool.label}</span>
-                        </div>
-                        {tool.tool?.category && (
-                          <div>
-                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Categoría</span>
-                            <span className="inline-block rounded-full bg-white/10 px-3 py-1 text-[11px] text-white">{tool.tool.category}</span>
-                          </div>
-                        )}
-                        {tool.tool?.kind && (
-                          <div>
-                            <span className="text-[10px] uppercase tracking-[0.18em] text-white/50 block mb-1">Tipo</span>
-                            <span className="inline-block rounded-full bg-[#CAFE5B]/20 text-[#CAFE5B] px-3 py-1 text-[11px]">{tool.tool.kind}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Card 2: Descripción */}
-                    <div
-                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
-                    >
-                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
-                        Descripción
-                      </h4>
-                      <p className="text-white/80 leading-relaxed text-sm">
-                        {tool.tool?.description?.trim() ||
-                          `${tool.label} te ayuda a ejecutar mejor tareas clave dentro de ${category.title.toLowerCase()}.`}
-                      </p>
-                    </div>
-
-                    {/* Card 3: Para quiénes sirve realmente */}
-                    <div
-                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
-                    >
-                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
-                        Para quiénes sirve realmente
-                      </h4>
-                      <p className="text-white/80 leading-relaxed text-sm">
-                        {tool.tool?.whatIsItReallyFor?.trim() || tool.whyItMatters || "En redacción..."}
-                      </p>
-                    </div>
-
-                    {/* Card 4: Quiénes deberían usarla */}
-                    <div
-                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl"
-                    >
-                      <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
-                        Quiénes deberían usarla
-                      </h4>
-                      <p className="text-white/80 leading-relaxed text-sm">
-                        {tool.tool?.whoIsItFor?.trim() || "Equipos, freelancers y negocios que quieren ganar velocidad."}
-                      </p>
-                    </div>
-
-                    {/* Card 5: Otros Usos */}
-                    <div
-                      className="rounded-[24px] border border-white/10 bg-[#0a0a0a] p-6 shadow-xl flex flex-col justify-between"
-                    >
-                      <div>
-                        <h4 className="text-[11px] uppercase tracking-[0.18em] text-[#CAFE5B] mb-3 font-semibold">
-                          Otros usos
-                        </h4>
-                        <p className="text-white/80 leading-relaxed text-sm">
-                          {tool.tool?.otrosUsos?.trim() || (tool.useCases && tool.useCases.length > 0 ? tool.useCases.join(" • ") : "En redacción...")}
-                        </p>
-                      </div>
-                      
-                      <div className="flex flex-wrap items-center gap-3 pt-6 mt-auto">
-                        {tool.href ? (
-                          <a
-                            href={tool.href}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 rounded-full bg-[#CAFE5B] px-5 py-2.5 text-[11px] font-black uppercase tracking-[0.16em] text-[#010101] transition hover:scale-[1.03] hover:bg-[#d8ff77]"
-                          >
-                            Visitar sitio
-                            <ExternalLink className="h-3.5 w-3.5" />
-                          </a>
-                        ) : null}
-                      </div>
-                    </div>
-
-                  </div>
-                </div>
+                <ToolEditorialDetail tool={tool} category={category} />
               </ExpandableCard>
             </motion.div>
           ))}

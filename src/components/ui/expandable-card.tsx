@@ -14,6 +14,7 @@ interface ExpandableCardProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
   className?: string;
   classNameExpanded?: string;
+  disableSharedLayout?: boolean;
 }
 
 export function ExpandableCard({
@@ -24,6 +25,7 @@ export function ExpandableCard({
   children,
   className,
   classNameExpanded,
+  disableSharedLayout = false,
   style,
   ...props
 }: ExpandableCardProps) {
@@ -36,9 +38,9 @@ export function ExpandableCard({
   };
   const cardTransition = {
     type: "spring",
-    stiffness: 340,
-    damping: 36,
-    mass: 0.8,
+    stiffness: 220,
+    damping: 30,
+    mass: 1,
   } as const;
 
   React.useEffect(() => {
@@ -82,7 +84,10 @@ export function ExpandableCard({
         {active ? (
           <div className="fixed inset-0 z-50 grid place-items-center p-3 sm:p-6 lg:p-10">
             <motion.div
-              layoutId={`card-${title}-${id}`}
+              layoutId={disableSharedLayout ? undefined : `card-${title}-${id}`}
+              initial={disableSharedLayout ? { opacity: 0, scale: 0.98, y: 12 } : undefined}
+              animate={disableSharedLayout ? { opacity: 1, scale: 1, y: 0 } : undefined}
+              exit={disableSharedLayout ? { opacity: 0, scale: 0.98, y: 12 } : undefined}
               transition={cardTransition}
               ref={cardRef}
               className={cn(
@@ -108,30 +113,25 @@ export function ExpandableCard({
                 <div className="flex items-start justify-between gap-6 p-6 sm:p-8">
                   <div>
                     {description ? (
-                      <motion.p
-                        layoutId={`description-${description}-${id}`}
-                        className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75"
-                      >
+                      <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
                         {description}
-                      </motion.p>
+                      </p>
                     ) : null}
-                    <motion.h3
+                    <h3
                       id={`card-title-${id}`}
-                      layoutId={`title-${title}-${id}`}
                       className={cn(
                         "font-semibold tracking-[-0.04em] text-white sm:text-4xl",
                         description ? "mt-2 text-3xl" : "text-4xl sm:text-5xl",
                       )}
                     >
                       {title}
-                    </motion.h3>
+                    </h3>
                   </div>
 
-                  <motion.button
+                  <button
                     type="button"
                     aria-label="Cerrar tarjeta"
-                    layoutId={`button-${title}-${id}`}
-                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/75 transition-colors duration-300 hover:border-white/20 hover:bg-white/10 hover:text-white focus:outline-none"
+                    className="absolute right-8 top-0 flex shrink-0 items-center justify-center text-white/75 transition-colors duration-300 hover:text-white focus:outline-none"
                     onClick={() => setActive(false)}
                   >
                     <motion.div
@@ -140,15 +140,15 @@ export function ExpandableCard({
                     >
                       <Plus className="h-5 w-5" />
                     </motion.div>
-                  </motion.button>
+                  </button>
                 </div>
 
                 <div className="px-6 pb-8 sm:px-8 sm:pb-10">
                   <motion.div
-                    layout
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
                     className="flex flex-col items-start gap-4 text-sm leading-7 text-white/72 sm:text-base"
                   >
                     {children}
@@ -165,7 +165,7 @@ export function ExpandableCard({
         tabIndex={0}
         aria-labelledby={`card-title-${id}`}
         aria-haspopup="dialog"
-        layoutId={`card-${title}-${id}`}
+        layoutId={disableSharedLayout ? undefined : `card-${title}-${id}`}
         transition={cardTransition}
         onClick={() => setActive(true)}
         onKeyDown={(event) => {
@@ -194,29 +194,24 @@ export function ExpandableCard({
           <div className="flex min-h-[5.25rem] items-end justify-between gap-4 px-2 pb-1">
             <div className="min-w-0 flex-1">
               {description ? (
-                <motion.p
-                  layoutId={`description-${description}-${id}`}
-                  className="text-sm font-semibold tracking-normal text-[#777986] sm:text-[0.95rem]"
-                >
+                <p className="text-sm font-semibold tracking-normal text-[#777986] sm:text-[0.95rem]">
                   {description}
-                </motion.p>
+                </p>
               ) : null}
-              <motion.h3
+              <h3
                 id={`card-title-${id}`}
-                layoutId={`title-${title}-${id}`}
                 className={cn(
                   "font-semibold tracking-normal text-[#050507]",
                   description ? "mt-1 text-[1.45rem] leading-[1.02] sm:text-[1.65rem]" : "text-[1.55rem] leading-[1.02] sm:text-[1.75rem]",
                 )}
               >
                 {title}
-              </motion.h3>
+              </h3>
             </div>
 
-            <motion.button
+            <button
               type="button"
               aria-label="Abrir tarjeta"
-              layoutId={`button-${title}-${id}`}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e0e2e8] bg-[#f8f8f9] text-[#333641] transition-colors duration-300 group-hover:border-[#caced8] group-hover:bg-white focus:outline-none sm:h-12 sm:w-12"
             >
               <motion.div
@@ -225,7 +220,7 @@ export function ExpandableCard({
               >
                 <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={1.8} />
               </motion.div>
-            </motion.button>
+            </button>
           </div>
         </div>
       </motion.div>

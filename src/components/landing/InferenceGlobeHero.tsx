@@ -11,9 +11,8 @@ import { routes } from "@/lib/routes";
 const InferenceGlobeHero = () => {
   const rootRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
-  const descriptionRef = useRef<HTMLParagraphElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
-    const sphereTargetRef = useRef<HTMLDivElement>(null);
+  const sphereTargetRef = useRef<HTMLDivElement>(null);
 
   const isMobile = typeof window !== 'undefined' ? window.matchMedia("(max-width: 768px)").matches : false;
 
@@ -21,10 +20,9 @@ const InferenceGlobeHero = () => {
     () => {
       const sphereTarget = sphereTargetRef.current;
       const titleEl = titleRef.current;
-      const descriptionEl = descriptionRef.current;
       const ctaEl = ctaRef.current;
 
-      if (!sphereTarget || !titleEl || !descriptionEl || !ctaEl) {
+      if (!sphereTarget || !titleEl || !ctaEl) {
         return;
       }
 
@@ -70,15 +68,7 @@ const InferenceGlobeHero = () => {
         originalPositions[i * 3 + 1] = y;
         originalPositions[i * 3 + 2] = z;
 
-        const color = new THREE.Color();
-        const rand = Math.random();
-        if (rand < 0.2) {
-          color.setHex(0xCAFE5B); // Neon green
-        } else if (rand < 0.8) {
-          color.setHex(0xFFFFFF); // White
-        } else {
-          color.setHex(0xAAAAAA); // Light Gray
-        }
+        const color = new THREE.Color(0xFFFFFF);
         
         colors[i * 3] = color.r;
         colors[i * 3 + 1] = color.g;
@@ -252,17 +242,16 @@ const InferenceGlobeHero = () => {
 
       if (!prefersReducedMotion) {
         introTl.to(titleEl, { duration: 1.2, opacity: 1, y: 0, ease: "power4.out" }, 0.5);
-        introTl.to(descriptionEl, { duration: 1, opacity: 1, y: 0, ease: "power3.out" }, "-=0.7");
         introTl.to(
           ctaEl,
           { duration: 0.8, opacity: 1, scale: 1, y: 0, ease: "back.out(1.7)" },
-          "-=0.4",
+          "-=0.55",
         );
 
         gsap.fromTo(wovenPoints.position, { y: -2 }, { y: 0, duration: 2, ease: "power2.out" });
         gsap.fromTo(wovenMaterial, { opacity: 0 }, { opacity: 0.8, duration: 2, ease: "power2.out" });
       } else {
-        gsap.set([titleEl, descriptionEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
+        gsap.set([titleEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
       }
 
       const handlePointerMove = (event: PointerEvent) => {
@@ -318,7 +307,7 @@ const InferenceGlobeHero = () => {
     <div ref={rootRef} className="relative h-screen w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
       
 
-      <div className="relative z-20 flex h-full w-full flex-col items-start justify-end pb-[15vh] md:pb-[20vh] px-8 md:px-16 lg:px-24">
+      <div className="relative z-20 flex h-full w-full flex-col items-start justify-end pb-[23vh] md:pb-[28vh] px-8 md:px-16 lg:px-24">
         <div className="pointer-events-none w-full max-w-4xl">
           <h1
             ref={titleRef}
@@ -336,14 +325,6 @@ const InferenceGlobeHero = () => {
               </div>
             </div>
           </h1>
-
-          <p
-            ref={descriptionRef}
-            className="mt-8 max-w-[600px] translate-y-6 opacity-0 text-left"
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '18px', lineHeight: 1.6, color: 'rgba(255,255,255,0.6)' }}
-          >
-            Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.
-          </p>
 
           <div ref={ctaRef} className="pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex justify-start">
             <ShinyButton

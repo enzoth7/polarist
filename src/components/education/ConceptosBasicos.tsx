@@ -81,7 +81,7 @@ const ConceptosBasicos = () => {
         </div>
 
         <CardContent className="p-0">
-          <Accordion type="single" collapsible defaultValue="concepto-1" className="w-full">
+          <Accordion type="single" collapsible className="w-full">
             {conceptosBasicos.map((concepto, index) => (
               <AccordionItem
                 key={concepto.title}

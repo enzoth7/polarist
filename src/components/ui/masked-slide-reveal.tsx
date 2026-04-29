@@ -9,6 +9,9 @@ export interface MaskedSlideRevealProps {
   staggerDelay?: number;
   className?: string;
   delay?: number;
+  triggerOnView?: boolean;
+  viewportAmount?: number;
+  animateOnce?: boolean;
 }
 
 export function MaskedSlideReveal({
@@ -16,6 +19,9 @@ export function MaskedSlideReveal({
   staggerDelay = 0.08,
   className,
   delay = 0,
+  triggerOnView = false,
+  viewportAmount = 0.6,
+  animateOnce = false,
 }: MaskedSlideRevealProps) {
   const words = text.split(" ");
 
@@ -36,7 +42,9 @@ export function MaskedSlideReveal({
           <motion.span
             style={{ display: "inline-block" }}
             initial={{ y: "110%" }}
-            animate={{ y: "0%" }}
+            animate={animateOnce || !triggerOnView ? { y: "0%" } : undefined}
+            whileInView={triggerOnView ? { y: "0%" } : undefined}
+            viewport={triggerOnView ? { once: true, amount: viewportAmount } : undefined}
             transition={{
               type: "spring",
               damping: 14,
