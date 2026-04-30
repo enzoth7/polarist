@@ -7,35 +7,35 @@
 /* ── Arno Pro (serif / editorial) ── */
 @font-face {
   font-family: "Arno Pro";
-  src: url("/fonts/arno-pro/ArnoPro-LightDisplay.otf") format("opentype");
+  src: url("/fonts/arno-pro/ArnoPro-LightDisplay.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Arno Pro";
-  src: url("/fonts/arno-pro/arno-pro.otf") format("opentype");
+  src: url("/fonts/arno-pro/arno-pro.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Arno Pro";
-  src: url("/fonts/arno-pro/ArnoPro-Smbd.otf") format("opentype");
+  src: url("/fonts/arno-pro/ArnoPro-Smbd.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Arno Pro";
-  src: url("/fonts/arno-pro/ArnoPro-SmbdItalic.otf") format("opentype");
+  src: url("/fonts/arno-pro/ArnoPro-SmbdItalic.woff2") format("woff2");
   font-weight: 600;
   font-style: italic;
   font-display: swap;
 }
 @font-face {
   font-family: "Arno Pro";
-  src: url("/fonts/arno-pro/arnopro-bold.otf") format("opentype");
+  src: url("/fonts/arno-pro/arnopro-bold.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
@@ -44,42 +44,42 @@
 /* ── Sequel Sans (sans / técnica) ── */
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Light Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Light Body.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Roman Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Roman Body.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Medium Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Medium Body.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Semi Bold Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Semi Bold Body.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Bold Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Bold Body.woff2") format("woff2");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
 @font-face {
   font-family: "Sequel Sans";
-  src: url("/fonts/sequel-sans/Sequel Sans Black Body.ttf") format("truetype");
+  src: url("/fonts/sequel-sans/Sequel Sans Black Body.woff2") format("woff2");
   font-weight: 900;
   font-style: normal;
   font-display: swap;

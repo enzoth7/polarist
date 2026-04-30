@@ -2,8 +2,8 @@ import ScrollExpandMedia from '@/components/ui/scroll-expansion-hero';
 
 const mediaContent = {
   video: {
-    src: '/images/landing/para-eso-creamos-firefly.mp4',
-    background: '/images/landing/para-eso-creamos.mp4',
+    src: '/images/landing/para-eso-creamos-firefly.webm',
+    background: '/images/landing/para-eso-creamos.webm',
     frameSequence: {
       basePath: '/images/landing/para-eso-creamos-firefly-frames-48',
       frameCount: 321,

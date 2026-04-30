@@ -26,7 +26,6 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ResourcesComingSoon from "./pages/ResourcesComingSoon";
-import Profile from "./pages/Profile";
 import Trends from "./pages/Trends";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
@@ -77,7 +76,7 @@ const ProfileRouteResolver = () => {
     return <Navigate to={getAppUserProfileRoute(profile.username.trim())} replace />;
   }
 
-  return <Profile />;
+  return <Library />;
 };
 
 const RequireAuthenticatedRoute = () => {

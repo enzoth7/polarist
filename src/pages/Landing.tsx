@@ -13,6 +13,7 @@ import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card
 import FlipHover from "@/components/ui/flip-hover";
 import Preloader from "@/components/ui/preloader";
 import { PolaristInterstitialReveal } from "@/components/ui/polarist-interstitial-reveal";
+import { isVideoAsset } from "@/lib/assetPaths";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
@@ -20,21 +21,21 @@ const featureBlocks = [
     title: "Delega lo repetitivo",
     description:
       "Automatiza procesos y dejá que la IA se encargue de las tareas que te roban tiempo y no te aportan valor.",
-    imgUrl: "/images/landing/delega-lo-repetitivo.mp4",
+    imgUrl: "/images/landing/delega-lo-repetitivo.webm",
     tag: "Automatización",
   },
   {
     title: "Traé a la realidad tus ideas",
     description:
       "El límite técnico bajó y lo que antes era inaccesible ahora está al alcance. Nunca fue tan fácil darle vida a tus ideas.",
-    imgUrl: "/images/landing/trae-a-la-realidad-tus-ideas.mp4",
+    imgUrl: "/images/landing/trae-a-la-realidad-tus-ideas.webm",
     tag: "Analytics",
   },
   {
     title: "Elegí que aprender de IA",
     description:
       "No es aprenderlo todo sobre herramientas o tendencias, sino lo que a vos te aporte valor.",
-    imgUrl: "/images/landing/elegi-que-aprender.mp4",
+    imgUrl: "/images/landing/elegi-que-aprender.webm",
     tag: "Integración",
   },
 ] as const;
@@ -44,7 +45,7 @@ const problemBlocks = [
     title: "Repetimos día tras día la\u00A0misma\u00A0tarea",
     description:
       "Copiamos datos de un lado a otro, actualizamos las mismas planillas o hacemos el mismo proceso tedioso que no nos aporta nada de valor",
-    imgUrl: "/images/landing/repetimos-misma-tarea.mp4",
+    imgUrl: "/images/landing/repetimos-misma-tarea.webm",
     tag: "Organización",
     stat: "14 hrs"
   },
@@ -52,7 +53,7 @@ const problemBlocks = [
     title: "Sabemos que hacer pero no\u00A0sabemos\u00A0el\u00A0cómo",
     description:
       "Tenemos ideas y mejoras en nuestra cabeza, pero creemos que son caras, inaccesibles para nosotros o que si hay algo que puede ayudarte, crees que lleva mucho tiempo aprenderlo.",
-    imgUrl: "/images/landing/sabemos-que-hacer.mp4",
+    imgUrl: "/images/landing/sabemos-que-hacer.webm",
     tag: "Procesos",
     stat: "60% Riesgo"
   },
@@ -60,7 +61,7 @@ const problemBlocks = [
     title: "Tenemos mucha información y no le damos uso",
     description:
       "Guardamos datos, tenemos información dispersa y la dejamos allí para usarla en el futuro, pero nunca lo terminamos haciendo porque no sabemos cómo organizarla y darle el valor correspondiente",
-    imgUrl: "/images/landing/tenemos-mucha-informacion.mp4",
+    imgUrl: "/images/landing/tenemos-mucha-informacion.webm",
     tag: "Adopción",
     stat: "Barrera AI"
   },
@@ -68,7 +69,7 @@ const problemBlocks = [
     title: "Leemos de IA y colapsamos",
     description:
       "Cuando escribimos IA en cualquier red social, automáticamente empezamos a saturarnos de noticias, aparece la sobreinformación y terminamos creyendo que debemos saber todo para empezar.",
-    imgUrl: "/images/landing/leemos-de-ia-y-colapsamos.mp4",
+    imgUrl: "/images/landing/leemos-de-ia-y-colapsamos.webm",
     tag: "Visibilidad",
     stat: "Sin métricas"
   },
@@ -85,8 +86,6 @@ const bk = {
   rLg: '24px',
   rPill: '999px',
 };
-
-const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
 
 let hasShownLandingPreloader = false;
 

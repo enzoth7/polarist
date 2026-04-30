@@ -52,6 +52,26 @@ type ChartDatum = RadarMetricPoint & {
   color: string;
 };
 
+function MetricLogoBadge({ entry }: { entry: ChartDatum }) {
+  const [hasError, setHasError] = useState(false);
+
+  if (!entry.visual.iconSrc || hasError) {
+    return (
+      <span style={{ fontSize: 7, fontWeight: 700, color: "#010101" }}>
+        {entry.visual.fallbackLabel.slice(0, 2)}
+      </span>
+    );
+  }
+
+  return (
+    <img
+      src={entry.visual.iconSrc}
+      alt={entry.label}
+      style={{ width: "100%", height: "100%", objectFit: "contain" }}
+      onError={() => setHasError(true)}
+    />
+  );
+}
 
 const getBarColor = () => BAR_COLOR;
 
@@ -148,13 +168,7 @@ function MetricBarChart({
                   boxShadow: 'none',
                 }}
               >
-                {entry.visual.iconSrc ? (
-                  <img src={entry.visual.iconSrc} alt={entry.label} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                ) : (
-                  <span style={{ fontSize: 7, fontWeight: 700, color: '#010101' }}>
-                    {entry.visual.fallbackLabel.slice(0, 2)}
-                  </span>
-                )}
+                <MetricLogoBadge entry={entry} />
               </div>
 
               {/* Nombre — aparece en hover, se extiende horizontalmente sin límite */}

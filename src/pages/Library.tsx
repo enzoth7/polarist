@@ -362,8 +362,12 @@ const SavedEventCard = ({ event }: { event: UserEvent }) => {
 };
 
 const Library = () => {
-  const { username } = useParams<{ username: string }>();
-  const { user } = useAuth();
+  const { username: urlUsername } = useParams<{ username: string }>();
+  const { user, profile: authProfile } = useAuth();
+  
+  // Si no hay username en la URL, intentamos usar el del perfil autenticado
+  const username = urlUsername || authProfile?.username;
+  
   const { profile, loading: profileLoading, error: profileError } = usePublicUserProfile(username);
   const {
     tools,
@@ -448,12 +452,21 @@ const Library = () => {
     return <FolderDetailView folderId={openedFolderId} onClose={() => setOpenedFolderId(null)} />;
   }
 
-  if (!username) {
+  if (!username && !profileLoading) {
     return (
-      <div className="flex min-h-fit items-center justify-center bg-[#010101] px-4 py-20">
-        <p className="text-base text-[#F6F6F6]" style={serifStyle}>
-          No encontramos ese perfil.
-        </p>
+      <div className="flex min-h-[50vh] items-center justify-center bg-[#010101] px-4 py-20">
+        <div className="text-center">
+          <p className="text-base text-[#F6F6F6]" style={serifStyle}>
+            Para ver tu biblioteca, necesitas configurar un nombre de usuario.
+          </p>
+          <Link 
+            to={routes.appSettings}
+            className="mt-4 inline-block text-[#CAFE5B] underline"
+            style={displayBoldStyle}
+          >
+            Ir a configuración
+          </Link>
+        </div>
       </div>
     );
   }

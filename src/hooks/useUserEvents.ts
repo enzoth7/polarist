@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { toModernImageAsset } from "@/lib/assetPaths";
 import { supabase } from "@/lib/supabase";
 
 type CommunityRegistrationRow = {
@@ -97,7 +98,7 @@ const fetchUserEvents = async (email: string, userId?: string): Promise<UserEven
       registeredAt: registration.created_at,
       title: event?.title ?? null,
       eventDate: event?.event_date ?? registration.event_date,
-      imageUrl: event?.image_url ?? null,
+      imageUrl: toModernImageAsset(event?.image_url) ?? null,
     };
   });
 };

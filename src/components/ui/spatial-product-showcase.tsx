@@ -5,13 +5,10 @@ import { motion, AnimatePresence, Variants } from 'framer-motion';
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import {
   LucideIcon,
-  AlertTriangle,
-  LayoutGrid,
-  ShieldCheck,
   Plus,
-  Sparkles,
 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
+import { isVideoAsset } from "@/lib/assetPaths";
 
 // =========================================
 // 1. CONFIGURATION & DATA TYPES
@@ -80,7 +77,7 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
           "Preferís que alguien te muestre el camino directo, qué usar y para qué, en lugar de pasarte semanas investigando por tu cuenta.",
       },
     ],
-    media: '/videos/p-verde-lista.mp4',
+    media: '/videos/p-verde-lista.webm',
     colors: {
       gradient: 'from-[#CAFE5B] to-emerald-900',
       glow: 'bg-[#CAFE5B]',
@@ -118,7 +115,7 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
           "Nosotros te damos el atajo y te mostramos el camino más fácil, pero el clic final y las ganas de aplicarlo en tu día a día dependen de vos.",
       },
     ],
-    media: '/videos/p-roja-lista.mp4',
+    media: '/videos/p-roja-lista.webm',
     colors: {
       gradient: 'from-red-600 to-orange-900',
       glow: 'bg-red-500',
@@ -127,8 +124,6 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
     stats: { connectionStatus: 'Desconectado', batteryLevel: 12, statusText: 'Riesgo Crítico' },
   },
 };
-
-const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith('.mp4');
 
 // =========================================
 // 2. ANIMATION VARIANTS

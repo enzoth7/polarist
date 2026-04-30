@@ -11,7 +11,7 @@ const BrandLogo = ({ className, imageClassName }: BrandLogoProps) => {
   return (
     <div className={cn("flex items-center", className)}>
       <img
-        src="/Polarist_logo.png"
+        src="/Polarist_logo.webp"
         alt="Logo de Polarist"
         className={cn("h-8 w-auto object-contain", imageClassName)}
       />

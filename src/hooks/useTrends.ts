@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { toModernImageAsset } from "@/lib/assetPaths";
 import { supabase } from "@/lib/supabase";
 import type { CinematicSliderItem } from "@/components/radar/CinematicSlider";
 
@@ -17,7 +18,7 @@ type TrendRow = {
 const mapTrendRow = (row: TrendRow): CinematicSliderItem => ({
   title: row.title,
   description: row.description,
-  image: row.image,
+  image: toModernImageAsset(row.image) ?? row.image,
   accent: row.accent,
   glow: row.glow,
 });

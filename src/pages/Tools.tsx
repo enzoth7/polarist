@@ -13,6 +13,7 @@ import { ToolLogo } from "@/components/tools/ToolLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
+import { isVideoAsset } from "@/lib/assetPaths";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
 
@@ -84,29 +85,27 @@ const CATEGORY_IMAGES: Record<string, string> = {
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
 };
 
-const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
-
 const CATEGORIES: CategoryDef[] = [
   {
     id: "conversacional",
     title: "Chatbot",
     description: "Asistentes de lenguaje para consultas, redacción y análisis.",
     coverImage: CATEGORY_IMAGES.conversacional,
-    image: "/images/tools/chatbot-pattern-storage.mp4",
+    image: "/images/tools/chatbot-pattern-storage.webm",
   },
   {
     id: "creacion",
     title: "Creación de Contenido",
     description: "Imágenes, video, música y presentaciones generadas con IA.",
     coverImage: CATEGORY_IMAGES.creacion,
-    image: "/images/tools/creacion-contenido-entryway.mp4",
+    image: "/images/tools/creacion-contenido-entryway.webm",
   },
   {
     id: "automatizaciones",
     title: "Automatizaciones",
     description: "Conectá apps y procesos sin código. El stack operativo moderno.",
     coverImage: CATEGORY_IMAGES.automatizaciones,
-    image: "/images/tools/automatizaciones-shelf-styling.mp4",
+    image: "/images/tools/automatizaciones-shelf-styling.webm",
     mediaPosition: "center 38%",
   },
   {
@@ -114,21 +113,21 @@ const CATEGORIES: CategoryDef[] = [
     title: "Desarrollo y Web",
     description: "Construí más rápido con IA, desde el diseño hasta el deploy.",
     coverImage: CATEGORY_IMAGES.desarrollo,
-    image: "/images/tools/desarrollo-web-coastal.mp4",
+    image: "/images/tools/desarrollo-web-coastal.webm",
   },
   {
     id: "marketing",
     title: "Marketing y Ventas",
     description: "Captá leads, automatizá comunicaciones y escalá campañas.",
     coverImage: CATEGORY_IMAGES.marketing,
-    image: "/images/tools/marketing-ventas-replacement.mp4",
+    image: "/images/tools/marketing-ventas-replacement.webm",
   },
   {
     id: "productividad",
     title: "Productividad",
     description: "Organizá, resumí y agilizá el trabajo diario.",
     coverImage: CATEGORY_IMAGES.productividad,
-    image: "/images/tools/productividad-cozy-corner.mp4",
+    image: "/images/tools/productividad-cozy-corner.webm",
   },
 ];
 

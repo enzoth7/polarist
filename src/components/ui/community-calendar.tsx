@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { OrderConfirmationCard } from "@/components/ui/order-confirmation-card";
 import { SpotlightBorder } from "@/components/ui/spotlight-card";
 import { useAuth } from "@/hooks/useAuth";
+import { toModernImageAsset } from "@/lib/assetPaths";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -312,7 +313,7 @@ export function CommunityCalendar() {
                   >
                     <EventCountdownCard
                       title={selectedEvent.title}
-                      image={selectedEvent.image_url || "/images/events/placeholder.png"}
+                      image={toModernImageAsset(selectedEvent.image_url) || "/Polarist_logo.webp"}
                       time={eventTime}
                       date={new Date(selectedEvent.event_date)}
                       isJoining={isSubmitting}

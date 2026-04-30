@@ -114,11 +114,11 @@ describe("buildRadarMetricCards", () => {
 
 describe("getModelVisual", () => {
   it("maps known model slugs to local provider logos", () => {
-    expect(getModelVisual("gpt-4o", "openai").iconSrc).toBe("/logos/ai/openai.png");
+    expect(getModelVisual("gpt-4o", "openai").iconSrc).toBe("/logos/ai/openai.webp");
     expect(getModelVisual("claude-3-5-sonnet", "anthropic").iconSrc).toBe(
-      "/logos/ai/anthropic.png",
+      "/logos/ai/anthropic.webp",
     );
-    expect(getModelVisual("gemini-2.5-flash", "google").iconSrc).toBe("/logos/ai/google.png");
+    expect(getModelVisual("gemini-2.5-flash", "google").iconSrc).toBe("/logos/ai/google.webp");
   });
 
   it("falls back gracefully for providers without a bundled logo", () => {

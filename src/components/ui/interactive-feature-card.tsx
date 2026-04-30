@@ -1,6 +1,8 @@
 "use client";
 
 import * as React from "react";
+
+import { isVideoAsset } from "@/lib/assetPaths";
 import { cn } from "@/lib/utils";
 
 interface InteractiveFeatureCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -8,8 +10,6 @@ interface InteractiveFeatureCardProps extends React.HTMLAttributes<HTMLDivElemen
   title: string;
   description: string;
 }
-
-const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
 
 export function InteractiveFeatureCard({
   className,

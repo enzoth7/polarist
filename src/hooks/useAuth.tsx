@@ -27,7 +27,7 @@ interface AuthContextType {
   avatarUrl: string;
 }
 
-const FALLBACK_AVATAR = "/avatar.jpg";
+const FALLBACK_AVATAR = "/avatar.webp";
 
 const getProviderAvatar = (user: User) => {
   const metadataAvatar =

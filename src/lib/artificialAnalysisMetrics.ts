@@ -1,5 +1,6 @@
 import { getModelVisual, type ModelVisual } from "./modelIcons.ts";
 import type { AIBenchmarkRow } from "@/hooks/useAIBenchmarks";
+import { toModernImageAsset } from "@/lib/assetPaths";
 
 const RADAR_MODELS_LIMIT = 10;
 
@@ -332,7 +333,7 @@ export function buildRadarMetricCardsFromSupabase(rows: AIBenchmarkRow[]): Radar
           displayValue: "",
           detailValue: "",
           visual: {
-            iconSrc: row.icon_filename ? `/logos/ai/${row.icon_filename}` : null,
+            iconSrc: row.icon_filename ? toModernImageAsset(`/logos/ai/${row.icon_filename}`) : null,
             fallbackLabel: row.name.slice(0, 2).toUpperCase(),
             accentFrom: "185 81% 58%",
             accentTo: "317 87% 71%",

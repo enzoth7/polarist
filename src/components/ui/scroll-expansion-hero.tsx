@@ -24,7 +24,7 @@ interface ScrollExpandMediaProps {
   titleRight?: string;
 }
 
-const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith('.mp4');
+const isVideoAsset = (assetPath: string) => /\.(mp4|webm)$/i.test(assetPath);
 
 const getFrameSrc = ({
   basePath,
