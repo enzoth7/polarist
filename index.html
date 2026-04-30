@@ -28,6 +28,40 @@
     content="Tu camino más fácil hacia la IA." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/Polarist_logo.png" />
+
+  <!-- Auto-Update Script -->
+  <script>
+    (function() {
+      const CHECK_INTERVAL = 5 * 60 * 1000; // 5 minutos
+      const VERSION_FILE = '/version.json';
+      let currentVersion = null;
+
+      async function checkVersion() {
+        try {
+          // Agregamos un timestamp para evitar que el navegador cachee el archivo de versión
+          const response = await fetch(`${VERSION_FILE}?t=${Date.now()}`);
+          if (!response.ok) return;
+          
+          const data = await response.json();
+          const newVersion = data.version;
+
+          if (currentVersion && currentVersion !== newVersion) {
+            console.log(`[Polarist] Nueva versión detectada: ${newVersion}. Recargando...`);
+            window.location.reload(true);
+          } else {
+            currentVersion = newVersion;
+          }
+        } catch (err) {
+          console.error('[Polarist] Error al chequear versión:', err);
+        }
+      }
+
+      // Chequeo inicial
+      checkVersion();
+      // Chequeo periódico
+      setInterval(checkVersion, CHECK_INTERVAL);
+    })();
+  </script>
 </head>
 
 <body>
