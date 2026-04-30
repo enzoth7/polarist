@@ -50,15 +50,30 @@ const PublicLayout = () => {
 const ProfileRouteResolver = () => {
   const { profile, status } = useAuth();
 
+  // Esperamos explícitamente a que el estado de carga termine
   if (status === "loading") {
-    return <div className="min-h-full bg-background" />;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#010101]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CAFE5B] border-t-transparent" />
+      </div>
+    );
   }
 
   if (status !== "authenticated") {
+    console.warn("[Polarist] Usuario no autenticado, redirigiendo a landing...");
     return <Navigate to={routes.landing} replace />;
   }
 
-  if (status === "authenticated" && profile?.username?.trim()) {
+  // Si estamos autenticados pero el perfil aún no cargó, esperamos un poco más
+  if (!profile && status === "authenticated") {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#010101]">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#CAFE5B] border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (profile?.username?.trim()) {
     return <Navigate to={getAppUserProfileRoute(profile.username.trim())} replace />;
   }
 
