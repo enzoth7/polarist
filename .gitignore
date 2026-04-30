@@ -59,3 +59,15 @@ coverage/
 # macOS metadata
 __MACOSX/
 ._*
+
+# Agent Context (brain)
+memory/
+skills/
+AGENT.md
+directivas/
+directivas_codex/
+Brand Kit/
+agente_diseno/
+Ideas/
+.claude/
+.claude*
