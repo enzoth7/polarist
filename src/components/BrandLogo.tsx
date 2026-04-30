@@ -13,7 +13,7 @@ const BrandLogo = ({ className, imageClassName }: BrandLogoProps) => {
       <img
         src="/Polarist_logo.png"
         alt="Logo de Polarist"
-        className={cn("h-10 w-10 rounded-full object-cover", imageClassName)}
+        className={cn("h-8 w-auto object-contain", imageClassName)}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import { getModelVisual, type ModelVisual } from "./modelIcons.ts";
+import type { AIBenchmarkRow } from "@/hooks/useAIBenchmarks";
 
 const RADAR_MODELS_LIMIT = 10;
 
@@ -300,6 +301,55 @@ export function buildRadarMetricCards(models: ArtificialAnalysisModel[], limit =
       point.detailValue = formatMetricDetailValue(metric.key, point.value);
       return point;
     });
+
+    return {
+      key: metric.key,
+      title: metric.title,
+      subtitle: metric.subtitle,
+      better: metric.better,
+      points: finalizedPoints,
+    } satisfies RadarMetricCard;
+  }).filter((card) => card.points.length > 0);
+}
+
+export function buildRadarMetricCardsFromSupabase(rows: AIBenchmarkRow[]): RadarMetricCard[] {
+  return METRIC_DEFINITIONS.map((metric) => {
+    const points = rows
+      .map((row) => {
+        const value = Number(row[metric.key]);
+        if (!Number.isFinite(value) || value <= 0) return null;
+
+        const slug = String(row.id);
+
+        return {
+          id: slug,
+          rank: 0,
+          label: row.name,
+          slug,
+          creatorName: "",
+          creatorSlug: "",
+          value,
+          displayValue: "",
+          detailValue: "",
+          visual: {
+            iconSrc: row.icon_filename ? `/logos/ai/${row.icon_filename}` : null,
+            fallbackLabel: row.name.slice(0, 2).toUpperCase(),
+            accentFrom: "185 81% 58%",
+            accentTo: "317 87% 71%",
+            glow: "191 100% 74%",
+          },
+        } satisfies RadarMetricPoint;
+      })
+      .filter((point): point is RadarMetricPoint => Boolean(point))
+      .sort((a, b) => (metric.better === "higher" ? b.value - a.value : a.value - b.value))
+      .slice(0, 10);
+
+    const finalizedPoints = points.map((point, i) => ({
+      ...point,
+      rank: i + 1,
+      displayValue: formatMetricValue(metric.key, point.value),
+      detailValue: formatMetricDetailValue(metric.key, point.value),
+    }));
 
     return {
       key: metric.key,

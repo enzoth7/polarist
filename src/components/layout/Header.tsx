@@ -94,13 +94,13 @@ const Header = () => {
   const isAuthenticated = status === "authenticated";
   const navItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
     { label: "Biblioteca", to: routes.login, showAlways: true },
@@ -138,14 +138,14 @@ const Header = () => {
 
   const mobileNavItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Recursos", to: routes.appResources, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appRadar, showAlways: true },
+    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: routes.login, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
@@ -203,7 +203,7 @@ const Header = () => {
 
           <div className="hidden min-w-0 items-center gap-2 md:flex">
             <Link to={routes.landing} className="shrink-0" aria-label="Marca Polarist">
-              <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
+              <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-auto" />
             </Link>
           </div>
         </div>
@@ -211,7 +211,7 @@ const Header = () => {
         {/* Centro */}
         <div className="flex min-w-0 items-center justify-center gap-2 md:hidden">
           <Link to={routes.landing} className="shrink-0" aria-label="Marca Polarist">
-            <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-9 border-border/60" />
+            <BrandLogo showLabel={false} imageClassName="header-brand-logo-image h-9 w-auto" />
           </Link>
         </div>
 

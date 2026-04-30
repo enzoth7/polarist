@@ -14,7 +14,7 @@ const MobileLayout = () => {
   const swipeStartXRef = useRef<number | null>(null);
   const swipeStartYRef = useRef<number | null>(null);
   const mainScrollRef = useRef<HTMLElement | null>(null);
-  const shouldUseNaturalFooterFlow = location.pathname === routes.appGuides;
+  const shouldUseNaturalFooterFlow = location.pathname === routes.appResources;
 
   useEffect(() => {
     mainScrollRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
@@ -52,8 +52,8 @@ const MobileLayout = () => {
     if (deltaX > 70 && deltaY < 50) {
       if (window.history.length > 1) {
         navigate(-1);
-      } else if (location.pathname !== routes.appRadar) {
-        navigate(routes.appRadar);
+      } else if (location.pathname !== routes.appTrends) {
+        navigate(routes.appTrends);
       }
     }
 

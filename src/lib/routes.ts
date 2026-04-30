@@ -6,22 +6,25 @@ export const routes = {
   contact: "/contact",
   login: "/login",
   resourcesComingSoon: "/recursos-pronto",
-  appRoot: "/app",
-  appRadar: "/app/radar",
-  appTools: "/app/tools",
-  appGuides: "/app/guides",
-  appCommunity: "/app/community",
-  appProfile: "/app/profile",
-  appSettings: "/app/settings",
+  appTrends: "/trends",
+  appTools: "/tools",
+  appResources: "/resources",
+  appCommunity: "/community",
+  appProfile: "/profile",
+  appSettings: "/settings",
 } as const;
 
 export const getAppUserProfileRoute = (username: string) =>
-  `${routes.appProfile}/${encodeURIComponent(username)}`;
+  `/library/${encodeURIComponent(username)}`;
 
 export const legacyAppRoutes = [
-  { from: "/radar", to: routes.appRadar },
-  { from: "/tools", to: routes.appTools },
-  { from: "/guides", to: routes.appGuides },
-  { from: "/community", to: routes.appCommunity },
-  { from: "/profile", to: routes.appProfile },
+  { from: "/app", to: "/profile" },
+  { from: "/app/radar", to: "/trends" },
+  { from: "/app/tools", to: "/tools" },
+  { from: "/app/guides", to: "/resources" },
+  { from: "/app/community", to: "/community" },
+  { from: "/app/profile", to: "/profile" },
+  { from: "/app/settings", to: "/settings" },
+  { from: "/radar", to: "/trends" },
+  { from: "/guides", to: "/resources" },
 ] as const;

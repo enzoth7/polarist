@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { Calendar, Users } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 
 import { buttonVariants } from "@/components/ui/button";
 import { SpotlightBorder } from "@/components/ui/spotlight-card";
@@ -12,7 +12,8 @@ interface EventCountdownCardProps {
   title?: string;
   date?: Date;
   image?: string;
-  attendees?: number;
+  isJoining?: boolean;
+  time?: string;
   onJoin?: () => void;
   enableAnimations?: boolean;
   className?: string;
@@ -22,7 +23,8 @@ export function EventCountdownCard({
   title = "React & AI Workshop",
   date,
   image = "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=600&fit=crop",
-  attendees = 42,
+  isJoining = false,
+  time,
   onJoin,
   enableAnimations = true,
   className,
@@ -181,10 +183,12 @@ export function EventCountdownCard({
               <Calendar className="h-5 w-5" />
               <span>{(date || eventDate).toLocaleDateString()}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              <span>{attendees} inscritos</span>
-            </div>
+            {time ? (
+              <div className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                <span>{time}</span>
+              </div>
+            ) : null}
           </div>
         </motion.div>
 
@@ -216,13 +220,16 @@ export function EventCountdownCard({
           <motion.button
             type="button"
             onClick={onJoin}
+            disabled={isJoining}
+            aria-busy={isJoining}
             variants={childVariants}
             className={cn(
               buttonVariants({ variant: "default" }),
               "h-11 w-full bg-gradient-to-r from-primary to-primary/90 font-medium shadow-lg shadow-primary/20 hover:from-primary/90 hover:to-primary",
+              isJoining && "pointer-events-none opacity-70",
             )}
           >
-            {timeLeft > 0 ? "Reservar lugar" : "Unirme"}
+            {isJoining ? "Registrando..." : timeLeft > 0 ? "Reservar lugar" : "Unirme"}
           </motion.button>
         </div>
       </div>

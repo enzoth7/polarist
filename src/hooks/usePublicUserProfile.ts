@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 
 export type PublicUserProfile = {
   id: string;
+  email: string | null;
   full_name: string | null;
   username: string | null;
   avatar_url: string | null;
@@ -31,16 +32,18 @@ export function usePublicUserProfile(username?: string) {
         setLoading(true);
         setError(null);
 
-        const { data, error: profileError } = await supabase.rpc("get_public_profile_by_username", {
-          profile_username: username,
-        });
+        const { data, error: profileError } = await supabase
+          .from("polarist_usuarios")
+          .select("id, email, full_name, username, avatar_url, occupation, country")
+          .eq("username", username)
+          .maybeSingle();
 
         if (profileError) {
           throw profileError;
         }
 
         if (isActive) {
-          setProfile((data?.[0] as PublicUserProfile | undefined) ?? null);
+          setProfile((data as PublicUserProfile | null) ?? null);
         }
       } catch (nextError) {
         if (isActive) {

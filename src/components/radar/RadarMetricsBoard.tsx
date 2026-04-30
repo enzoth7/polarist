@@ -52,11 +52,6 @@ type ChartDatum = RadarMetricPoint & {
   color: string;
 };
 
-const formatUpdatedAt = (timestamp: number) =>
-  new Intl.DateTimeFormat("es-UY", {
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(timestamp);
 
 const getBarColor = () => BAR_COLOR;
 
@@ -321,17 +316,14 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
 export function RadarMetricsBoard() {
   const {
     data: metricCards = [],
-    dataUpdatedAt,
     error,
     isError,
-    isFetching,
     isLoading,
     refetch,
+    isFetching,
   } = useArtificialAnalysis();
-
-  const updatedAtLabel = dataUpdatedAt ? formatUpdatedAt(dataUpdatedAt) : null;
   const errorMessage =
-    error instanceof Error ? error.message : "No se pudieron cargar las metricas de Artificial Analysis.";
+    error instanceof Error ? error.message : "No se pudieron cargar las métricas.";
   return (
     <section className="w-full space-y-24 bg-[#010101] pb-16 pt-0" style={{ perspective: "1200px" }}>
       <div className="mx-auto w-full max-w-[2000px] space-y-24 px-4 md:px-10 lg:px-14 xl:px-16">
@@ -372,7 +364,9 @@ export function RadarMetricsBoard() {
             <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }} className="mt-4">
               Metrics unavailable
             </h3>
-            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-black/55">{errorMessage}</p>
+            <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-black/55">
+              {errorMessage}
+            </p>
             <Button
               onClick={() => void refetch()}
               variant="outline"
@@ -391,25 +385,27 @@ export function RadarMetricsBoard() {
                 <MetricCard key={card.key} card={card} />
               ))}
             </div>
-            {/* Fuente debajo de los cards */}
             <p
               className="text-center"
               style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '10px', letterSpacing: '2px', color: 'rgba(246,246,246,0.5)', textTransform: 'uppercase' }}
             >
-              Fuente: Artificial Analysis
-              {updatedAtLabel ? ` · Actualizado ${updatedAtLabel}` : ""}
-              {isFetching && !isLoading ? " · Actualizando" : ""}
+              Fuente:{" "}
+              <a
+                href="https://artificialanalysis.ai/"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: 'rgba(246,246,246,0.5)', textDecoration: 'underline' }}
+              >
+                artificialanalysis.ai
+              </a>
             </p>
           </>
         ) : null}
 
         {!isLoading && !isError && metricCards.length === 0 ? (
-          <article className="mx-auto max-w-3xl rounded-[24px] border border-black/8 bg-white p-8 text-center shadow-[0_18px_42px_-30px_rgba(1,1,1,0.16)]">
-            <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '24px', letterSpacing: '-0.5px', color: 'var(--polarist-black, #010101)' }}>
-              No hay métricas disponibles
-            </h3>
-            <p className="mt-3 text-sm leading-6 text-black/55">
-              La API no devolvio suficientes datos para construir el radar en este momento.
+          <article className="mx-auto max-w-3xl rounded-[24px] border border-white/10 bg-[#0A0A0A] p-8 text-center">
+            <p className="text-sm text-white/40" style={{ fontFamily: 'var(--font-sans)' }}>
+              No hay datos cargados todavía.
             </p>
           </article>
         ) : null}

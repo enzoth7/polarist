@@ -21,16 +21,16 @@ import Contact from "./pages/legals/Contact";
 import Community from "./pages/Community";
 import PrivacyPolicy from "./pages/legals/PrivacyPolicy";
 import TermsConditions from "./pages/legals/TermsConditions";
-import Guides from "./pages/Guides";
+import Resources from "./pages/Resources";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ResourcesComingSoon from "./pages/ResourcesComingSoon";
 import Profile from "./pages/Profile";
-import Radar from "./pages/Radar";
+import Trends from "./pages/Trends";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
-import UserProfile from "./pages/UserProfile";
+import Library from "./pages/Library";
 
 const queryClient = new QueryClient();
 
@@ -95,16 +95,15 @@ const AppRoutes = () => {
       <Route path={routes.resourcesComingSoon} element={<ResourcesComingSoon />} />
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
 
-      <Route path={routes.appRoot} element={<MobileLayout />}>
-        <Route index element={<Navigate to={routes.appProfile} replace />} />
-        <Route path="radar" element={<Radar />} />
-        <Route path="tools" element={<Tools />} />
-        <Route path="guides" element={<Guides />} />
-        <Route path="community" element={<Community />} />
-        <Route path="profile" element={<ProfileRouteResolver />} />
-        <Route path="profile/:username" element={<UserProfile />} />
+      <Route element={<MobileLayout />}>
+        <Route path={routes.appTrends} element={<Trends />} />
+        <Route path={routes.appTools} element={<Tools />} />
+        <Route path={routes.appResources} element={<Resources />} />
+        <Route path={routes.appCommunity} element={<Community />} />
+        <Route path={routes.appProfile} element={<ProfileRouteResolver />} />
+        <Route path="/library/:username" element={<Library />} />
         <Route element={<RequireAuthenticatedRoute />}>
-          <Route path="settings" element={<Settings />} />
+          <Route path={routes.appSettings} element={<Settings />} />
         </Route>
       </Route>
 

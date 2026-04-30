@@ -6,6 +6,7 @@
 - 2026-04-24 — **Estilo de Layout**: Carruseles horizontales tipo "Streaming" (Netflix/Warzone) para herramientas. Cards tipo "posters" verticales de 24px de radio.
 - 2026-04-24 — **Paleta Oficial**: `#010101` (Fondo), `#F6F6F6` (Texto), `#CAFE5B` (Acento).
 - 2026-04-30 — Fusionados cambios de Cristian desde `feat/community-spotlight-effect` a `main`. Rama extra eliminada del repositorio remoto.
+- 2026-04-30 — **Actualización de Metadata y Assets**: Limpieza de favicons antiguos en `/public`, actualización de `index.html` y `sitemap.xml` con el nuevo logo (`Polarist_logo.png`) y fechas actuales. Reconstrucción de la carpeta `dist`.
 
 ## Patrones encontrados
 - El usuario prefiere el **espacio en blanco (whitespace)** sobre los contenedores físicos. Menos cajas, más aire.

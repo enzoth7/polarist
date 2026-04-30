@@ -4,7 +4,7 @@ import { FinalCTA } from "@/components/layout/FinalCTA";
 import { useTrends } from "@/hooks/useTrends";
 import { routes } from "@/lib/routes";
 
-const Radar = () => {
+const Trends = () => {
   const { data: trendItems = [], isLoading, error } = useTrends();
 
   return (
@@ -41,4 +41,4 @@ const Radar = () => {
   );
 };
 
-export default Radar;
+export default Trends;

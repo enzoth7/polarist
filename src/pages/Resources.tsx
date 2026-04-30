@@ -19,7 +19,7 @@ const FOLDER_IMAGES: Record<string, string> = {
   memory:   "https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=800&q=80",
 };
 
-const Guides = () => {
+const Resources = () => {
   const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
 
   const showcaseItems = useMemo<ShowcaseItem[]>(() =>
@@ -140,4 +140,4 @@ const Guides = () => {
   );
 };
 
-export default Guides;
+export default Resources;
