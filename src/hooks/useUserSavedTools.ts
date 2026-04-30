@@ -14,30 +14,29 @@ type UserSavedToolsResult = {
 };
 
 const fetchUserSavedTools = async (userId: string): Promise<UserSavedToolsResult> => {
-  const { data, error } = await supabase.rpc("get_public_user_saved_tools", {
-    profile_user_id: userId,
-  });
+  const { data, error } = await supabase
+    .from("tool_saves")
+    .select("tool_id, created_at")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false });
 
   if (error) {
     throw error;
   }
 
   const toolRows = (data ?? []) as PublicSavedToolRow[];
-  const sortedToolRows = [...toolRows].sort(
-    (left, right) => new Date(right.created_at).getTime() - new Date(left.created_at).getTime(),
-  );
-  const toolIds = sortedToolRows.map((row) => row.tool_id);
+  const savedToolNames = toolRows.map((row) => row.tool_id);
 
-  if (toolIds.length === 0) {
+  if (savedToolNames.length === 0) {
     return {
       tools: [],
       savedToolCreatedAtById: {},
     };
   }
 
-  const tools = await fetchTools({ ids: toolIds });
+  const tools = await fetchTools({ names: savedToolNames });
   const savedToolCreatedAtById = Object.fromEntries(
-    sortedToolRows.map((row) => [row.tool_id, row.created_at]),
+    toolRows.map((row) => [row.tool_id, row.created_at]),
   );
 
   return {

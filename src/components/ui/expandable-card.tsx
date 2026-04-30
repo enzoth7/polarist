@@ -16,6 +16,7 @@ interface ExpandableCardProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   classNameExpanded?: string;
   disableSharedLayout?: boolean;
+  expandedHeaderActions?: React.ReactNode;
 }
 
 export function ExpandableCard({
@@ -28,6 +29,7 @@ export function ExpandableCard({
   className,
   classNameExpanded,
   disableSharedLayout = false,
+  expandedHeaderActions,
   style,
   ...props
 }: ExpandableCardProps) {
@@ -114,8 +116,8 @@ export function ExpandableCard({
               </div>
 
               <div className="relative flex h-full flex-col">
-                <div className="flex items-start justify-between gap-6 px-6 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12">
-                  <div>
+                <div className="flex items-center justify-between gap-6 px-6 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12">
+                  <div className="min-w-0 flex-1">
                     {description ? (
                       <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
                         {description}
@@ -131,6 +133,12 @@ export function ExpandableCard({
                       {title}
                     </h3>
                   </div>
+
+                  {expandedHeaderActions ? (
+                    <div className="flex shrink-0 items-center gap-2 pr-24 sm:pr-32">
+                      {expandedHeaderActions}
+                    </div>
+                  ) : null}
 
                   <button
                     type="button"

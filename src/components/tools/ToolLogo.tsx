@@ -82,17 +82,17 @@ export function ToolLogo({ name, logoFilename, className, imageClassName }: Tool
   const logoSources = useMemo(() => {
     const sources: LogoSource[] = [];
 
+    const specialLogo = specialLogoByName[name];
+
+    if (specialLogo) {
+      sources.push(specialLogo);
+    }
+
     if (logoFilename) {
       sources.push({
         src: `/logos/${logoFilename}`,
         imageClassName: "object-contain p-1.5",
       });
-    }
-
-    const specialLogo = specialLogoByName[name];
-
-    if (specialLogo) {
-      sources.push(specialLogo);
     }
 
     // Generic fallbacks for local assets in different formats

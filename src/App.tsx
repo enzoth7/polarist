@@ -25,6 +25,7 @@ import Guides from "./pages/Guides";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
+import ResourcesComingSoon from "./pages/ResourcesComingSoon";
 import Profile from "./pages/Profile";
 import Radar from "./pages/Radar";
 import Settings from "./pages/Settings";
@@ -34,13 +35,6 @@ import UserProfile from "./pages/UserProfile";
 const queryClient = new QueryClient();
 
 const PublicLayout = () => {
-  const location = useLocation();
-  const { status } = useAuth();
-  
-  if (status === "authenticated" && location.pathname === routes.landing) {
-    return <Navigate to={routes.appProfile} replace />;
-  }
-
   return (
     <div className="relative flex min-h-dvh flex-col bg-white">
       <Header />
@@ -56,7 +50,7 @@ const PublicLayout = () => {
 const ProfileRouteResolver = () => {
   const { profile, status } = useAuth();
 
-  if (status === "loading" || (status === "authenticated" && !profile)) {
+  if (status === "loading") {
     return <div className="min-h-full bg-background" />;
   }
 
@@ -98,6 +92,7 @@ const AppRoutes = () => {
       </Route>
 
       <Route path={routes.login} element={<Login />} />
+      <Route path={routes.resourcesComingSoon} element={<ResourcesComingSoon />} />
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
 
       <Route path={routes.appRoot} element={<MobileLayout />}>

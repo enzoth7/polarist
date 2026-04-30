@@ -12,7 +12,6 @@ type ToolRow = {
   who_is_it_for: string | null;
   what_is_it_really_for: string | null;
   otros_usos: string | null;
-  is_beta: boolean;
   created_at: string;
   logo_filename: string | null;
 };
@@ -27,13 +26,11 @@ export type ToolItem = {
   whoIsItFor: string | null;
   whatIsItReallyFor: string | null;
   otrosUsos: string | null;
-  isBeta: boolean;
   createdAt: string;
   logoFilename: string | null;
 };
 
 type FetchToolsOptions = {
-  isBeta?: boolean;
   names?: string[];
   ids?: string[];
   limit?: number;
@@ -53,7 +50,6 @@ const TOOL_SELECT_COLUMNS = `
   who_is_it_for,
   what_is_it_really_for,
   otros_usos,
-  is_beta,
   created_at,
   logo_filename
 `;
@@ -77,7 +73,6 @@ const mapToolRow = (row: ToolRow): ToolItem => ({
   whoIsItFor: row.who_is_it_for,
   whatIsItReallyFor: row.what_is_it_really_for,
   otrosUsos: row.otros_usos,
-  isBeta: row.is_beta,
   createdAt: row.created_at,
   logoFilename: row.logo_filename,
 });
@@ -101,10 +96,6 @@ export async function fetchTools(options: FetchToolsOptions = {}) {
     .from("tools")
     .select(TOOL_SELECT_COLUMNS)
     .order("created_at", { ascending: true });
-
-  if (typeof options.isBeta === "boolean") {
-    query = query.eq("is_beta", options.isBeta);
-  }
 
   if (normalizedNames.length > 0) {
     query = query.in("name", normalizedNames);
@@ -150,7 +141,6 @@ export function useToolsQuery(options: UseToolsQueryOptions = {}) {
     queryKey: [
       "tools",
       {
-        isBeta: fetchOptions.isBeta ?? null,
         names: normalizeToolNames(fetchOptions.names),
         ids: normalizeToolNames(fetchOptions.ids),
         limit: fetchOptions.limit ?? null,

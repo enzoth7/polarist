@@ -6,7 +6,6 @@ import { FolderDetailView } from "@/components/guides/FolderDetailView";
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { type GuideFolderCard, guideFoldersCatalog } from "@/data/guideFoldersCatalog";
-import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { usePublicUserProfile } from "@/hooks/usePublicUserProfile";
 import { useSavedGuideFolders } from "@/hooks/useSavedGuideFolders";
@@ -141,10 +140,7 @@ const SavedToolPoster = ({
 }: {
   tool: ToolItem;
   onSelect: (tool: ToolItem) => void;
-}) => {
-  const primaryNiche = tool.niches[0] ? withSpanishAccents(toolNicheMap[tool.niches[0]].label) : null;
-
-  return (
+}) => (
     <article
       role="button"
       tabIndex={0}
@@ -164,11 +160,6 @@ const SavedToolPoster = ({
           <span className="text-[0.62rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={displayBoldStyle}>
             {withSpanishAccents(tool.category)}
           </span>
-          {tool.isBeta ? (
-            <span className="text-[0.62rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={serifStyle}>
-              Beta
-            </span>
-          ) : null}
         </div>
 
         <div className="mt-6 flex h-24 items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.03]">
@@ -194,13 +185,11 @@ const SavedToolPoster = ({
         <div className="mt-6 border-t border-white/10 pt-4">
           <p className="text-[0.78rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
             {withSpanishAccents(tool.kind)}
-            {primaryNiche ? ` / ${primaryNiche}` : ""}
           </p>
         </div>
       </div>
     </article>
-  );
-};
+);
 
 const SavedResourceCard = ({
   folder,

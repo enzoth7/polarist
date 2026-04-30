@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { motion } from "framer-motion";
-import { ArrowUpRight, ExternalLink, Plus } from "lucide-react";
+import { Bookmark, ExternalLink, Heart, Plus } from "lucide-react";
 
 import Modal from "@/components/ui/modal-drop";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -9,8 +10,13 @@ import { BubbleText } from "@/components/ui/bubble-text";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 
+import { useAuth } from "@/hooks/useAuth";
+import { useToolInteractions } from "@/hooks/useToolInteractions";
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
+import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+
+type ToolInteractions = ReturnType<typeof useToolInteractions>;
 
 const BK = {
   black: "#010101",
@@ -19,12 +25,6 @@ const BK = {
 
 const CARD_RADIUS = 32;
 const sequelTextStyle = { fontFamily: "Sequel Sans" };
-
-type RequestedTool = {
-  label: string;
-  aliases?: string[];
-  fallbackHref?: string;
-};
 
 type CategoryDef = {
   id: string;
@@ -35,18 +35,32 @@ type CategoryDef = {
   mediaPosition?: string;
   mediaFit?: "cover" | "contain";
   mediaScale?: number;
-  tools: RequestedTool[];
 };
 
 type ResolvedTool = {
   label: string;
   href: string | null;
-  tool: ToolItem | null;
-  preview: string;
-  whyItMatters: string;
-  useCases: string[];
-  cautions: string[];
+  tool: ToolItem;
 };
+
+const SUPABASE_CATEGORY_TO_ID: Record<string, string> = {
+  "ia conversacional": "conversacional",
+  "creacion de contenido": "creacion",
+  "automatizacion": "automatizaciones",
+  "desarrollo y web": "desarrollo",
+  "marketing y ventas": "marketing",
+  "productividad": "productividad",
+};
+
+const normalizeCategoryKey = (value: string | null | undefined) =>
+  (value ?? "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .trim();
+
+const matchCategoryId = (toolCategory: string | null | undefined, categoryId: string) =>
+  SUPABASE_CATEGORY_TO_ID[normalizeCategoryKey(toolCategory)] === categoryId;
 
 type ClaudeDetailSection = {
   id: string;
@@ -70,96 +84,6 @@ const CATEGORY_IMAGES: Record<string, string> = {
     "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80",
 };
 
-const CATEGORY_PLAYBOOK: Record<
-  string,
-  { preview: string; whyItMatters: string; useCases: string[]; cautions: string[] }
-> = {
-  conversacional: {
-    preview: "Asistencia conversacional",
-    whyItMatters:
-      "Ideal para responder, redactar, investigar y ordenar ideas con mucha menos fricción.",
-    useCases: [
-      "Resolver consultas complejas en minutos.",
-      "Escribir textos, propuestas o respuestas mejor estructuradas.",
-      "Analizar información y bajar ideas a acciones concretas.",
-    ],
-    cautions: [
-      "Conviene validar datos sensibles o cifras antes de publicar.",
-      "Rinde mucho más cuando se le da contexto claro del negocio.",
-    ],
-  },
-  creacion: {
-    preview: "Producción creativa",
-    whyItMatters:
-      "Sirve para producir piezas visuales, video, presentaciones y assets creativos a velocidad de campaña.",
-    useCases: [
-      "Generar imágenes y conceptos visuales para anuncios o branding.",
-      "Armar presentaciones, reels o piezas multimedia con menos tiempo de edición.",
-      "Explorar ideas de estilo antes de producir una versión final.",
-    ],
-    cautions: [
-      "Hay que cuidar consistencia de marca y derechos de uso de assets.",
-      "La mejor calidad aparece cuando se trabaja con referencias claras.",
-    ],
-  },
-  automatizaciones: {
-    preview: "Operación conectada",
-    whyItMatters:
-      "Permite conectar herramientas, mover datos entre sistemas y evitar tareas manuales repetitivas.",
-    useCases: [
-      "Automatizar leads, formularios, CRM y seguimiento comercial.",
-      "Sincronizar operaciones entre apps sin depender de procesos manuales.",
-      "Construir flujos de trabajo que corran solos todos los días.",
-    ],
-    cautions: [
-      "Hay que revisar permisos, errores y escenarios de fallback.",
-      "No conviene automatizar un proceso roto sin definirlo primero.",
-    ],
-  },
-  desarrollo: {
-    preview: "Construcción digital",
-    whyItMatters:
-      "Acelera diseño, código, prototipado y despliegue para pasar de idea a producto mucho más rápido.",
-    useCases: [
-      "Prototipar interfaces y flujos antes de desarrollar.",
-      "Escribir, revisar o corregir código con apoyo de IA.",
-      "Publicar proyectos más rápido con tooling moderno.",
-    ],
-    cautions: [
-      "Siempre hace falta criterio técnico para revisar lo generado.",
-      "La velocidad no reemplaza una buena arquitectura base.",
-    ],
-  },
-  marketing: {
-    preview: "Crecimiento y ventas",
-    whyItMatters:
-      "Ayuda a captar demanda, ordenar conversaciones comerciales y escalar comunicación sin perder timing.",
-    useCases: [
-      "Capturar leads y enriquecer datos automáticamente.",
-      "Acompañar prospectos con mensajes, formularios o secuencias.",
-      "Diseñar campañas más eficientes con foco en conversión.",
-    ],
-    cautions: [
-      "Conviene alinear el tono comercial con la marca antes de escalar.",
-      "Hay que medir resultados reales, no solo volumen de actividad.",
-    ],
-  },
-  productividad: {
-    preview: "Trabajo diario optimizado",
-    whyItMatters:
-      "Reduce tiempo operativo, resume información y ordena conocimiento para equipos que hacen muchas cosas a la vez.",
-    useCases: [
-      "Resumir reuniones, documentos y conversaciones largas.",
-      "Documentar procesos y centralizar conocimiento.",
-      "Agilizar tareas repetidas del día a día.",
-    ],
-    cautions: [
-      "Es importante revisar prioridades para no automatizar ruido.",
-      "La adopción mejora cuando el equipo entiende el beneficio práctico.",
-    ],
-  },
-};
-
 const isVideoAsset = (assetPath: string) => assetPath.toLowerCase().endsWith(".mp4");
 
 const CATEGORIES: CategoryDef[] = [
@@ -169,13 +93,6 @@ const CATEGORIES: CategoryDef[] = [
     description: "Asistentes de lenguaje para consultas, redacción y análisis.",
     coverImage: CATEGORY_IMAGES.conversacional,
     image: "/images/tools/chatbot-pattern-storage.mp4",
-    tools: [
-      { label: "Claude", fallbackHref: "https://claude.ai" },
-      { label: "ChatGPT", fallbackHref: "https://chatgpt.com" },
-      { label: "Gemini", fallbackHref: "https://gemini.google.com" },
-      { label: "Perplexity", fallbackHref: "https://www.perplexity.ai" },
-      { label: "Grok", fallbackHref: "https://grok.com" },
-    ],
   },
   {
     id: "creacion",
@@ -183,28 +100,6 @@ const CATEGORIES: CategoryDef[] = [
     description: "Imágenes, video, música y presentaciones generadas con IA.",
     coverImage: CATEGORY_IMAGES.creacion,
     image: "/images/tools/creacion-contenido-entryway.mp4",
-    tools: [
-      { label: "Midjourney", aliases: ["MidJourney"], fallbackHref: "https://www.midjourney.com" },
-      { label: "Adobe Firefly", aliases: ["Firefly"], fallbackHref: "https://www.adobe.com/products/firefly.html" },
-      { label: "Higgsfield", fallbackHref: "https://higgsfield.ai" },
-      { label: "Genspark", fallbackHref: "https://genspark.ai" },
-      { label: "Runway", fallbackHref: "https://runwayml.com" },
-      { label: "ElevenLabs", fallbackHref: "https://elevenlabs.io" },
-      { label: "Retell", aliases: ["Retell AI"], fallbackHref: "https://www.retellai.com" },
-      { label: "Ideogram", fallbackHref: "https://ideogram.ai" },
-      { label: "HeyGen", fallbackHref: "https://www.heygen.com" },
-      { label: "Jasper", fallbackHref: "https://www.jasper.ai" },
-      { label: "Descript", fallbackHref: "https://www.descript.com" },
-      { label: "Freepik", fallbackHref: "https://www.freepik.com" },
-      { label: "Opus Clip", fallbackHref: "https://www.opus.pro" },
-      { label: "Canva", aliases: ["Canva IA"], fallbackHref: "https://www.canva.com" },
-      { label: "Odysser", fallbackHref: "https://odysser.com" },
-      { label: "Submagic", fallbackHref: "https://www.submagic.co" },
-      { label: "Magnific", aliases: ["Magnific AI"], fallbackHref: "https://magnific.ai" },
-      { label: "Beeble", fallbackHref: "https://beeble.ai" },
-      { label: "Suno", fallbackHref: "https://suno.com" },
-      { label: "Moises", fallbackHref: "https://moises.ai" },
-    ],
   },
   {
     id: "automatizaciones",
@@ -213,13 +108,6 @@ const CATEGORIES: CategoryDef[] = [
     coverImage: CATEGORY_IMAGES.automatizaciones,
     image: "/images/tools/automatizaciones-shelf-styling.mp4",
     mediaPosition: "center 38%",
-    tools: [
-      { label: "n8n", fallbackHref: "https://n8n.io" },
-      { label: "Make", fallbackHref: "https://www.make.com" },
-      { label: "Zapier", fallbackHref: "https://zapier.com" },
-      { label: "Apify", fallbackHref: "https://apify.com" },
-      { label: "Gumloop", fallbackHref: "https://www.gumloop.com" },
-    ],
   },
   {
     id: "desarrollo",
@@ -227,17 +115,6 @@ const CATEGORIES: CategoryDef[] = [
     description: "Construí más rápido con IA, desde el diseño hasta el deploy.",
     coverImage: CATEGORY_IMAGES.desarrollo,
     image: "/images/tools/desarrollo-web-coastal.mp4",
-    tools: [
-      { label: "Lovable", fallbackHref: "https://lovable.dev" },
-      { label: "Supabase", fallbackHref: "https://supabase.com" },
-      { label: "Vercel", fallbackHref: "https://vercel.com" },
-      { label: "Framer AI", aliases: ["Framer"], fallbackHref: "https://www.framer.com/ai" },
-      { label: "VS Code", fallbackHref: "https://code.visualstudio.com" },
-      { label: "Cursor", fallbackHref: "https://cursor.com" },
-      { label: "Bolt.new", fallbackHref: "https://bolt.new" },
-      { label: "Stitch", aliases: ["Stitch AI"], fallbackHref: "https://stitch.withgoogle.com" },
-      { label: "Figma", fallbackHref: "https://www.figma.com" },
-    ],
   },
   {
     id: "marketing",
@@ -245,14 +122,6 @@ const CATEGORIES: CategoryDef[] = [
     description: "Captá leads, automatizá comunicaciones y escalá campañas.",
     coverImage: CATEGORY_IMAGES.marketing,
     image: "/images/tools/marketing-ventas-replacement.mp4",
-    tools: [
-      { label: "AdCreative", aliases: ["AdCreative.ai"], fallbackHref: "https://www.adcreative.ai" },
-      { label: "Pomelli", fallbackHref: "https://labs.google.com/u/0/pomelli" },
-      { label: "Surfer SEO", fallbackHref: "https://surferseo.com" },
-      { label: "Typeform", fallbackHref: "https://www.typeform.com" },
-      { label: "Kommo", fallbackHref: "https://kommo.com" },
-      { label: "Manychat", aliases: ["ManyChat"], fallbackHref: "https://manychat.com" },
-    ],
   },
   {
     id: "productividad",
@@ -260,16 +129,6 @@ const CATEGORIES: CategoryDef[] = [
     description: "Organizá, resumí y agilizá el trabajo diario.",
     coverImage: CATEGORY_IMAGES.productividad,
     image: "/images/tools/productividad-cozy-corner.mp4",
-    tools: [
-      { label: "Notion AI", aliases: ["Notion"], fallbackHref: "https://www.notion.so/product/ai" },
-      { label: "NotebookLM", fallbackHref: "https://notebooklm.google.com" },
-      { label: "Loom", fallbackHref: "https://www.loom.com" },
-      { label: "Antigravity", fallbackHref: "https://antigravity.google" },
-      { label: "Wispr", fallbackHref: "https://wisprflow.ai" },
-      { label: "Gamma", fallbackHref: "https://gamma.app" },
-      { label: "Slack", fallbackHref: "https://slack.com" },
-      { label: "Fireflies", aliases: ["Fireflies.ai"], fallbackHref: "https://fireflies.ai" },
-    ],
   },
 ];
 
@@ -277,104 +136,183 @@ const normalizeText = (value: string) =>
   value.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
 
 
-const resolveTool = (
-  req: RequestedTool,
-  category: CategoryDef,
-  toolsByName: Map<string, ToolItem>,
-): ResolvedTool => {
-  const match =
-    [req.label, ...(req.aliases ?? [])]
-      .map((candidate) => toolsByName.get(normalizeText(candidate)))
-      .find((tool): tool is ToolItem => Boolean(tool)) ?? null;
+const buildResolvedTool = (tool: ToolItem): ResolvedTool => ({
+  label: tool.name,
+  href: getToolHref(tool),
+  tool,
+});
 
-  const playbook = CATEGORY_PLAYBOOK[category.id];
+const buildToolDetailSections = (tool: ResolvedTool): ClaudeDetailSection[] => {
+  const sections: ClaudeDetailSection[] = [];
+  const baseId = normalizeText(tool.label);
 
-  return {
-    label: req.label,
-    href: match ? getToolHref(match) : (req.fallbackHref ?? null),
-    tool: match,
-    preview: playbook.preview,
-    whyItMatters: playbook.whyItMatters,
-    useCases: playbook.useCases,
-    cautions: playbook.cautions,
-  };
-};
-
-const buildToolDetailSections = (tool: ResolvedTool, category: CategoryDef): ClaudeDetailSection[] => [
-  {
-    id: `${normalizeText(tool.label)}-what`,
-    number: "01",
-    title: "Qué es",
-    description:
-      `${tool.label} es una herramienta de ${category.title.toLowerCase()} pensada para ${tool.preview.toLowerCase()}.`,
-  },
-  {
-    id: `${normalizeText(tool.label)}-practice`,
-    number: "02",
-    title: "Qué resuelve en la práctica",
-    description:
-      tool.tool?.whatIsItReallyFor?.trim() ||
-      tool.tool?.description?.trim() ||
-      `${tool.label} te ayuda a ejecutar mejor tareas clave dentro de ${category.title.toLowerCase()}.`,
-  },
-  {
-    id: `${normalizeText(tool.label)}-who`,
-    number: "03",
-    title: "Para quién es",
-    description:
-      tool.tool?.whoIsItFor?.trim() ||
-      "Ideal para equipos, freelancers y negocios que quieren ganar velocidad sin perder criterio.",
-  },
-  {
-    id: `${normalizeText(tool.label)}-uses`,
-    number: "04",
-    title: "Otros usos",
-    description:
-      tool.tool?.otrosUsos?.trim() ||
-      tool.useCases.join(" • "),
-  },
-];
-
-const splitTitleKeepingLastWords = (value: string, wordCount = 2) => {
-  const words = value.trim().split(/\s+/);
-
-  if (words.length <= wordCount) {
-    return { head: "", tail: value };
+  const realPurpose = tool.tool.whatIsItReallyFor?.trim();
+  if (realPurpose) {
+    sections.push({
+      id: `${baseId}-purpose`,
+      number: "",
+      title: "Para qué sirve realmente",
+      description: realPurpose,
+    });
   }
 
-  const head = words.slice(0, -wordCount).join(" ");
-  const tail = words.slice(-wordCount).join(" ");
+  const audience = tool.tool.whoIsItFor?.trim();
+  if (audience) {
+    sections.push({
+      id: `${baseId}-who`,
+      number: "",
+      title: "Para quién es",
+      description: audience,
+    });
+  }
 
-  return { head, tail };
+  const otherUses = tool.tool.otrosUsos?.trim();
+  if (otherUses) {
+    sections.push({
+      id: `${baseId}-uses`,
+      number: "",
+      title: "Otros usos",
+      description: otherUses,
+    });
+  }
+
+  return sections.map((section, index) => ({
+    ...section,
+    number: String(index + 1).padStart(2, "0"),
+  }));
 };
 
-function ToolEditorialDetail({ tool, category }: { tool: ResolvedTool; category: CategoryDef }) {
-  const detailSections = buildToolDetailSections(tool, category);
-  const categoryTitle = splitTitleKeepingLastWords(category.title);
+function ToolHeaderActions({
+  toolName,
+  interactions,
+}: {
+  toolName: string;
+  interactions: ToolInteractions;
+}) {
+  const navigate = useNavigate();
+  const { status } = useAuth();
+  const isFavorited = interactions.isFavorited(toolName);
+  const isSaved = interactions.isSaved(toolName);
+  const favoriteCount = interactions.getFavoriteCount(toolName);
+  const isFavoritePending = interactions.isFavoritePending(toolName);
+  const isSavePending = interactions.isSavePending(toolName);
+
+  const requiresLogin = status !== "authenticated";
+
+  const handleFavorite = async () => {
+    if (requiresLogin) {
+      navigate(routes.login);
+      return;
+    }
+    try {
+      await interactions.toggleFavorite(toolName);
+    } catch (error) {
+      if ((error as Error).message === "AUTH_REQUIRED") {
+        navigate(routes.login);
+      }
+    }
+  };
+
+  const handleSave = async () => {
+    if (requiresLogin) {
+      navigate(routes.login);
+      return;
+    }
+    try {
+      await interactions.toggleSave(toolName);
+    } catch (error) {
+      if ((error as Error).message === "AUTH_REQUIRED") {
+        navigate(routes.login);
+      }
+    }
+  };
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={handleFavorite}
+        disabled={isFavoritePending}
+        aria-label={isFavorited ? "Quitar de favoritos" : "Agregar a favoritos"}
+        aria-pressed={isFavorited}
+        className="group inline-flex items-center gap-1.5 rounded-full px-2 py-1.5 text-sm text-white/75 transition-colors hover:text-white disabled:opacity-60"
+        style={sequelTextStyle}
+      >
+        <motion.span
+          key={isFavorited ? "fav-on" : "fav-off"}
+          whileTap={{ scale: 0.82 }}
+          animate={{ scale: isFavorited ? [1, 1.2, 1] : 1 }}
+          transition={{ type: "spring", stiffness: 520, damping: 16 }}
+          className="inline-flex"
+        >
+          <Heart
+            strokeWidth={1.8}
+            className={cn(
+              "h-5 w-5 transition-colors",
+              isFavorited
+                ? "fill-[#CAFE5B] text-[#CAFE5B]"
+                : "fill-transparent text-white/70 group-hover:text-white",
+            )}
+          />
+        </motion.span>
+        {favoriteCount > 0 ? (
+          <span className="font-medium tabular-nums text-white/80">{favoriteCount}</span>
+        ) : null}
+      </button>
+
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={isSavePending}
+        aria-label={isSaved ? "Quitar de guardados" : "Guardar"}
+        aria-pressed={isSaved}
+        className="group inline-flex items-center justify-center rounded-full p-1.5 text-white/75 transition-colors hover:text-white disabled:opacity-60"
+      >
+        <motion.span
+          key={isSaved ? "save-on" : "save-off"}
+          whileTap={{ scale: 0.82 }}
+          animate={{ scale: isSaved ? [1, 1.2, 1] : 1 }}
+          transition={{ type: "spring", stiffness: 520, damping: 16 }}
+          className="inline-flex"
+        >
+          <Bookmark
+            strokeWidth={1.8}
+            className={cn(
+              "h-5 w-5 transition-colors",
+              isSaved
+                ? "fill-[#CAFE5B] text-[#CAFE5B]"
+                : "fill-transparent text-white/70 group-hover:text-white",
+            )}
+          />
+        </motion.span>
+      </button>
+    </>
+  );
+}
+
+function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
+  const detailSections = buildToolDetailSections(tool);
+  const description = tool.tool.description?.trim();
+  const kind = tool.tool.kind?.trim();
 
   return (
     <div className="space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
       <div className="grid items-start gap-10 lg:grid-cols-[minmax(340px,0.78fr)_minmax(720px,1.22fr)] lg:gap-14">
         <div className="flex h-full flex-col space-y-8 lg:self-start">
           <div className="space-y-5">
-            <h2
-              className="max-w-[16ch] text-[clamp(1.5rem,3.5vw,3rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6] lg:max-w-[11ch]"
-              style={sequelTextStyle}
-            >
-              <span className="text-[#CAFE5B]">
-                {categoryTitle.head ? (
-                  <>
-                    {categoryTitle.head}{" "}
-                    <span className="whitespace-nowrap">{categoryTitle.tail}</span>
-                  </>
-                ) : (
-                  categoryTitle.tail
-                )}
-              </span>
-            </h2>
-            <p className="max-w-[34ch] text-[1.05rem] leading-8 text-white/72" style={sequelTextStyle}>
-              {tool.whyItMatters} Dentro de {category.title}, {tool.label} funciona como una puerta de entrada muy fuerte para pensar, ejecutar y resolver mejor.
-            </p>
+            {kind ? (
+              <h2
+                className="text-[clamp(1.4rem,2.8vw,2.4rem)] font-bold leading-[1] tracking-[-0.04em] text-[#CAFE5B]"
+                style={sequelTextStyle}
+              >
+                {kind}
+              </h2>
+            ) : null}
+            {description ? (
+              <p className="max-w-[34ch] text-[1.05rem] leading-8 text-white/72" style={sequelTextStyle}>
+                {description}
+              </p>
+            ) : null}
           </div>
 
           <div className="flex justify-start pt-0">
@@ -449,19 +387,20 @@ function CategoryDetail({
   category: CategoryDef;
   officialTools: ToolItem[];
 }) {
-  const toolsByName = useMemo(
-    () => new Map(officialTools.map((tool) => [normalizeText(tool.name), tool] as const)),
-    [officialTools],
-  );
-
   const tools = useMemo(
-    () => category.tools.map((req) => resolveTool(req, category, toolsByName)),
-    [category, toolsByName],
+    () =>
+      officialTools
+        .filter((tool) => matchCategoryId(tool.category, category.id))
+        .map((tool) => buildResolvedTool(tool)),
+    [category, officialTools],
   );
+  const toolNames = useMemo(() => tools.map((tool) => tool.tool.name), [tools]);
+  const interactions = useToolInteractions(toolNames);
   const desktopColumns = useMemo(() => {
     if (tools.length <= 1) return tools.length || 1;
     if (tools.length >= 18) return 7;
     if (tools.length >= 15) return 6;
+    if (tools.length % 5 === 0) return 5;
     if (tools.length % 4 === 0) return 4;
     if (tools.length % 3 === 0) return 3;
     if (tools.length % 2 === 0) return 2;
@@ -514,6 +453,9 @@ function CategoryDetail({
                 classNameExpanded={
                   "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-h-[860px] !max-w-[1320px] !bg-[#010101] !border-white/10"
                 }
+                expandedHeaderActions={
+                  <ToolHeaderActions toolName={tool.tool.name} interactions={interactions} />
+                }
                 media={
                   <div className="flex h-full w-full items-center justify-center px-4 py-4 md:px-5 md:py-5">
                     <ToolLogo
@@ -525,7 +467,7 @@ function CategoryDetail({
                   </div>
                 }
               >
-                <ToolEditorialDetail tool={tool} category={category} />
+                <ToolEditorialDetail tool={tool} />
               </ExpandableCard>
             </motion.div>
           ))}
@@ -537,7 +479,7 @@ function CategoryDetail({
 
 const Tools = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { data: officialTools = [] } = useToolsQuery({ isBeta: false });
+  const { data: officialTools = [] } = useToolsQuery();
 
   const selectedCategory = selectedId ? CATEGORIES.find((category) => category.id === selectedId) ?? null : null;
 

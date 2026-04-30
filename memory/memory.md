@@ -5,6 +5,7 @@
 - 2026-04-24 — Jerarquía tipográfica del Brand Kit definida: Arno Pro (titulares) · Sequel Sans Bold (subtítulos/énfasis) · **Sequel Sans Regular (base, todo el resto)**.
 - 2026-04-24 — **Estilo de Layout**: Carruseles horizontales tipo "Streaming" (Netflix/Warzone) para herramientas. Cards tipo "posters" verticales de 24px de radio.
 - 2026-04-24 — **Paleta Oficial**: `#010101` (Fondo), `#F6F6F6` (Texto), `#CAFE5B` (Acento).
+- 2026-04-30 — Fusionados cambios de Cristian desde `feat/community-spotlight-effect` a `main`. Rama extra eliminada del repositorio remoto.
 
 ## Patrones encontrados
 - El usuario prefiere el **espacio en blanco (whitespace)** sobre los contenedores físicos. Menos cajas, más aire.

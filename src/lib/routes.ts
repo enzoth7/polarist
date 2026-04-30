@@ -5,6 +5,7 @@ export const routes = {
   about: "/about",
   contact: "/contact",
   login: "/login",
+  resourcesComingSoon: "/recursos-pronto",
   appRoot: "/app",
   appRadar: "/app/radar",
   appTools: "/app/tools",

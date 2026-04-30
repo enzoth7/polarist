@@ -35,7 +35,7 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
     to={to}
     className={({ isActive }) =>
       cn(
-        "px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
+        "relative z-[1] pointer-events-auto px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
         isActive && "text-[#1d1d1f]",
       )
     }
@@ -66,7 +66,7 @@ const DesktopCommunityItem = () => {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="relative z-40 px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]"
+          className="relative z-[110] px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]"
           style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
         >
           Comunidad
@@ -75,7 +75,7 @@ const DesktopCommunityItem = () => {
       <PopoverContent
         align="center"
         sideOffset={16}
-        className="z-[70] w-auto border-0 bg-transparent p-0 shadow-none"
+        className="z-[110] w-auto border-0 bg-transparent p-0 shadow-none"
       >
         <CommunityCalendar />
       </PopoverContent>
@@ -85,7 +85,7 @@ const DesktopCommunityItem = () => {
 
 const Header = () => {
   const navigate = useNavigate();
-  const { logout, profile, status, user, avatarUrl } = useAuth();
+  const { logout, profile, status, user } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const today = new Date();
   const currentHour = today.getHours();
@@ -93,15 +93,17 @@ const Header = () => {
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
   const isAuthenticated = status === "authenticated";
   const navItems = isAuthenticated ? [
+    { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.login, showAlways: true },
+    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
+    { label: "Biblioteca", to: routes.login, showAlways: true },
   ];
 
   let greeting = "Hola";
@@ -135,6 +137,7 @@ const Header = () => {
   };
 
   const mobileNavItems = isAuthenticated ? [
+    { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: routes.appGuides, showAlways: true },
@@ -144,12 +147,13 @@ const Header = () => {
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appRadar, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appGuides, showAlways: true },
+    { label: "Recursos", to: routes.login, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
+    { label: "Biblioteca", to: routes.login, showAlways: true },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-black/5 bg-[#F6F6F6] backdrop-blur-lg saturate-150 transition-all duration-300">
+    <header className="sticky top-0 isolate z-[1000] w-full border-b border-black/5 bg-[#F6F6F6] backdrop-blur-lg saturate-150 transition-all duration-300">
       <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-2.5 md:max-w-[2000px] md:grid-cols-3 md:px-10 lg:px-14 xl:px-16">
         {/* Lado Izquierdo */}
         <div className="flex items-center justify-start">
@@ -211,7 +215,7 @@ const Header = () => {
           </Link>
         </div>
 
-        <nav className="hidden items-center justify-center gap-5 md:flex lg:gap-6">
+        <nav className="relative z-[1] hidden items-center justify-center gap-5 md:flex lg:gap-6">
           {navItems.map((item) => (
             <div key={item.label} className="contents">
               <DesktopNavItem {...item} />
@@ -237,15 +241,7 @@ const Header = () => {
                     {desktopGreetingLabel}
                   </span>
                   <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
-                    {avatarUrl ? (
-                      <img 
-                        src={avatarUrl} 
-                        alt={profile?.fullName || "Perfil"} 
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
-                    )}
+                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
                   </span>
                 </button>
               </DropdownMenuTrigger>
@@ -256,15 +252,7 @@ const Header = () => {
                 {/* Cabecera con avatar + nombre */}
                 <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-[#f6f6f6] text-zinc-700">
-                    {avatarUrl ? (
-                      <img 
-                        src={avatarUrl} 
-                        alt={profile?.fullName || "Perfil"} 
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
-                    )}
+                    <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
                   </div>
                   <div className="min-w-0">
                     <p 

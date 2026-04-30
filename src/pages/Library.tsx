@@ -6,7 +6,6 @@ import { FolderDetailView } from "@/components/guides/FolderDetailView";
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { type GuideFolderCard, guideFoldersCatalog } from "@/data/guideFoldersCatalog";
-import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { useSavedGuideFolders } from "@/hooks/useSavedGuideFolders";
 import { useToast } from "@/hooks/use-toast";
@@ -68,7 +67,6 @@ const matchesToolSearch = (tool: ToolItem, searchTerm: string) => {
       tool.kind,
       tool.description ?? "",
       tool.whoIsItFor ?? "",
-      tool.niches.join(" "),
     ].join(" "),
   ).includes(normalizedSearch);
 };
@@ -358,10 +356,7 @@ const Library = () => {
             ) : filteredSavedTools.length > 0 ? (
               <div className="-mx-4 overflow-x-auto pb-2 pl-4 [scrollbar-width:none] md:-mx-8 md:pl-8 [&::-webkit-scrollbar]:hidden">
                 <div className="flex gap-4 pr-4 md:gap-5 md:pr-8">
-                  {filteredSavedTools.map((tool) => {
-                    const primaryNiche = tool.niches[0] ? withSpanishAccents(toolNicheMap[tool.niches[0]].label) : null;
-
-                    return (
+                  {filteredSavedTools.map((tool) => (
                       <article
                         key={tool.name}
                         role="button"
@@ -382,11 +377,6 @@ const Library = () => {
                             <span className="text-[0.62rem] uppercase tracking-[0.24em] text-white/38" style={displayBoldStyle}>
                               {withSpanishAccents(tool.category)}
                             </span>
-                            {tool.isBeta ? (
-                              <span className="text-[0.62rem] uppercase tracking-[0.24em] text-white/34" style={serifStyle}>
-                                Beta
-                              </span>
-                            ) : null}
                           </div>
 
                           <div className="mt-6 flex h-24 items-center justify-center">
@@ -412,7 +402,6 @@ const Library = () => {
                           <div className="mt-auto pt-6">
                             <p className="text-[0.78rem] leading-relaxed text-white/38" style={serifStyle}>
                               {withSpanishAccents(tool.kind)}
-                              {primaryNiche ? ` / ${primaryNiche}` : ""}
                             </p>
                           </div>
                         </div>
@@ -457,8 +446,7 @@ const Library = () => {
                           </button>
                         </div>
                       </article>
-                    );
-                  })}
+                  ))}
                 </div>
               </div>
             ) : (

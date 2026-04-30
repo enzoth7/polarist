@@ -10,7 +10,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { toolNicheMap } from "@/data/aiToolsCatalog";
 import { getToolHref, type ToolItem } from "@/hooks/useTools";
 import { withSpanishAccents } from "@/lib/withSpanishAccents";
 
@@ -83,9 +82,7 @@ export function ToolDetailsModal({
                 className="text-sm leading-6 text-muted-foreground"
                 style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
               >
-                {selectedTool.isBeta
-                  ? "Exploración temprana, acceso cambiante y propuesta todavía en formación."
-                  : "Ficha resumida de la herramienta dentro del catálogo oficial."}
+                Ficha resumida de la herramienta dentro del catálogo oficial.
               </DialogDescription>
             </DialogHeader>
 
