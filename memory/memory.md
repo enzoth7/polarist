@@ -9,6 +9,7 @@
 - 2026-04-30 — **Actualización de Metadata y Assets**: Limpieza de favicons antiguos en `/public`, actualización de `index.html` y `sitemap.xml` con el nuevo logo (`Polarist_logo.png`) y fechas actuales. Reconstrucción de la carpeta `dist`.
 - 2026-04-30 — **Integración de Eventos**: Vinculación relacional establecida en Supabase entre `community_registrations` y `polarist_usuarios` vía `user_id`. Implementado soporte para visualización de eventos en la Library por Email y ID de usuario.
 - 2026-04-30 — **Gestión de Timezones**: Forzado el uso de `America/Montevideo` en Edge Functions para asegurar que los correos automáticos reflejen la hora de Uruguay (UTC-3).
+- 2026-04-30 — **Sistema de Auto-Update**: Implementado script de detección de versiones en `index.html` que consulta `version.json` periódicamente para forzar el refresco del caché del navegador ante nuevos despliegues.
 
 ## Patrones encontrados
 - Para consultas complejas de Supabase que involucran caracteres especiales (ej: emails en `.or()`), es obligatorio envolver los valores en comillas dobles (`"email.eq.\"${email}\""`) para evitar errores de PostgREST.
