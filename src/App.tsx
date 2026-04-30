@@ -122,6 +122,8 @@ const AppRoutes = () => {
   );
 };
 
+import { Analytics } from "@vercel/analytics/react";
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -133,11 +135,13 @@ const App = () => (
             <BrowserRouter>
               <AppRoutes />
             </BrowserRouter>
+            <Analytics />
           </PageFocusOverlayProvider>
         </AuthProvider>
       </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
+
 
 export default App;
