@@ -7,6 +7,10 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AuthProvider } from "@/hooks/useAuth";
+import {
+  PageFocusOverlay,
+  PageFocusOverlayProvider,
+} from "@/hooks/usePageFocusOverlay";
 import { getAppUserProfileRoute, legacyAppRoutes, routes } from "@/lib/routes";
 
 import { StickyFooter } from "@/components/ui/sticky-footer";
@@ -14,6 +18,7 @@ import Header from "./components/layout/Header";
 import MobileLayout from "./components/layout/MobileLayout";
 import AboutUs from "./pages/legals/AboutUs";
 import Contact from "./pages/legals/Contact";
+import Community from "./pages/Community";
 import PrivacyPolicy from "./pages/legals/PrivacyPolicy";
 import TermsConditions from "./pages/legals/TermsConditions";
 import Guides from "./pages/Guides";
@@ -39,8 +44,9 @@ const PublicLayout = () => {
   return (
     <div className="relative flex min-h-dvh flex-col bg-white">
       <Header />
-      <main className="min-h-0 flex-1">
+      <main className="relative min-h-0 flex-1">
         <Outlet />
+        <PageFocusOverlay />
       </main>
       <StickyFooter />
     </div>
@@ -99,6 +105,7 @@ const AppRoutes = () => {
         <Route path="radar" element={<Radar />} />
         <Route path="tools" element={<Tools />} />
         <Route path="guides" element={<Guides />} />
+        <Route path="community" element={<Community />} />
         <Route path="profile" element={<ProfileRouteResolver />} />
         <Route path="profile/:username" element={<UserProfile />} />
         <Route element={<RequireAuthenticatedRoute />}>
@@ -120,11 +127,13 @@ const App = () => (
     <TooltipProvider>
       <ThemeProvider>
         <AuthProvider>
-          <Toaster />
-          <Sonner position="top-center" />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          <PageFocusOverlayProvider>
+            <Toaster />
+            <Sonner position="top-center" />
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </PageFocusOverlayProvider>
         </AuthProvider>
       </ThemeProvider>
     </TooltipProvider>

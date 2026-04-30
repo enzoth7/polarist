@@ -13,8 +13,14 @@ const specialLogoByName: Record<string, LogoSource> = {
     src: "/logos/openai.png",
     imageClassName: "object-contain p-2.5",
   },
-  Claude: { src: "/logos/claude.svg" },
-  Gemini: { src: "/logos/gemini.svg" },
+  Claude: {
+    src: "/logos/claude.svg",
+    imageClassName: "object-contain p-0 max-h-none max-w-none h-[96%] w-[96%]",
+  },
+  Gemini: {
+    src: "/logos/gemini.svg",
+    imageClassName: "object-contain p-0 max-h-none max-w-none h-[93%] w-[93%]",
+  },
   "Stitch AI": {
     src: "/logos/stitch.png",
     imageClassName: "object-contain p-1.5",
@@ -25,12 +31,39 @@ const specialLogoByName: Record<string, LogoSource> = {
   },
   NotebookLM: { src: "/logos/notebooklm.svg" },
   "Nano Banana": { src: "/logos/gemini.svg" },
-  Grok: { src: "/logos/grok.svg" },
+  Grok: {
+    src: "/logos/grok.svg",
+    imageClassName: "object-contain p-0 max-h-none max-w-none h-[93%] w-[93%]",
+  },
   Apollo: { src: "/logos/apollo.svg" },
   Freepik: { src: "/logos/freepik.svg" },
   Genspark: { src: "/logos/genspark.svg" },
   Higgsfield: { src: "/logos/higgsfield.svg" },
+  HeyGen: {
+    src: "/logos/heygen.png",
+    imageClassName: "object-contain p-1.5 max-h-[70%] max-w-[86%]",
+  },
+  Jasper: {
+    src: "/logos/jasper.jpg",
+    imageClassName: "object-contain p-0 mix-blend-multiply",
+  },
   Loom: { src: "/logos/loom.svg" },
+  Make: {
+    src: "/logos/make.png",
+    imageClassName: "object-contain p-0 max-h-none max-w-none h-[108%] w-[108%]",
+  },
+  Manychat: {
+    src: "/logos/manychat.png",
+    imageClassName: "object-contain p-1.5 brightness-0",
+  },
+  "Opus Clip": {
+    src: "/logos/opusclip.png",
+    imageClassName: "object-contain p-1.5 brightness-0",
+  },
+  Retell: {
+    src: "/logos/retell.png",
+    imageClassName: "object-contain p-0 mix-blend-multiply",
+  },
   Sora: { src: "/logos/sora.svg" },
   Wispr: { src: "/logos/wispr.png", imageClassName: "object-cover p-0" },
   "Notion AI": { src: "/logos/notion.png" },
@@ -118,7 +151,7 @@ export function ToolLogo({ name, logoFilename, className, imageClassName }: Tool
         loading="lazy"
         referrerPolicy="no-referrer"
         className={cn(
-          "h-full w-full rounded-xl object-contain p-1.5",
+          "max-h-[78%] max-w-[78%] rounded-xl object-contain p-1",
           activeSource.imageClassName,
           imageClassName,
         )}

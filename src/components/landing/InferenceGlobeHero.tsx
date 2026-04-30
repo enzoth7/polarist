@@ -45,6 +45,7 @@ const InferenceGlobeHero = () => {
 
       const particleCount = isMobile ? 30000 : 50000;
       const positions = new Float32Array(particleCount * 3);
+      const simulationPositions = new Float32Array(particleCount * 3);
       const originalPositions = new Float32Array(particleCount * 3);
       const colors = new Float32Array(particleCount * 3);
       const velocities = new Float32Array(particleCount * 3);
@@ -64,6 +65,9 @@ const InferenceGlobeHero = () => {
         positions[i * 3] = x;
         positions[i * 3 + 1] = y;
         positions[i * 3 + 2] = z;
+        simulationPositions[i * 3] = x;
+        simulationPositions[i * 3 + 1] = y;
+        simulationPositions[i * 3 + 2] = z;
         originalPositions[i * 3] = x;
         originalPositions[i * 3 + 1] = y;
         originalPositions[i * 3 + 2] = z;
@@ -98,10 +102,11 @@ const InferenceGlobeHero = () => {
       const wovenMaterial = new THREE.PointsMaterial({
         size: isMobile ? 0.008 : 0.011,
         vertexColors: true,
-        blending: THREE.AdditiveBlending,
+        blending: THREE.NormalBlending,
         transparent: true,
-        opacity: 0.8,
-        depthWrite: false,
+        opacity: 0.92,
+        depthWrite: true,
+        depthTest: true,
         map: texture,
         alphaTest: 0.1
       });
@@ -186,13 +191,18 @@ const InferenceGlobeHero = () => {
         const localZDirZ = Math.cos(angle);
 
         const posArray = wovenGeometry.attributes.position.array;
+        const hiddenDistance = 9999;
 
         for (let i = 0; i < particleCount; i++) {
             const ix = i * 3;
             const iy = i * 3 + 1;
             const iz = i * 3 + 2;
 
-            const currentPos = new THREE.Vector3(posArray[ix], posArray[iy], posArray[iz]);
+            const currentPos = new THREE.Vector3(
+              simulationPositions[ix],
+              simulationPositions[iy],
+              simulationPositions[iz],
+            );
             const originalPos = new THREE.Vector3(originalPositions[ix], originalPositions[iy], originalPositions[iz]);
             const velocity = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
 
@@ -216,13 +226,23 @@ const InferenceGlobeHero = () => {
             // Damping
             velocity.multiplyScalar(0.92);
 
-            posArray[ix] += velocity.x;
-            posArray[iy] += velocity.y;
-            posArray[iz] += velocity.z;
+            simulationPositions[ix] += velocity.x;
+            simulationPositions[iy] += velocity.y;
+            simulationPositions[iz] += velocity.z;
             
             velocities[ix] = velocity.x;
             velocities[iy] = velocity.y;
             velocities[iz] = velocity.z;
+
+            if (isFrontHemisphere) {
+              posArray[ix] = simulationPositions[ix];
+              posArray[iy] = simulationPositions[iy];
+              posArray[iz] = simulationPositions[iz];
+            } else {
+              posArray[ix] = hiddenDistance;
+              posArray[iy] = hiddenDistance;
+              posArray[iz] = hiddenDistance;
+            }
         }
         wovenGeometry.attributes.position.needsUpdate = true;
 
@@ -249,7 +269,7 @@ const InferenceGlobeHero = () => {
         );
 
         gsap.fromTo(wovenPoints.position, { y: -2 }, { y: 0, duration: 2, ease: "power2.out" });
-        gsap.fromTo(wovenMaterial, { opacity: 0 }, { opacity: 0.8, duration: 2, ease: "power2.out" });
+        gsap.fromTo(wovenMaterial, { opacity: 0 }, { opacity: 0.92, duration: 2, ease: "power2.out" });
       } else {
         gsap.set([titleEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
       }

@@ -11,6 +11,7 @@ interface ExpandableCardProps extends React.HTMLAttributes<HTMLDivElement> {
   src: string;
   description: string;
   media?: React.ReactNode;
+  hideExpandedMedia?: boolean;
   children?: React.ReactNode;
   className?: string;
   classNameExpanded?: string;
@@ -22,6 +23,7 @@ export function ExpandableCard({
   src,
   description,
   media,
+  hideExpandedMedia = false,
   children,
   className,
   classNameExpanded,
@@ -99,18 +101,20 @@ export function ExpandableCard({
             >
               <div>
                 <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:z-10 before:h-24 before:bg-gradient-to-t before:from-[#010101] before:to-transparent">
-                  {media ?? (
-                    <img
-                      src={src}
-                      alt={title}
-                      className="h-72 w-full object-cover object-center sm:h-96"
-                    />
-                  )}
+                  {!hideExpandedMedia
+                    ? media ?? (
+                        <img
+                          src={src}
+                          alt={title}
+                          className="h-72 w-full object-cover object-center sm:h-96"
+                        />
+                      )
+                    : null}
                 </div>
               </div>
 
               <div className="relative flex h-full flex-col">
-                <div className="flex items-start justify-between gap-6 p-6 sm:p-8">
+                <div className="flex items-start justify-between gap-6 px-6 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12">
                   <div>
                     {description ? (
                       <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
@@ -131,7 +135,7 @@ export function ExpandableCard({
                   <button
                     type="button"
                     aria-label="Cerrar tarjeta"
-                    className="absolute right-8 top-0 flex shrink-0 items-center justify-center text-white/75 transition-colors duration-300 hover:text-white focus:outline-none"
+                    className="absolute right-6 top-5 flex shrink-0 items-center justify-center text-white/75 transition-colors duration-300 hover:text-white focus:outline-none sm:right-8 sm:top-7"
                     onClick={() => setActive(false)}
                   >
                     <motion.div
@@ -175,23 +179,23 @@ export function ExpandableCard({
           }
         }}
         className={cn(
-          "tools-modal-sequel group flex w-full cursor-pointer flex-col overflow-hidden rounded-[1.9rem] border border-[#e7e7eb] bg-[#f8f8f9] p-4 font-sequel shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-transform duration-500 hover:-translate-y-1",
+          "tools-modal-sequel group flex w-full cursor-pointer flex-col overflow-hidden rounded-[1.6rem] border border-[#e7e7eb] bg-[#f8f8f9] p-2.5 font-sequel shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-transform duration-500 hover:-translate-y-1",
           className,
         )}
         style={sequelStyle}
       >
-        <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-4">
+        <div className="grid h-full grid-rows-[minmax(0,1fr)_auto] gap-2.5">
           <div className="min-h-0">
             {media ?? (
               <img
                 src={src}
                 alt={title}
-                className="h-full w-full rounded-[1.5rem] object-cover object-center"
+                className="h-full w-full rounded-[1.25rem] object-cover object-center"
               />
             )}
           </div>
 
-          <div className="flex min-h-[5.25rem] items-end justify-between gap-4 px-2 pb-1">
+          <div className="flex min-h-[3.45rem] items-end justify-between gap-2 px-1 pb-0.5 sm:min-h-[3.8rem]">
             <div className="min-w-0 flex-1">
               {description ? (
                 <p className="text-sm font-semibold tracking-normal text-[#777986] sm:text-[0.95rem]">
@@ -202,7 +206,7 @@ export function ExpandableCard({
                 id={`card-title-${id}`}
                 className={cn(
                   "font-semibold tracking-normal text-[#050507]",
-                  description ? "mt-1 text-[1.45rem] leading-[1.02] sm:text-[1.65rem]" : "text-[1.55rem] leading-[1.02] sm:text-[1.75rem]",
+                  description ? "mt-1 text-[0.94rem] leading-[1.02] sm:text-[1.05rem] md:text-[1.16rem]" : "text-[0.94rem] leading-[1.02] sm:text-[1.05rem] md:text-[1.16rem]",
                 )}
               >
                 {title}
@@ -212,13 +216,13 @@ export function ExpandableCard({
             <button
               type="button"
               aria-label="Abrir tarjeta"
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#e0e2e8] bg-[#f8f8f9] text-[#333641] transition-colors duration-300 group-hover:border-[#caced8] group-hover:bg-white focus:outline-none sm:h-12 sm:w-12"
+              className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-[#e0e2e8] bg-[#f8f8f9] text-[#333641] transition-colors duration-300 group-hover:border-[#caced8] group-hover:bg-white focus:outline-none sm:h-8 sm:w-8"
             >
               <motion.div
                 animate={{ rotate: active ? 45 : 0 }}
                 transition={{ duration: 0.4 }}
               >
-                <Plus className="h-4 w-4 sm:h-5 sm:w-5" strokeWidth={1.8} />
+                <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5" strokeWidth={1.8} />
               </motion.div>
             </button>
           </div>
