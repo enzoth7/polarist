@@ -1,6 +1,8 @@
-import { useCallback, useEffect, useMemo, useState, type Dispatch, type SetStateAction } from "react";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { useAuth } from "@/hooks/useAuth";
+import type { ToolItem } from "@/hooks/useTools";
 import { supabase } from "@/lib/supabase";
 
 type ToolRow = {
@@ -12,10 +14,27 @@ type FavoriteCountRow = {
   favorites_count: number;
 };
 
+type ToolInteractionsSnapshot = {
+  favoriteCounts: Record<string, number>;
+  favoriteToolIds: string[];
+  savedToolIds: string[];
+};
+
+type UserSavedToolsSnapshot = {
+  tools: ToolItem[];
+  savedToolCreatedAtById: Record<string, string>;
+};
+
 const emptyToolRowsResponse = {
   data: [] as ToolRow[],
   error: null,
 };
+
+const buildEmptySnapshot = (toolIds: string[]): ToolInteractionsSnapshot => ({
+  favoriteCounts: Object.fromEntries(toolIds.map((toolId) => [toolId, 0])) as Record<string, number>,
+  favoriteToolIds: [],
+  savedToolIds: [],
+});
 
 const normalizeToolIds = (toolIds: string[]) =>
   Array.from(
@@ -36,223 +55,344 @@ const buildCountsRecord = (toolIds: string[], rows: FavoriteCountRow[] | null) =
   return counts;
 };
 
-const setPendingState = (
-  setter: Dispatch<SetStateAction<Record<string, boolean>>>,
-  toolId: string,
-  isPending: boolean,
-) => {
-  setter((current) => {
-    if (isPending) {
-      return { ...current, [toolId]: true };
-    }
+const buildToolInteractionsQueryKey = (userId: string | null, toolIds: string[]) => [
+  "tool-interactions",
+  userId ?? "anonymous",
+  toolIds.join("|"),
+] as const;
 
-    const next = { ...current };
-    delete next[toolId];
-    return next;
+const fetchToolInteractions = async (
+  toolIds: string[],
+  isAuthenticated: boolean,
+  userId?: string,
+): Promise<ToolInteractionsSnapshot> => {
+  if (toolIds.length === 0) {
+    return buildEmptySnapshot(toolIds);
+  }
+
+  const countsPromise = supabase.rpc("get_tool_favorite_counts", {
+    requested_tool_ids: toolIds,
   });
+
+  const favoriteRowsPromise =
+    isAuthenticated && userId ?
+      supabase
+        .from("tool_favorites")
+        .select("tool_id")
+        .eq("user_id", userId)
+        .in("tool_id", toolIds)
+    : Promise.resolve(emptyToolRowsResponse);
+
+  const savedRowsPromise =
+    isAuthenticated && userId ?
+      supabase
+        .from("tool_saves")
+        .select("tool_id")
+        .eq("user_id", userId)
+        .in("tool_id", toolIds)
+    : Promise.resolve(emptyToolRowsResponse);
+
+  const [
+    { data: countsData, error: countsError },
+    { data: favoriteRows, error: favoritesError },
+    { data: savedRows, error: savesError },
+  ] = await Promise.all([countsPromise, favoriteRowsPromise, savedRowsPromise]);
+
+  if (countsError) {
+    console.error("Error fetching tool favorite counts:", countsError.message);
+  }
+
+  if (favoritesError) {
+    throw favoritesError;
+  }
+
+  if (savesError) {
+    throw savesError;
+  }
+
+  return {
+    favoriteCounts: buildCountsRecord(toolIds, (countsData as FavoriteCountRow[] | null) ?? null),
+    favoriteToolIds: (favoriteRows ?? []).map((row) => row.tool_id),
+    savedToolIds: (savedRows ?? []).map((row) => row.tool_id),
+  };
+};
+
+const updateInteractionsAcrossQueries = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  userId: string,
+  updater: (snapshot: ToolInteractionsSnapshot, toolIds: string[]) => ToolInteractionsSnapshot,
+) => {
+  queryClient.setQueriesData<ToolInteractionsSnapshot>(
+    { queryKey: ["tool-interactions", userId] },
+    (current, query) => {
+      if (!current) {
+        return current;
+      }
+
+      const joinedToolIds = typeof query.queryKey[2] === "string" ? query.queryKey[2] : "";
+      const toolIds = joinedToolIds ? joinedToolIds.split("|").filter(Boolean) : [];
+      return updater(current, toolIds);
+    },
+  );
+};
+
+const findToolInToolsCache = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  toolId: string,
+) => {
+  const toolQueries = queryClient.getQueriesData<ToolItem[]>({ queryKey: ["tools"] });
+
+  for (const [, tools] of toolQueries) {
+    const matchedTool = tools?.find((tool) => tool.name === toolId);
+    if (matchedTool) {
+      return matchedTool;
+    }
+  }
+
+  return null;
+};
+
+const updateSavedToolsCache = (
+  queryClient: ReturnType<typeof useQueryClient>,
+  userId: string,
+  toolId: string,
+  wasSaved: boolean,
+) => {
+  queryClient.setQueryData<UserSavedToolsSnapshot>(
+    ["public-user-saved-tools", userId],
+    (current) => {
+      if (!current) {
+        return current;
+      }
+
+      if (wasSaved) {
+        const nextCreatedAtById = { ...current.savedToolCreatedAtById };
+        delete nextCreatedAtById[toolId];
+
+        return {
+          tools: current.tools.filter((tool) => tool.name !== toolId),
+          savedToolCreatedAtById: nextCreatedAtById,
+        };
+      }
+
+      const matchedTool = findToolInToolsCache(queryClient, toolId);
+      if (!matchedTool || current.tools.some((tool) => tool.name === toolId)) {
+        return current;
+      }
+
+      return {
+        tools: [matchedTool, ...current.tools],
+        savedToolCreatedAtById: {
+          ...current.savedToolCreatedAtById,
+          [toolId]: new Date().toISOString(),
+        },
+      };
+    },
+  );
 };
 
 export function useToolInteractions(toolIds: string[]) {
   const { status, user } = useAuth();
+  const queryClient = useQueryClient();
   const normalizedToolIds = useMemo(() => normalizeToolIds(toolIds), [toolIds]);
-  const [favoriteCounts, setFavoriteCounts] = useState<Record<string, number>>({});
-  const [favoriteToolIds, setFavoriteToolIds] = useState<string[]>([]);
-  const [savedToolIds, setSavedToolIds] = useState<string[]>([]);
+  const queryKey = useMemo(
+    () => buildToolInteractionsQueryKey(user?.id ?? null, normalizedToolIds),
+    [normalizedToolIds, user?.id],
+  );
   const [favoritePendingById, setFavoritePendingById] = useState<Record<string, boolean>>({});
   const [savePendingById, setSavePendingById] = useState<Record<string, boolean>>({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds]);
-  const savedToolIdSet = useMemo(() => new Set(savedToolIds), [savedToolIds]);
+  const query = useQuery({
+    queryKey,
+    queryFn: () => fetchToolInteractions(normalizedToolIds, status === "authenticated", user?.id),
+    staleTime: 60_000,
+  });
 
-  const loadInteractions = useCallback(async () => {
-    if (normalizedToolIds.length === 0) {
-      setFavoriteCounts({});
-      setFavoriteToolIds([]);
-      setSavedToolIds([]);
-      setLoading(false);
-      setError(null);
-      return;
+  const snapshot = query.data ?? buildEmptySnapshot(normalizedToolIds);
+  const favoriteToolIdSet = useMemo(() => new Set(snapshot.favoriteToolIds), [snapshot.favoriteToolIds]);
+  const savedToolIdSet = useMemo(() => new Set(snapshot.savedToolIds), [snapshot.savedToolIds]);
+
+  const favoriteMutation = useMutation({
+    mutationFn: async ({ toolId, wasFavorite }: { toolId: string; wasFavorite: boolean }) => {
+      if (!user) {
+        throw new Error("AUTH_REQUIRED");
+      }
+
+      if (wasFavorite) {
+        const { error } = await supabase
+          .from("tool_favorites")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("tool_id", toolId);
+
+        if (error) {
+          throw error;
+        }
+      } else {
+        const { error } = await supabase
+          .from("tool_favorites")
+          .upsert({ user_id: user.id, tool_id: toolId }, { onConflict: "user_id,tool_id" });
+
+        if (error) {
+          throw error;
+        }
+      }
+    },
+    onSuccess: (_data, variables) => {
+      if (!user) {
+        return;
+      }
+
+      updateSavedToolsCache(queryClient, user.id, variables.toolId, variables.wasSaved);
+
+      updateInteractionsAcrossQueries(queryClient, user.id, (current, currentToolIds) => {
+        if (!currentToolIds.includes(variables.toolId)) {
+          return current;
+        }
+
+        const favoriteToolIdSet = new Set(current.favoriteToolIds);
+        if (variables.wasFavorite) {
+          favoriteToolIdSet.delete(variables.toolId);
+        } else {
+          favoriteToolIdSet.add(variables.toolId);
+        }
+
+        const currentCount = current.favoriteCounts[variables.toolId] ?? 0;
+        return {
+          favoriteCounts: {
+            ...current.favoriteCounts,
+            [variables.toolId]: Math.max(0, currentCount + (variables.wasFavorite ? -1 : 1)),
+          },
+          favoriteToolIds: Array.from(favoriteToolIdSet),
+          savedToolIds: current.savedToolIds,
+        };
+      });
+    },
+    onSettled: () => {
+      if (user) {
+        void queryClient.invalidateQueries({ queryKey: ["tool-interactions", user.id] });
+        void queryClient.invalidateQueries({ queryKey: ["public-user-saved-tools", user.id] });
+      } else {
+        void queryClient.invalidateQueries({ queryKey: ["tool-interactions", "anonymous"] });
+      }
+    },
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: async ({ toolId, wasSaved }: { toolId: string; wasSaved: boolean }) => {
+      if (!user) {
+        throw new Error("AUTH_REQUIRED");
+      }
+
+      if (wasSaved) {
+        const { error } = await supabase
+          .from("tool_saves")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("tool_id", toolId);
+
+        if (error) {
+          throw error;
+        }
+      } else {
+        const { error } = await supabase
+          .from("tool_saves")
+          .upsert({ user_id: user.id, tool_id: toolId }, { onConflict: "user_id,tool_id" });
+
+        if (error) {
+          throw error;
+        }
+      }
+    },
+    onSuccess: (_data, variables) => {
+      if (!user) {
+        return;
+      }
+
+      updateInteractionsAcrossQueries(queryClient, user.id, (current, currentToolIds) => {
+        if (!currentToolIds.includes(variables.toolId)) {
+          return current;
+        }
+
+        const savedToolIdSet = new Set(current.savedToolIds);
+        if (variables.wasSaved) {
+          savedToolIdSet.delete(variables.toolId);
+        } else {
+          savedToolIdSet.add(variables.toolId);
+        }
+
+        return {
+          favoriteCounts: current.favoriteCounts,
+          favoriteToolIds: current.favoriteToolIds,
+          savedToolIds: Array.from(savedToolIdSet),
+        };
+      });
+    },
+    onSettled: () => {
+      if (user) {
+        void queryClient.invalidateQueries({ queryKey: ["tool-interactions", user.id] });
+      } else {
+        void queryClient.invalidateQueries({ queryKey: ["tool-interactions", "anonymous"] });
+      }
+    },
+  });
+
+  const toggleFavorite = async (toolId: string) => {
+    if (!user) {
+      throw new Error("AUTH_REQUIRED");
     }
 
-    setLoading(true);
-    setError(null);
+    setFavoritePendingById((current) => ({ ...current, [toolId]: true }));
 
     try {
-      const countsPromise = supabase.rpc("get_tool_favorite_counts", {
-        requested_tool_ids: normalizedToolIds,
+      await favoriteMutation.mutateAsync({
+        toolId,
+        wasFavorite: favoriteToolIdSet.has(toolId),
       });
-
-      const favoriteRowsPromise =
-        status === "authenticated" && user ?
-          supabase
-            .from("tool_favorites")
-            .select("tool_id")
-            .eq("user_id", user.id)
-            .in("tool_id", normalizedToolIds)
-        : Promise.resolve(emptyToolRowsResponse);
-
-      const savedRowsPromise =
-        status === "authenticated" && user ?
-          supabase
-            .from("tool_saves")
-            .select("tool_id")
-            .eq("user_id", user.id)
-            .in("tool_id", normalizedToolIds)
-        : Promise.resolve(emptyToolRowsResponse);
-
-      const [
-        { data: countsData, error: countsError },
-        { data: favoriteRows, error: favoritesError },
-        { data: savedRows, error: savesError },
-      ] = await Promise.all([countsPromise, favoriteRowsPromise, savedRowsPromise]);
-
-      if (countsError) {
-        console.error("Error fetching tool favorite counts:", countsError.message);
-      }
-
-      if (favoritesError) {
-        throw favoritesError;
-      }
-
-      if (savesError) {
-        throw savesError;
-      }
-
-      setFavoriteCounts(buildCountsRecord(normalizedToolIds, (countsData as FavoriteCountRow[] | null) ?? null));
-      setFavoriteToolIds((favoriteRows ?? []).map((row) => row.tool_id));
-      setSavedToolIds((savedRows ?? []).map((row) => row.tool_id));
-    } catch (nextError) {
-      const message =
-        nextError instanceof Error ? nextError.message : "No pudimos cargar tus interacciones.";
-
-      console.error("Error loading tool interactions:", message);
-      setFavoriteCounts(buildCountsRecord(normalizedToolIds, null));
-      setFavoriteToolIds([]);
-      setSavedToolIds([]);
-      setError(message);
     } finally {
-      setLoading(false);
+      setFavoritePendingById((current) => {
+        const next = { ...current };
+        delete next[toolId];
+        return next;
+      });
     }
-  }, [normalizedToolIds, status, user]);
+  };
 
-  useEffect(() => {
-    void loadInteractions();
-  }, [loadInteractions]);
+  const toggleSave = async (toolId: string) => {
+    if (!user) {
+      throw new Error("AUTH_REQUIRED");
+    }
 
-  const toggleFavorite = useCallback(
-    async (toolId: string) => {
-      if (!user) {
-        throw new Error("AUTH_REQUIRED");
-      }
+    setSavePendingById((current) => ({ ...current, [toolId]: true }));
 
-      const wasFavorite = favoriteToolIdSet.has(toolId);
-
-      setPendingState(setFavoritePendingById, toolId, true);
-      setFavoriteToolIds((current) =>
-        wasFavorite ? current.filter((currentToolId) => currentToolId !== toolId) : [...current, toolId],
-      );
-      setFavoriteCounts((current) => ({
-        ...current,
-        [toolId]: Math.max(0, (current[toolId] ?? 0) + (wasFavorite ? -1 : 1)),
-      }));
-
-      try {
-        if (wasFavorite) {
-          const { error: deleteError } = await supabase
-            .from("tool_favorites")
-            .delete()
-            .eq("user_id", user.id)
-            .eq("tool_id", toolId);
-
-          if (deleteError) {
-            throw deleteError;
-          }
-        } else {
-          const { error: insertError } = await supabase
-            .from("tool_favorites")
-            .insert({ user_id: user.id, tool_id: toolId });
-
-          if (insertError) {
-            throw insertError;
-          }
-        }
-      } catch (nextError) {
-        setFavoriteToolIds((current) =>
-          wasFavorite ? [...current, toolId] : current.filter((currentToolId) => currentToolId !== toolId),
-        );
-        setFavoriteCounts((current) => ({
-          ...current,
-          [toolId]: Math.max(0, (current[toolId] ?? 0) + (wasFavorite ? 1 : -1)),
-        }));
-        throw nextError;
-      } finally {
-        setPendingState(setFavoritePendingById, toolId, false);
-      }
-    },
-    [favoriteToolIdSet, user],
-  );
-
-  const toggleSave = useCallback(
-    async (toolId: string) => {
-      if (!user) {
-        throw new Error("AUTH_REQUIRED");
-      }
-
-      const wasSaved = savedToolIdSet.has(toolId);
-
-      setPendingState(setSavePendingById, toolId, true);
-      setSavedToolIds((current) =>
-        wasSaved ? current.filter((currentToolId) => currentToolId !== toolId) : [...current, toolId],
-      );
-
-      try {
-        if (wasSaved) {
-          const { error: deleteError } = await supabase
-            .from("tool_saves")
-            .delete()
-            .eq("user_id", user.id)
-            .eq("tool_id", toolId);
-
-          if (deleteError) {
-            throw deleteError;
-          }
-        } else {
-          const { error: insertError } = await supabase
-            .from("tool_saves")
-            .insert({ user_id: user.id, tool_id: toolId });
-
-          if (insertError) {
-            throw insertError;
-          }
-        }
-      } catch (nextError) {
-        setSavedToolIds((current) =>
-          wasSaved ? [...current, toolId] : current.filter((currentToolId) => currentToolId !== toolId),
-        );
-        throw nextError;
-      } finally {
-        setPendingState(setSavePendingById, toolId, false);
-      }
-    },
-    [savedToolIdSet, user],
-  );
+    try {
+      await saveMutation.mutateAsync({
+        toolId,
+        wasSaved: savedToolIdSet.has(toolId),
+      });
+    } finally {
+      setSavePendingById((current) => {
+        const next = { ...current };
+        delete next[toolId];
+        return next;
+      });
+    }
+  };
 
   return {
-    error,
-    favoriteCounts,
-    favoriteToolIds,
+    error: query.error instanceof Error ? query.error.message : null,
+    favoriteCounts: snapshot.favoriteCounts,
+    favoriteToolIds: snapshot.favoriteToolIds,
     favoriteToolIdSet,
-    loading,
-    savedToolIds,
+    loading: query.isLoading,
+    savedToolIds: snapshot.savedToolIds,
     savedToolIdSet,
-    getFavoriteCount: (toolId: string) => favoriteCounts[toolId] ?? 0,
+    getFavoriteCount: (toolId: string) => snapshot.favoriteCounts[toolId] ?? 0,
     isFavoritePending: (toolId: string) => Boolean(favoritePendingById[toolId]),
     isFavorited: (toolId: string) => favoriteToolIdSet.has(toolId),
     isSavePending: (toolId: string) => Boolean(savePendingById[toolId]),
     isSaved: (toolId: string) => savedToolIdSet.has(toolId),
-    refreshInteractions: loadInteractions,
+    refreshInteractions: () => queryClient.invalidateQueries({ queryKey }),
     toggleFavorite,
     toggleSave,
   };

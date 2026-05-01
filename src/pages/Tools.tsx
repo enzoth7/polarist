@@ -9,6 +9,8 @@ import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/acco
 import { BubbleText } from "@/components/ui/bubble-text";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
+import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";
+import { FinalCTA } from "@/components/layout/FinalCTA";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
@@ -501,7 +503,7 @@ const Tools = () => {
         ) : null}
       </Modal>
 
-      <div style={{ minHeight: "100vh", backgroundColor: BK.black, padding: "120px 40px 120px" }}>
+      <div className="min-h-screen bg-[#010101] px-5 py-24 md:px-10 md:py-[120px]">
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div
             style={{
@@ -520,16 +522,16 @@ const Tools = () => {
                 color: BK.white,
                 marginBottom: 20,
                 textAlign: "center",
-                whiteSpace: "nowrap",
+                textWrap: "balance",
               }}
             >
-              <BubbleText text="Las herramientas más útiles del Mercado" />
+              Las herramientas más útiles del Mercado
             </h1>
             <p
               style={{
                 fontFamily: "Sequel Sans",
                 fontWeight: 400,
-                fontSize: "18px",
+                fontSize: "clamp(15px, 4vw, 18px)",
                 lineHeight: 1.6,
                 color: BK.white,
                 marginBottom: 120,
@@ -606,7 +608,18 @@ const Tools = () => {
             </div>
           </div>
         </div>
+
+        <div className="mt-24">
+          <RadarMetricsBoard />
+        </div>
       </div>
+
+      <FinalCTA
+        title="Mantente en la vanguardia"
+        description="Explora las últimas tendencias en el mercado"
+        buttonText="Ver tendencias"
+        to={routes.appTrends}
+      />
     </>
   );
 };

@@ -144,7 +144,7 @@ export function ToolLogo({ name, logoFilename, className, imageClassName }: Tool
     return (
       <div
         className={cn(
-          "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border/40 bg-muted/40 text-muted-foreground",
+          "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-muted/40 text-muted-foreground",
           className,
         )}
       >
@@ -156,7 +156,7 @@ export function ToolLogo({ name, logoFilename, className, imageClassName }: Tool
   return (
     <div
       className={cn(
-        "flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-border/40 bg-background",
+        "flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background",
         className,
       )}
     >

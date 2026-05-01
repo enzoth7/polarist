@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 import { isVideoAsset } from "@/lib/assetPaths";
+import { cn } from "@/lib/utils";
 
 // =========================================
 // 1. CONFIGURATION & DATA TYPES
@@ -186,8 +187,8 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
     <div
       className={`relative flex items-center justify-center overflow-hidden rounded-full bg-transparent ${
         isVideoAsset(data.media)
-          ? "h-64 w-64 md:h-[390px] md:w-[390px]"
-          : "h-56 w-56 md:h-[320px] md:w-[320px]"
+          ? "h-48 w-48 md:h-[390px] md:w-[390px]"
+          : "h-40 w-40 md:h-[320px] md:w-[320px]"
       }`}
     >
       <motion.div
@@ -232,10 +233,11 @@ const ProductVisual = ({ data, isLeft }: { data: ProductData; isLeft: boolean })
 
 const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }) => {
   // If isLeft (Sin Polarist), the text should be on the left visually, meaning text-left alignment.
-  const alignClass = isLeft ? 'items-start text-left' : 'items-end text-right';
-  const triggerAlignClass = isLeft ? 'text-left' : 'text-right';
-  const rowAlignClass = isLeft ? 'flex-row' : 'flex-row-reverse';
-  const contentAlignClass = isLeft ? 'text-left' : 'text-right';
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+  const alignClass = isMobile ? 'items-center text-center' : (isLeft ? 'items-start text-left' : 'items-end text-right');
+  const triggerAlignClass = isMobile ? 'text-center' : (isLeft ? 'text-left' : 'text-right');
+  const rowAlignClass = isMobile ? 'flex-row' : (isLeft ? 'flex-row' : 'flex-row-reverse');
+  const contentAlignClass = isMobile ? 'text-center' : (isLeft ? 'text-left' : 'text-right');
 
   return (
     <motion.div
@@ -246,7 +248,13 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
       className={`flex flex-col ${alignClass} w-full`}
       style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
     >
-      <motion.h1 variants={ANIMATIONS.item} className="mb-5 text-[2rem] font-bold tracking-tight text-[#F6F6F6] md:mb-6 md:text-[2.6rem]">
+      <motion.h1 
+        variants={ANIMATIONS.item} 
+        className={cn(
+          "mb-5 text-2xl font-bold tracking-tight md:mb-6 md:text-[2.6rem]",
+          isLeft ? "text-[#CAFE5B]" : "text-[#FF4D4D]"
+        )}
+      >
         {data.title}
       </motion.h1>
       
@@ -264,7 +272,7 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
             >
               <AccordionPrimitive.Header className="flex">
                 <AccordionPrimitive.Trigger
-                  className={`flex flex-1 items-center justify-between gap-4 py-4 text-[20px] font-semibold leading-7 transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 md:text-[24px] ${triggerAlignClass}`}
+                  className={`flex flex-1 items-center justify-between gap-4 py-4 text-[18px] font-semibold leading-7 transition-all [&>svg>path:last-child]:origin-center [&>svg>path:last-child]:transition-all [&>svg>path:last-child]:duration-200 [&[data-state=open]>svg>path:last-child]:rotate-90 [&[data-state=open]>svg>path:last-child]:opacity-0 [&[data-state=open]>svg]:rotate-180 md:text-[24px] ${triggerAlignClass}`}
                 >
                   <span className={`flex items-center ${rowAlignClass}`}>
                     <span className={`flex flex-col ${contentAlignClass}`}>
@@ -303,7 +311,7 @@ const Switcher = ({
   const options = Object.values(PRODUCT_DATA).map(p => ({ id: p.id, label: p.label }));
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-44 z-50 flex justify-center md:bottom-48">
+    <div className="pointer-events-none absolute inset-x-0 bottom-24 z-50 flex justify-center md:bottom-24">
       <motion.div layout className="pointer-events-auto flex items-center gap-7">
         {options.map((opt) => (
           <motion.button
@@ -341,15 +349,15 @@ export default function SpatialProductShowcase() {
   const isLeft = activeSide === 'left';
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-[#010101] pb-20 pt-10 text-zinc-100 selection:bg-zinc-800 md:pb-24 md:pt-12" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+    <div className="relative flex min-h-screen w-full flex-col items-center justify-start overflow-hidden bg-[#010101] pb-32 pt-24 text-zinc-100 selection:bg-zinc-800 md:justify-center md:pb-24 md:pt-12" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
       {/* Header */}
-      <div className="absolute top-10 z-20 w-full px-4 text-center md:top-12">
-         <h2 className="text-4xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+      <div className="absolute top-14 z-20 w-full px-4 text-center md:top-12">
+         <h2 className="text-3xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             ¿Para quién es Polarist?
          </h2>
       </div>
 
-      <main className="relative z-10 mx-auto mt-2 flex w-full max-w-[1720px] flex-col justify-center px-8 pb-8 md:mt-4 md:px-20 lg:px-28">
+      <main className="relative z-10 mx-auto mt-0 flex w-full max-w-[1720px] flex-col justify-center px-8 pb-8 md:mt-4 md:px-20 lg:px-28">
         <motion.div
           layout
           transition={{ type: 'spring', bounce: 0, duration: 0.9 }}

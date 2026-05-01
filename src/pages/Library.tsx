@@ -1,10 +1,13 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CalendarDays, Clock3, FolderOpen, User } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock3, FolderOpen } from "lucide-react";
 
 import { FolderDetailView } from "@/components/guides/FolderDetailView";
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
+import NavHeader from "@/components/ui/nav-header";
 import { ToolLogo } from "@/components/tools/ToolLogo";
+import Modal from "@/components/ui/modal-drop";
+import { AvatarPicker } from "@/components/ui/avatar-picker";
 import { type GuideFolderCard, guideFoldersCatalog } from "@/data/guideFoldersCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { usePublicUserProfile } from "@/hooks/usePublicUserProfile";
@@ -37,6 +40,13 @@ const guideKindLabelMap: Record<GuideFolderCard["kind"], string> = {
   memory: "Memory Systems",
 };
 
+const savedFilterHeadingMap: Record<SavedFilterKey, string> = {
+  all: "Todo",
+  tools: "Herramientas",
+  resources: "Recursos",
+  events: "Eventos",
+};
+
 const displayBlackStyle = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 700,
@@ -45,6 +55,16 @@ const displayBlackStyle = {
 const displayBoldStyle = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 700,
+} as const;
+
+const sequelRegularStyle = {
+  fontFamily: "var(--font-sequel, sans-serif)",
+  fontWeight: 400,
+} as const;
+
+const sequelMediumStyle = {
+  fontFamily: "var(--font-sequel, sans-serif)",
+  fontWeight: 600,
 } as const;
 
 const serifStyle = {
@@ -103,22 +123,37 @@ const formatEventTimeLabel = (value?: string | null) => {
     return "Hora por confirmar";
   }
 
-  return `${eventTimeFormatter.format(new Date(timestamp))} HS`;
+  return `${eventTimeFormatter.format(new Date(timestamp))} Hs`;
 };
 
-const ProfileHeaderSkeleton = () => (
-  <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
-    <div className="w-fit">
-      <div className="h-[216px] w-[176px] animate-pulse rounded-[24px] border border-white/[0.08] bg-white/[0.05]" />
-    </div>
+const buildCancelledEventsStorageKey = (userId?: string, email?: string) => {
+  const normalizedEmail = email?.trim().toLowerCase();
+  if (!userId && !normalizedEmail) {
+    return null;
+  }
 
-    <div className="space-y-4">
-      <div className="h-14 w-72 animate-pulse rounded-full bg-white/[0.05]" />
-      <div className="h-6 w-full max-w-[520px] animate-pulse rounded-full bg-white/[0.05]" />
-      <div className="flex gap-4">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div key={index} className="h-8 w-28 animate-pulse rounded-full bg-white/[0.05]" />
-        ))}
+  return `polarist-cancelled-events:${userId ?? "anon"}:${normalizedEmail ?? "no-email"}`;
+};
+
+const getCancelledEventKeys = (event: UserEvent) =>
+  [`registration:${event.registrationId}`];
+
+const ProfileHeaderSkeleton = () => (
+  <div className="w-full md:inline-block md:min-w-[980px] md:max-w-fit overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
+    <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1.2fr)] lg:items-center">
+      <div className="flex justify-center lg:justify-start">
+        <div className="h-[190px] w-[190px] animate-pulse rounded-[28px] bg-black/[0.05]" />
+      </div>
+
+      <div className="space-y-5">
+        <div className="h-20 w-72 animate-pulse rounded-[28px] bg-black/[0.05]" />
+        <div className="h-6 w-full max-w-[520px] animate-pulse rounded-full bg-black/[0.05]" />
+        <div className="h-5 w-full max-w-[440px] animate-pulse rounded-full bg-black/[0.04]" />
+        <div className="flex gap-4 pt-2">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-8 w-28 animate-pulse rounded-full bg-black/[0.05]" />
+          ))}
+        </div>
       </div>
     </div>
   </div>
@@ -129,9 +164,72 @@ const ToolPosterSkeleton = () => (
     {Array.from({ length: 4 }).map((_, index) => (
       <div
         key={index}
-        className="h-[332px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.04]"
+        className="h-[332px] animate-pulse rounded-[24px] bg-white/[0.04]"
       />
     ))}
+  </div>
+);
+
+const ToolCarouselSkeleton = () => (
+  <div className="space-y-5">
+    <div className="flex items-center justify-between gap-4">
+      <div className="h-8 w-52 animate-pulse rounded-full bg-white/[0.05]" />
+      <div className="hidden gap-2 sm:flex">
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+      </div>
+    </div>
+
+    <div className="scrollbar-hide flex gap-4 overflow-hidden">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <div
+          key={index}
+          className="h-[372px] w-[220px] animate-pulse rounded-[28px] bg-white/[0.04] sm:w-[248px]"
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const ResourceCarouselSkeleton = () => (
+  <div className="space-y-5">
+    <div className="flex items-center justify-between gap-4">
+      <div className="h-8 w-40 animate-pulse rounded-full bg-white/[0.05]" />
+      <div className="hidden gap-2 sm:flex">
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+      </div>
+    </div>
+
+    <div className="scrollbar-hide flex gap-4 overflow-hidden">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="h-[236px] w-[280px] animate-pulse rounded-[24px] bg-white/[0.04]"
+        />
+      ))}
+    </div>
+  </div>
+);
+
+const EventCarouselSkeleton = () => (
+  <div className="space-y-5">
+    <div className="flex items-center justify-between gap-4">
+      <div className="h-8 w-44 animate-pulse rounded-full bg-white/[0.05]" />
+      <div className="hidden gap-2 sm:flex">
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+        <div className="h-10 w-10 animate-pulse rounded-full bg-white/[0.05]" />
+      </div>
+    </div>
+
+    <div className="scrollbar-hide flex gap-4 overflow-hidden">
+      {Array.from({ length: 3 }).map((_, index) => (
+        <div
+          key={index}
+          className="h-[268px] w-[286px] animate-pulse rounded-[24px] bg-white/[0.04] sm:w-[320px]"
+        />
+      ))}
+    </div>
   </div>
 );
 
@@ -140,7 +238,7 @@ const ResourceGridSkeleton = () => (
     {Array.from({ length: 3 }).map((_, index) => (
       <div
         key={index}
-        className="h-[236px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.04]"
+        className="h-[236px] animate-pulse rounded-[24px] bg-white/[0.04]"
       />
     ))}
   </div>
@@ -151,7 +249,7 @@ const EventGridSkeleton = () => (
     {Array.from({ length: 3 }).map((_, index) => (
       <div
         key={index}
-        className="h-[296px] animate-pulse rounded-[24px] border border-white/10 bg-white/[0.04]"
+        className="h-[296px] animate-pulse rounded-[24px] bg-white/[0.04]"
       />
     ))}
   </div>
@@ -166,7 +264,7 @@ const EmptyState = ({
   description: string;
   cta?: ReactNode;
 }) => (
-  <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-5 py-10 text-center md:px-7">
+  <div className="rounded-[24px] bg-white/[0.03] px-5 py-10 text-center md:px-7">
     <h3 className="text-[1.15rem] leading-tight text-[#F6F6F6]" style={displayBlackStyle}>
       {title}
     </h3>
@@ -186,54 +284,54 @@ const SavedToolPoster = ({
   tool: ToolItem;
   onSelect: (tool: ToolItem) => void;
 }) => (
-    <article
-      role="button"
-      tabIndex={0}
-      onClick={() => onSelect(tool)}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          onSelect(tool);
-        }
-      }}
-      className="group relative flex min-h-[332px] cursor-pointer flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05)_0%,rgba(16,16,16,0.98)_36%,rgba(8,8,8,1)_100%)] p-5 transition-transform duration-300 hover:-translate-y-1 hover:scale-[1.01]"
-    >
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-[linear-gradient(180deg,rgba(255,255,255,0.06),transparent)]" />
+  <article
+    role="button"
+    tabIndex={0}
+    onClick={() => onSelect(tool)}
+    onKeyDown={(event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        onSelect(tool);
+      }
+    }}
+    className="group relative flex min-h-[372px] w-[220px] flex-shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-[28px] border border-black/5 bg-white shadow-[0_15px_45px_rgba(0,0,0,0.08)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_25px_65px_rgba(0,0,0,0.12)] sm:w-[248px]"
+  >
+    <div className="pointer-events-none absolute inset-x-0 -top-3 bottom-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.02)_0%,rgba(0,0,0,0.01)_18%,rgba(0,0,0,0)_34%,rgba(0,0,0,0.01)_58%,rgba(0,0,0,0.04)_100%)]" />
 
-      <div className="relative flex flex-1 flex-col">
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-[0.62rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={displayBoldStyle}>
-            {withSpanishAccents(tool.category)}
-          </span>
-        </div>
+    <div className="relative flex flex-1 flex-col p-3">
+      <div className="relative flex flex-1 items-center justify-center overflow-hidden rounded-[22px] px-5 py-6">
+        <ToolLogo
+          name={tool.name}
+          logoFilename={tool.logoFilename}
+          className="h-[112px] w-[112px] rounded-[24px] bg-white transition-transform duration-300 group-hover:scale-[1.03] sm:h-[120px] sm:w-[120px]"
+          imageClassName="p-2.5"
+        />
+      </div>
 
-        <div className="mt-6 flex h-24 items-center justify-center rounded-[20px] border border-white/10 bg-white/[0.03]">
-          <ToolLogo
-            name={tool.name}
-            logoFilename={tool.logoFilename}
-            className="h-[88px] w-[88px] border-none bg-transparent"
-            imageClassName="p-1"
-          />
-        </div>
-
-        <div className="mt-6 flex-1">
-          <h3 className="text-[1.34rem] leading-[1.04] text-[#F6F6F6]" style={serifBoldStyle}>
+      <div className="mt-2.5 space-y-2.5 px-4 pb-4">
+        <div className="space-y-2">
+          <h3 className="text-[1.18rem] leading-[1.02] text-[#010101] sm:text-[1.24rem]" style={displayBoldStyle}>
             {tool.name}
           </h3>
-          <p className="mt-3 max-h-[5.4rem] overflow-hidden text-[0.98rem] leading-[1.36] text-[#F6F6F6]" style={serifStyle}>
+          <p className="line-clamp-3 min-h-[3.75rem] text-[0.88rem] leading-[1.34] text-[#010101]/80 sm:text-[0.9rem]" style={sequelRegularStyle}>
             {tool.description?.trim() ||
               tool.whoIsItFor?.trim() ||
               "Herramienta guardada dentro de esta coleccion."}
           </p>
         </div>
 
-        <div className="mt-6 border-t border-white/10 pt-4">
-          <p className="text-[0.78rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
+        <div className="border-t border-black/5 pt-3">
+          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#010101]/60" style={displayBoldStyle}>
+            Tipo
+          </p>
+          <p className="mt-1 text-[0.78rem] leading-relaxed text-[#010101]" style={sequelRegularStyle}>
             {withSpanishAccents(tool.kind)}
           </p>
         </div>
       </div>
-    </article>
+    </div>
+    <div className="pointer-events-none absolute inset-0 z-20 rounded-[28px] border-2 border-white/30" />
+  </article>
 );
 
 const SavedResourceCard = ({
@@ -253,7 +351,7 @@ const SavedResourceCard = ({
         onOpen(folder.id);
       }
     }}
-    className="group relative flex min-h-[236px] cursor-pointer flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#060606] p-5 transition-transform duration-300 hover:-translate-y-1"
+    className="group relative flex min-h-[236px] w-[280px] flex-shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-[24px] bg-[#060606] p-5 transition-transform duration-300 hover:-translate-y-1 sm:w-[320px]"
   >
     <div className="flex items-start justify-between gap-4">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
@@ -276,7 +374,7 @@ const SavedResourceCard = ({
       </p>
     </div>
 
-    <div className="mt-6 border-t border-white/10 pt-4">
+    <div className="mt-6 pt-4">
       <span className="text-[0.76rem] uppercase tracking-[0.2em] text-[#F6F6F6]" style={displayBoldStyle}>
         Abrir carpeta
       </span>
@@ -284,79 +382,95 @@ const SavedResourceCard = ({
   </article>
 );
 
-const SavedEventCard = ({ event }: { event: UserEvent }) => {
+const SavedEventCard = ({
+  event,
+  canCancel,
+  isCancelling,
+  onCancel,
+}: {
+  event: UserEvent;
+  canCancel: boolean;
+  isCancelling: boolean;
+  onCancel?: (event: UserEvent) => void;
+}) => {
   const title = event.title?.trim() || "Evento de comunidad";
   const dateLabel = formatEventDateLabel(event.eventDate);
   const timeLabel = formatEventTimeLabel(event.eventDate);
 
   return (
-    <article className="group relative flex min-h-[296px] flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[#060606] p-5 transition-transform duration-300 hover:-translate-y-1">
-      <div className="relative overflow-hidden rounded-[20px] border border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]">
+    <article className="group relative flex min-h-[268px] w-[286px] flex-shrink-0 snap-start flex-col overflow-hidden rounded-[24px] bg-white shadow-[0_15px_45px_rgba(0,0,0,0.08)] sm:w-[320px]">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[44%]" />
+      <div className="relative overflow-hidden rounded-t-[24px] bg-[linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))]">
         {event.imageUrl ? (
           <img
             src={event.imageUrl}
             alt={title}
-            className="h-[148px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            className="h-[168px] w-full object-cover"
           />
         ) : (
-          <div className="h-[148px] w-full bg-[radial-gradient(circle_at_top,rgba(202,254,91,0.22),transparent_45%),linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.02))]" />
+          <div className="h-[168px] w-full bg-[radial-gradient(circle_at_top,rgba(202,254,91,0.22),transparent_45%),linear-gradient(180deg,rgba(255,255,255,0.1),rgba(255,255,255,0.02))]" />
         )}
 
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.18),rgba(0,0,0,0.72))]" />
-
-        <div className="absolute inset-x-0 top-0 flex items-start justify-between gap-3 p-4">
-          <span
-            className="rounded-full border border-white/14 bg-black/35 px-3 py-1 text-[0.68rem] uppercase tracking-[0.24em] text-[#F6F6F6] backdrop-blur-sm"
-            style={displayBoldStyle}
-          >
-            Evento
-          </span>
-          <span
-            className="rounded-full border border-white/14 bg-black/35 px-3 py-1 text-[0.7rem] text-[#F6F6F6] backdrop-blur-sm"
-            style={serifStyle}
-          >
-            Registrado
-          </span>
-        </div>
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_60%,rgba(0,0,0,0.6)_100%)]" />
 
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className="max-w-[18rem] text-[1.2rem] leading-[1.06] text-[#F6F6F6]" style={serifBoldStyle}>
+          <h3 className="max-w-[16rem] text-[1.08rem] leading-[1.06] text-white" style={serifBoldStyle}>
             {title}
           </h3>
         </div>
       </div>
 
-      <div className="mt-5 flex flex-1 flex-col">
-        <div className="space-y-3">
-          <div className="flex items-center gap-3 text-[#F6F6F6]">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
+      <div className="relative mt-4 flex flex-1 flex-col px-4 pb-4">
+        <div className="space-y-2.5">
+          <div className="flex items-center gap-3 text-[#010101]">
+            <span className="flex shrink-0 items-center justify-center text-black/60">
               <CalendarDays className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={displayBoldStyle}>
+              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={displayBoldStyle}>
                 Fecha real
               </p>
-              <p className="mt-1 text-[0.98rem] leading-[1.35] text-[#F6F6F6]" style={serifStyle}>
+              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequelMediumStyle}>
                 {dateLabel}
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 text-[#F6F6F6]">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
+          <div className="flex items-center gap-3 text-[#010101]">
+            <span className="flex shrink-0 items-center justify-center text-black/60">
               <Clock3 className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={displayBoldStyle}>
+              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={displayBoldStyle}>
                 Hora
               </p>
-              <p className="mt-1 text-[0.98rem] leading-[1.35] text-[#F6F6F6]" style={serifStyle}>
+              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequelMediumStyle}>
                 {timeLabel}
               </p>
             </div>
           </div>
         </div>
+
+        {canCancel ? (
+          <div className="mt-5 flex justify-end">
+            <button
+              type="button"
+              onClick={(clickEvent) => {
+                clickEvent.stopPropagation();
+                onCancel?.(event);
+              }}
+              onKeyDown={(keyEvent) => keyEvent.stopPropagation()}
+              className="inline-flex items-center bg-transparent px-0 py-0 text-[0.72rem] font-bold text-red-500 transition-colors duration-300 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+              style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+              disabled={isCancelling}
+            >
+              {isCancelling ? "Cancelando..." : "Cancelar evento"}
+            </button>
+          </div>
+        ) : null}
       </div>
+
+      <div className="pointer-events-none absolute inset-0 z-20 rounded-[24px] border-2 border-white/30" />
     </article>
   );
 };
@@ -378,6 +492,18 @@ const Library = () => {
   const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
   const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
   const [activeSavedFilter, setActiveSavedFilter] = useState<SavedFilterKey>("all");
+  const toolsScrollRef = useRef<HTMLDivElement>(null);
+  const resourcesScrollRef = useRef<HTMLDivElement>(null);
+  const eventsScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollToolsLeft, setCanScrollToolsLeft] = useState(false);
+  const [canScrollToolsRight, setCanScrollToolsRight] = useState(false);
+  const [canScrollResourcesLeft, setCanScrollResourcesLeft] = useState(false);
+  const [canScrollResourcesRight, setCanScrollResourcesRight] = useState(false);
+  const [canScrollEventsLeft, setCanScrollEventsLeft] = useState(false);
+  const [canScrollEventsRight, setCanScrollEventsRight] = useState(false);
+  const [cancelledEventKeys, setCancelledEventKeys] = useState<string[]>([]);
+  const [eventToCancel, setEventToCancel] = useState<UserEvent | null>(null);
+  const [hasLoadedCancelledEvents, setHasLoadedCancelledEvents] = useState(false);
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
   const profileEmail =
@@ -386,13 +512,52 @@ const Library = () => {
     events,
     loading: eventsLoading,
     error: eventsError,
+    cancelEventRegistration,
+    isCancellingEvent,
   } = useUserEvents(profileEmail, profile?.id);
-  const { savedFolderIds } = useSavedGuideFolders();
+  const { savedFolderIds, loading: foldersLoading } = useSavedGuideFolders();
 
   const displayName = profile?.full_name?.trim() || "Usuario Polarist";
   const firstName = displayName.split(/\s+/)[0] || "Usuario";
-  const avatarInitials = getInitials(profile?.full_name);
+  const cancelledEventsStorageKey = useMemo(
+    () => buildCancelledEventsStorageKey(profile?.id, profileEmail),
+    [profile?.id, profileEmail],
+  );
 
+  useEffect(() => {
+    if (typeof window === "undefined" || !cancelledEventsStorageKey) {
+      setCancelledEventKeys([]);
+      setHasLoadedCancelledEvents(false);
+      return;
+    }
+
+    try {
+      const storedValue = window.localStorage.getItem(cancelledEventsStorageKey);
+      if (!storedValue) {
+        setCancelledEventKeys([]);
+        setHasLoadedCancelledEvents(true);
+        return;
+      }
+
+      const parsed = JSON.parse(storedValue);
+      setCancelledEventKeys(Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : []);
+    } catch {
+      setCancelledEventKeys([]);
+    }
+
+    setHasLoadedCancelledEvents(true);
+  }, [cancelledEventsStorageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !cancelledEventsStorageKey || !hasLoadedCancelledEvents) {
+      return;
+    }
+
+    window.localStorage.setItem(
+      cancelledEventsStorageKey,
+      JSON.stringify(cancelledEventKeys),
+    );
+  }, [cancelledEventKeys, cancelledEventsStorageKey, hasLoadedCancelledEvents]);
   const orderedSavedTools = useMemo(() => {
     const nextTools = [...tools];
 
@@ -430,22 +595,211 @@ const Library = () => {
     return nextEvents;
   }, [events]);
 
+  const visibleRegisteredEvents = useMemo(
+    () =>
+      orderedUserEvents.filter(
+        (event) => !getCancelledEventKeys(event).some((key) => cancelledEventKeys.includes(key)),
+      ),
+    [cancelledEventKeys, orderedUserEvents],
+  );
+
   const showToolsSection = activeSavedFilter === "all" || activeSavedFilter === "tools";
   const showResourcesSection = activeSavedFilter === "all" || activeSavedFilter === "resources";
   const showEventsSection = activeSavedFilter === "all" || activeSavedFilter === "events";
 
   const visibleTools = showToolsSection ? orderedSavedTools : [];
   const visibleResources = showResourcesSection ? orderedSavedGuideFolders : [];
-  const visibleEvents = showEventsSection ? orderedUserEvents : [];
+  const visibleEvents = showEventsSection ? visibleRegisteredEvents : [];
 
-  const totalSavedEntries = orderedSavedTools.length + orderedSavedGuideFolders.length + orderedUserEvents.length;
+  const handleCancelEvent = useCallback((event: UserEvent) => {
+    setEventToCancel(event);
+  }, []);
+
+  const confirmCancelEvent = useCallback(
+    async (event: UserEvent) => {
+      setEventToCancel(null);
+      const eventKeys = getCancelledEventKeys(event);
+
+      setCancelledEventKeys((current) =>
+        Array.from(new Set([...current, ...eventKeys])),
+      );
+
+      try {
+        await cancelEventRegistration(event.registrationId);
+      } catch (error) {
+        console.error("No pudimos cancelar el evento en Supabase:", error);
+      }
+    },
+    [cancelEventRegistration],
+  );
+
+  const totalSavedEntries = orderedSavedTools.length + orderedSavedGuideFolders.length + visibleRegisteredEvents.length;
   const hasAnyVisibleContent =
     visibleTools.length > 0 || visibleResources.length > 0 || visibleEvents.length > 0;
+
+  const isDataLoading = profileLoading || toolsLoading || eventsLoading || foldersLoading;
+
   const savedFilterCounts: Record<SavedFilterKey, number> = {
     all: totalSavedEntries,
     tools: orderedSavedTools.length,
     resources: orderedSavedGuideFolders.length,
-    events: orderedUserEvents.length,
+    events: visibleRegisteredEvents.length,
+  };
+  const savedFilterItems = savedFilterOptions.map((filterOption) => ({
+    id: filterOption.id,
+    label: filterOption.label,
+    meta: !isDataLoading ? savedFilterCounts[filterOption.id] : undefined,
+  }));
+  const activeSavedFilterHeading = savedFilterHeadingMap[activeSavedFilter];
+
+  const checkToolsScrollability = useCallback(() => {
+    const container = toolsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollToolsLeft(scrollLeft > 4);
+    setCanScrollToolsRight(scrollLeft < scrollWidth - clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const container = toolsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    checkToolsScrollability();
+    container.addEventListener("scroll", checkToolsScrollability);
+    window.addEventListener("resize", checkToolsScrollability);
+
+    return () => {
+      container.removeEventListener("scroll", checkToolsScrollability);
+      window.removeEventListener("resize", checkToolsScrollability);
+    };
+  }, [checkToolsScrollability, visibleTools.length]);
+
+  const scrollTools = (direction: "left" | "right") => {
+    const container = toolsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const firstCard = container.firstElementChild as HTMLElement | null;
+    const cardWidth = firstCard?.offsetWidth ?? container.clientWidth * 0.82;
+    const styles = window.getComputedStyle(container);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    const scrollAmount = cardWidth + gap;
+
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+
+    window.setTimeout(checkToolsScrollability, 320);
+  };
+
+  const checkResourcesScrollability = useCallback(() => {
+    const container = resourcesScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollResourcesLeft(scrollLeft > 4);
+    setCanScrollResourcesRight(scrollLeft < scrollWidth - clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const container = resourcesScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    checkResourcesScrollability();
+    container.addEventListener("scroll", checkResourcesScrollability);
+    window.addEventListener("resize", checkResourcesScrollability);
+
+    return () => {
+      container.removeEventListener("scroll", checkResourcesScrollability);
+      window.removeEventListener("resize", checkResourcesScrollability);
+    };
+  }, [checkResourcesScrollability, visibleResources.length]);
+
+  const scrollResources = (direction: "left" | "right") => {
+    const container = resourcesScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const firstCard = container.firstElementChild as HTMLElement | null;
+    const cardWidth = firstCard?.offsetWidth ?? container.clientWidth * 0.82;
+    const styles = window.getComputedStyle(container);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    const scrollAmount = cardWidth + gap;
+
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+
+    window.setTimeout(checkResourcesScrollability, 320);
+  };
+
+  const checkEventsScrollability = useCallback(() => {
+    const container = eventsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    setCanScrollEventsLeft(scrollLeft > 4);
+    setCanScrollEventsRight(scrollLeft < scrollWidth - clientWidth - 4);
+  }, []);
+
+  useEffect(() => {
+    const container = eventsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    checkEventsScrollability();
+    container.addEventListener("scroll", checkEventsScrollability);
+    window.addEventListener("resize", checkEventsScrollability);
+
+    return () => {
+      container.removeEventListener("scroll", checkEventsScrollability);
+      window.removeEventListener("resize", checkEventsScrollability);
+    };
+  }, [checkEventsScrollability, visibleEvents.length]);
+
+  const scrollEvents = (direction: "left" | "right") => {
+    const container = eventsScrollRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const firstCard = container.firstElementChild as HTMLElement | null;
+    const cardWidth = firstCard?.offsetWidth ?? container.clientWidth * 0.82;
+    const styles = window.getComputedStyle(container);
+    const gap = Number.parseFloat(styles.columnGap || styles.gap || "0") || 0;
+    const scrollAmount = cardWidth + gap;
+
+    container.scrollBy({
+      left: direction === "left" ? -scrollAmount : scrollAmount,
+      behavior: "smooth",
+    });
+
+    window.setTimeout(checkEventsScrollability, 320);
   };
 
   if (openedFolderId) {
@@ -487,66 +841,49 @@ const Library = () => {
   return (
     <div className="min-h-[102vh] bg-[#010101] px-4 pb-48 pt-6 md:px-8 md:pb-64 md:pt-8">
       <div className="mx-auto flex w-full max-w-[1480px] flex-col gap-10">
-        <header className="border-b border-white/10 pb-10">
+        <header className="pb-10">
           {profileLoading ? (
             <ProfileHeaderSkeleton />
           ) : (
-            <div className="grid gap-8 lg:grid-cols-[220px_1fr] lg:items-end">
-              <div className="w-fit">
-                <div className="flex h-[216px] w-[176px] items-center justify-center overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.04] text-[#F6F6F6]">
+            <div className="w-full md:inline-block md:min-w-[980px] md:max-w-fit overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
+              <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1.2fr)] lg:items-end">
+                <div className="flex justify-center lg:justify-start">
                   {profile?.avatar_url ? (
-                    <img
-                      src={profile.avatar_url}
-                      alt={profile.full_name || "Perfil"}
-                      className="h-full w-full object-cover object-top"
-                    />
-                  ) : avatarInitials ? (
-                    <span className="text-[2rem] tracking-[-0.04em]" style={displayBlackStyle}>
-                      {avatarInitials}
-                    </span>
+                    <div className="mx-auto lg:mx-0 h-[190px] w-[190px] overflow-hidden rounded-[26px]">
+                      <img
+                        src={profile.avatar_url}
+                        alt={profile.full_name || "Perfil"}
+                        className="h-full w-full object-cover object-top"
+                      />
+                    </div>
                   ) : (
-                    <User className="h-10 w-10 text-white/54" />
+                    <div className="w-full max-w-[340px]">
+                      <AvatarPicker
+                        title="Sin foto todavía"
+                        subtitle="Podés usar este efecto mientras no tengas avatar cargado."
+                      />
+                    </div>
                   )}
                 </div>
-              </div>
 
-              <div className="min-w-0">
-                <h1
-                  className="text-[clamp(2.2rem,6vw,4rem)] leading-[0.92] tracking-[-0.06em] text-[#F6F6F6]"
-                  style={displayBlackStyle}
-                >
-                  Hola, {firstName}
-                </h1>
+                <div className="min-w-0 text-center lg:text-left lg:-ml-8 lg:self-end">
+                  <h1
+                    className="text-[clamp(2.5rem,4.8vw,3.8rem)] leading-[0.9] tracking-[-0.07em] text-[#010101]"
+                    style={displayBlackStyle}
+                  >
+                    Biblioteca
+                  </h1>
 
-
-
-                <div className="mt-7 flex flex-wrap items-center gap-6">
-                  {savedFilterOptions.map((filterOption) => {
-                    const isActive = filterOption.id === activeSavedFilter;
-                    const count = savedFilterCounts[filterOption.id];
-
-                    return (
-                      <button
-                        key={filterOption.id}
-                        type="button"
-                        onClick={() => setActiveSavedFilter(filterOption.id)}
-                        className={cn(
-                          "border-b pb-2 text-left text-sm tracking-[0.02em] transition-colors",
-                          isActive ?
-                            "border-[#F6F6F6] text-[#F6F6F6]"
-                          : "border-transparent text-[#F6F6F6] opacity-60 hover:opacity-100",
-                        )}
-                        style={
-                          isActive ? displayBoldStyle : { fontFamily: "var(--font-sequel, sans-serif)", fontWeight: 400 }
-                        }
-                      >
-                        {filterOption.label}
-                        <span className="ml-2 text-[#F6F6F6]" style={serifStyle}>
-                          {count}
-                        </span>
-                      </button>
-                    );
-                  })}
+                  <div className={cn("mt-8 flex justify-center lg:justify-start w-full transition-opacity duration-300", isDataLoading ? "opacity-0" : "opacity-100")}>
+                    <NavHeader
+                      activeId={activeSavedFilter}
+                      items={savedFilterItems}
+                      onChange={(id) => setActiveSavedFilter(id as SavedFilterKey)}
+                      className="border-black/8 bg-[#f1f1f1] p-1.5 mx-auto lg:mx-0"
+                      itemClassName="px-2.5 py-1.5 text-[0.75rem] sm:text-[0.8rem] md:px-4 md:py-2 md:text-[0.95rem]"
+                      cursorClassName="bg-white"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -565,21 +902,28 @@ const Library = () => {
                 color: "#F6F6F6"
               }}
             >
-              Últimas cosas guardadas
+              {activeSavedFilterHeading}
             </h2>
           </div>
 
           {profileLoading ? (
             <>
-              {showToolsSection ? <ToolPosterSkeleton /> : null}
-              {showResourcesSection ? <ResourceGridSkeleton /> : null}
-              {showEventsSection ? <EventGridSkeleton /> : null}
+              {showToolsSection ? <ToolCarouselSkeleton /> : null}
+              {showResourcesSection ? <ResourceCarouselSkeleton /> : null}
+              {showEventsSection ? <EventCarouselSkeleton /> : null}
             </>
           ) : (
             <>
+              {activeSavedFilter === "all" && !hasAnyVisibleContent && !toolsLoading && !eventsLoading && !toolsError && !eventsError ? (
+                <EmptyState
+                  title={isOwnProfile ? "Todavia no guardaste nada" : "Este perfil no tiene elementos visibles"}
+                  description=""
+                />
+              ) : null}
+
               {showToolsSection ? (
                 toolsLoading ? (
-                  <ToolPosterSkeleton />
+                  <ToolCarouselSkeleton />
                 ) : toolsError ? (
                   activeSavedFilter === "tools" || !hasAnyVisibleContent ? (
                     <EmptyState
@@ -589,18 +933,41 @@ const Library = () => {
                   ) : null
                 ) : visibleTools.length > 0 ? (
                   <div className="space-y-5">
-                    {activeSavedFilter === "all" ? (
-                      <div className="flex items-center justify-between gap-4">
-                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
-                          Herramientas guardadas
-                        </h3>
-                        <span className="text-sm text-[#F6F6F6]" style={serifStyle}>
-                          {visibleTools.length}
-                        </span>
-                      </div>
-                    ) : null}
+                    <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
+                      {activeSavedFilter === "all" ? (
+                        <div className="min-w-0">
+                          <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                            Herramientas
+                          </h3>
+                        </div>
+                      ) : null}
 
-                    <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => scrollTools("left")}
+                          disabled={!canScrollToolsLeft}
+                          aria-label="Ver herramientas anteriores"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollTools("right")}
+                          disabled={!canScrollToolsRight}
+                          aria-label="Ver siguientes herramientas"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    <div
+                      ref={toolsScrollRef}
+                      className="scrollbar-hide -mt-2 flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pt-2 pb-2 scroll-smooth sm:gap-5"
+                    >
                       {visibleTools.map((tool) => (
                         <SavedToolPoster key={tool.name} tool={tool} onSelect={setSelectedTool} />
                       ))}
@@ -609,22 +976,7 @@ const Library = () => {
                 ) : activeSavedFilter === "tools" ? (
                   <EmptyState
                     title={isOwnProfile ? "Todavia no guardaste herramientas" : "Este perfil no tiene herramientas visibles"}
-                    description={
-                      isOwnProfile ?
-                        "Guarda herramientas desde el catalogo para construir tu galeria privada."
-                      : ""
-                    }
-                    cta={
-                      isOwnProfile ? (
-                        <Link
-                          to={routes.appTools}
-                          className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
-                          style={displayBoldStyle}
-                        >
-                          Explorar herramientas
-                        </Link>
-                      ) : null
-                    }
+                    description=""
                   />
                 ) : null
               ) : null}
@@ -632,18 +984,38 @@ const Library = () => {
               {showResourcesSection ? (
                 visibleResources.length > 0 ? (
                   <div className="space-y-5">
-                    {activeSavedFilter === "all" ? (
-                      <div className="flex items-center justify-between gap-4">
+                    <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
+                      {activeSavedFilter === "all" ? (
                         <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
-                          Recursos guardados
+                          Recursos
                         </h3>
-                        <span className="text-sm text-[#F6F6F6]" style={serifStyle}>
-                          {visibleResources.length}
-                        </span>
+                      ) : null}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => scrollResources("left")}
+                          disabled={!canScrollResourcesLeft}
+                          aria-label="Ver recursos anteriores"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollResources("right")}
+                          disabled={!canScrollResourcesRight}
+                          aria-label="Ver siguientes recursos"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
                       </div>
-                    ) : null}
+                    </div>
 
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div
+                      ref={resourcesScrollRef}
+                      className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scroll-smooth sm:gap-5"
+                    >
                       {visibleResources.map((folder) => (
                         <SavedResourceCard key={folder.id} folder={folder} onOpen={setOpenedFolderId} />
                       ))}
@@ -652,29 +1024,14 @@ const Library = () => {
                 ) : activeSavedFilter === "resources" ? (
                   <EmptyState
                     title={isOwnProfile ? "Todavia no guardaste recursos" : "Este perfil no tiene recursos visibles"}
-                    description={
-                      isOwnProfile ?
-                        "Las carpetas que guardes en Recursos apareceran en esta galeria."
-                      : ""
-                    }
-                    cta={
-                      isOwnProfile ? (
-                        <Link
-                          to={routes.appResources}
-                          className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
-                          style={displayBoldStyle}
-                        >
-                          Explorar recursos
-                        </Link>
-                      ) : null
-                    }
+                    description=""
                   />
                 ) : null
               ) : null}
 
               {showEventsSection ? (
                 eventsLoading ? (
-                  <EventGridSkeleton />
+                  <EventCarouselSkeleton />
                 ) : eventsError ? (
                   activeSavedFilter === "events" || !hasAnyVisibleContent ? (
                     <EmptyState
@@ -684,40 +1041,53 @@ const Library = () => {
                   ) : null
                 ) : visibleEvents.length > 0 ? (
                   <div className="space-y-5">
-                    <div className="flex items-center justify-between gap-4">
-                      <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
-                        Eventos programados
-                      </h3>
-                      <span className="text-sm text-[#F6F6F6]" style={serifStyle}>
-                        {visibleEvents.length}
-                      </span>
+                    <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
+                      {activeSavedFilter === "all" ? (
+                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                          Eventos
+                        </h3>
+                      ) : null}
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => scrollEvents("left")}
+                          disabled={!canScrollEventsLeft}
+                          aria-label="Ver eventos anteriores"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => scrollEvents("right")}
+                          disabled={!canScrollEventsRight}
+                          aria-label="Ver siguientes eventos"
+                          className="rounded-full border border-white/12 bg-white/[0.04] p-2 text-[#F6F6F6] transition-all duration-300 hover:bg-white/[0.08] disabled:cursor-not-allowed disabled:opacity-30"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                    <div
+                      ref={eventsScrollRef}
+                      className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scroll-smooth sm:gap-5"
+                    >
                       {visibleEvents.map((event) => (
-                        <SavedEventCard key={event.registrationId} event={event} />
+                        <SavedEventCard
+                          key={event.registrationId}
+                          event={event}
+                          canCancel={isOwnProfile}
+                          isCancelling={isCancellingEvent(event.registrationId)}
+                          onCancel={handleCancelEvent}
+                        />
                       ))}
                     </div>
                   </div>
                 ) : activeSavedFilter === "events" ? (
                   <EmptyState
                     title={isOwnProfile ? "Todavia no tenes eventos programados" : "Este perfil no tiene eventos programados"}
-                    description={
-                      isOwnProfile ?
-                        "Los eventos a los que te registres desde Comunidad van a aparecer en esta seccion."
-                      : ""
-                    }
-                    cta={
-                      isOwnProfile ? (
-                        <Link
-                          to={routes.appCommunity}
-                          className="inline-flex border-b border-white/16 pb-1 text-sm text-[#F6F6F6] transition-colors hover:border-white/28 hover:text-white"
-                          style={displayBoldStyle}
-                        >
-                          Ver comunidad
-                        </Link>
-                      ) : null
-                    }
+                    description=""
                   />
                 ) : null
               ) : null}
@@ -732,6 +1102,53 @@ const Library = () => {
         isOpen={Boolean(selectedTool)}
         onClose={() => setSelectedTool(null)}
       />
+
+      <Modal
+        isOpen={!!eventToCancel}
+        onClose={() => setEventToCancel(null)}
+        type="blur"
+        animationType="scale"
+        disablePadding={true}
+        className="bg-transparent border-0 shadow-none"
+        showCloseButton={false}
+      >
+        <div className="flex w-[380px] max-w-full flex-col rounded-[2.2rem] border border-black/10 bg-white p-8 text-[#010101] shadow-2xl">
+          <div className="text-center">
+            {eventToCancel && (
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#010101]/40" style={displayBoldStyle}>
+                {formatEventDateLabel(eventToCancel.eventDate)}
+              </p>
+            )}
+            <h2 className="mx-auto mt-4 max-w-[21rem] text-xl font-bold leading-tight" style={displayBoldStyle}>
+              ¿Estás seguro que querés eliminar el evento?
+            </h2>
+            {eventToCancel && (
+              <p className="mt-3 text-sm text-[#010101]/60" style={sequelRegularStyle}>
+                {eventToCancel.title}
+              </p>
+            )}
+          </div>
+
+          <div className="mt-10 flex flex-col gap-3">
+            <button
+              type="button"
+              onClick={() => eventToCancel && confirmCancelEvent(eventToCancel)}
+              className="h-12 w-full rounded-2xl bg-[#ff0000] text-sm font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
+              style={displayBoldStyle}
+            >
+              Sí, eliminar
+            </button>
+            <button
+              type="button"
+              onClick={() => setEventToCancel(null)}
+              className="h-12 w-full rounded-2xl bg-transparent text-sm font-bold text-[#010101]/60 transition-colors hover:bg-black/5"
+              style={displayBoldStyle}
+            >
+              No, volver
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

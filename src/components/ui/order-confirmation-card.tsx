@@ -108,11 +108,11 @@ export const OrderConfirmationCard: React.FC<OrderConfirmationCardProps> = ({
         animate="visible"
         aria-live="polite"
         className={cn(
-          "w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 text-[#010101] shadow-[0_20px_50px_rgba(0,0,0,0.12)]",
+          "flex flex-col w-full max-w-sm rounded-2xl border border-black/10 bg-white p-6 text-[#010101] shadow-[0_20px_50px_rgba(0,0,0,0.12)]",
           className,
         )}
       >
-        <div className="flex h-full flex-col items-center space-y-6 text-center">
+        <div className="flex flex-1 flex-col items-center space-y-6 text-center">
           <motion.div variants={itemVariants}>{icon}</motion.div>
           <motion.h2
             variants={itemVariants}

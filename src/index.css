@@ -214,6 +214,15 @@
     font-family: "Sequel Sans" !important;
   }
 
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   @keyframes float-gentle {
     0%,
     100% {

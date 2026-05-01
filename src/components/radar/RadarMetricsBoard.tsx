@@ -46,7 +46,7 @@ const ADJACENT_BAR_COLOR = "rgba(202,254,91,0.56)";
 const LOADING_CARD_KEYS: RadarMetricKey[] = ["intelligence", "speed", "price"];
 const LOADING_BAR_HEIGHTS = [26, 44, 58, 72, 84, 60, 42, 68, 52, 76] as const;
 const METRIC_CARD_CLASS =
-  "rounded-[24px] border border-white/10 bg-[#010101] p-6 shadow-[0_20px_48px_-24px_rgba(0,0,0,0.6)]";
+  "rounded-[24px] border border-white/10 bg-[#010101] p-4 md:p-6 shadow-[0_20px_48px_-24px_rgba(0,0,0,0.6)]";
 
 type ChartDatum = RadarMetricPoint & {
   color: string;
@@ -110,7 +110,7 @@ function MetricBarChart({
           return (
             <div
               key={entry.slug}
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', height: '100%', padding: '0 3px' }}
+              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', position: 'relative', height: '100%', padding: '0 clamp(1px, 0.5vw, 3px)' }}
             >
               {/* Barra */}
               <motion.div 
@@ -152,16 +152,15 @@ function MetricBarChart({
                 onMouseEnter={() => setHoveredSlug(entry.slug)}
                 onMouseLeave={() => setHoveredSlug(null)}
                 style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 7,
+                  width: 'clamp(14px, 4vw, 32px)',
+                  height: 'clamp(14px, 4vw, 32px)',
+                  borderRadius: 'clamp(4px, 1.5vw, 7px)',
                   background: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   overflow: 'hidden',
-                  padding: 4,
-                  flexShrink: 0,
+                  padding: 'clamp(1px, 0.5vw, 4px)',
                   cursor: 'pointer',
                   transition: 'none',
                   transform: 'scale(1)',
@@ -282,12 +281,10 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
       className={cn(METRIC_CARD_CLASS, "relative cursor-default transition-colors duration-300 hover:border-[#CAFE5B]/30")}
     >
       <div
+        className="absolute top-4 right-4 md:top-6 md:right-6"
         style={{
-          position: 'absolute',
-          top: 24,
-          right: 24,
-          minWidth: 56,
-          height: 30,
+          minWidth: 'clamp(40px, 8vw, 56px)',
+          height: 'clamp(22px, 5vw, 30px)',
           borderRadius: 8,
           border: '1px solid rgba(202,254,91,0.24)',
           background: 'rgba(1,1,1,0.72)',
@@ -295,7 +292,7 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: 12,
+          fontSize: 'clamp(9px, 2.5vw, 12px)',
           fontWeight: 800,
           fontFamily: 'var(--font-sans)',
           lineHeight: 1,
@@ -341,22 +338,23 @@ export function RadarMetricsBoard() {
   return (
     <section className="w-full space-y-24 bg-[#010101] pb-16 pt-0" style={{ perspective: "1200px" }}>
       <div className="mx-auto w-full max-w-[2000px] space-y-24 px-4 md:px-10 lg:px-14 xl:px-16">
-        <header className="space-y-3 text-center">
+        <header className="space-y-5 text-center">
           <h2
             style={{ 
               fontFamily: 'var(--font-sans)', 
               fontWeight: 700, 
-              fontSize: 'clamp(28px, 4vw, 44px)', 
+              fontSize: 'clamp(24px, 6vw, 44px)', 
               letterSpacing: '-1px', 
               lineHeight: 1.1, 
-              color: '#F6F6F6' 
+              color: '#F6F6F6',
+              textWrap: 'balance'
             }}
           >
             Empresas tecnológicas que llevan el liderazgo
           </h2>
           <p
-            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '16px', lineHeight: 1.55, color: '#F6F6F6' }}
-            className="mx-auto max-w-3xl"
+            style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: 'clamp(14px, 4vw, 16px)', lineHeight: 1.55, color: '#F6F6F6', textWrap: 'balance' }}
+            className="mx-auto max-w-3xl px-4"
           >
             Cuadros comparativos de inteligencia, velocidad y precio que ofrece cada motor de IA.
           </p>

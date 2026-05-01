@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { cn } from '@/lib/utils';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -95,6 +96,7 @@ const ScrollExpandMedia = ({
   const stickyRef = useRef<HTMLDivElement>(null);
   const mediaRef = useRef<HTMLDivElement>(null);
   const mediaInnerRef = useRef<HTMLImageElement | HTMLVideoElement | HTMLCanvasElement>(null);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const mediaVideoRef = useRef<HTMLVideoElement | null>(null);
   const sequenceCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawSequenceProgressRef = useRef<(progress: number) => void>(() => {});
@@ -242,9 +244,9 @@ const ScrollExpandMedia = ({
 
     // Estado inicial performante usando clip-path. Más pequeño (más inset)
     gsap.set(mediaRef.current, {
-      clipPath: window.innerWidth < 768 
-        ? 'inset(35% 25% round 2rem)' // Mobile: más alto que ancho, más chico
-        : 'inset(30% 38% round 2rem)', // Desktop: proporcionado, más chico en el medio
+      clipPath: isMobile 
+        ? 'inset(20% 0% round 2rem)' // Mobile: ancho total y mayor altura inicial
+        : 'inset(30% 38% round 2rem)', 
     });
 
     // Expand the media container to full width and height
@@ -271,9 +273,10 @@ const ScrollExpandMedia = ({
     tl.to(
       textLeftRef.current,
       {
-        x: '-60vw',
+        x: isMobile ? '-120vw' : '-60vw',
         opacity: 0,
-        ease: 'power1.inOut',
+        duration: isMobile ? 0.2 : 1,
+        ease: 'power2.inOut',
       },
       0
     );
@@ -281,16 +284,17 @@ const ScrollExpandMedia = ({
     tl.to(
       textRightRef.current,
       {
-        x: '60vw',
+        x: isMobile ? '120vw' : '60vw',
         opacity: 0,
-        ease: 'power1.inOut',
+        duration: isMobile ? 0.2 : 1,
+        ease: 'power2.inOut',
       },
       0
     );
 
     // Fade out background and text container
     tl.to(
-      [bgRef.current, textContainerRef.current],
+      [bgRef.current, textContainerRef.current].filter(Boolean),
       {
         opacity: 0,
         ease: 'none',
@@ -350,64 +354,65 @@ const ScrollExpandMedia = ({
         ref={stickyRef}
         className="relative flex h-screen w-full flex-col items-center justify-center overflow-hidden"
       >
-        {/* Background Image that fades out */}
-        <div ref={bgRef} className="absolute inset-0 z-0 h-full w-full">
-          {bgIsVideo ? (
-            <video
-              src={bgImageSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-              className="h-full w-full object-cover opacity-80"
-              aria-label="Background"
-            />
-          ) : (
-            <img
-              src={bgImageSrc}
-              alt="Background"
-              className="h-full w-full object-cover opacity-80"
-            />
-          )}
-          <div className="absolute inset-0 bg-black/60" />
-        </div>
+        {/* Background Image that fades out (Hidden on mobile) */}
+        {!isMobile && (
+          <div ref={bgRef} className="absolute inset-0 z-0 h-full w-full">
+            {bgIsVideo ? (
+              <video
+                src={bgImageSrc}
+                autoPlay
+                loop
+                muted
+                playsInline
+                className="h-full w-full object-cover opacity-80"
+                aria-label="Background"
+              />
+            ) : (
+              <img
+                src={bgImageSrc}
+                alt="Background"
+                className="h-full w-full object-cover opacity-80"
+              />
+            )}
+            <div className="absolute inset-0 bg-black/60" />
+          </div>
+        )}
 
         {/* The Text split in the background */}
         <div
           ref={textContainerRef}
-          className="pointer-events-none absolute inset-0 z-10 flex items-center justify-between"
+          className={cn(
+            "pointer-events-none absolute inset-0 flex flex-col md:flex-row items-center justify-between md:justify-between px-8 py-[21vh] md:py-0 md:px-0",
+            isMobile ? "z-[60]" : "z-10"
+          )}
         >
-          {/* Espacio Izquierdo (centrado en el hueco lateral) */}
-          <div className="flex-1 flex items-center justify-center h-full">
-            <h2
-              ref={textLeftRef}
-              className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
-              style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
-            >
-              {renderAnimatedTitle(titleLeft)}
-            </h2>
-          </div>
+          <h2
+            ref={textLeftRef}
+            className="text-4xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
+            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+          >
+            {renderAnimatedTitle(titleLeft)}
+          </h2>
 
-          {/* Espacio central reservado para la imagen (no texto aquí) */}
-          <div className="w-[24%] md:w-[24%] h-full shrink-0" />
+          <div className="hidden md:block w-[24%] h-full shrink-0" />
 
-          {/* Espacio Derecho (centrado en el hueco lateral) */}
-          <div className="flex-1 flex items-center justify-center h-full">
-            <h2
-              ref={textRightRef}
-              className="text-2xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
-              style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
-            >
-              {renderAnimatedTitle(titleRight)}
-            </h2>
-          </div>
+          <h2
+            ref={textRightRef}
+            className="text-4xl md:text-4xl lg:text-[3.5vw] font-bold tracking-tight text-white opacity-90 text-center leading-none"
+            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+          >
+            {renderAnimatedTitle(titleRight)}
+          </h2>
         </div>
 
         {/* The Expanding Media Container */}
         <div
           ref={mediaRef}
           className="relative z-20 h-screen w-screen overflow-hidden shadow-[0_0_50px_rgba(202,254,91,0.3)]"
-          style={{ willChange: 'clip-path' }}
+          style={{ 
+            willChange: 'clip-path',
+            filter: 'drop-shadow(0 0 1px rgba(255,255,255,0.5))'
+          }}
         >
           {useFrameSequence ? (
             <canvas

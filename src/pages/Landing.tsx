@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import InferenceGlobeHero from "@/components/landing/InferenceGlobeHero";
 import { routes } from "@/lib/routes";
 import { FinalCTA } from "@/components/layout/FinalCTA";
@@ -14,6 +14,7 @@ import FlipHover from "@/components/ui/flip-hover";
 import Preloader from "@/components/ui/preloader";
 import { PolaristInterstitialReveal } from "@/components/ui/polarist-interstitial-reveal";
 import { isVideoAsset } from "@/lib/assetPaths";
+import { cn } from "@/lib/utils";
 gsap.registerPlugin(ScrollTrigger);
 
 const featureBlocks = [
@@ -90,7 +91,10 @@ const bk = {
 let hasShownLandingPreloader = false;
 
 const Landing = () => {
-  const [showPreloader, setShowPreloader] = useState(!hasShownLandingPreloader);
+  const [searchParams] = useSearchParams();
+  const skipLoaderParam = searchParams.get("skipLoader") === "true";
+  const [showPreloader, setShowPreloader] = useState(!hasShownLandingPreloader && !skipLoaderParam);
+  const isMobile = typeof window !== 'undefined' ? window.matchMedia("(max-width: 768px)").matches : false;
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLElement>(null);
   const problemsSectionRef = useRef<HTMLDivElement>(null);
@@ -153,6 +157,7 @@ const Landing = () => {
             duration: 0.3,
             stagger: 0.12,
             ease: "power2.out",
+            paddingRight: "0.05em",
             clearProps: "opacity,transform,filter",
           })
           .from(
@@ -209,8 +214,6 @@ const Landing = () => {
         });
       }
 
-      // Removed obsolete GSAP why-section logic since it is replaced by SpatialProductShowcase
-
       ScrollTrigger.refresh();
     },
     { scope: containerRef, revertOnUpdate: true },
@@ -232,11 +235,11 @@ const Landing = () => {
       </div>
 
       {/* ─── PROBLEMAS ─── */}
-      <div ref={problemsSectionRef} className="relative z-[15] px-6 py-24 sm:px-10 lg:px-20" style={{ background: bk.pureWhite }}>
-        <div className="mx-auto max-w-[1200px] mb-14 text-center">
+      <div ref={problemsSectionRef} className={cn("relative z-[15] px-6 lg:px-20", isMobile ? "pt-10 pb-24" : "py-24 sm:px-10")} style={{ background: bk.pureWhite }}>
+        <div className={cn("mx-auto max-w-[1200px] text-center", isMobile ? "mb-10" : "mb-14")}>
           <h2
             className="section-title leading-none"
-            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(32px, 5vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
+            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '25px' : 'clamp(24px, 7vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black, whiteSpace: isMobile ? 'nowrap' : 'normal' }}
           >
             A todos nos ha pasado que...
           </h2>
@@ -278,8 +281,11 @@ const Landing = () => {
                 </FlipHover>
 
                 {/* Contenido (Fuera del contenedor de la imagen) */}
-                <div className="flex-1 flex flex-col items-start text-left w-full justify-center">
-                  <h3 style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: 'clamp(28px, 4vw, 40px)', letterSpacing: '-1px', lineHeight: 1.15, color: bk.black, marginBottom: '20px' }}>
+                <div className={cn("flex-1 flex flex-col w-full justify-center", isMobile ? "items-center text-center" : "items-start text-left")}>
+                  <h3 
+                    className="text-balance"
+                    style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '24px' : 'clamp(28px, 4vw, 40px)', letterSpacing: '-1px', lineHeight: 1.15, color: bk.black, marginBottom: '20px' }}
+                  >
                     {problem.title}
                   </h3>
                   <p style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '18px', lineHeight: 1.6, color: 'rgba(1,1,1,0.6)' }}>
@@ -306,7 +312,7 @@ const Landing = () => {
         className="relative z-20 overflow-hidden"
         style={{ perspective: "1200px", background: bk.black }}
       >
-        <section className="relative z-20 flex w-full flex-col items-center justify-center px-6 pb-24 pt-14 sm:px-10 sm:pb-28 sm:pt-18 lg:px-16 lg:pb-32 lg:pt-20" style={{ background: bk.black }}>
+        <section className={cn("relative z-20 flex w-full flex-col items-center justify-center px-6 pt-14 sm:px-10 sm:pt-18 lg:px-16 lg:pt-20", isMobile ? "pb-4" : "pb-24 sm:pb-28 lg:pb-32")} style={{ background: bk.black }}>
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <InteractiveFeatureCard

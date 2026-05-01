@@ -26,14 +26,14 @@ export const FinalCTA = ({
           {title}
         </h2>
         {description ? (
-          <p className="mt-6 max-w-none text-lg leading-relaxed whitespace-nowrap" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, color: '#F6F6F6' }}>
+          <p className="mt-6 max-w-none px-4 text-base leading-relaxed text-balance md:text-lg" style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, color: '#F6F6F6' }}>
             {description}
           </p>
         ) : null}
         <div className="mt-10">
           <ShinyButton
             asChild
-            className="inline-flex px-[42px] py-[18px] text-[16px] font-semibold tracking-[0.5px] no-underline"
+            className="inline-flex px-[30px] py-[14px] text-[15px] sm:px-[42px] sm:py-[18px] sm:text-[16px] font-semibold tracking-[0.5px] no-underline"
             style={{ fontFamily: "var(--font-sans)" }}
           >
             <Link to={to}>{buttonText}</Link>

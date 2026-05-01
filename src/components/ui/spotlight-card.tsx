@@ -121,7 +121,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       '--radius': '32', // Rounded 2rem matches Bento
       '--border': '1',
       '--backdrop': 'rgba(255,255,255,0.02)',
-      '--backup-border': 'rgba(255,255,255,0.05)',
+      '--backup-border': 'transparent',
       '--size': '300', // Spotlight size
       '--outer': '1',
       '--border-size': 'calc(var(--border, 1) * 1px)',
@@ -185,7 +185,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
         calc(var(--spotlight-size) * 0.5) calc(var(--spotlight-size) * 0.5) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(0 100% 100% / var(--border-light-opacity, 1)), transparent 100%
+        hsl(0 100% 100% / var(--border-light-opacity, 0.1)), transparent 100%
       );
     }
     

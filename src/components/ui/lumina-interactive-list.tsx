@@ -435,9 +435,9 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
 
 
 
-        <div className="slide-content absolute inset-0 flex flex-col items-start justify-start z-10 pointer-events-none px-8 md:px-16 lg:px-24 pt-28 md:pt-32 lg:pt-36 drop-shadow-2xl w-full max-w-7xl mx-auto">
+        <div className="slide-content absolute inset-0 flex flex-col items-start justify-start z-10 pointer-events-none px-8 md:px-16 lg:px-24 pt-40 md:pt-32 lg:pt-36 drop-shadow-2xl w-full max-w-7xl mx-auto">
             <h1 
-              className="slide-title text-5xl md:text-7xl lg:text-8xl text-white mb-6 text-left leading-[1.05] tracking-[-0.03em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]" 
+              className="slide-title text-[clamp(32px,8vw,48px)] md:text-7xl lg:text-8xl text-white mb-6 text-left leading-[1.05] tracking-[-0.03em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]" 
               style={{ 
                 fontFamily: '"Arno Pro", serif',
                 fontWeight: 400,
@@ -468,7 +468,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
           type="button"
           aria-label="Noticia anterior"
           onClick={() => apiRef.current?.prev()}
-          className="absolute left-10 top-1/2 z-20 flex h-14 w-14 -translate-y-1/2 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:left-14 md:h-16 md:w-16"
+          className="absolute left-4 bottom-48 top-auto translate-y-0 z-20 flex h-14 w-14 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:left-14 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:h-16 md:w-16"
         >
           <ChevronLeft className="h-[1.7rem] w-[1.7rem]" strokeWidth={2.3} />
         </button>
@@ -477,7 +477,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
           type="button"
           aria-label="Siguiente noticia"
           onClick={() => apiRef.current?.next()}
-          className="absolute right-10 top-1/2 z-20 flex h-14 w-14 -translate-y-1/2 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:right-14 md:h-16 md:w-16"
+          className="absolute right-4 bottom-48 top-auto translate-y-0 z-20 flex h-14 w-14 items-center justify-center text-white transition-all duration-300 hover:scale-110 md:right-14 md:bottom-auto md:top-1/2 md:-translate-y-1/2 md:h-16 md:w-16"
         >
           <ChevronRight className="h-[1.7rem] w-[1.7rem]" strokeWidth={2.3} />
         </button>
@@ -491,7 +491,13 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
         .slide-nav-item.active .slide-nav-title { color: #fff; }
         .title-line {
           display: block;
-          white-space: nowrap;
+          white-space: normal;
+          text-wrap: balance;
+        }
+        @media (min-width: 768px) {
+          .title-line {
+            white-space: nowrap;
+          }
         }
       `}</style>
     </>

@@ -37,6 +37,7 @@ export function MaskedSlideReveal({
             lineHeight: 1.1,
             marginRight: "0.2em",
             paddingBottom: "0.1em",
+            paddingRight: "0.05em",
           }}
         >
           <motion.span

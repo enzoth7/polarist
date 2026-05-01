@@ -7,6 +7,7 @@ import { MaskedSlideReveal } from "@/components/ui/masked-slide-reveal";
 import { ShinyButton } from "@/components/ui/shiny-button";
 
 import { routes } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 const InferenceGlobeHero = () => {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -36,7 +37,7 @@ const InferenceGlobeHero = () => {
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-      camera.position.z = 6.5;
+      camera.position.z = isMobile ? 8 : 6.5;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -327,14 +328,17 @@ const InferenceGlobeHero = () => {
     <div ref={rootRef} className="relative h-screen w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
       
 
-      <div className="relative z-20 flex h-full w-full flex-col items-start justify-end pb-[23vh] md:pb-[28vh] px-8 md:px-16 lg:px-24">
+      <div className={cn(
+        "relative z-20 flex h-full w-full flex-col justify-end pb-[23vh] md:pb-[28vh] px-8 md:px-16 lg:px-24",
+        isMobile ? "items-center" : "items-start"
+      )}>
         <div className="pointer-events-none w-full max-w-4xl">
           <h1
             ref={titleRef}
             className="translate-y-6 opacity-0"
             style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.5rem,7vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.88, color: 'var(--polarist-white, #F6F6F6)' }}
           >
-            <div className="block text-left">
+            <div className={cn("block", isMobile ? "text-center" : "text-left")}>
               <MaskedSlideReveal text="Tu camino más" delay={0.6} />
               <br />
               <div style={{ display: 'inline' }}>
@@ -346,7 +350,7 @@ const InferenceGlobeHero = () => {
             </div>
           </h1>
 
-          <div ref={ctaRef} className="pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex justify-start">
+          <div ref={ctaRef} className={cn("pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex", isMobile ? "justify-center" : "justify-start")}>
             <ShinyButton
               asChild
               className="inline-flex px-10 py-4 text-[16px] font-semibold tracking-[0.5px] no-underline"
@@ -362,7 +366,7 @@ const InferenceGlobeHero = () => {
         <div
           ref={sphereTargetRef}
           className="absolute inset-0 w-full h-full"
-          style={{ transform: isMobile ? 'none' : 'translateX(21%) scale(1.1)' }}
+          style={{ transform: isMobile ? 'translateY(-22%)' : 'translateX(21%) scale(1.1)' }}
         />
       </div>
     </div>

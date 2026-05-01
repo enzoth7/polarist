@@ -30,8 +30,8 @@ const CountdownValue = ({ value }: { value: string }) => {
     <div
       className="relative overflow-hidden"
       style={{
-        minWidth: "clamp(86px, 19vw, 220px)",
-        height: "clamp(62px, 12vw, 126px)",
+        minWidth: "clamp(54px, 16vw, 220px)",
+        height: "clamp(42px, 10vw, 126px)",
       }}
     >
       <AnimatePresence mode="popLayout" initial={false}>
@@ -44,7 +44,7 @@ const CountdownValue = ({ value }: { value: string }) => {
           className="absolute inset-0 flex items-center justify-center"
           style={{
             fontFamily: "var(--font-sequel, sans-serif)",
-            fontSize: "clamp(52px, 12vw, 126px)",
+            fontSize: "clamp(34px, 10vw, 126px)",
             fontWeight: 400,
             letterSpacing: "-0.06em",
             lineHeight: 0.9,
@@ -91,8 +91,8 @@ const ResourcesComingSoon = () => {
         >
           <div className="mb-6 flex justify-center md:mb-8">
             <ShinyButton
-              onClick={() => navigate(routes.landing)}
-              className="px-8 py-4 text-sm font-medium"
+              onClick={() => navigate(routes.landing + "?skipLoader=true")}
+              className="px-5 py-2.5 text-[0.8rem] md:px-8 md:py-4 md:text-sm font-medium"
             >
               Volver al inicio
             </ShinyButton>
@@ -110,7 +110,7 @@ const ResourcesComingSoon = () => {
                       className="mt-2"
                       style={{
                         fontFamily: "var(--font-sequel, sans-serif)",
-                        fontSize: "clamp(10px, 1.6vw, 18px)",
+                        fontSize: "clamp(8px, 1.4vw, 18px)",
                         fontWeight: 500,
                         letterSpacing: "0.18em",
                         color: "rgba(246,246,246,0.7)",
@@ -125,7 +125,7 @@ const ResourcesComingSoon = () => {
                       className="translate-y-[0.08em]"
                       style={{
                         fontFamily: "var(--font-sequel, sans-serif)",
-                        fontSize: "clamp(44px, 10vw, 110px)",
+                        fontSize: "clamp(32px, 8vw, 110px)",
                         fontWeight: 300,
                         lineHeight: 0.9,
                         color: "#F6F6F6",

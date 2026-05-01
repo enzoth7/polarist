@@ -3,7 +3,9 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { ChevronLeft } from "lucide-react";
 
 import { EventCountdownCard } from "@/components/ui/event-countdown-card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,9 @@ import { Input } from "@/components/ui/input";
 import { OrderConfirmationCard } from "@/components/ui/order-confirmation-card";
 import { SpotlightBorder } from "@/components/ui/spotlight-card";
 import { useAuth } from "@/hooks/useAuth";
+import { usePageFocusOverlay } from "@/hooks/usePageFocusOverlay";
 import { toModernImageAsset } from "@/lib/assetPaths";
+import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +27,7 @@ const MONTH_NAMES = [
 
 const CALENDAR_WIDTH = 390;
 const CARD_GAP = 18;
-const PANEL_HEIGHT = 450;
+const PANEL_HEIGHT = 468;
 
 type SupabaseEvent = {
   id: string;
@@ -41,6 +45,15 @@ type RegistrationPayload = {
   name: string;
 };
 
+const COMMUNITY_EVENT_OVERRIDES: Record<
+  string,
+  Partial<Pick<SupabaseEvent, "event_date" | "is_active">>
+> = {
+  "6a7cc3d8-ba8c-4c16-960e-f8717baaa96d": { is_active: false },
+  "6171f1b7-5e89-4d24-8212-76d3119fcc55": { event_date: "2026-05-18T22:00:00+00:00" },
+  "7c6b6420-122a-4647-aa0c-24cd9504c00f": { event_date: "2026-05-25T22:00:00+00:00" },
+};
+
 async function fetchCommunityEvents(): Promise<SupabaseEvent[]> {
   const { data, error } = await supabase
     .from("community_events")
@@ -49,7 +62,13 @@ async function fetchCommunityEvents(): Promise<SupabaseEvent[]> {
     .order("event_date", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as SupabaseEvent[];
+
+  return ((data ?? []) as SupabaseEvent[])
+    .map((event) => ({
+      ...event,
+      ...(COMMUNITY_EVENT_OVERRIDES[event.id] ?? {}),
+    }))
+    .filter((event) => event.is_active);
 }
 
 const splitTitle = (title: string) => {
@@ -111,7 +130,9 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode; cl
 // ── CommunityCalendar ────────────────────────────────────────────────────────
 
 export function CommunityCalendar() {
+  const navigate = useNavigate();
   const { user, profile } = useAuth();
+  const { setPageFocusOverlayOpen } = usePageFocusOverlay();
   const queryClient = useQueryClient();
   const { data: events = [], isLoading } = useQuery({
     queryKey: ["community_events"],
@@ -203,14 +224,8 @@ export function CommunityCalendar() {
     const profileName = profile?.fullName?.trim();
     const profileEmail = profile?.email?.trim();
 
-    if (user && profileName && profileEmail) {
-      void submitRegistration({
-        name: profileName,
-        email: profileEmail,
-      });
-      return;
-    }
-
+    setRegistrationName(profileName ?? "");
+    setRegistrationEmail(profileEmail ?? "");
     setView("form");
   };
 
@@ -264,7 +279,6 @@ export function CommunityCalendar() {
 
       setView("success");
       await queryClient.invalidateQueries({ queryKey: ["user-events"] });
-      toast.success("¡Registro exitoso!");
     } catch (err) {
       console.error(err);
       toast.error(err instanceof Error ? err.message : "Hubo un error al procesar tu registro.");
@@ -281,16 +295,27 @@ export function CommunityCalendar() {
     });
   };
 
+  const handleGoToLibrary = () => {
+    setPageFocusOverlayOpen(false);
+    setView("calendar");
+    setSelectedEvent(null);
+    navigate(
+      profile?.username?.trim()
+        ? getAppUserProfileRoute(profile.username.trim())
+        : routes.appProfile,
+    );
+  };
+
   const [titleFirstLine, titleSecondLine] = selectedEvent
     ? splitTitle(selectedEvent.title)
     : ["", ""];
 
   const eventTime = selectedEvent
-    ? new Date(selectedEvent.event_date).toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" }) + " HS"
+    ? new Date(selectedEvent.event_date).toLocaleTimeString("es", { hour: "numeric", minute: "2-digit", hour12: true }).toUpperCase()
     : "";
 
   return (
-    <div className="relative mt-2 w-[390px] max-w-[calc(100vw-2rem)]" style={{ height: PANEL_HEIGHT }}>
+    <div className="relative mt-2 w-[390px] max-w-[calc(100vw-2rem)] md:h-[468px]">
       <AnimatePresence mode="wait">
         {view === "calendar" ? (
           <motion.div
@@ -325,45 +350,96 @@ export function CommunityCalendar() {
               </AnimatePresence>
             </div>
 
-            <motion.div className="relative z-10 h-full w-full">
-              <BentoCard className="h-full">
-                <div className="mx-auto w-[340px] max-w-full">
-                  <h2 className="mb-1.5 text-xl font-semibold tracking-tight text-[#010101] md:text-2xl">
-                    Próximos encuentros
-                  </h2>
-                  <p className="text-xs leading-5 text-muted-foreground md:text-sm">
-                    Descubre nuestras próximas llamadas para entender mejor el mundo de la IA.
-                  </p>
+            <motion.div className="relative z-10 w-full h-[468px]">
+              {/* Calendario principal (siempre visible en desktop, oculto en móvil si hay un evento) */}
+              <div className={cn("h-full", selectedEvent ? "hidden md:block" : "block")}>
+                <BentoCard className="h-full">
+                  <div className="mx-auto flex h-full w-[340px] max-w-full flex-col">
+                    <h2 className="mb-1 text-xl font-semibold tracking-tight text-[#010101] md:text-2xl">
+                      Próximos encuentros
+                    </h2>
+                    <p className="text-xs leading-4.5 text-muted-foreground md:text-sm">
+                      Descubre nuestras próximas llamadas para entender mejor el mundo de la IA.
+                    </p>
 
-                  <div className="mx-auto mt-3 aspect-square w-[340px]">
-                    <div className="flex h-full flex-col rounded-2xl border border-black/[0.05] bg-white px-4 py-3.5 shadow-inner">
-                      <div className="flex items-center space-x-2">
-                        <p className="text-xs font-medium capitalize text-[#010101]">
-                          {MONTH_NAMES[displayMonth]}, {displayYear}
-                        </p>
-                        <span className="h-1 w-1 rounded-full bg-[#c5cad5]" />
-                        <p className="text-[11px] text-muted-foreground">Charlas y encuentros</p>
-                      </div>
-                      <div className="mt-3 grid flex-1 grid-cols-7 place-items-center gap-1.5">
-                        {isLoading ? (
-                          <div className="col-span-7 py-20 text-xs text-muted-foreground">Cargando encuentros...</div>
-                        ) : renderCalendarDays()}
+                    <div className="mx-auto mt-2 flex-1 min-h-0 w-[340px]">
+                      <div className="flex h-full flex-col rounded-2xl border border-black/[0.05] bg-white px-4 py-3.5 shadow-inner">
+                        <div className="flex items-center space-x-2">
+                          <p className="text-xs font-medium capitalize text-[#010101]">
+                            {MONTH_NAMES[displayMonth]}, {displayYear}
+                          </p>
+                          <span className="h-1 w-1 rounded-full bg-[#c5cad5]" />
+                          <p className="text-[11px] text-muted-foreground">Charlas y encuentros</p>
+                        </div>
+                        <div className="mt-3 grid flex-1 grid-cols-7 place-items-center gap-1.5">
+                          {isLoading ? (
+                            <div className="col-span-7 py-20 text-xs text-muted-foreground">Cargando encuentros...</div>
+                          ) : renderCalendarDays()}
+                        </div>
                       </div>
                     </div>
+                    <p className="mt-2 text-[11px] leading-4 text-muted-foreground md:text-xs">
+                      Presiona la fecha en verde para poder registrarte.
+                    </p>
+                  </div>
+                </BentoCard>
+              </div>
+
+              {/* Vista móvil de detalles (reemplaza al calendario en el mismo espacio) */}
+              {selectedEvent && (
+                <div className="flex h-[468px] w-full flex-col md:hidden">
+                  <button 
+                    onClick={() => setSelectedEvent(null)}
+                    className="mb-3 flex w-fit items-center text-sm font-medium text-[#F6F6F6] transition-colors hover:text-white"
+                  >
+                    <ChevronLeft className="mr-1 h-4 w-4" /> Volver al calendario
+                  </button>
+                  <div className="flex-1 min-h-0">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={`mobile-details-${selectedEvent.id}`}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="h-full w-full"
+                      >
+                        <EventCountdownCard
+                          title={selectedEvent.title}
+                          image={toModernImageAsset(selectedEvent.image_url) || "/Polarist_logo.webp"}
+                          time={eventTime}
+                          date={new Date(selectedEvent.event_date)}
+                          isJoining={isSubmitting}
+                          onJoin={handleStartRegistration}
+                          className="h-full w-full"
+                        />
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
-              </BentoCard>
+              )}
             </motion.div>
           </motion.div>
         ) : view === "form" ? (
-          <motion.form
+          <motion.div
             key="registration-form"
             initial={{ opacity: 0, scale: 0.95, y: 16, filter: "blur(8px)" }}
             animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, scale: 0.96, y: -12, filter: "blur(8px)" }}
-            onSubmit={handleSubmitRegistration}
-            className="flex h-full w-full flex-col rounded-2xl border border-black/10 bg-white p-6 text-[#010101] shadow-2xl"
+            className="flex h-full w-full flex-col"
           >
+            <button 
+              type="button"
+              onClick={() => setView("calendar")}
+              className="mb-3 flex w-fit items-center text-sm font-medium text-[#F6F6F6] transition-colors hover:text-white md:hidden"
+            >
+              <ChevronLeft className="mr-1 h-4 w-4" /> Volver
+            </button>
+            <form
+              onSubmit={handleSubmitRegistration}
+              className="flex flex-1 w-full min-h-[468px] flex-col rounded-2xl border border-black/10 bg-white p-6 text-[#010101] shadow-2xl"
+            >
+
             <div className="text-center">
               <p className="text-sm font-medium text-muted-foreground">
                 {new Date(selectedEvent!.event_date).toLocaleDateString()}
@@ -403,11 +479,12 @@ export function CommunityCalendar() {
             <Button
               type="submit"
               disabled={isSubmitting || !registrationName || !registrationEmail}
-              className="mt-auto h-12 rounded-xl bg-black text-white hover:bg-black/90 disabled:opacity-40"
+              className="mt-12 md:mt-auto h-12 rounded-xl bg-black text-white hover:bg-black/90 disabled:opacity-40"
             >
               {isSubmitting ? "Registrando..." : "Confirmar registro"}
             </Button>
-          </motion.form>
+          </form>
+        </motion.div>
         ) : (
           <motion.div
             key="registration-success"
@@ -418,9 +495,17 @@ export function CommunityCalendar() {
             <OrderConfirmationCard
               name={registrationName}
               email={registrationEmail}
-              dateTime={new Date(selectedEvent!.event_date).toLocaleString()}
-              onGoToAccount={() => setView("calendar")}
-              className="h-full"
+              dateTime={new Date(selectedEvent!.event_date).toLocaleString("es-UY", {
+                day: "numeric",
+                month: "numeric",
+                year: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
+              }).toUpperCase()}
+              onGoToAccount={handleGoToLibrary}
+              buttonText="Ir a biblioteca"
+              className="flex-1 w-full min-h-[468px] max-w-full shadow-2xl"
             />
           </motion.div>
         )}

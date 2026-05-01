@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { toModernImageAsset } from "@/lib/assetPaths";
 import { supabase } from "@/lib/supabase";
@@ -105,17 +105,38 @@ const fetchUserEvents = async (email: string, userId?: string): Promise<UserEven
 
 export function useUserEvents(email?: string, userId?: string) {
   const normalizedEmail = normalizeEmail(email);
+  const queryClient = useQueryClient();
+  const queryKey = ["user-events", normalizedEmail || null, userId || null] as const;
 
   const query = useQuery({
-    queryKey: ["user-events", normalizedEmail || null, userId || null],
+    queryKey,
     queryFn: () => fetchUserEvents(normalizedEmail, userId),
     enabled: Boolean(normalizedEmail || userId),
     staleTime: 60_000,
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: async (registrationId: string) => {
+      const { error } = await supabase
+        .from("community_registrations")
+        .delete()
+        .eq("id", registrationId);
+
+      if (error) {
+        throw error;
+      }
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey });
+    },
   });
 
   return {
     events: query.data ?? [],
     loading: query.isLoading,
     error: query.error instanceof Error ? query.error.message : null,
+    cancelEventRegistration: cancelMutation.mutateAsync,
+    isCancellingEvent: (registrationId: string) =>
+      cancelMutation.isPending && cancelMutation.variables === registrationId,
   };
 }

@@ -130,13 +130,14 @@ export function PolaristInterstitialReveal({
           className="mt-10 max-w-6xl text-balance text-[1.12rem] leading-8 !text-[#F6F6F6] md:text-[1.5rem] md:leading-[1.55] lg:max-w-[86rem]"
           style={{ fontFamily: "var(--font-sans)" }}
         >
-          {descriptionLines.map((line, index) => {
-            const lineDelay = wordDelay + index * 0.32;
+          {description.split(". ").map((line, index, array) => {
+            const lineText = index < array.length - 1 ? line + "." : line;
+            const lineDelay = wordDelay + index * 0.4; // Slightly more delay for the second paragraph
 
             return (
-              <div key={`${line}-${index}`} className={index > 0 ? "mt-2 md:mt-3" : ""}>
+              <div key={index} className={index > 0 ? "mt-6" : ""}>
                 <MaskedSlideReveal
-                  text={line}
+                  text={lineText}
                   delay={lineDelay}
                   animateOnce={hasEnteredView}
                   className="justify-center !text-[#F6F6F6]"

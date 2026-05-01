@@ -59,8 +59,7 @@ const ProfileRouteResolver = () => {
   }
 
   if (status !== "authenticated") {
-    console.warn("[Polarist] Usuario no autenticado, redirigiendo a landing...");
-    return <Navigate to={routes.landing} replace />;
+    return <Navigate to={routes.login} replace />;
   }
 
   // Si estamos autenticados pero el perfil aún no cargó, esperamos un poco más

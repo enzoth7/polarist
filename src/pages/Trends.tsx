@@ -9,7 +9,7 @@ const Trends = () => {
 
   return (
     <div className="min-h-full bg-[#010101] pb-0 pt-0 text-[#010101]">
-      <div className="flex w-full flex-col gap-24 pb-16 md:pb-24">
+      <div className="flex w-full flex-col">
         <section className="space-y-4">
           {isLoading ? (
             <div className="flex h-[clamp(500px,85vh,900px)] items-center justify-center">
@@ -27,16 +27,7 @@ const Trends = () => {
             }))} />
           )}
         </section>
-
-        <RadarMetricsBoard />
       </div>
-
-      <FinalCTA
-        title="Mantente a la vanguardia"
-        description="Mirá las últimas tendencias en herramientas y elegí las que más se adapten a vos."
-        buttonText="Ver herramientas"
-        to={routes.appTools}
-      />
     </div>
   );
 };

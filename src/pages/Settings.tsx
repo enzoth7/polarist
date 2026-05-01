@@ -10,6 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
+import { ShinyButton } from "@/components/ui/shiny-button";
+import { AvatarUploader } from "@/components/ui/avatar-uploader";
 
 const NON_COUNTRY_REGION_CODES = new Set([
   "AC", "CP", "DG", "EA", "EU", "EZ", "IC", "TA", "UN",
@@ -82,11 +84,8 @@ const Settings = () => {
     setLocalAvatarUrl(profile?.avatarUrl || avatarUrl);
   }, [profile, avatarUrl]);
 
-  const handleAvatarUpload = async (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !profile) return;
-    if (!file.type.startsWith("image/")) { toast.error("Por favor, sube una imagen válida."); return; }
-    if (file.size > 5 * 1024 * 1024) { toast.error("La imagen debe pesar menos de 5MB."); return; }
+  const onAvatarUpload = async (file: File) => {
+    if (!profile) return { success: false };
     try {
       setIsUploadingAvatar(true);
       const fileExt = file.name.split(".").pop();
@@ -98,10 +97,11 @@ const Settings = () => {
       if (profileError) throw profileError;
       setLocalAvatarUrl(publicUrl);
       await refreshProfile();
-      toast.success("Foto de perfil actualizada.");
+      return { success: true };
     } catch (error) {
       console.error("Avatar upload error:", error);
       toast.error("Ocurrió un error al subir la imagen.");
+      return { success: false };
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -150,12 +150,6 @@ const Settings = () => {
       
       await refreshProfile();
       setPassword("");
-      
-      showBubbleToast({
-        title: "Cambios guardados",
-        description: normalizedEmail !== profile.email ? "Revisá tu correo para confirmar el nuevo email." : "Tu perfil se actualizó correctamente.",
-        tone: "success",
-      });
     } catch (error: any) {
       console.error("Error updating settings:", error);
       
@@ -174,8 +168,8 @@ const Settings = () => {
   };
 
   // ─── Clases del sistema de diseño (Brand Kit B Sutil) ─────────────────
-  const cardClass = "relative overflow-hidden rounded-[32px] bg-white/[0.03] border border-white/10 p-6 md:p-8 backdrop-blur-md";
-  const inputClass = "h-12 rounded-2xl border-white/10 bg-white/[0.05] text-[#F6F6F6] placeholder:text-[#F6F6F6]/30 focus:bg-white/[0.08] focus:border-[#CAFE5B]/50 focus-visible:ring-1 focus-visible:ring-[#CAFE5B] focus-visible:ring-offset-0 transition-all duration-300";
+  const cardClass = "relative overflow-hidden rounded-[32px] bg-white/[0.03] p-6 md:p-8 backdrop-blur-md";
+  const inputClass = "h-12 rounded-2xl border-transparent bg-white/[0.05] text-[#F6F6F6] placeholder:text-[#F6F6F6]/30 ring-0 ring-offset-0 focus:bg-white/[0.05] focus:border-white/40 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 transition-none";
   const labelClass = "text-[11px] font-bold uppercase tracking-[0.2em] text-[#F6F6F6]/40";
   const sequelStyle = { fontFamily: 'var(--font-sequel, sans-serif)' };
 
@@ -207,9 +201,8 @@ const Settings = () => {
         {/* ─── Header ─────────────────────────────────────────────── */}
         <div className="flex items-end justify-between mb-4">
           <div>
-            <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#F6F6F6]/30" style={sequelStyle}>Cuenta</span>
             <h1 
-              className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-tight leading-none text-[#F6F6F6] mt-2"
+              className="text-[clamp(1.8rem,4vw,2.8rem)] font-bold tracking-tight leading-none text-[#F6F6F6]"
               style={{ ...sequelStyle, letterSpacing: '-0.04em' }}
             >
               Configuración
@@ -217,7 +210,7 @@ const Settings = () => {
           </div>
           <Link
             to={profileRoute}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.05] px-5 py-2.5 text-[12px] font-bold text-[#F6F6F6]/80 backdrop-blur-xl transition-all hover:bg-white/[0.1] hover:scale-105 active:scale-95"
+            className="flex items-center gap-2 rounded-full bg-white/[0.05] px-5 py-2.5 text-[12px] font-bold text-[#F6F6F6]/80 backdrop-blur-xl transition-all hover:bg-white/[0.1] hover:scale-105 active:scale-95"
             style={sequelStyle}
           >
             <ArrowLeft className="h-4 w-4" />
@@ -239,35 +232,30 @@ const Settings = () => {
                     <img src={localAvatarUrl} alt={profile.fullName} className="h-full w-full object-cover" />
                   )}
                 </div>
-                <label
-                  htmlFor="avatar-upload"
-                  className="absolute -bottom-1 -right-1 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-[#CAFE5B] text-[#010101] shadow-lg transition-all hover:scale-110 active:scale-90"
-                >
-                  <Camera className="h-4 w-4" />
-                  <input id="avatar-upload" type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} disabled={isUploadingAvatar} />
-                </label>
-              </div>
+                </div>
 
               {/* Info */}
               <div className="flex-1">
                 <h2 className="text-lg font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Foto de perfil</h2>
                 <p className="text-[13px] font-medium text-[#F6F6F6]/40 mt-1" style={sequelStyle}>JPG, PNG o WebP. Máximo 5 MB.</p>
-                <label
-                  htmlFor="avatar-upload"
-                  className="mt-4 inline-flex cursor-pointer items-center rounded-full border border-white/10 bg-white/[0.05] px-4 py-2 text-[11px] font-bold text-[#F6F6F6]/80 transition-all hover:bg-white/[0.1]"
-                  style={sequelStyle}
-                >
-                  {isUploadingAvatar ? "Subiendo..." : "Actualizar foto"}
-                </label>
+                <AvatarUploader onUpload={onAvatarUpload}>
+                  <button
+                    type="button"
+                    className="mt-4 inline-flex cursor-pointer items-center rounded-full bg-white/[0.05] px-4 py-2 text-[11px] font-bold text-[#F6F6F6]/80 transition-all hover:bg-white/[0.1]"
+                    style={sequelStyle}
+                    disabled={isUploadingAvatar}
+                  >
+                    {isUploadingAvatar ? "Subiendo..." : "Actualizar foto"}
+                  </button>
+                </AvatarUploader>
               </div>
             </div>
           </section>
 
           {/* ─── Perfil ──────────────────────────────────────────── */}
           <section className={cardClass}>
-            <div className="flex items-center gap-2.5 mb-8">
-              <UserRound className="h-4 w-4 text-[#CAFE5B]" />
-              <h2 className="text-base font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Perfil</h2>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Perfil</h2>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
@@ -303,9 +291,8 @@ const Settings = () => {
 
           {/* ─── Cuenta ──────────────────────────────────────────── */}
           <section className={cardClass}>
-            <div className="flex items-center gap-2.5 mb-8">
-              <Mail className="h-4 w-4 text-[#CAFE5B]" />
-              <h2 className="text-base font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Gestión de cuenta</h2>
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Gestión de cuenta</h2>
             </div>
 
             <div className="grid gap-6">
@@ -326,15 +313,15 @@ const Settings = () => {
           </section>
 
           {/* ─── Guardar ─────────────────────────────────────────── */}
-          <div className="flex justify-end pt-4">
-            <button
+          <div className="flex justify-center pt-4">
+            <ShinyButton
               type="submit"
               disabled={isSaving}
-              className="inline-flex items-center justify-center min-w-[180px] rounded-full bg-[#CAFE5B] px-10 py-4 text-[14px] font-bold tracking-tight text-[#010101] shadow-[0_20px_40px_-10px_rgba(202,254,91,0.3)] transition-all duration-300 hover:scale-105 hover:bg-[#CAFE5B]/90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center justify-center px-8 py-3 text-[14px] font-semibold tracking-[0.5px] no-underline min-w-[170px]"
               style={sequelStyle}
             >
               {isSaving ? "Guardando..." : "Guardar cambios"}
-            </button>
+            </ShinyButton>
           </div>
 
         </form>
