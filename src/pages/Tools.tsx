@@ -6,7 +6,6 @@ import { Bookmark, ExternalLink, Heart, Plus } from "lucide-react";
 
 import Modal from "@/components/ui/modal-drop";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
-import { BubbleText } from "@/components/ui/bubble-text";
 import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";

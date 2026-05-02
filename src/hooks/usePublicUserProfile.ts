@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 import { supabase } from "@/lib/supabase";
 
 export type PublicUserProfile = {
   id: string;
-  email: string | null;
   full_name: string | null;
   username: string | null;
   avatar_url: string | null;
@@ -13,60 +12,27 @@ export type PublicUserProfile = {
 };
 
 export function usePublicUserProfile(username?: string) {
-  const [profile, setProfile] = useState<PublicUserProfile | null>(null);
-  const [loading, setLoading] = useState(Boolean(username));
-  const [error, setError] = useState<string | null>(null);
+  const query = useQuery({
+    queryKey: ["public-user-profiles", username ?? null],
+    queryFn: async (): Promise<PublicUserProfile | null> => {
+      const { data, error } = await supabase.rpc("get_public_profile_by_username", {
+        p_username: username,
+      });
 
-  useEffect(() => {
-    let isActive = true;
-
-    const loadProfile = async () => {
-      if (!username) {
-        setProfile(null);
-        setLoading(false);
-        setError(null);
-        return;
+      if (error) {
+        throw error;
       }
 
-      try {
-        setLoading(true);
-        setError(null);
-
-        const { data, error: profileError } = await supabase
-          .from("polarist_usuarios")
-          .select("id, email, full_name, username, avatar_url, occupation, country")
-          .eq("username", username)
-          .maybeSingle();
-
-        if (profileError) {
-          throw profileError;
-        }
-
-        if (isActive) {
-          setProfile((data as PublicUserProfile | null) ?? null);
-        }
-      } catch (nextError) {
-        if (isActive) {
-          setProfile(null);
-          setError(nextError instanceof Error ? nextError.message : "No pudimos cargar el perfil.");
-        }
-      } finally {
-        if (isActive) {
-          setLoading(false);
-        }
-      }
-    };
-
-    void loadProfile();
-
-    return () => {
-      isActive = false;
-    };
-  }, [username]);
+      const row = Array.isArray(data) ? data[0] : data;
+      return (row as PublicUserProfile | null) ?? null;
+    },
+    enabled: Boolean(username),
+    staleTime: 60_000,
+  });
 
   return {
-    profile,
-    loading,
-    error,
+    profile: query.data ?? null,
+    loading: query.isLoading,
+    error: query.error instanceof Error ? query.error.message : null,
   };
 }

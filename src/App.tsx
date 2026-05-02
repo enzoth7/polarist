@@ -130,24 +130,27 @@ const AppRoutes = () => {
 };
 
 import { Analytics } from "@vercel/analytics/react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <PageFocusOverlayProvider>
-            <Toaster />
-            <Sonner position="top-center" />
-            <BrowserRouter>
-              <AppRoutes />
-            </BrowserRouter>
-            <Analytics />
-          </PageFocusOverlayProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <PageFocusOverlayProvider>
+              <Toaster />
+              <Sonner position="top-center" />
+              <BrowserRouter>
+                <AppRoutes />
+              </BrowserRouter>
+              <Analytics />
+            </PageFocusOverlayProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 

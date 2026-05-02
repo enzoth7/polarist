@@ -41,7 +41,8 @@ const fetchUserEvents = async (email: string, userId?: string): Promise<UserEven
     .select("id, email, name, event_id, event_date, created_at, user_id");
 
   if (userId && email) {
-    query = query.or(`email.eq."${email}",user_id.eq."${userId}"`);
+    const safeEmail = email.replace(/"/g, "");
+    query = query.or(`email.eq."${safeEmail}",user_id.eq.${userId}`);
   } else if (userId) {
     query = query.eq("user_id", userId);
   } else {

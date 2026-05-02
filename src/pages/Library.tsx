@@ -47,34 +47,19 @@ const savedFilterHeadingMap: Record<SavedFilterKey, string> = {
   events: "Eventos",
 };
 
-const displayBlackStyle = {
+const sequel700 = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 700,
 } as const;
 
-const displayBoldStyle = {
-  fontFamily: "var(--font-sequel, sans-serif)",
-  fontWeight: 700,
-} as const;
-
-const sequelRegularStyle = {
+const sequel400 = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 400,
 } as const;
 
-const sequelMediumStyle = {
+const sequel600 = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 600,
-} as const;
-
-const serifStyle = {
-  fontFamily: "var(--font-sequel, sans-serif)",
-  fontWeight: 400,
-} as const;
-
-const serifBoldStyle = {
-  fontFamily: "var(--font-sequel, sans-serif)",
-  fontWeight: 700,
 } as const;
 
 const getInitials = (name?: string | null) =>
@@ -255,11 +240,11 @@ const EmptyState = ({
   cta?: ReactNode;
 }) => (
   <div className="rounded-[24px] bg-white/[0.03] px-5 py-10 text-center md:px-7">
-    <h3 className="text-[1.15rem] leading-tight text-[#F6F6F6]" style={displayBlackStyle}>
+    <h3 className="text-[1.15rem] leading-tight text-[#F6F6F6]" style={sequel700}>
       {title}
     </h3>
     {description ? (
-      <p className="mx-auto mt-3 max-w-[34rem] text-[1rem] leading-relaxed text-[#F6F6F6]" style={serifStyle}>
+      <p className="mx-auto mt-3 max-w-[34rem] text-[1rem] leading-relaxed text-[#F6F6F6]" style={sequel400}>
         {description}
       </p>
     ) : null}
@@ -300,10 +285,10 @@ const SavedToolPoster = ({
 
       <div className="mt-2.5 space-y-2.5 px-4 pb-4">
         <div className="space-y-2">
-          <h3 className="text-[1.18rem] leading-[1.02] text-[#010101] sm:text-[1.24rem]" style={displayBoldStyle}>
+          <h3 className="text-[1.18rem] leading-[1.02] text-[#010101] sm:text-[1.24rem]" style={sequel700}>
             {tool.name}
           </h3>
-          <p className="line-clamp-3 min-h-[3.75rem] text-[0.88rem] leading-[1.34] text-[#010101]/80 sm:text-[0.9rem]" style={sequelRegularStyle}>
+          <p className="line-clamp-3 min-h-[3.75rem] text-[0.88rem] leading-[1.34] text-[#010101]/80 sm:text-[0.9rem]" style={sequel400}>
             {tool.description?.trim() ||
               tool.whoIsItFor?.trim() ||
               "Herramienta guardada dentro de esta coleccion."}
@@ -311,10 +296,10 @@ const SavedToolPoster = ({
         </div>
 
         <div className="border-t border-black/5 pt-3">
-          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#010101]/60" style={displayBoldStyle}>
+          <p className="text-[0.68rem] uppercase tracking-[0.18em] text-[#010101]/60" style={sequel700}>
             Tipo
           </p>
-          <p className="mt-1 text-[0.78rem] leading-relaxed text-[#010101]" style={sequelRegularStyle}>
+          <p className="mt-1 text-[0.78rem] leading-relaxed text-[#010101]" style={sequel400}>
             {withSpanishAccents(tool.kind)}
           </p>
         </div>
@@ -347,25 +332,25 @@ const SavedResourceCard = ({
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
         <FolderOpen className="h-5 w-5" />
       </span>
-      <span className="text-[0.7rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={displayBoldStyle}>
+      <span className="text-[0.7rem] uppercase tracking-[0.24em] text-[#F6F6F6]" style={sequel700}>
         Recurso
       </span>
     </div>
 
     <div className="mt-8 flex-1">
-      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={displayBoldStyle}>
+      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={sequel700}>
         {guideKindLabelMap[folder.kind]}
       </p>
-      <h3 className="mt-3 text-[1.3rem] leading-[1.05] text-[#F6F6F6]" style={serifBoldStyle}>
+      <h3 className="mt-3 text-[1.3rem] leading-[1.05] text-[#F6F6F6]" style={sequel700}>
         {folder.title}
       </h3>
-      <p className="mt-4 text-[1rem] leading-[1.42] text-[#F6F6F6]" style={serifStyle}>
+      <p className="mt-4 text-[1rem] leading-[1.42] text-[#F6F6F6]" style={sequel400}>
         {folder.description}
       </p>
     </div>
 
     <div className="mt-6 pt-4">
-      <span className="text-[0.76rem] uppercase tracking-[0.2em] text-[#F6F6F6]" style={displayBoldStyle}>
+      <span className="text-[0.76rem] uppercase tracking-[0.2em] text-[#F6F6F6]" style={sequel700}>
         Abrir carpeta
       </span>
     </div>
@@ -404,7 +389,7 @@ const SavedEventCard = ({
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_60%,rgba(0,0,0,0.6)_100%)]" />
 
         <div className="absolute inset-x-0 bottom-0 p-4">
-          <h3 className="max-w-[16rem] text-[1.08rem] leading-[1.06] text-white" style={serifBoldStyle}>
+          <h3 className="max-w-[16rem] text-[1.08rem] leading-[1.06] text-white" style={sequel700}>
             {title}
           </h3>
         </div>
@@ -417,10 +402,10 @@ const SavedEventCard = ({
               <CalendarDays className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={displayBoldStyle}>
+              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={sequel700}>
                 Fecha real
               </p>
-              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequelMediumStyle}>
+              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequel600}>
                 {dateLabel}
               </p>
             </div>
@@ -431,10 +416,10 @@ const SavedEventCard = ({
               <Clock3 className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={displayBoldStyle}>
+              <p className="text-[0.68rem] uppercase tracking-[0.22em] text-[#010101]/60" style={sequel700}>
                 Hora
               </p>
-              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequelMediumStyle}>
+              <p className="mt-1 text-[0.9rem] leading-[1.32] text-[#010101]" style={sequel600}>
                 {timeLabel}
               </p>
             </div>
@@ -494,8 +479,7 @@ const Library = () => {
   const [eventToCancel, setEventToCancel] = useState<UserEvent | null>(null);
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
-  const profileEmail =
-    profile?.email?.trim() || (isOwnProfile ? user?.email?.trim() : undefined);
+  const profileEmail = isOwnProfile ? user?.email?.trim() : undefined;
   const {
     events,
     loading: eventsLoading,
@@ -751,13 +735,13 @@ const Library = () => {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-[#010101] px-4 py-20">
         <div className="text-center">
-          <p className="text-base text-[#F6F6F6]" style={serifStyle}>
+          <p className="text-base text-[#F6F6F6]" style={sequel400}>
             Para ver tu biblioteca, necesitas configurar un nombre de usuario.
           </p>
           <Link 
             to={routes.appSettings}
             className="mt-4 inline-block text-[#CAFE5B] underline"
-            style={displayBoldStyle}
+            style={sequel700}
           >
             Ir a configuración
           </Link>
@@ -810,7 +794,7 @@ const Library = () => {
                 <div className="min-w-0 text-center lg:text-left lg:-ml-8 lg:self-end">
                   <h1
                     className="text-[clamp(2.5rem,4.8vw,3.8rem)] leading-[0.9] tracking-[-0.07em] text-[#010101]"
-                    style={displayBlackStyle}
+                    style={sequel700}
                   >
                     Biblioteca
                   </h1>
@@ -877,7 +861,7 @@ const Library = () => {
                     <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
                       {activeSavedFilter === "all" ? (
                         <div className="min-w-0">
-                          <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                          <h3 className="text-[1.15rem] text-[#F6F6F6]" style={sequel700}>
                             Herramientas
                           </h3>
                         </div>
@@ -927,7 +911,7 @@ const Library = () => {
                   <div className="space-y-5">
                     <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
                       {activeSavedFilter === "all" ? (
-                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={sequel700}>
                           Recursos
                         </h3>
                       ) : null}
@@ -984,7 +968,7 @@ const Library = () => {
                   <div className="space-y-5">
                     <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
                       {activeSavedFilter === "all" ? (
-                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={displayBoldStyle}>
+                        <h3 className="text-[1.15rem] text-[#F6F6F6]" style={sequel700}>
                           Eventos
                         </h3>
                       ) : null}
@@ -1056,15 +1040,15 @@ const Library = () => {
         <div className="flex w-[380px] max-w-full flex-col rounded-[2.2rem] border border-black/10 bg-white p-8 text-[#010101] shadow-2xl">
           <div className="text-center">
             {eventToCancel && (
-              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#010101]/40" style={displayBoldStyle}>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#010101]/40" style={sequel700}>
                 {formatEventDateLabel(eventToCancel.eventDate)}
               </p>
             )}
-            <h2 className="mx-auto mt-4 max-w-[21rem] text-xl font-bold leading-tight" style={displayBoldStyle}>
+            <h2 className="mx-auto mt-4 max-w-[21rem] text-xl font-bold leading-tight" style={sequel700}>
               ¿Estás seguro que querés eliminar el evento?
             </h2>
             {eventToCancel && (
-              <p className="mt-3 text-sm text-[#010101]/60" style={sequelRegularStyle}>
+              <p className="mt-3 text-sm text-[#010101]/60" style={sequel400}>
                 {eventToCancel.title}
               </p>
             )}
@@ -1075,7 +1059,7 @@ const Library = () => {
               type="button"
               onClick={() => eventToCancel && confirmCancelEvent(eventToCancel)}
               className="h-12 w-full rounded-2xl bg-[#ff0000] text-sm font-bold text-white transition-transform hover:scale-[1.02] active:scale-[0.98]"
-              style={displayBoldStyle}
+              style={sequel700}
             >
               Sí, eliminar
             </button>
@@ -1083,7 +1067,7 @@ const Library = () => {
               type="button"
               onClick={() => setEventToCancel(null)}
               className="h-12 w-full rounded-2xl bg-transparent text-sm font-bold text-[#010101]/60 transition-colors hover:bg-black/5"
-              style={displayBoldStyle}
+              style={sequel700}
             >
               No, volver
             </button>

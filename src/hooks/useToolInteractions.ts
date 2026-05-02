@@ -243,8 +243,6 @@ export function useToolInteractions(toolIds: string[]) {
         return;
       }
 
-      updateSavedToolsCache(queryClient, user.id, variables.toolId, variables.wasSaved);
-
       updateInteractionsAcrossQueries(queryClient, user.id, (current, currentToolIds) => {
         if (!currentToolIds.includes(variables.toolId)) {
           return current;
