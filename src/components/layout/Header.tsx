@@ -176,25 +176,29 @@ const Header = () => {
             </SheetTrigger>
             <SheetContent side="left" className="w-[85%] p-0 border-none bg-transparent">
               <UserProfileSidebar 
-                user={{
+                user={isAuthenticated ? {
                   name: cleanFullName || "Usuario",
                   email: user?.email || "",
                   avatarUrl: avatarUrl || "/avatar.webp"
-                }}
+                } : undefined}
                 navItems={mobileNavItems.map((item) => ({
                   label: item.label,
                   href: item.to,
-                  isSeparator: item.label === "Configuración" // esto ya no se aplica porque lo sacamos, pero no hace daño
                 }))}
-                settingsItem={{
+                settingsItem={isAuthenticated ? {
                   label: "Configuración",
-                  href: isAuthenticated ? routes.appSettings : routes.login
-                }}
+                  href: routes.appSettings,
+                  icon: <Settings className="h-full w-full" />
+                } : undefined}
                 onItemClick={closeMobileMenu}
-                logoutItem={{
+                logoutItem={isAuthenticated ? {
                   label: isSigningOut ? "Cerrando..." : "Cerrar sesión",
                   icon: <LogOut className="h-full w-full" />,
                   onClick: handleLogout
+                } : {
+                  label: "Iniciar sesión",
+                  icon: <LogIn className="h-full w-full" />,
+                  onClick: () => navigate(routes.login)
                 }}
                 className="h-full max-w-none rounded-none border-none bg-[#F6F6F6] pt-20"
               />

@@ -122,9 +122,14 @@ const Modal: React.FC<ModalProps> = ({
   disablePadding = false,
 }) => {
   const [mounted, setMounted] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    const checkMobile = () => setIsMobile(window.innerWidth < 640)
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+    return () => window.removeEventListener("resize", checkMobile)
   }, [])
 
   // ESC key handler
@@ -182,13 +187,35 @@ const Modal: React.FC<ModalProps> = ({
   const getModalClasses = () => {
     const base =
       "w-auto bg-background border border-border text-card-foreground max-w-[90%] sm:max-w-xl rounded-2xl shadow-lg m-4 relative"
-    return type === "overlay" ? base : `${base} border border-border`
+    
+    // Mobile Bottom Sheet Classes
+    const mobileClasses = "fixed bottom-0 left-0 right-0 m-0 max-w-full max-h-[85vh] overflow-y-auto rounded-t-[32px] rounded-b-none border-x-0 border-b-0 pb-10"
+    
+    return isMobile 
+      ? cn(base, mobileClasses)
+      : (type === "overlay" ? base : `${base} border border-border`)
   }
 
   if (!mounted) return null
 
   // Choose the appropriate animation variants
-  const variants = animationType === "scale" ? scaleVariants : dropVariants
+  const bottomSheetVariants: Variants = {
+    hidden: { y: "100%", opacity: 1 },
+    visible: { 
+      y: 0, 
+      opacity: 1,
+      transition: { type: "spring", damping: 30, stiffness: 300 } 
+    },
+    exit: { 
+      y: "100%", 
+      opacity: 1,
+      transition: { duration: 0.2 } 
+    }
+  }
+
+  const variants = isMobile 
+    ? bottomSheetVariants 
+    : (animationType === "scale" ? scaleVariants : dropVariants)
 
   const modalContent = (
     <AnimatePresence>
@@ -198,11 +225,15 @@ const Modal: React.FC<ModalProps> = ({
           initial="hidden"
           animate="visible"
           exit="exit"
-          className={`fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto ${getOverlayClasses()}`}
+          className={cn(
+            "fixed inset-0 z-[100] flex",
+            isMobile ? "items-end overflow-hidden" : "items-center justify-center overflow-y-auto",
+            getOverlayClasses()
+          )}
           onClick={handleOverlayClick}
           style={{
-            alignItems: position === 0 ? "center" : "flex-start",
-            paddingTop: position === 0 ? 0 : `calc(50vh - ${position}px)`,
+            alignItems: isMobile ? "flex-end" : (position === 0 ? "center" : "flex-start"),
+            paddingTop: isMobile ? 0 : (position === 0 ? 0 : `calc(50vh - ${position}px)`),
             willChange:
               type === "blur" ? "backdrop-filter, opacity" : undefined,
           }}
@@ -217,6 +248,9 @@ const Modal: React.FC<ModalProps> = ({
             onClick={(e) => e.stopPropagation()}
             layout={type === "blur"}
           >
+            {isMobile && (
+              <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-white/20" />
+            )}
             {title ? (
               <div
                 className={cn(

@@ -48,11 +48,7 @@ type RegistrationPayload = {
 const COMMUNITY_EVENT_OVERRIDES: Record<
   string,
   Partial<Pick<SupabaseEvent, "event_date" | "is_active">>
-> = {
-  "6a7cc3d8-ba8c-4c16-960e-f8717baaa96d": { is_active: false },
-  "6171f1b7-5e89-4d24-8212-76d3119fcc55": { event_date: "2026-05-18T22:00:00+00:00" },
-  "7c6b6420-122a-4647-aa0c-24cd9504c00f": { event_date: "2026-05-25T22:00:00+00:00" },
-};
+> = {};
 
 async function fetchCommunityEvents(): Promise<SupabaseEvent[]> {
   const { data, error } = await supabase

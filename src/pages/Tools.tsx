@@ -414,10 +414,10 @@ function CategoryDetail({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="tools-modal-sequel relative w-full overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
+      className="tools-modal-sequel relative w-full h-fit overflow-visible rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
       style={sequelTextStyle}
     >
-      <div className="relative space-y-4">
+      <div className="relative space-y-4 pb-16 md:pb-8">
         <div className="flex items-center justify-center px-2 py-2 md:px-3 md:py-3">
           <div className="space-y-2 text-center">
             <h1 className="text-[clamp(1.35rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
@@ -493,6 +493,7 @@ const Tools = () => {
         animationType="scale"
         disablePadding
         showCloseButton={true}
+        position={340}
         className="tools-modal-sequel dark !max-w-[1400px] border-0 !bg-transparent font-sequel shadow-none"
       >
         {selectedCategory ? (

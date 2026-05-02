@@ -20,7 +20,7 @@ interface UserProfile {
 }
 
 interface UserProfileSidebarProps {
-  user: UserProfile;
+  user?: UserProfile;
   navItems: NavItem[];
   logoutItem: {
     icon: React.ReactNode;
@@ -72,20 +72,28 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
         variants={sidebarVariants}
         aria-label="User Profile Menu"
       >
-        {/* User Info Header */}
-        <motion.div variants={itemVariants} className="flex items-center space-x-4 p-2">
-          <img
-            src={user.avatarUrl}
-            alt={`${user.name}'s avatar`}
-            className="h-12 w-12 rounded-full object-cover"
-          />
-          <div className="flex flex-col truncate">
-            <span className="font-semibold text-lg">{user.name}</span>
-            <span className="text-sm text-muted-foreground truncate">{user.email}</span>
-          </div>
-        </motion.div>
-
-        <motion.div variants={itemVariants} className="my-4 border-t border-border" />
+        {/* User Info Header - Only shown if user prop is provided */}
+        {user ? (
+          <>
+            <motion.div variants={itemVariants} className="flex items-center space-x-4 p-2">
+              <img
+                src={user.avatarUrl}
+                alt={`${user.name}'s avatar`}
+                className="h-12 w-12 rounded-full object-cover"
+              />
+              <div className="flex flex-col truncate">
+                <span className="font-semibold text-lg">{user.name}</span>
+                <span className="text-sm text-muted-foreground truncate">{user.email}</span>
+              </div>
+            </motion.div>
+            <motion.div variants={itemVariants} className="my-4 border-t border-border" />
+          </>
+        ) : (
+          <motion.div variants={itemVariants} className="p-2 mb-4">
+            <span className="font-bold text-2xl tracking-tight text-[#010101]">Polarist</span>
+            <p className="text-sm text-muted-foreground mt-1">Explora nuestras herramientas</p>
+          </motion.div>
+        )}
 
         {/* Navigation Links */}
         <nav className="flex-1 space-y-1" role="navigation">
@@ -120,12 +128,16 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
               <ChevronRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
             </Link>
           )}
+          
           <button
             onClick={() => {
               onItemClick?.();
               logoutItem.onClick();
             }}
-            className="group flex w-full items-center rounded-md px-3.5 py-3 text-base font-bold text-destructive transition-colors hover:bg-destructive/10"
+            className={cn(
+              "group flex w-full items-center rounded-md px-3.5 py-3 text-base font-bold transition-colors",
+              user ? "text-destructive hover:bg-destructive/10" : "text-primary hover:bg-primary/10"
+            )}
           >
             {logoutItem.icon && <span className="mr-3 h-5 w-5">{logoutItem.icon}</span>}
             <span>{logoutItem.label}</span>

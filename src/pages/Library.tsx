@@ -126,17 +126,7 @@ const formatEventTimeLabel = (value?: string | null) => {
   return `${eventTimeFormatter.format(new Date(timestamp))} Hs`;
 };
 
-const buildCancelledEventsStorageKey = (userId?: string, email?: string) => {
-  const normalizedEmail = email?.trim().toLowerCase();
-  if (!userId && !normalizedEmail) {
-    return null;
-  }
 
-  return `polarist-cancelled-events:${userId ?? "anon"}:${normalizedEmail ?? "no-email"}`;
-};
-
-const getCancelledEventKeys = (event: UserEvent) =>
-  [`registration:${event.registrationId}`];
 
 const ProfileHeaderSkeleton = () => (
   <div className="w-full md:inline-block md:min-w-[980px] md:max-w-fit overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
@@ -501,9 +491,7 @@ const Library = () => {
   const [canScrollResourcesRight, setCanScrollResourcesRight] = useState(false);
   const [canScrollEventsLeft, setCanScrollEventsLeft] = useState(false);
   const [canScrollEventsRight, setCanScrollEventsRight] = useState(false);
-  const [cancelledEventKeys, setCancelledEventKeys] = useState<string[]>([]);
   const [eventToCancel, setEventToCancel] = useState<UserEvent | null>(null);
-  const [hasLoadedCancelledEvents, setHasLoadedCancelledEvents] = useState(false);
 
   const isOwnProfile = Boolean(user && profile && user.id === profile.id);
   const profileEmail =
@@ -519,45 +507,9 @@ const Library = () => {
 
   const displayName = profile?.full_name?.trim() || "Usuario Polarist";
   const firstName = displayName.split(/\s+/)[0] || "Usuario";
-  const cancelledEventsStorageKey = useMemo(
-    () => buildCancelledEventsStorageKey(profile?.id, profileEmail),
-    [profile?.id, profileEmail],
-  );
 
-  useEffect(() => {
-    if (typeof window === "undefined" || !cancelledEventsStorageKey) {
-      setCancelledEventKeys([]);
-      setHasLoadedCancelledEvents(false);
-      return;
-    }
 
-    try {
-      const storedValue = window.localStorage.getItem(cancelledEventsStorageKey);
-      if (!storedValue) {
-        setCancelledEventKeys([]);
-        setHasLoadedCancelledEvents(true);
-        return;
-      }
 
-      const parsed = JSON.parse(storedValue);
-      setCancelledEventKeys(Array.isArray(parsed) ? parsed.filter((value): value is string => typeof value === "string") : []);
-    } catch {
-      setCancelledEventKeys([]);
-    }
-
-    setHasLoadedCancelledEvents(true);
-  }, [cancelledEventsStorageKey]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !cancelledEventsStorageKey || !hasLoadedCancelledEvents) {
-      return;
-    }
-
-    window.localStorage.setItem(
-      cancelledEventsStorageKey,
-      JSON.stringify(cancelledEventKeys),
-    );
-  }, [cancelledEventKeys, cancelledEventsStorageKey, hasLoadedCancelledEvents]);
   const orderedSavedTools = useMemo(() => {
     const nextTools = [...tools];
 
@@ -595,13 +547,7 @@ const Library = () => {
     return nextEvents;
   }, [events]);
 
-  const visibleRegisteredEvents = useMemo(
-    () =>
-      orderedUserEvents.filter(
-        (event) => !getCancelledEventKeys(event).some((key) => cancelledEventKeys.includes(key)),
-      ),
-    [cancelledEventKeys, orderedUserEvents],
-  );
+  const visibleRegisteredEvents = orderedUserEvents;
 
   const showToolsSection = activeSavedFilter === "all" || activeSavedFilter === "tools";
   const showResourcesSection = activeSavedFilter === "all" || activeSavedFilter === "resources";
@@ -618,11 +564,6 @@ const Library = () => {
   const confirmCancelEvent = useCallback(
     async (event: UserEvent) => {
       setEventToCancel(null);
-      const eventKeys = getCancelledEventKeys(event);
-
-      setCancelledEventKeys((current) =>
-        Array.from(new Set([...current, ...eventKeys])),
-      );
 
       try {
         await cancelEventRegistration(event.registrationId);
