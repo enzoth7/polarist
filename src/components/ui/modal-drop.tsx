@@ -189,7 +189,7 @@ const Modal: React.FC<ModalProps> = ({
       "w-auto bg-background border border-border text-card-foreground max-w-[90%] sm:max-w-xl rounded-2xl shadow-lg m-4 relative"
     
     // Mobile Bottom Sheet Classes
-    const mobileClasses = "fixed bottom-0 left-0 right-0 m-0 max-w-full max-h-[85vh] overflow-y-auto rounded-t-[32px] rounded-b-none border-x-0 border-b-0 pb-10"
+    const mobileClasses = "fixed bottom-0 left-0 right-0 m-0 max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-[32px] rounded-b-none border-x-0 border-b-0 pb-10"
     
     return isMobile 
       ? cn(base, mobileClasses)

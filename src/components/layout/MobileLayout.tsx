@@ -72,7 +72,7 @@ const MobileLayout = () => {
 
           <main
             ref={mainScrollRef}
-            className="relative flex-1 overflow-y-auto overscroll-contain"
+            className="relative flex-1 overflow-y-auto overflow-x-hidden overscroll-contain"
             onTouchStart={handleAppTouchStart}
             onTouchEnd={handleAppTouchEnd}
             onTouchCancel={resetSwipeGesture}

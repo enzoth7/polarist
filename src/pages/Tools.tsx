@@ -296,9 +296,9 @@ function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
   const kind = tool.tool.kind?.trim();
 
   return (
-    <div className="space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
-      <div className="grid items-start gap-10 lg:grid-cols-[minmax(340px,0.78fr)_minmax(720px,1.22fr)] lg:gap-14">
-        <div className="flex h-full flex-col space-y-8 lg:self-start">
+    <div className="w-full overflow-x-hidden space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
+      <div className="grid min-w-0 items-start gap-10 lg:grid-cols-[minmax(340px,0.78fr)_minmax(720px,1.22fr)] lg:gap-14">
+        <div className="flex min-w-0 h-full flex-col space-y-8 lg:self-start">
           <div className="space-y-5">
             {kind ? (
               <h2
@@ -330,26 +330,26 @@ function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
           </div>
         </div>
 
-        <div className="mx-auto flex w-full max-w-[980px] justify-center pb-10 lg:max-w-[920px] lg:pb-12">
-          <Accordion type="single" collapsible className="w-full space-y-8">
+        <div className="mx-auto flex w-full min-w-0 max-w-[980px] justify-center overflow-x-hidden pb-10 lg:max-w-[920px] lg:pb-12">
+          <Accordion type="single" collapsible className="w-full min-w-0 space-y-8">
             {detailSections.map((section) => (
               <AccordionItem
                 key={section.id}
                 value={section.id}
-                className="rounded-[1.6rem] border border-white/10 bg-[#010101] px-8 py-2 shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
+                className="min-w-0 overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#010101] px-8 py-2 shadow-[0_12px_30px_rgba(0,0,0,0.25)]"
               >
                 <AccordionPrimitive.Header className="flex">
                   <AccordionPrimitive.Trigger
                     style={sequelTextStyle}
-                    className="flex w-full items-center justify-between gap-5 py-6 text-left [&>div>svg>path:last-child]:origin-center [&>div>svg>path:last-child]:transition-all [&>div>svg>path:last-child]:duration-200 [&[data-state=open]>div>svg>path:last-child]:rotate-90 [&[data-state=open]>div>svg>path:last-child]:opacity-0"
+                    className="flex w-full min-w-0 items-center justify-between gap-5 py-6 text-left [&>div>svg>path:last-child]:origin-center [&>div>svg>path:last-child]:transition-all [&>div>svg>path:last-child]:duration-200 [&[data-state=open]>div>svg>path:last-child]:rotate-90 [&[data-state=open]>div>svg>path:last-child]:opacity-0"
                   >
                     <h3
-                      className="text-[clamp(1.45rem,2.4vw,2.2rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6]"
+                      className="min-w-0 flex-1 text-[clamp(1.45rem,2.4vw,2.2rem)] font-bold leading-[0.98] tracking-[-0.05em] text-[#F6F6F6]"
                       style={sequelTextStyle}
                     >
                       {section.title}
                     </h3>
-                    <div className="flex items-center gap-5">
+                    <div className="flex shrink-0 items-center gap-5 pl-3">
                       <span
                         className="shrink-0 text-[1.6rem] font-bold tracking-[-0.05em] text-[#CAFE5B]"
                         style={sequelTextStyle}
@@ -366,7 +366,10 @@ function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
                   </AccordionPrimitive.Trigger>
                 </AccordionPrimitive.Header>
                 <AccordionContent style={sequelTextStyle} className="pb-5 pt-0">
-                  <p className="max-w-[52ch] text-[0.94rem] leading-[1.65] text-white/72" style={sequelTextStyle}>
+                  <p
+                    className="max-w-[52ch] break-words text-[0.94rem] leading-[1.65] text-white/72"
+                    style={sequelTextStyle}
+                  >
                     {section.description}
                   </p>
                 </AccordionContent>
@@ -415,10 +418,10 @@ function CategoryDetail({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="tools-modal-sequel relative w-full h-fit overflow-visible rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
+      className="tools-modal-sequel relative h-fit w-full overflow-x-hidden rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
       style={sequelTextStyle}
     >
-      <div className="relative space-y-4 pb-16 md:pb-8">
+      <div className="relative space-y-4 overflow-x-hidden pb-16 md:pb-8">
         <div className="sticky top-0 z-20 -mx-3 flex items-center justify-center bg-[#010101]/95 px-12 py-3 backdrop-blur md:relative md:mx-0 md:bg-transparent md:px-3 md:py-3 md:backdrop-blur-none">
           <h1 className="text-[clamp(1.2rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6] text-center">
             {category.title}
@@ -435,7 +438,7 @@ function CategoryDetail({
 
         <div
           className={cn(
-            "grid grid-cols-2 gap-2",
+            "grid min-w-0 grid-cols-2 gap-2 overflow-x-hidden",
             "lg:grid-cols-none lg:[grid-template-columns:repeat(var(--desktop-cols),minmax(0,1fr))]",
           )}
           style={{ ["--desktop-cols" as string]: desktopColumns }}
@@ -447,7 +450,7 @@ function CategoryDetail({
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.35, delay: 0.04 * index }}
               className={cn(
-                "w-full",
+                "min-w-0 w-full",
                 hasOddMobileItem && index === tools.length - 1 && "col-span-2 mx-auto max-w-[calc(50%-0.25rem)] lg:col-span-1 lg:max-w-none",
               )}
             >
@@ -459,7 +462,7 @@ function CategoryDetail({
                 disableSharedLayout
                 hideExpandedMedia
                 classNameExpanded={
-                  "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-h-[860px] !max-w-[1320px] !bg-[#010101] !border-white/10"
+                  "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-w-full sm:!max-h-[860px] sm:!max-w-[1320px] !bg-[#010101] !border-white/10"
                 }
                 expandedHeaderActions={
                   <ToolHeaderActions toolName={tool.tool.name} interactions={interactions} />
@@ -501,7 +504,7 @@ const Tools = () => {
         disablePadding
         showCloseButton={false}
         position={340}
-        className="tools-modal-sequel dark !max-w-[1400px] border-0 !bg-transparent font-sequel shadow-none"
+        className="tools-modal-sequel dark !max-w-[1400px] overflow-x-hidden border-0 !bg-transparent font-sequel shadow-none"
       >
         {selectedCategory ? (
           <CategoryDetail

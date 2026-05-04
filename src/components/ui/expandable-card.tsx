@@ -36,6 +36,7 @@ export function ExpandableCard({
 }: ExpandableCardProps) {
   const [active, setActive] = React.useState(false);
   const cardRef = React.useRef<HTMLDivElement>(null);
+  const scrollAreaRef = React.useRef<HTMLDivElement>(null);
   const id = React.useId();
   const sequelStyle: React.CSSProperties = {
     ...style,
@@ -72,6 +73,14 @@ export function ExpandableCard({
     };
   }, []);
 
+  React.useEffect(() => {
+    if (!active) {
+      return;
+    }
+
+    scrollAreaRef.current?.scrollTo({ top: 0, left: 0, behavior: "auto" });
+  }, [active]);
+
   const expandedOverlay = (
     <>
       <AnimatePresence initial={false}>
@@ -88,31 +97,32 @@ export function ExpandableCard({
 
       <AnimatePresence initial={false}>
         {active ? (
-          <div className="fixed inset-0 z-[201] grid place-items-center p-2 sm:p-6 lg:p-10 pointer-events-none">
+          <div className="pointer-events-none fixed inset-0 z-[201] grid items-end justify-items-center px-1 pt-8 sm:place-items-center sm:p-6 lg:p-10">
             <motion.div
               layoutId={disableSharedLayout ? undefined : `card-${title}-${id}`}
-              initial={disableSharedLayout ? { opacity: 0, scale: 0.98, y: 12 } : undefined}
-              animate={disableSharedLayout ? { opacity: 1, scale: 1, y: 0 } : undefined}
-              exit={disableSharedLayout ? { opacity: 0, scale: 0.98, y: 12 } : undefined}
+              initial={disableSharedLayout ? { opacity: 0, y: 80 } : undefined}
+              animate={disableSharedLayout ? { opacity: 1, y: 0 } : undefined}
+              exit={disableSharedLayout ? { opacity: 0, y: 80 } : undefined}
               transition={cardTransition}
               ref={cardRef}
               className={cn(
-                "tools-modal-sequel pointer-events-auto relative flex h-full max-h-[min(92dvh,960px)] w-full max-w-[920px] flex-col overflow-auto rounded-[1.5rem] border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-[2rem]",
+                "tools-modal-sequel pointer-events-auto relative flex w-full flex-col overflow-hidden rounded-t-[1.75rem] rounded-b-none border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] sm:h-full sm:max-h-[min(92dvh,960px)] sm:max-w-[920px] sm:rounded-[2rem]",
+                "max-h-[72dvh]",
                 classNameExpanded,
               )}
               style={sequelStyle}
               {...props}
             >
-              <div className="sticky top-0 z-30 flex items-center justify-end gap-2 px-4 pt-4 pb-2 bg-gradient-to-b from-[#010101] via-[#010101] to-transparent sm:px-6 sm:pt-5 sm:pb-3">
+              <div className="sticky top-0 z-30 flex items-center justify-end gap-2 border-b border-white/10 bg-[#010101]/95 px-4 pb-3 pt-4 backdrop-blur sm:px-6 sm:pt-5 sm:pb-3">
                 {expandedHeaderActions ? (
-                  <div className="mr-auto flex shrink-0 items-center gap-2">
+                  <div className="mr-auto flex min-w-0 items-center gap-1.5 overflow-hidden">
                     {expandedHeaderActions}
                   </div>
                 ) : null}
                 <button
                   type="button"
                   aria-label="Cerrar tarjeta"
-                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/75 transition-colors duration-300 hover:bg-white/20 hover:text-white focus:outline-none"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/75 transition-colors duration-300 hover:bg-white/20 hover:text-white focus:outline-none sm:h-11 sm:w-11"
                   onClick={() => setActive(false)}
                 >
                   <motion.div
@@ -136,36 +146,41 @@ export function ExpandableCard({
                 </div>
               ) : null}
 
-              <div className="relative flex h-full flex-col">
-                <div className="flex items-center gap-6 px-5 pb-4 pt-2 sm:px-8 sm:pb-6 sm:pt-4">
-                  <div className="min-w-0 flex-1">
-                    {description ? (
-                      <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
-                        {description}
-                      </p>
-                    ) : null}
-                    <h3
-                      id={`card-title-${id}`}
-                      className={cn(
-                        "font-semibold tracking-[-0.04em] text-white",
-                        description ? "mt-2 text-2xl sm:text-3xl" : "text-2xl sm:text-4xl md:text-5xl",
-                      )}
-                    >
-                      {title}
-                    </h3>
+              <div
+                ref={scrollAreaRef}
+                className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]"
+              >
+                <div className="relative flex min-h-full flex-col">
+                  <div className="flex items-center gap-6 px-5 pb-4 pt-3 sm:px-8 sm:pb-6 sm:pt-4">
+                    <div className="min-w-0 flex-1">
+                      {description ? (
+                        <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
+                          {description}
+                        </p>
+                      ) : null}
+                      <h3
+                        id={`card-title-${id}`}
+                        className={cn(
+                          "font-semibold tracking-[-0.04em] text-white",
+                          description ? "mt-2 text-2xl sm:text-3xl" : "text-2xl sm:text-4xl md:text-5xl",
+                        )}
+                      >
+                        {title}
+                      </h3>
+                    </div>
                   </div>
-                </div>
 
-                <div className="px-5 pb-8 sm:px-8 sm:pb-10">
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2, ease: "easeOut" }}
-                    className="flex flex-col items-start gap-4 text-sm leading-7 text-white/72 sm:text-base"
-                  >
-                    {children}
-                  </motion.div>
+                  <div className="px-5 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] sm:px-8 sm:pb-10">
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.2, ease: "easeOut" }}
+                      className="flex flex-col items-start gap-4 text-sm leading-7 text-white/72 sm:text-base"
+                    >
+                      {children}
+                    </motion.div>
+                  </div>
                 </div>
               </div>
             </motion.div>
