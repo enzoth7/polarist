@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus } from "lucide-react";
 
@@ -71,7 +72,7 @@ export function ExpandableCard({
     };
   }, []);
 
-  return (
+  const expandedOverlay = (
     <>
       <AnimatePresence initial={false}>
         {active ? (
@@ -79,14 +80,15 @@ export function ExpandableCard({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 h-full w-full bg-black/55 backdrop-blur-md"
+            className="fixed inset-0 z-[200] h-full w-full bg-black/55 backdrop-blur-md"
+            onClick={() => setActive(false)}
           />
         ) : null}
       </AnimatePresence>
 
       <AnimatePresence initial={false}>
         {active ? (
-          <div className="fixed inset-0 z-50 grid place-items-center p-3 sm:p-6 lg:p-10">
+          <div className="fixed inset-0 z-[201] grid place-items-center p-2 sm:p-6 lg:p-10 pointer-events-none">
             <motion.div
               layoutId={disableSharedLayout ? undefined : `card-${title}-${id}`}
               initial={disableSharedLayout ? { opacity: 0, scale: 0.98, y: 12 } : undefined}
@@ -95,28 +97,47 @@ export function ExpandableCard({
               transition={cardTransition}
               ref={cardRef}
               className={cn(
-                "tools-modal-sequel relative flex h-full max-h-[min(92vh,960px)] w-full max-w-[920px] flex-col overflow-auto rounded-[2rem] border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch]",
+                "tools-modal-sequel pointer-events-auto relative flex h-full max-h-[min(92dvh,960px)] w-full max-w-[920px] flex-col overflow-auto rounded-[1.5rem] border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] [scrollbar-width:none] [-ms-overflow-style:none] [-webkit-overflow-scrolling:touch] sm:rounded-[2rem]",
                 classNameExpanded,
               )}
               style={sequelStyle}
               {...props}
             >
-              <div>
-                <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:z-10 before:h-24 before:bg-gradient-to-t before:from-[#010101] before:to-transparent">
-                  {!hideExpandedMedia
-                    ? media ?? (
-                        <img
-                          src={src}
-                          alt={title}
-                          className="h-72 w-full object-cover object-center sm:h-96"
-                        />
-                      )
-                    : null}
-                </div>
+              <div className="sticky top-0 z-30 flex items-center justify-end gap-2 px-4 pt-4 pb-2 bg-gradient-to-b from-[#010101] via-[#010101] to-transparent sm:px-6 sm:pt-5 sm:pb-3">
+                {expandedHeaderActions ? (
+                  <div className="mr-auto flex shrink-0 items-center gap-2">
+                    {expandedHeaderActions}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  aria-label="Cerrar tarjeta"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/75 transition-colors duration-300 hover:bg-white/20 hover:text-white focus:outline-none"
+                  onClick={() => setActive(false)}
+                >
+                  <motion.div
+                    animate={{ rotate: active ? 45 : 0 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <Plus className="h-5 w-5" />
+                  </motion.div>
+                </button>
               </div>
 
+              {!hideExpandedMedia ? (
+                <div className="relative before:absolute before:inset-x-0 before:bottom-[-1px] before:z-10 before:h-24 before:bg-gradient-to-t before:from-[#010101] before:to-transparent">
+                  {media ?? (
+                    <img
+                      src={src}
+                      alt={title}
+                      className="h-56 w-full object-cover object-center sm:h-96"
+                    />
+                  )}
+                </div>
+              ) : null}
+
               <div className="relative flex h-full flex-col">
-                <div className="flex items-center justify-between gap-6 px-6 pb-6 pt-10 sm:px-8 sm:pb-8 sm:pt-12">
+                <div className="flex items-center gap-6 px-5 pb-4 pt-2 sm:px-8 sm:pb-6 sm:pt-4">
                   <div className="min-w-0 flex-1">
                     {description ? (
                       <p className="text-sm font-medium uppercase tracking-[0.22em] text-[#cafe5b]/75">
@@ -126,36 +147,16 @@ export function ExpandableCard({
                     <h3
                       id={`card-title-${id}`}
                       className={cn(
-                        "font-semibold tracking-[-0.04em] text-white sm:text-4xl",
-                        description ? "mt-2 text-3xl" : "text-4xl sm:text-5xl",
+                        "font-semibold tracking-[-0.04em] text-white",
+                        description ? "mt-2 text-2xl sm:text-3xl" : "text-2xl sm:text-4xl md:text-5xl",
                       )}
                     >
                       {title}
                     </h3>
                   </div>
-
-                  {expandedHeaderActions ? (
-                    <div className="flex shrink-0 items-center gap-2 pr-24 sm:pr-32">
-                      {expandedHeaderActions}
-                    </div>
-                  ) : null}
-
-                  <button
-                    type="button"
-                    aria-label="Cerrar tarjeta"
-                    className="absolute right-4 top-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/75 transition-colors duration-300 hover:bg-white/20 hover:text-white focus:outline-none sm:right-6 sm:top-5"
-                    onClick={() => setActive(false)}
-                  >
-                    <motion.div
-                      animate={{ rotate: active ? 45 : 0 }}
-                      transition={{ duration: 0.4 }}
-                    >
-                      <Plus className="h-5 w-5" />
-                    </motion.div>
-                  </button>
                 </div>
 
-                <div className="px-6 pb-8 sm:px-8 sm:pb-10">
+                <div className="px-5 pb-8 sm:px-8 sm:pb-10">
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -171,6 +172,12 @@ export function ExpandableCard({
           </div>
         ) : null}
       </AnimatePresence>
+    </>
+  );
+
+  return (
+    <>
+      {typeof document !== "undefined" ? createPortal(expandedOverlay, document.body) : null}
 
       <motion.div
         role="button"
@@ -187,7 +194,7 @@ export function ExpandableCard({
           }
         }}
         className={cn(
-          "tools-modal-sequel group flex w-full cursor-pointer flex-col overflow-hidden rounded-[1.6rem] border border-[#e7e7eb] bg-[#f8f8f9] p-2.5 font-sequel shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-transform duration-500 hover:-translate-y-1",
+          "tools-modal-sequel group flex w-full cursor-pointer flex-col overflow-hidden rounded-[1.6rem] border border-[#e7e7eb] bg-[#f8f8f9] p-2.5 font-sequel shadow-[0_10px_30px_rgba(15,23,42,0.08)] transition-transform duration-500 md:hover:-translate-y-1",
           className,
         )}
         style={sequelStyle}

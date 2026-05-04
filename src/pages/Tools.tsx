@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 import { motion } from "framer-motion";
-import { Bookmark, ExternalLink, Heart, Plus } from "lucide-react";
+import { Bookmark, ExternalLink, Heart, Plus, X } from "lucide-react";
 
 import Modal from "@/components/ui/modal-drop";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -383,9 +383,11 @@ function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
 function CategoryDetail({
   category,
   officialTools,
+  onClose,
 }: {
   category: CategoryDef;
   officialTools: ToolItem[];
+  onClose: () => void;
 }) {
   const tools = useMemo(
     () =>
@@ -417,12 +419,18 @@ function CategoryDetail({
       style={sequelTextStyle}
     >
       <div className="relative space-y-4 pb-16 md:pb-8">
-        <div className="flex items-center justify-center px-2 py-2 md:px-3 md:py-3">
-          <div className="space-y-2 text-center">
-            <h1 className="text-[clamp(1.35rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
-              {category.title}
-            </h1>
-          </div>
+        <div className="sticky top-0 z-20 -mx-3 flex items-center justify-center bg-[#010101]/95 px-12 py-3 backdrop-blur md:relative md:mx-0 md:bg-transparent md:px-3 md:py-3 md:backdrop-blur-none">
+          <h1 className="text-[clamp(1.2rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6] text-center">
+            {category.title}
+          </h1>
+          <button
+            type="button"
+            aria-label="Cerrar"
+            onClick={onClose}
+            className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 md:right-4"
+          >
+            <X className="h-5 w-5" strokeWidth={2} />
+          </button>
         </div>
 
         <div
@@ -491,7 +499,7 @@ const Tools = () => {
         type="blur"
         animationType="scale"
         disablePadding
-        showCloseButton={true}
+        showCloseButton={false}
         position={340}
         className="tools-modal-sequel dark !max-w-[1400px] border-0 !bg-transparent font-sequel shadow-none"
       >
@@ -499,11 +507,12 @@ const Tools = () => {
           <CategoryDetail
             category={selectedCategory}
             officialTools={officialTools}
+            onClose={() => setSelectedId(null)}
           />
         ) : null}
       </Modal>
 
-      <div className="min-h-screen bg-[#010101] px-5 py-24 md:px-10 md:py-[120px]">
+      <div className="min-h-dvh bg-[#010101] px-5 py-24 md:px-10 md:py-[120px]">
         <div style={{ maxWidth: 1400, margin: "0 auto" }}>
           <div
             style={{
@@ -549,7 +558,7 @@ const Tools = () => {
                   key={category.id}
                   type="button"
                   onClick={() => setSelectedId(category.id)}
-                  className="group relative aspect-[16/10] w-full overflow-hidden text-left transition-transform duration-500 hover:-translate-y-1"
+                  className="group relative aspect-[16/10] w-full overflow-hidden text-left transition-transform duration-500 md:hover:-translate-y-1"
                   style={{
                     borderRadius: CARD_RADIUS,
                     border: "1px solid rgba(255,255,255,0.08)",
@@ -565,7 +574,7 @@ const Tools = () => {
                       loop
                       muted
                       playsInline
-                      className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
+                      className="absolute inset-0 h-full w-full transition-transform duration-700 md:group-hover:scale-105"
                       style={{
                         objectFit: category.mediaFit ?? "cover",
                         objectPosition: category.mediaPosition ?? "center",
@@ -577,7 +586,7 @@ const Tools = () => {
                     <img
                       src={category.image}
                       alt={category.title}
-                      className="absolute inset-0 h-full w-full transition-transform duration-700 group-hover:scale-105"
+                      className="absolute inset-0 h-full w-full transition-transform duration-700 md:group-hover:scale-105"
                       style={{
                         objectFit: category.mediaFit ?? "cover",
                         objectPosition: category.mediaPosition ?? "center",
