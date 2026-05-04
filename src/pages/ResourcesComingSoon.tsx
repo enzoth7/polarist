@@ -4,11 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { routes } from "@/lib/routes";
+import { supabase } from "@/lib/supabase";
 
-const RESOURCES_COUNTDOWN_TARGET = new Date("2026-05-04T20:00:00-03:00").getTime();
-
-const getTimeRemaining = () => {
-  const diff = Math.max(RESOURCES_COUNTDOWN_TARGET - Date.now(), 0);
+const getTimeRemaining = (target: number) => {
+  const diff = Math.max(target - Date.now(), 0);
 
   return {
     days: Math.floor(diff / (1000 * 60 * 60 * 24)),
@@ -66,15 +65,29 @@ const CountdownValue = ({ value }: { value: string }) => {
 
 const ResourcesComingSoon = () => {
   const navigate = useNavigate();
-  const [timeRemaining, setTimeRemaining] = useState(getTimeRemaining);
+  const [target, setTarget] = useState<number | null>(null);
+  const [timeRemaining, setTimeRemaining] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    const interval = window.setInterval(() => {
-      setTimeRemaining(getTimeRemaining());
-    }, 1000);
-
-    return () => window.clearInterval(interval);
+    supabase
+      .from("site_config")
+      .select("value")
+      .eq("key", "countdown_target")
+      .single()
+      .then(({ data }) => {
+        const ts = data ? new Date(data.value).getTime() : new Date("2026-05-18T20:00:00-03:00").getTime();
+        setTarget(ts);
+        setTimeRemaining(getTimeRemaining(ts));
+      });
   }, []);
+
+  useEffect(() => {
+    if (target === null) return;
+    const interval = window.setInterval(() => {
+      setTimeRemaining(getTimeRemaining(target));
+    }, 1000);
+    return () => window.clearInterval(interval);
+  }, [target]);
 
   return (
     <div
