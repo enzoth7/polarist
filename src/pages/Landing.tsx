@@ -206,7 +206,8 @@ const Landing = () => {
               start: "top 85%",
               toggleActions: "play reverse play reverse",
             },
-            x: isEven ? -80 : 80,
+            x: isMobile ? 0 : (isEven ? -80 : 80),
+            y: isMobile ? 40 : 0,
             opacity: 0,
             duration: 1.2,
             ease: "power3.out",
@@ -239,7 +240,7 @@ const Landing = () => {
         <div className={cn("mx-auto max-w-[1200px] text-center", isMobile ? "mb-10" : "mb-14")}>
           <h2
             className="section-title leading-none"
-            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '25px' : 'clamp(24px, 7vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black, whiteSpace: isMobile ? 'nowrap' : 'normal' }}
+            style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '25px' : 'clamp(24px, 7vw, 52px)', letterSpacing: '-1px', lineHeight: 1.1, color: bk.black }}
           >
             A todos nos ha pasado que...
           </h2>

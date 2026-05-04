@@ -35,7 +35,7 @@ const queryClient = new QueryClient();
 
 const PublicLayout = () => {
   return (
-    <div className="relative flex min-h-dvh flex-col bg-white">
+    <div className="relative flex min-h-dvh flex-col bg-white overflow-x-hidden">
       <Header />
       <main className="relative min-h-0 flex-1">
         <Outlet />
