@@ -213,9 +213,9 @@ export function ToolDetailsModal({
                 <h2
                   className="text-[clamp(2rem,4vw,3.4rem)] font-bold tracking-[-0.04em] text-[#F6F6F6]"
                   style={sequelStyle}
-                  >
-                    {selectedTool.name}
-                  </h2>
+                >
+                  {selectedTool.name}
+                </h2>
               </div>
 
               <div className="flex shrink-0 items-center gap-2 pr-10 sm:pr-14">
