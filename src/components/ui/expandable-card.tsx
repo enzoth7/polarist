@@ -143,7 +143,7 @@ export function ExpandableCard({
                   <button
                     type="button"
                     aria-label="Cerrar tarjeta"
-                    className="absolute right-6 top-5 flex shrink-0 items-center justify-center text-white/75 transition-colors duration-300 hover:text-white focus:outline-none sm:right-8 sm:top-7"
+                    className="absolute right-4 top-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/10 text-white/75 transition-colors duration-300 hover:bg-white/20 hover:text-white focus:outline-none sm:right-6 sm:top-5"
                     onClick={() => setActive(false)}
                   >
                     <motion.div

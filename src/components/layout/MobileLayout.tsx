@@ -64,7 +64,7 @@ const MobileLayout = () => {
     <div className="app-shell-backdrop min-h-screen">
       <div
         id="polarist-app-container"
-        className="relative flex h-screen w-full flex-col overflow-hidden bg-[#010101]"
+        className="relative flex h-dvh w-full flex-col overflow-hidden bg-[#010101]"
         style={{ transform: "translateZ(0)" }}
       >
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
@@ -72,7 +72,7 @@ const MobileLayout = () => {
 
           <main
             ref={mainScrollRef}
-            className="relative flex-1 overflow-y-auto"
+            className="relative flex-1 overflow-y-auto overscroll-contain"
             onTouchStart={handleAppTouchStart}
             onTouchEnd={handleAppTouchEnd}
             onTouchCancel={resetSwipeGesture}

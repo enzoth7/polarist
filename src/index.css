@@ -200,6 +200,7 @@
     font-synthesis: none;
     -webkit-font-smoothing: antialiased;
     overflow-x: hidden;
+    overscroll-behavior-y: none;
   }
 
   h1,
