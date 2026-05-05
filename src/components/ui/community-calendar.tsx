@@ -29,6 +29,14 @@ const CALENDAR_WIDTH = 390;
 const CARD_GAP = 18;
 const PANEL_HEIGHT = 468;
 
+const getStartOfDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
+
+const getMillisecondsUntilNextDay = (date: Date) => {
+  const nextDay = new Date(date);
+  nextDay.setHours(24, 0, 0, 0);
+  return Math.max(nextDay.getTime() - date.getTime(), 1_000);
+};
+
 type SupabaseEvent = {
   id: string;
   title: string;
@@ -81,9 +89,10 @@ const CalendarDay: React.FC<{
   isHeader?: boolean;
   hasFutureEvent?: boolean;
   hasPastEvent?: boolean;
+  isPastDay?: boolean;
   isActive?: boolean;
   onClick?: () => void;
-}> = ({ day, isHeader, hasFutureEvent, hasPastEvent, isActive, onClick }) => {
+}> = ({ day, isHeader, hasFutureEvent, hasPastEvent, isPastDay, isActive, onClick }) => {
   const Comp = hasFutureEvent ? "button" : "div";
 
   return (
@@ -100,10 +109,18 @@ const CalendarDay: React.FC<{
             : "bg-[#CAFE5B] text-[#010101]"
           : hasPastEvent
             ? "bg-black/[0.06] text-black/25"
+            : isPastDay
+              ? "text-black/35"
             : "text-muted-foreground",
       )}
     >
-      <span className={cn("font-medium", isHeader ? "text-[10px]" : "text-sm")}>
+      <span
+        className={cn(
+          "relative font-medium",
+          isHeader ? "text-[10px]" : "text-sm",
+          isPastDay && !hasFutureEvent && "after:absolute after:left-[-2px] after:right-[-2px] after:top-1/2 after:h-px after:-translate-y-1/2 after:rounded-full after:bg-current after:opacity-70",
+        )}
+      >
         {day}
       </span>
     </Comp>
@@ -136,21 +153,29 @@ export function CommunityCalendar() {
     staleTime: 5 * 60_000,
   });
 
-  const today = useMemo(() => new Date(), []);
-  const [displayYear, setDisplayYear] = useState(today.getFullYear());
-  const [displayMonth, setDisplayMonth] = useState(today.getMonth());
+  const [currentDate, setCurrentDate] = useState(() => new Date());
+  const today = useMemo(() => getStartOfDay(currentDate), [currentDate]);
+  const [displayYear, setDisplayYear] = useState(() => currentDate.getFullYear());
+  const [displayMonth, setDisplayMonth] = useState(() => currentDate.getMonth());
   const [selectedEvent, setSelectedEvent] = useState<SupabaseEvent | null>(null);
   const [view, setView] = useState<CommunityView>("calendar");
   const [registrationName, setRegistrationName] = useState("");
   const [registrationEmail, setRegistrationEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const timeoutId = window.setTimeout(() => {
+      setCurrentDate(new Date());
+    }, getMillisecondsUntilNextDay(currentDate));
+
+    return () => window.clearTimeout(timeoutId);
+  }, [currentDate]);
+
   // Auto-salto al primer mes con eventos futuros
   useEffect(() => {
     if (!events.length) return;
 
-    const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const futureEvents = events.filter((e) => new Date(e.event_date) >= startOfToday);
+    const futureEvents = events.filter((e) => getStartOfDay(new Date(e.event_date)) >= today);
     if (!futureEvents.length) return;
 
     const currentMonthHasFuture = futureEvents.some((e) => {
@@ -192,7 +217,9 @@ export function CommunityCalendar() {
 
     for (let day = 1; day <= daysInMonth; day++) {
       const event = eventsByDay.get(day);
-      const isPastEvent = event ? new Date(event.event_date) < new Date() : false;
+      const dayDate = new Date(displayYear, displayMonth, day);
+      const isPastDay = getStartOfDay(dayDate) < today;
+      const isPastEvent = Boolean(event && getStartOfDay(new Date(event.event_date)) < today);
       const isFutureEvent = event && !isPastEvent;
 
       days.push(
@@ -201,6 +228,7 @@ export function CommunityCalendar() {
           day={day}
           hasFutureEvent={isFutureEvent}
           hasPastEvent={isPastEvent}
+          isPastDay={isPastDay}
           isActive={selectedEvent?.id === event?.id}
           onClick={() => {
             if (event && isFutureEvent) {
