@@ -418,70 +418,75 @@ function CategoryDetail({
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.55, ease: "easeOut" }}
-      className="tools-modal-sequel relative h-fit w-full overflow-x-hidden rounded-[32px] border border-white/10 bg-[#010101] p-3 font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)] md:p-4"
+      className="tools-modal-sequel relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] font-sequel text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)]"
       style={sequelTextStyle}
     >
-      <div className="relative space-y-4 overflow-x-hidden pb-16 md:pb-8">
-        <div className="sticky top-0 z-20 -mx-3 flex items-center justify-center bg-[#010101]/95 px-12 py-3 backdrop-blur md:relative md:mx-0 md:bg-transparent md:px-3 md:py-3 md:backdrop-blur-none">
-          <h1 className="text-[clamp(1.2rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6] text-center">
-            {category.title}
-          </h1>
-          <button
-            type="button"
-            aria-label="Cerrar"
-            onClick={onClose}
-            className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white/80 transition-colors hover:bg-white/20 md:right-4"
-          >
-            <X className="h-5 w-5" strokeWidth={2} />
-          </button>
-        </div>
+      {/* X fijo — fuera del scroll, siempre visible */}
+      <button
+        type="button"
+        aria-label="Cerrar"
+        onClick={onClose}
+        className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20"
+      >
+        <X className="h-5 w-5" strokeWidth={2} />
+      </button>
 
-        <div
-          className={cn(
-            "grid min-w-0 grid-cols-2 gap-2 overflow-x-hidden",
-            "lg:grid-cols-none lg:[grid-template-columns:repeat(var(--desktop-cols),minmax(0,1fr))]",
-          )}
-          style={{ ["--desktop-cols" as string]: desktopColumns }}
-        >
-          {tools.map((tool, index) => (
-            <motion.div
-              key={`${tool.label}-${index}`}
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.35, delay: 0.04 * index }}
-              className={cn(
-                "min-w-0 w-full",
-                hasOddMobileItem && index === tools.length - 1 && "col-span-2 mx-auto max-w-[calc(50%-0.25rem)] lg:col-span-1 lg:max-w-none",
-              )}
-            >
-              <ExpandableCard
-                title={tool.label}
-                src=""
-                description=""
-                className={cn("w-full", "aspect-square")}
-                disableSharedLayout
-                hideExpandedMedia
-                classNameExpanded={
-                  "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-w-full sm:!max-h-[860px] sm:!max-w-[1320px] !bg-[#010101] !border-white/10"
-                }
-                expandedHeaderActions={
-                  <ToolHeaderActions toolName={tool.tool.name} interactions={interactions} />
-                }
-                media={
-                  <div className="flex h-full w-full items-center justify-center px-4 py-4 md:px-5 md:py-5">
-                    <ToolLogo
-                      name={tool.label}
-                      logoFilename={tool.tool?.logoFilename}
-                      className="h-16 w-16 translate-y-[13%] rounded-[1.5rem] border-0 bg-transparent sm:h-20 sm:w-20 md:h-24 md:w-24"
-                      imageClassName="p-0 object-contain"
-                    />
-                  </div>
-                }
+      {/* Scroll interno */}
+      <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="space-y-4 overflow-x-hidden px-3 pb-8 pt-4 md:px-4">
+          <div className="flex items-center justify-center px-12 py-3">
+            <h1 className="text-center text-[clamp(1.2rem,3vw,2.3rem)] font-bold leading-[1.02] tracking-[-0.04em] text-[#F6F6F6]">
+              {category.title}
+            </h1>
+          </div>
+
+          <div
+            className={cn(
+              "grid min-w-0 grid-cols-2 gap-2 overflow-x-hidden",
+              "lg:grid-cols-none lg:[grid-template-columns:repeat(var(--desktop-cols),minmax(0,1fr))]",
+            )}
+            style={{ ["--desktop-cols" as string]: desktopColumns }}
+          >
+            {tools.map((tool, index) => (
+              <motion.div
+                key={`${tool.label}-${index}`}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, delay: 0.04 * index }}
+                className={cn(
+                  "min-w-0 w-full",
+                  hasOddMobileItem && index === tools.length - 1 && "col-span-2 mx-auto max-w-[calc(50%-0.25rem)] lg:col-span-1 lg:max-w-none",
+                )}
               >
-                <ToolEditorialDetail tool={tool} />
-              </ExpandableCard>
-            </motion.div>
-          ))}
+                <ExpandableCard
+                  title={tool.label}
+                  src=""
+                  description=""
+                  className={cn("w-full", "aspect-square")}
+                  disableSharedLayout
+                  hideExpandedMedia
+                  classNameExpanded={
+                    "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-w-full sm:!max-h-[860px] sm:!max-w-[1320px] !bg-[#010101] !border-white/10"
+                  }
+                  expandedHeaderActions={
+                    <ToolHeaderActions toolName={tool.tool.name} interactions={interactions} />
+                  }
+                  media={
+                    <div className="flex h-full w-full items-center justify-center px-4 py-4 md:px-5 md:py-5">
+                      <ToolLogo
+                        name={tool.label}
+                        logoFilename={tool.tool?.logoFilename}
+                        className="h-16 w-16 translate-y-[13%] rounded-[1.5rem] border-0 bg-transparent sm:h-20 sm:w-20 md:h-24 md:w-24"
+                        imageClassName="p-0 object-contain"
+                      />
+                    </div>
+                  }
+                >
+                  <ToolEditorialDetail tool={tool} />
+                </ExpandableCard>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -503,7 +508,8 @@ const Tools = () => {
         animationType="scale"
         disablePadding
         showCloseButton={false}
-        position={340}
+        position={0}
+        centerOnMobile
         className="tools-modal-sequel dark !max-w-[1400px] overflow-x-hidden border-0 !bg-transparent font-sequel shadow-none"
       >
         {selectedCategory ? (

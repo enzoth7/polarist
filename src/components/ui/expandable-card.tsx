@@ -97,7 +97,7 @@ export function ExpandableCard({
 
       <AnimatePresence initial={false}>
         {active ? (
-          <div className="pointer-events-none fixed inset-0 z-[201] grid items-end justify-items-center px-1 pt-8 sm:place-items-center sm:p-6 lg:p-10">
+          <div className="pointer-events-none fixed inset-0 z-[201] grid place-items-center p-4 sm:p-6 lg:p-10">
             <motion.div
               layoutId={disableSharedLayout ? undefined : `card-${title}-${id}`}
               initial={disableSharedLayout ? { opacity: 0, y: 80 } : undefined}
@@ -106,8 +106,8 @@ export function ExpandableCard({
               transition={cardTransition}
               ref={cardRef}
               className={cn(
-                "tools-modal-sequel pointer-events-auto relative flex w-full flex-col overflow-hidden rounded-t-[1.75rem] rounded-b-none border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] sm:h-full sm:max-h-[min(92dvh,960px)] sm:max-w-[920px] sm:rounded-[2rem]",
-                "max-h-[72dvh]",
+                "tools-modal-sequel pointer-events-auto relative flex w-full flex-col overflow-hidden rounded-[1.75rem] border border-white/10 bg-[#010101] font-sequel shadow-[0_28px_90px_rgba(0,0,0,0.55)] sm:h-full sm:max-h-[min(92dvh,960px)] sm:max-w-[920px] sm:rounded-[2rem]",
+                "max-h-[88dvh]",
                 classNameExpanded,
               )}
               style={sequelStyle}
