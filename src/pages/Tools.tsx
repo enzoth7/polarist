@@ -426,7 +426,7 @@ function CategoryDetail({
         type="button"
         aria-label="Cerrar"
         onClick={onClose}
-        className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20"
+        className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-[#2c2c2c] text-white transition-colors hover:bg-[#3a3a3a]"
       >
         <X className="h-5 w-5" strokeWidth={2} />
       </button>

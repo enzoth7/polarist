@@ -225,7 +225,7 @@ export function ExpandableCard({
             )}
           </div>
 
-          <div className="flex min-h-[3.45rem] items-end justify-between gap-2 px-1 pb-0.5 sm:min-h-[3.8rem]">
+          <div className="flex min-h-[3.45rem] items-end justify-between gap-2 px-1 pb-2.5 sm:min-h-[3.8rem] sm:pb-2">
             <div className="min-w-0 flex-1">
               {description ? (
                 <p className="text-sm font-semibold tracking-normal text-[#777986] sm:text-[0.95rem]">
