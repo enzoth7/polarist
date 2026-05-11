@@ -19,66 +19,102 @@ interface ResourceShowcaseProps {
 export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
   const [hoveredId, setHoveredId] = useState<string | null>(null);
 
-  // Distribuir en 3 columnas con offsets distintos (igual que el original)
   const col1 = items.filter((_, i) => i % 3 === 0);
   const col2 = items.filter((_, i) => i % 3 === 1);
   const col3 = items.filter((_, i) => i % 3 === 2);
 
   return (
-    <div className="flex flex-col md:flex-row items-start gap-8 md:gap-16 lg:gap-32 select-none w-full max-w-7xl mx-auto py-8 px-4 md:px-6">
-
-      {/* ── Izquierda: lista de títulos ── */}
-      <div className="flex flex-col sm:grid sm:grid-cols-2 md:flex md:flex-col gap-6 md:gap-8 flex-1 w-full order-2 md:order-1">
+    <>
+      {/* ── Mobile: lista de cards ── */}
+      <div className="flex flex-col gap-3 w-full max-w-lg mx-auto px-4 md:hidden">
         {items.map((item) => (
-          <ItemRow
-            key={item.id}
-            item={item}
-            hoveredId={hoveredId}
-            onHover={setHoveredId}
-          />
+          <MobileCard key={item.id} item={item} />
         ))}
       </div>
 
-      {/* ── Derecha: grid de fotos ── */}
-      <div className="flex gap-2 md:gap-3 flex-shrink-0 overflow-visible p-4 md:p-6 order-1 md:order-2 mt-0">
-        {/* Columna 1 — Desplazada para alinear el medio con el gap de las otras */}
-        <div className="flex flex-col gap-2 md:gap-3 -mt-[98px]">
-          {col1.map((item) => (
-            <PhotoCard
+      {/* ── Desktop: layout 2 paneles ── */}
+      <div className="hidden md:flex md:flex-row items-start gap-16 lg:gap-32 select-none w-full max-w-7xl mx-auto py-8 px-6">
+        {/* Izquierda: lista de títulos */}
+        <div className="flex flex-col gap-8 flex-1 w-full">
+          {items.map((item) => (
+            <ItemRow
               key={item.id}
               item={item}
-              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
               hoveredId={hoveredId}
               onHover={setHoveredId}
             />
           ))}
         </div>
 
-        {/* Columna 2 */}
-        <div className="flex flex-col gap-2 md:gap-3">
-          {col2.map((item) => (
-            <PhotoCard
-              key={item.id}
-              item={item}
-              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
+        {/* Derecha: grid de fotos */}
+        <div className="flex gap-3 flex-shrink-0 overflow-visible p-6">
+          <div className="flex flex-col gap-3 -mt-[98px]">
+            {col1.map((item) => (
+              <PhotoCard
+                key={item.id}
+                item={item}
+                className="w-[185px] h-[185px]"
+                hoveredId={hoveredId}
+                onHover={setHoveredId}
+              />
+            ))}
+          </div>
+          <div className="flex flex-col gap-3">
+            {col2.map((item) => (
+              <PhotoCard
+                key={item.id}
+                item={item}
+                className="w-[185px] h-[185px]"
+                hoveredId={hoveredId}
+                onHover={setHoveredId}
+              />
+            ))}
+          </div>
+          <div className="flex flex-col gap-3">
+            {col3.map((item) => (
+              <PhotoCard
+                key={item.id}
+                item={item}
+                className="w-[185px] h-[185px]"
+                hoveredId={hoveredId}
+                onHover={setHoveredId}
+              />
+            ))}
+          </div>
         </div>
+      </div>
+    </>
+  );
+}
 
-        {/* Columna 3 */}
-        <div className="flex flex-col gap-2 md:gap-3">
-          {col3.map((item) => (
-            <PhotoCard
-              key={item.id}
-              item={item}
-              className="w-[130px] h-[130px] sm:w-[150px] sm:h-[150px] md:w-[185px] md:h-[185px]"
-              hoveredId={hoveredId}
-              onHover={setHoveredId}
-            />
-          ))}
-        </div>
+// ── Card de mobile ────────────────────────────────────────────────────────
+function MobileCard({ item }: { item: ShowcaseItem }) {
+  return (
+    <div
+      className="flex items-center gap-4 rounded-2xl bg-white/[0.03] p-3 cursor-pointer active:bg-white/[0.06] transition-colors"
+      onClick={() => item.onSelect?.()}
+    >
+      <div className="h-[72px] w-[72px] flex-shrink-0 overflow-hidden rounded-xl">
+        <img
+          src={item.image}
+          alt={item.title}
+          className="h-full w-full object-cover"
+          style={{ filter: 'grayscale(0.5) brightness(0.8)' }}
+        />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p
+          className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#CAFE5B]/70"
+          style={{ fontFamily: 'var(--font-serif)' }}
+        >
+          {item.eyebrow}
+        </p>
+        <p
+          className="mt-1 text-[15px] font-semibold leading-tight tracking-tight text-white/90"
+          style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+        >
+          {item.title}
+        </p>
       </div>
     </div>
   );

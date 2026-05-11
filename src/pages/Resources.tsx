@@ -130,7 +130,8 @@ const Resources = () => {
         animationType="scale"
         disablePadding
         showCloseButton={false}
-        position={120}
+        position={0}
+        centerOnMobile
         className="!max-w-[720px] border-0 !bg-transparent shadow-none"
       >
         {openedResource ? (

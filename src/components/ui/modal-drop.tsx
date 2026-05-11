@@ -36,6 +36,11 @@ interface ModalProps {
    * @default false
    */
   disablePadding?: boolean
+  /**
+   * Force centered layout on mobile instead of bottom sheet.
+   * @default false
+   */
+  centerOnMobile?: boolean
 }
 
 const backdropVariants: Variants = {
@@ -120,6 +125,7 @@ const Modal: React.FC<ModalProps> = ({
   animationType = "scale",
   position = 0,
   disablePadding = false,
+  centerOnMobile = false,
 }) => {
   const [mounted, setMounted] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
@@ -187,13 +193,12 @@ const Modal: React.FC<ModalProps> = ({
   const getModalClasses = () => {
     const base =
       "w-auto bg-background border border-border text-card-foreground max-w-[90%] sm:max-w-xl rounded-2xl shadow-lg m-4 relative"
-    
+
     // Mobile Bottom Sheet Classes
     const mobileClasses = "fixed bottom-0 left-0 right-0 m-0 max-w-full max-h-[85vh] overflow-y-auto overflow-x-hidden overscroll-contain rounded-t-[32px] rounded-b-none border-x-0 border-b-0 pb-10"
-    
-    return isMobile 
-      ? cn(base, mobileClasses)
-      : (type === "overlay" ? base : `${base} border border-border`)
+
+    if (isMobile && !centerOnMobile) return cn(base, mobileClasses)
+    return type === "overlay" ? base : `${base} border border-border`
   }
 
   if (!mounted) return null
@@ -213,8 +218,8 @@ const Modal: React.FC<ModalProps> = ({
     }
   }
 
-  const variants = isMobile 
-    ? bottomSheetVariants 
+  const variants = (isMobile && !centerOnMobile)
+    ? bottomSheetVariants
     : (animationType === "scale" ? scaleVariants : dropVariants)
 
   const modalContent = (
@@ -227,13 +232,13 @@ const Modal: React.FC<ModalProps> = ({
           exit="exit"
           className={cn(
             "fixed inset-0 z-[100] flex",
-            isMobile ? "items-end overflow-hidden" : "items-center justify-center overflow-y-auto",
+            (isMobile && !centerOnMobile) ? "items-end overflow-hidden" : "items-center justify-center overflow-y-auto",
             getOverlayClasses()
           )}
           onClick={handleOverlayClick}
           style={{
-            alignItems: isMobile ? "flex-end" : (position === 0 ? "center" : "flex-start"),
-            paddingTop: isMobile ? 0 : (position === 0 ? 0 : `calc(50vh - ${position}px)`),
+            alignItems: (isMobile && !centerOnMobile) ? "flex-end" : (position === 0 ? "center" : "flex-start"),
+            paddingTop: (isMobile && !centerOnMobile) ? 0 : (position === 0 ? 0 : `calc(50vh - ${position}px)`),
             willChange:
               type === "blur" ? "backdrop-filter, opacity" : undefined,
           }}
@@ -248,7 +253,7 @@ const Modal: React.FC<ModalProps> = ({
             onClick={(e) => e.stopPropagation()}
             layout={type === "blur"}
           >
-            {isMobile && (
+            {isMobile && !centerOnMobile && (
               <div className="mx-auto mt-3 h-1.5 w-12 rounded-full bg-white/20" />
             )}
             {title ? (

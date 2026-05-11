@@ -98,13 +98,13 @@ const Header = () => {
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
+    { label: "Recursos", to: routes.appResources, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
+    { label: "Recursos", to: routes.appResources, showAlways: true },
     { label: "Biblioteca", to: routes.appProfile, showAlways: true },
   ];
 
@@ -142,14 +142,14 @@ const Header = () => {
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
+    { label: "Recursos", to: routes.appResources, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.resourcesComingSoon, showAlways: true },
+    { label: "Recursos", to: routes.appResources, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: routes.appProfile, showAlways: true },
   ];
