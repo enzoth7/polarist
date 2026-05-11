@@ -1,14 +1,50 @@
 import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { X, ChevronDown } from "lucide-react";
 import ReactMarkdown from "react-markdown";
+import * as AccordionPrimitive from "@radix-ui/react-accordion";
 
 import { useResourcesQuery, type ResourceItem } from "@/hooks/useResources";
 import ResourceShowcase, { type ShowcaseItem } from "@/components/ui/resource-showcase";
 import Modal from "@/components/ui/modal-drop";
+import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80";
 
 const SANS = "var(--font-sequel, sans-serif)";
+
+function parseMarkdownSections(content: string): { heading: string; body: string }[] {
+  const h2Parts = content
+    .split(/\n(?=## )/)
+    .filter((p) => p.startsWith("## "))
+    .map((p) => {
+      const lines = p.split("\n");
+      return { heading: lines[0].slice(3).trim(), body: lines.slice(1).join("\n").trim() };
+    });
+
+  // Múltiples ## → cada uno es una sección real (aiterms, marketing-terms)
+  if (h2Parts.length > 1) return h2Parts;
+
+  // Un solo ## → es un wrapper, buscar ### adentro (strategy, visual, social, timeline)
+  const wrapperBody = h2Parts[0]?.body ?? content;
+  const h3Sections = wrapperBody
+    .split(/\n(?=### )/)
+    .filter((p) => p.trimStart().startsWith("### "))
+    .map((p) => {
+      const pLines = p.split("\n");
+      const heading = pLines[0].replace(/^###\s+(\d+\.?\s*)?/, "").trim();
+      return { heading, body: pLines.slice(1).join("\n").trim() };
+    });
+
+  return h3Sections; // vacío → muestra markdown plano (prompts, decision)
+}
+
+function stripOuterH2(content: string): string {
+  const lines = content.split("\n");
+  if (!lines[0]?.startsWith("## ")) return content;
+  let start = 1;
+  while (start < lines.length && !lines[start]?.trim()) start++;
+  return lines.slice(start).join("\n").trim();
+}
 
 const markdownComponents = {
   h2: ({ children }: { children?: React.ReactNode }) => (
@@ -56,52 +92,88 @@ const markdownComponents = {
   ),
 };
 
-const ResourceDetail = ({ resource, onClose }: { resource: ResourceItem; onClose: () => void }) => (
-  <div className="relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)]">
-    <button
-      type="button"
-      aria-label="Cerrar"
-      onClick={onClose}
-      className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20"
-    >
-      <X className="h-5 w-5" strokeWidth={2} />
-    </button>
+function ResourceDetail({ resource, onClose }: { resource: ResourceItem; onClose: () => void }) {
+  const sections = resource.content ? parseMarkdownSections(resource.content) : [];
+  const flatBody = resource.content ? stripOuterH2(resource.content) : null;
 
-    <div className="flex-1 overflow-y-auto overscroll-contain">
-      <div className="relative aspect-[16/9] w-full overflow-hidden">
-        <img src={resource.image ?? FALLBACK_IMAGE} alt="" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/40 to-transparent" />
-      </div>
+  return (
+    <div className="relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)]">
+      <button
+        type="button"
+        aria-label="Cerrar"
+        onClick={onClose}
+        className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20"
+      >
+        <X className="h-5 w-5" strokeWidth={2} />
+      </button>
 
-      <div className="px-7 pb-12 pt-6 md:px-10 md:pb-14 md:pt-8">
-        <p
-          className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#CAFE5B]"
-          style={{ fontFamily: "var(--font-serif)" }}
-        >
-          {resource.eyebrow}
-        </p>
-        <h2
-          className="mt-3 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.03em]"
-          style={{ fontFamily: SANS }}
-        >
-          {resource.title}
-        </h2>
-        <p
-          className="mt-5 text-[15px] leading-[1.7] text-[#F6F6F6]/70"
-          style={{ fontFamily: SANS }}
-        >
-          {resource.description}
-        </p>
+      <div className="flex-1 overflow-y-auto overscroll-contain">
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
+          <img src={resource.image ?? FALLBACK_IMAGE} alt="" className="h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/40 to-transparent" />
+        </div>
 
-        {resource.content ? (
-          <div className="mt-10 border-t border-white/8 pt-8">
-            <ReactMarkdown components={markdownComponents}>{resource.content}</ReactMarkdown>
+        <div className="px-7 pb-4 pt-6 md:px-10 md:pt-8">
+          <p
+            className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#CAFE5B]"
+            style={{ fontFamily: "var(--font-serif)" }}
+          >
+            {resource.eyebrow}
+          </p>
+          <h2
+            className="mt-3 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.03em]"
+            style={{ fontFamily: SANS }}
+          >
+            {resource.title}
+          </h2>
+          <p
+            className="mt-5 text-[15px] leading-[1.7] text-[#F6F6F6]/70"
+            style={{ fontFamily: SANS }}
+          >
+            {resource.description}
+          </p>
+        </div>
+
+        {sections.length === 0 && flatBody ? (
+          <div className="border-t border-white/8 px-7 pb-10 pt-6 md:px-10">
+            <ReactMarkdown components={markdownComponents}>{flatBody}</ReactMarkdown>
           </div>
         ) : null}
+
+        {sections.length > 0 && (
+          <div className="border-t border-white/8 px-5 pb-10 pt-5 md:px-8">
+            <Accordion type="multiple" className="space-y-2">
+              {sections.map((section, i) => (
+                <AccordionItem
+                  key={i}
+                  value={`section-${i}`}
+                  className="overflow-hidden rounded-[1.3rem] border border-white/8 bg-white/[0.03] px-5"
+                >
+                  <AccordionPrimitive.Header className="flex">
+                    <AccordionPrimitive.Trigger
+                      className="group flex w-full items-center justify-between py-5 text-left [&[data-state=open]>svg]:rotate-180"
+                    >
+                      <span
+                        className="text-[0.97rem] font-bold leading-tight tracking-[-0.02em] text-[#F6F6F6] md:text-[1.05rem]"
+                        style={{ fontFamily: SANS }}
+                      >
+                        {section.heading}
+                      </span>
+                      <ChevronDown className="h-4 w-4 shrink-0 text-[#CAFE5B] transition-transform duration-300" />
+                    </AccordionPrimitive.Trigger>
+                  </AccordionPrimitive.Header>
+                  <AccordionContent className="pb-5">
+                    <ReactMarkdown components={markdownComponents}>{section.body}</ReactMarkdown>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        )}
       </div>
     </div>
-  </div>
-);
+  );
+}
 
 const Resources = () => {
   const { data: resources = [] } = useResourcesQuery();
