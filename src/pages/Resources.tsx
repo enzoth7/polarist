@@ -1,9 +1,10 @@
 import { useMemo, useState } from "react";
-import { X, Plus } from "lucide-react";
+import { X, Plus, ExternalLink, Download } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 
 import { useResourcesQuery, type ResourceItem } from "@/hooks/useResources";
+import { useResourceDownloadsQuery, type DownloadItem } from "@/hooks/useResourceDownloads";
 import ResourceShowcase, { type ShowcaseItem } from "@/components/ui/resource-showcase";
 import Modal from "@/components/ui/modal-drop";
 import { Accordion, AccordionContent, AccordionItem } from "@/components/ui/accordion";
@@ -179,8 +180,86 @@ function ResourceDetail({ resource, onClose }: { resource: ResourceItem; onClose
   );
 }
 
+async function forceDownload(url: string) {
+  const filename = url.split("/").pop() ?? "archivo";
+  const res = await fetch(url);
+  const blob = await res.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = blobUrl;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(blobUrl);
+}
+
+const LINK_THUMB = "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=80&q=70";
+const SKILL_THUMB = "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=80&q=70";
+
+function DownloadRow({ item, isLast }: { item: DownloadItem; isLast: boolean }) {
+  const isDownload = item.type === "download";
+  const [loading, setLoading] = useState(false);
+
+  const handleDownload = async () => {
+    if (loading) return;
+    setLoading(true);
+    try { await forceDownload(item.url); } finally { setLoading(false); }
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-4 py-4 rounded-xl transition-colors duration-300 hover:bg-white/[0.05]">
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl">
+            <img
+              src={item.imageUrl ?? (isDownload ? SKILL_THUMB : LINK_THUMB)}
+              alt=""
+              className="h-full w-full object-cover"
+              style={{ filter: "grayscale(0.3) brightness(0.75)" }}
+            />
+          </div>
+          <div className="min-w-0">
+            <p className="text-[15px] font-semibold leading-tight tracking-[-0.01em] text-[#F6F6F6]" style={{ fontFamily: SANS }}>
+              {item.title}
+            </p>
+            {item.description ? (
+              <p className="mt-1 text-[13px] leading-[1.55] text-[#F6F6F6]/50" style={{ fontFamily: SANS }}>
+                {item.description}
+              </p>
+            ) : null}
+          </div>
+        </div>
+        {isDownload ? (
+          <button
+            type="button"
+            onClick={handleDownload}
+            disabled={loading}
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-[#F6F6F6]/60 transition-colors hover:border-[#CAFE5B]/40 hover:text-[#CAFE5B] disabled:opacity-40"
+            aria-label="Descargar"
+          >
+            <Download className="h-4 w-4" strokeWidth={2} />
+          </button>
+        ) : (
+          <a
+            href={item.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-[#F6F6F6]/60 transition-colors hover:border-[#a78bfa]/40 hover:text-[#a78bfa]"
+            aria-label="Abrir enlace"
+          >
+            <ExternalLink className="h-4 w-4" strokeWidth={2} />
+          </a>
+        )}
+      </div>
+      {!isLast && <div className="mx-14 h-px bg-white/10" />}
+    </div>
+  );
+}
+
 const Resources = () => {
   const { data: resources = [] } = useResourcesQuery();
+  const { data: downloads = [] } = useResourceDownloadsQuery();
   const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
 
   const openedResource = resources.find((r) => r.id === openedFolderId) ?? null;
@@ -314,6 +393,31 @@ const Resources = () => {
 
       {/* Showcase interactivo */}
       <ResourceShowcase items={showcaseItems} />
+
+      {/* Links externos y descargables */}
+      {downloads.length > 0 && (
+        <div className="mt-32 w-full max-w-4xl">
+          <h2
+            style={{
+              fontFamily: SANS,
+              fontSize: "clamp(2rem, 5vw, 3.2rem)",
+              fontWeight: 700,
+              letterSpacing: "-0.04em",
+              lineHeight: 1,
+              color: "#F6F6F6",
+              textAlign: "center",
+              marginBottom: "2.5rem",
+            }}
+          >
+            Links externos y descargables
+          </h2>
+            <div>
+            {downloads.map((item, i) => (
+              <DownloadRow key={item.id} item={item} isLast={i === downloads.length - 1} />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
     </>
   );
