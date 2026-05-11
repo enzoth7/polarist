@@ -1,16 +1,113 @@
 import { useMemo, useState } from "react";
+import { X } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
-import { FolderDetailView } from "@/components/guides/FolderDetailView";
-import { useResourcesQuery } from "@/hooks/useResources";
+import { useResourcesQuery, type ResourceItem } from "@/hooks/useResources";
 import ResourceShowcase, { type ShowcaseItem } from "@/components/ui/resource-showcase";
+import Modal from "@/components/ui/modal-drop";
 
 const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80";
+
+const SANS = "var(--font-sequel, sans-serif)";
+
+const markdownComponents = {
+  h2: ({ children }: { children?: React.ReactNode }) => (
+    <h3
+      className="mt-10 text-[1.35rem] font-bold leading-[1.15] tracking-[-0.02em] text-[#F6F6F6] first:mt-0 md:text-[1.5rem]"
+      style={{ fontFamily: SANS }}
+    >
+      {children}
+    </h3>
+  ),
+  h3: ({ children }: { children?: React.ReactNode }) => (
+    <h4
+      className="mt-8 text-[1.05rem] font-bold leading-[1.25] tracking-[-0.015em] text-[#F6F6F6] md:text-[1.15rem]"
+      style={{ fontFamily: SANS }}
+    >
+      {children}
+    </h4>
+  ),
+  p: ({ children }: { children?: React.ReactNode }) => (
+    <p
+      className="mt-3 text-[14.5px] leading-[1.75] text-[#F6F6F6]/72 md:text-[15px]"
+      style={{ fontFamily: SANS }}
+    >
+      {children}
+    </p>
+  ),
+  ul: ({ children }: { children?: React.ReactNode }) => (
+    <ul className="mt-3 flex flex-col gap-2.5 pl-1">{children}</ul>
+  ),
+  li: ({ children }: { children?: React.ReactNode }) => (
+    <li
+      className="relative pl-5 text-[14.5px] leading-[1.6] text-[#F6F6F6]/72 before:absolute before:left-0 before:top-[0.65em] before:h-1 before:w-1 before:rounded-full before:bg-[#CAFE5B] md:text-[15px]"
+      style={{ fontFamily: SANS }}
+    >
+      {children}
+    </li>
+  ),
+  strong: ({ children }: { children?: React.ReactNode }) => (
+    <strong className="font-bold text-[#F6F6F6]">{children}</strong>
+  ),
+  em: ({ children }: { children?: React.ReactNode }) => (
+    <em className="not-italic text-[#F6F6F6]/55" style={{ fontFamily: SANS }}>
+      {children}
+    </em>
+  ),
+};
+
+const ResourceDetail = ({ resource, onClose }: { resource: ResourceItem; onClose: () => void }) => (
+  <div className="relative flex max-h-[88vh] w-full flex-col overflow-hidden rounded-[32px] border border-white/10 bg-[#010101] text-[#F6F6F6] shadow-[0_28px_90px_rgba(0,0,0,0.55)]">
+    <button
+      type="button"
+      aria-label="Cerrar"
+      onClick={onClose}
+      className="absolute right-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/20"
+    >
+      <X className="h-5 w-5" strokeWidth={2} />
+    </button>
+
+    <div className="flex-1 overflow-y-auto overscroll-contain">
+      <div className="relative aspect-[16/9] w-full overflow-hidden">
+        <img src={resource.image ?? FALLBACK_IMAGE} alt="" className="h-full w-full object-cover" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#010101] via-[#010101]/40 to-transparent" />
+      </div>
+
+      <div className="px-7 pb-12 pt-6 md:px-10 md:pb-14 md:pt-8">
+        <p
+          className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#CAFE5B]"
+          style={{ fontFamily: "var(--font-serif)" }}
+        >
+          {resource.eyebrow}
+        </p>
+        <h2
+          className="mt-3 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.03em]"
+          style={{ fontFamily: SANS }}
+        >
+          {resource.title}
+        </h2>
+        <p
+          className="mt-5 text-[15px] leading-[1.7] text-[#F6F6F6]/70"
+          style={{ fontFamily: SANS }}
+        >
+          {resource.description}
+        </p>
+
+        {resource.content ? (
+          <div className="mt-10 border-t border-white/8 pt-8">
+            <ReactMarkdown components={markdownComponents}>{resource.content}</ReactMarkdown>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  </div>
+);
 
 const Resources = () => {
   const { data: resources = [] } = useResourcesQuery();
   const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
 
-  const openedResource = resources.find((r) => r.id === openedFolderId);
+  const openedResource = resources.find((r) => r.id === openedFolderId) ?? null;
 
   const showcaseItems = useMemo<ShowcaseItem[]>(() =>
     resources.map((resource) => ({
@@ -24,17 +121,24 @@ const Resources = () => {
     [resources],
   );
 
-  if (openedFolderId && openedResource) {
-    return (
-      <FolderDetailView
-        folder={openedResource}
-        onClose={() => setOpenedFolderId(null)}
-      />
-    );
-  }
-
   return (
-    <div className="min-h-screen bg-[#010101] flex flex-col items-center justify-start px-4 pb-32 pt-24">
+    <>
+      <Modal
+        isOpen={!!openedResource}
+        onClose={() => setOpenedFolderId(null)}
+        type="blur"
+        animationType="scale"
+        disablePadding
+        showCloseButton={false}
+        position={120}
+        className="!max-w-[720px] border-0 !bg-transparent shadow-none"
+      >
+        {openedResource ? (
+          <ResourceDetail resource={openedResource} onClose={() => setOpenedFolderId(null)} />
+        ) : null}
+      </Modal>
+
+      <div className="min-h-screen bg-[#010101] flex flex-col items-center justify-start px-4 pb-32 pt-24">
       {/* Sección Introductoria y Tutorial */}
       <div className="max-w-4xl w-full mb-24 space-y-12">
         <div className="space-y-6 text-center">
@@ -134,6 +238,7 @@ const Resources = () => {
       {/* Showcase interactivo */}
       <ResourceShowcase items={showcaseItems} />
     </div>
+    </>
   );
 };
 

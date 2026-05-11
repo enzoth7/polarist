@@ -9,6 +9,7 @@ type ResourceRow = {
   description: string;
   kind: string;
   image: string | null;
+  content: string | null;
   created_at: string;
 };
 
@@ -19,6 +20,7 @@ export type ResourceItem = {
   description: string;
   kind: string;
   image: string | null;
+  content: string | null;
   createdAt: string;
 };
 
@@ -29,6 +31,7 @@ const mapResourceRow = (row: ResourceRow): ResourceItem => ({
   description: row.description,
   kind: row.kind,
   image: row.image,
+  content: row.content,
   createdAt: row.created_at,
 });
 
@@ -38,7 +41,7 @@ export function useResourcesQuery() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("resources")
-        .select("id, eyebrow, title, description, kind, image, created_at")
+        .select("id, eyebrow, title, description, kind, image, content, created_at")
         .order("created_at", { ascending: true });
 
       if (error) throw error;
