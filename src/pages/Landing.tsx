@@ -114,16 +114,6 @@ const Landing = () => {
 
   useGSAP(
     () => {
-      if (heroRef.current) {
-        ScrollTrigger.create({
-          trigger: heroRef.current,
-          pin: true,
-          pinSpacing: false,
-          start: "top top",
-          end: "bottom top",
-        });
-      }
-
       if (videoSectionRef.current) {
         gsap.from(".solutions-grid", {
           scrollTrigger: {

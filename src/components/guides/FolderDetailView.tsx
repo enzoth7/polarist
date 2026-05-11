@@ -1,6 +1,5 @@
 import { ArrowLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
-import { guideFoldersCatalog } from "@/data/guideFoldersCatalog";
 
 // ── Brand Kit B ───────────────────────────────────────────────────────────
 const BG    = "#F6F6F6";
@@ -79,7 +78,7 @@ const guideContentCatalog: Record<string, ChapterCard[]> = {
     { id: "7", title: "IA Generativa",              subtitle: "Imágenes, audio, video",      isUnlocked: false },
     { id: "8", title: "El Presente",                subtitle: "Agentes y razonamiento",      isUnlocked: false },
   ],
-  terms: [
+  aiterms: [
     { id: "1", title: "Inferencia",     subtitle: "Cómo un modelo predice",        isUnlocked: true  },
     { id: "2", title: "Tokens",         subtitle: "La unidad mínima del lenguaje", isUnlocked: true  },
     { id: "3", title: "Perceptrones",   subtitle: "La neurona artificial",         isUnlocked: true  },
@@ -115,15 +114,14 @@ const guideContentCatalog: Record<string, ChapterCard[]> = {
 const inner = { maxWidth: 1200, margin: "0 auto", padding: "0 32px" };
 
 interface FolderDetailViewProps {
-  folderId: string;
+  folder: { id: string; title: string; description: string };
   onClose: () => void;
 }
 
-export const FolderDetailView = ({ folderId, onClose }: FolderDetailViewProps) => {
+export const FolderDetailView = ({ folder, onClose }: FolderDetailViewProps) => {
   const [activeChapter, setActiveChapter] = useState<string | null>(null);
 
-  const folder   = guideFoldersCatalog.find((f) => f.id === folderId);
-  const chapters = guideContentCatalog[folderId] ?? [];
+  const chapters = guideContentCatalog[folder.id] ?? [];
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: BG }}>
@@ -168,7 +166,7 @@ export const FolderDetailView = ({ folderId, onClose }: FolderDetailViewProps) =
             marginBottom: 14,
           }}
         >
-          {folder?.title ?? folderId}
+          {folder.title}
         </h1>
         <p
           style={{
@@ -181,7 +179,7 @@ export const FolderDetailView = ({ folderId, onClose }: FolderDetailViewProps) =
             marginBottom: 48,
           }}
         >
-          {folder?.description ?? "Seleccioná un capítulo para explorar el contenido."}
+          {folder.description}
         </p>
 
         {/* Grid de capítulos */}

@@ -1,40 +1,37 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
-import { conceptosBasicos } from "@/components/education/ConceptosBasicos";
 import { FolderDetailView } from "@/components/guides/FolderDetailView";
-import { guideFoldersCatalog } from "@/data/guideFoldersCatalog";
+import { useResourcesQuery } from "@/hooks/useResources";
 import ResourceShowcase, { type ShowcaseItem } from "@/components/ui/resource-showcase";
-import { useState } from "react";
 
-// ── Imágenes por carpeta (Unsplash, temáticas) ─────────────────────────────
-const FOLDER_IMAGES: Record<string, string> = {
-  social:   "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?auto=format&fit=crop&w=800&q=80",
-  web:      "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=800&q=80",
-  visual:   "https://images.unsplash.com/photo-1541746972996-4e0b0f43e02a?auto=format&fit=crop&w=800&q=80",
-  decision: "https://images.unsplash.com/photo-1633613286991-611fe299c4be?auto=format&fit=crop&w=800&q=80",
-  strategy: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=800&q=80",
-  timeline: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?auto=format&fit=crop&w=800&q=80",
-  terms:    "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80",
-  prompts:  "https://images.unsplash.com/photo-1675271591211-126ad94e495d?auto=format&fit=crop&w=800&q=80",
-  memory:   "https://images.unsplash.com/photo-1544256718-3bcf237f3974?auto=format&fit=crop&w=800&q=80",
-};
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80";
 
 const Resources = () => {
+  const { data: resources = [] } = useResourcesQuery();
   const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
 
+  const openedResource = resources.find((r) => r.id === openedFolderId);
+
   const showcaseItems = useMemo<ShowcaseItem[]>(() =>
-    guideFoldersCatalog.map((card) => ({
-      id:          card.id,
-      title:       card.title,
-      eyebrow:     card.eyebrow,
-      description: card.id === "recursos"
-        ? card.description.replace("{count}", String(conceptosBasicos.length))
-        : card.description,
-      image:       FOLDER_IMAGES[card.id] ?? "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&w=800&q=80",
-      onSelect:    () => {}, // Desactivado por ahora
+    resources.map((resource) => ({
+      id:          resource.id,
+      title:       resource.title,
+      eyebrow:     resource.eyebrow,
+      description: resource.description,
+      image:       resource.image ?? FALLBACK_IMAGE,
+      onSelect:    () => setOpenedFolderId(resource.id),
     })),
-    [],
+    [resources],
   );
+
+  if (openedFolderId && openedResource) {
+    return (
+      <FolderDetailView
+        folder={openedResource}
+        onClose={() => setOpenedFolderId(null)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#010101] flex flex-col items-center justify-start px-4 pb-32 pt-24">

@@ -728,7 +728,10 @@ const Library = () => {
   };
 
   if (openedFolderId) {
-    return <FolderDetailView folderId={openedFolderId} onClose={() => setOpenedFolderId(null)} />;
+    const openedFolder = guideFoldersCatalog.find((f) => f.id === openedFolderId);
+    if (openedFolder) {
+      return <FolderDetailView folder={openedFolder} onClose={() => setOpenedFolderId(null)} />;
+    }
   }
 
   if (!username && !profileLoading) {
