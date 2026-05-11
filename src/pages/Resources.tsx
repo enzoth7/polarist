@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { X, ChevronDown } from "lucide-react";
+import { X, Plus } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import * as AccordionPrimitive from "@radix-ui/react-accordion";
 
@@ -82,9 +82,17 @@ const markdownComponents = {
       {children}
     </li>
   ),
-  strong: ({ children }: { children?: React.ReactNode }) => (
-    <strong className="font-bold text-[#F6F6F6]">{children}</strong>
-  ),
+  strong: ({ children }: { children?: React.ReactNode }) => {
+    const text = Array.isArray(children)
+      ? children.map((c) => (typeof c === "string" ? c : "")).join("")
+      : typeof children === "string" ? children : "";
+    const isLabel = text.trimEnd().endsWith(":");
+    return (
+      <strong className="font-bold" style={{ color: isLabel ? "#CAFE5B" : "#F6F6F6" }}>
+        {children}
+      </strong>
+    );
+  },
   em: ({ children }: { children?: React.ReactNode }) => (
     <em className="not-italic text-[#F6F6F6]/55" style={{ fontFamily: SANS }}>
       {children}
@@ -114,14 +122,8 @@ function ResourceDetail({ resource, onClose }: { resource: ResourceItem; onClose
         </div>
 
         <div className="px-7 pb-4 pt-6 md:px-10 md:pt-8">
-          <p
-            className="text-[10px] font-bold uppercase tracking-[0.22em] text-[#CAFE5B]"
-            style={{ fontFamily: "var(--font-serif)" }}
-          >
-            {resource.eyebrow}
-          </p>
           <h2
-            className="mt-3 text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.03em]"
+            className="text-[clamp(1.6rem,3.4vw,2.4rem)] font-bold leading-[1.05] tracking-[-0.03em]"
             style={{ fontFamily: SANS }}
           >
             {resource.title}
@@ -135,23 +137,23 @@ function ResourceDetail({ resource, onClose }: { resource: ResourceItem; onClose
         </div>
 
         {sections.length === 0 && flatBody ? (
-          <div className="border-t border-white/8 px-7 pb-10 pt-6 md:px-10">
+          <div className="px-7 pb-10 pt-4 md:px-10">
             <ReactMarkdown components={markdownComponents}>{flatBody}</ReactMarkdown>
           </div>
         ) : null}
 
         {sections.length > 0 && (
-          <div className="border-t border-white/8 px-5 pb-10 pt-5 md:px-8">
+          <div className="px-5 pb-10 pt-3 md:px-8">
             <Accordion type="multiple" className="space-y-2">
               {sections.map((section, i) => (
                 <AccordionItem
                   key={i}
                   value={`section-${i}`}
-                  className="overflow-hidden rounded-[1.3rem] border border-white/8 bg-white/[0.03] px-5"
+                  className="overflow-hidden rounded-[1.6rem] border border-white/10 bg-[#010101] px-6 py-1 shadow-[0_8px_24px_rgba(0,0,0,0.2)]"
                 >
                   <AccordionPrimitive.Header className="flex">
                     <AccordionPrimitive.Trigger
-                      className="group flex w-full items-center justify-between py-5 text-left [&[data-state=open]>svg]:rotate-180"
+                      className="flex w-full items-center justify-between gap-4 py-5 text-left [&[data-state=open]>div]:rotate-45"
                     >
                       <span
                         className="text-[0.97rem] font-bold leading-tight tracking-[-0.02em] text-[#F6F6F6] md:text-[1.05rem]"
@@ -159,7 +161,9 @@ function ResourceDetail({ resource, onClose }: { resource: ResourceItem; onClose
                       >
                         {section.heading}
                       </span>
-                      <ChevronDown className="h-4 w-4 shrink-0 text-[#CAFE5B] transition-transform duration-300" />
+                      <div className="flex shrink-0 items-center transition-transform duration-300">
+                        <Plus className="h-[18px] w-[18px] text-[#F6F6F6]/70" strokeWidth={2} />
+                      </div>
                     </AccordionPrimitive.Trigger>
                   </AccordionPrimitive.Header>
                   <AccordionContent className="pb-5">
