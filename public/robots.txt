@@ -1,5 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /library
+Disallow: /settings
 Disallow: /app/profile
 Disallow: /app/library
 Disallow: /app/settings

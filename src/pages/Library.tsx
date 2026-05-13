@@ -2,17 +2,20 @@ import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } fro
 import { Link, useParams } from "react-router-dom";
 import { CalendarDays, ChevronLeft, ChevronRight, Clock3, FolderOpen } from "lucide-react";
 
-import { FolderDetailView } from "@/components/guides/FolderDetailView";
+import {
+  FALLBACK_RESOURCE_IMAGE,
+  ResourceDetail,
+} from "@/components/resources/ResourceDetail";
 import { ToolDetailsModal } from "@/components/tools/ToolDetailsModal";
 import NavHeader from "@/components/ui/nav-header";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import Modal from "@/components/ui/modal-drop";
 import { AvatarPicker } from "@/components/ui/avatar-picker";
-import { type GuideFolderCard, guideFoldersCatalog } from "@/data/guideFoldersCatalog";
 import { useAuth } from "@/hooks/useAuth";
 import { usePublicUserProfile } from "@/hooks/usePublicUserProfile";
-import { useSavedGuideFolders } from "@/hooks/useSavedGuideFolders";
+import { type ResourceItem } from "@/hooks/useResources";
 import { useUserEvents, type UserEvent } from "@/hooks/useUserEvents";
+import { useUserSavedResources } from "@/hooks/useUserSavedResources";
 import { useUserSavedTools } from "@/hooks/useUserSavedTools";
 import { type ToolItem } from "@/hooks/useTools";
 import { routes } from "@/lib/routes";
@@ -27,18 +30,6 @@ const savedFilterOptions: Array<{ id: SavedFilterKey; label: string }> = [
   { id: "resources", label: "Recursos" },
   { id: "events", label: "Eventos" },
 ];
-
-const guideKindLabelMap: Record<GuideFolderCard["kind"], string> = {
-  social: "Social Systems",
-  web: "Web Structures",
-  visual: "Visual Culture",
-  decision: "Decision Framework",
-  strategy: "Brand Strategy",
-  timeline: "AI Timeline",
-  terms: "Glossary",
-  prompts: "Prompt Archive",
-  memory: "Memory Systems",
-};
 
 const savedFilterHeadingMap: Record<SavedFilterKey, string> = {
   all: "Todo",
@@ -61,14 +52,6 @@ const sequel600 = {
   fontFamily: "var(--font-sequel, sans-serif)",
   fontWeight: 600,
 } as const;
-
-const getInitials = (name?: string | null) =>
-  name
-    ?.trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase() ?? "")
-    .join("") || "PU";
 
 const parseSavedTime = (value?: string) => {
   if (!value) {
@@ -208,28 +191,6 @@ const EventCarouselSkeleton = () => (
   </div>
 );
 
-const ResourceGridSkeleton = () => (
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {Array.from({ length: 3 }).map((_, index) => (
-      <div
-        key={index}
-        className="h-[236px] animate-pulse rounded-[24px] bg-white/[0.04]"
-      />
-    ))}
-  </div>
-);
-
-const EventGridSkeleton = () => (
-  <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {Array.from({ length: 3 }).map((_, index) => (
-      <div
-        key={index}
-        className="h-[296px] animate-pulse rounded-[24px] bg-white/[0.04]"
-      />
-    ))}
-  </div>
-);
-
 const EmptyState = ({
   title,
   description,
@@ -310,24 +271,33 @@ const SavedToolPoster = ({
 );
 
 const SavedResourceCard = ({
-  folder,
+  resource,
   onOpen,
 }: {
-  folder: GuideFolderCard;
-  onOpen: (folderId: string) => void;
+  resource: ResourceItem;
+  onOpen: (resource: ResourceItem) => void;
 }) => (
   <article
     role="button"
     tabIndex={0}
-    onClick={() => onOpen(folder.id)}
+    onClick={() => onOpen(resource)}
     onKeyDown={(event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        onOpen(folder.id);
+        onOpen(resource);
       }
     }}
     className="group relative flex min-h-[236px] w-[280px] flex-shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-[24px] bg-[#060606] p-5 transition-transform duration-300 hover:-translate-y-1 sm:w-[320px]"
   >
+    <div className="pointer-events-none absolute inset-0">
+      <img
+        src={resource.image ?? FALLBACK_RESOURCE_IMAGE}
+        alt=""
+        className="h-full w-full object-cover opacity-30 transition-transform duration-500 group-hover:scale-[1.03]"
+      />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(1,1,1,0.2),rgba(1,1,1,0.92))]" />
+    </div>
+
     <div className="flex items-start justify-between gap-4">
       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-white/72">
         <FolderOpen className="h-5 w-5" />
@@ -337,21 +307,21 @@ const SavedResourceCard = ({
       </span>
     </div>
 
-    <div className="mt-8 flex-1">
+    <div className="relative mt-8 flex-1">
       <p className="text-[0.72rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={sequel700}>
-        {guideKindLabelMap[folder.kind]}
+        {resource.eyebrow}
       </p>
       <h3 className="mt-3 text-[1.3rem] leading-[1.05] text-[#F6F6F6]" style={sequel700}>
-        {folder.title}
+        {resource.title}
       </h3>
       <p className="mt-4 text-[1rem] leading-[1.42] text-[#F6F6F6]" style={sequel400}>
-        {folder.description}
+        {resource.description}
       </p>
     </div>
 
-    <div className="mt-6 pt-4">
+    <div className="relative mt-6 pt-4">
       <span className="text-[0.76rem] uppercase tracking-[0.2em] text-[#F6F6F6]" style={sequel700}>
-        Abrir carpeta
+        Abrir recurso
       </span>
     </div>
   </article>
@@ -465,7 +435,7 @@ const Library = () => {
     error: toolsError,
   } = useUserSavedTools(profile?.id);
   const [selectedTool, setSelectedTool] = useState<ToolItem | null>(null);
-  const [openedFolderId, setOpenedFolderId] = useState<string | null>(null);
+  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
   const [activeSavedFilter, setActiveSavedFilter] = useState<SavedFilterKey>("all");
   const toolsScrollRef = useRef<HTMLDivElement>(null);
   const resourcesScrollRef = useRef<HTMLDivElement>(null);
@@ -487,12 +457,11 @@ const Library = () => {
     cancelEventRegistration,
     isCancellingEvent,
   } = useUserEvents(profileEmail, profile?.id);
-  const { savedFolderIds, loading: foldersLoading } = useSavedGuideFolders();
-
-  const displayName = profile?.full_name?.trim() || "Usuario Polarist";
-  const firstName = displayName.split(/\s+/)[0] || "Usuario";
-
-
+  const {
+    resources: savedResources,
+    loading: resourcesLoading,
+    error: resourcesError,
+  } = useUserSavedResources(profile?.id);
 
   const orderedSavedTools = useMemo(() => {
     const nextTools = [...tools];
@@ -505,19 +474,6 @@ const Library = () => {
 
     return nextTools;
   }, [savedToolCreatedAtById, tools]);
-
-  const orderedSavedGuideFolders = useMemo(() => {
-    if (!isOwnProfile) {
-      return [];
-    }
-
-    const foldersById = new Map(guideFoldersCatalog.map((folder) => [folder.id, folder]));
-
-    return [...savedFolderIds]
-      .reverse()
-      .map((folderId) => foldersById.get(folderId))
-      .filter((folder): folder is GuideFolderCard => Boolean(folder));
-  }, [isOwnProfile, savedFolderIds]);
 
   const orderedUserEvents = useMemo(() => {
     const nextEvents = [...events];
@@ -538,7 +494,7 @@ const Library = () => {
   const showEventsSection = activeSavedFilter === "all" || activeSavedFilter === "events";
 
   const visibleTools = showToolsSection ? orderedSavedTools : [];
-  const visibleResources = showResourcesSection ? orderedSavedGuideFolders : [];
+  const visibleResources = showResourcesSection ? savedResources : [];
   const visibleEvents = showEventsSection ? visibleRegisteredEvents : [];
 
   const handleCancelEvent = useCallback((event: UserEvent) => {
@@ -558,16 +514,16 @@ const Library = () => {
     [cancelEventRegistration],
   );
 
-  const totalSavedEntries = orderedSavedTools.length + orderedSavedGuideFolders.length + visibleRegisteredEvents.length;
+  const totalSavedEntries = orderedSavedTools.length + savedResources.length + visibleRegisteredEvents.length;
   const hasAnyVisibleContent =
     visibleTools.length > 0 || visibleResources.length > 0 || visibleEvents.length > 0;
 
-  const isDataLoading = profileLoading || toolsLoading || eventsLoading || foldersLoading;
+  const isDataLoading = profileLoading || toolsLoading || resourcesLoading || eventsLoading;
 
   const savedFilterCounts: Record<SavedFilterKey, number> = {
     all: totalSavedEntries,
     tools: orderedSavedTools.length,
-    resources: orderedSavedGuideFolders.length,
+    resources: savedResources.length,
     events: visibleRegisteredEvents.length,
   };
   const savedFilterItems = savedFilterOptions.map((filterOption) => ({
@@ -727,13 +683,6 @@ const Library = () => {
     window.setTimeout(checkEventsScrollability, 320);
   };
 
-  if (openedFolderId) {
-    const openedFolder = guideFoldersCatalog.find((f) => f.id === openedFolderId);
-    if (openedFolder) {
-      return <FolderDetailView folder={openedFolder} onClose={() => setOpenedFolderId(null)} />;
-    }
-  }
-
   if (!username && !profileLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-[#010101] px-4 py-20">
@@ -842,7 +791,14 @@ const Library = () => {
             </>
           ) : (
             <>
-              {activeSavedFilter === "all" && !hasAnyVisibleContent && !toolsLoading && !eventsLoading && !toolsError && !eventsError ? (
+              {activeSavedFilter === "all" &&
+              !hasAnyVisibleContent &&
+              !toolsLoading &&
+              !resourcesLoading &&
+              !eventsLoading &&
+              !toolsError &&
+              !resourcesError &&
+              !eventsError ? (
                 <EmptyState
                   title={isOwnProfile ? "Todavia no guardaste nada" : "Este perfil no tiene elementos visibles"}
                   description=""
@@ -910,7 +866,16 @@ const Library = () => {
               ) : null}
 
               {showResourcesSection ? (
-                visibleResources.length > 0 ? (
+                resourcesLoading ? (
+                  <ResourceCarouselSkeleton />
+                ) : resourcesError ? (
+                  activeSavedFilter === "resources" || !hasAnyVisibleContent ? (
+                    <EmptyState
+                      title="No pudimos cargar los recursos guardados"
+                      description="Intenta de nuevo en unos segundos."
+                    />
+                  ) : null
+                ) : visibleResources.length > 0 ? (
                   <div className="space-y-5">
                     <div className={cn("flex items-center gap-4", activeSavedFilter === "all" ? "justify-between" : "justify-end")}>
                       {activeSavedFilter === "all" ? (
@@ -944,8 +909,12 @@ const Library = () => {
                       ref={resourcesScrollRef}
                       className="scrollbar-hide flex snap-x snap-mandatory gap-4 overflow-x-auto px-1 pb-2 scroll-smooth sm:gap-5"
                     >
-                      {visibleResources.map((folder) => (
-                        <SavedResourceCard key={folder.id} folder={folder} onOpen={setOpenedFolderId} />
+                      {visibleResources.map((resource) => (
+                        <SavedResourceCard
+                          key={resource.id}
+                          resource={resource}
+                          onOpen={setSelectedResource}
+                        />
                       ))}
                     </div>
                   </div>
@@ -1030,6 +999,22 @@ const Library = () => {
         isOpen={Boolean(selectedTool)}
         onClose={() => setSelectedTool(null)}
       />
+
+      <Modal
+        isOpen={Boolean(selectedResource)}
+        onClose={() => setSelectedResource(null)}
+        type="blur"
+        animationType="scale"
+        disablePadding
+        showCloseButton={false}
+        position={0}
+        centerOnMobile
+        className="!max-w-[720px] border-0 !bg-transparent shadow-none"
+      >
+        {selectedResource ? (
+          <ResourceDetail resource={selectedResource} onClose={() => setSelectedResource(null)} />
+        ) : null}
+      </Modal>
 
       <Modal
         isOpen={!!eventToCancel}

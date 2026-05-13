@@ -14,6 +14,7 @@ import {
 import { getAppUserProfileRoute, legacyAppRoutes, routes } from "@/lib/routes";
 
 import { StickyFooter } from "@/components/ui/sticky-footer";
+import { Seo } from "@/components/Seo";
 import Header from "./components/layout/Header";
 import MobileLayout from "./components/layout/MobileLayout";
 import AboutUs from "./pages/legals/AboutUs";
@@ -140,6 +141,7 @@ const App = () => (
               <Toaster />
               <Sonner position="top-center" />
               <BrowserRouter>
+                <Seo />
                 <AppRoutes />
               </BrowserRouter>
               <Analytics />

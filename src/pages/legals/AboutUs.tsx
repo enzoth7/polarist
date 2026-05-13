@@ -14,7 +14,7 @@ const AboutUs = () => {
     <LegalPageLayout
       eyebrow="Sobre Polarist"
       title="¿Quiénes somos?"
-      description="Creamos Polarist para acercar herramientas útiles a negocios reales sin convertir la experiencia en una barrera técnica."
+      description="Somos un equipo obsesionado con eliminar la fricción entre la IA y los negocios tradicionales."
       showSecondaryGlow={false}
     >
       <Accordion type="single" collapsible className="w-full">
@@ -37,7 +37,7 @@ const AboutUs = () => {
             style={sequelStyle}
             className="text-sm leading-7 text-[#F6F6F6]/70 font-normal"
           >
-            Somos un equipo obsesionado con eliminar la fricción entre la IA y los negocios tradicionales. Nuestra misión es ahorrarte horas de aprendizaje mediante atajos directos, probados y listos para usar en tu rubro, sin que tengas que volverte un experto técnico.
+             Nuestra misión es ahorrarte horas de aprendizaje mediante atajos directos, probados y listos para usar en tu rubro, sin que tengas que volverte un experto técnico. Creamos Polarist para acercar herramientas útiles a negocios reales sin convertir la experiencia en una barrera técnica.
           </AccordionContent>
         </AccordionItem>
       </Accordion>

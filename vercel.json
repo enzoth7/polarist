@@ -14,9 +14,119 @@
       ]
     }
   ],
+  "redirects": [
+    {
+      "source": "/signup",
+      "destination": "/login",
+      "permanent": false
+    },
+    {
+      "source": "/profile",
+      "destination": "/library",
+      "permanent": true
+    },
+    {
+      "source": "/app",
+      "destination": "/library",
+      "permanent": true
+    },
+    {
+      "source": "/app/profile",
+      "destination": "/library",
+      "permanent": true
+    },
+    {
+      "source": "/app/radar",
+      "destination": "/trends",
+      "permanent": true
+    },
+    {
+      "source": "/app/tools",
+      "destination": "/tools",
+      "permanent": true
+    },
+    {
+      "source": "/app/guides",
+      "destination": "/resources",
+      "permanent": true
+    },
+    {
+      "source": "/app/community",
+      "destination": "/community",
+      "permanent": true
+    },
+    {
+      "source": "/app/settings",
+      "destination": "/settings",
+      "permanent": true
+    },
+    {
+      "source": "/radar",
+      "destination": "/trends",
+      "permanent": true
+    },
+    {
+      "source": "/guides",
+      "destination": "/resources",
+      "permanent": true
+    },
+    {
+      "source": "/recursos-pronto",
+      "destination": "/resources",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/contact",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/terms",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/trends",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/tools",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/resources",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/community",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/login",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/library",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/library/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/settings",
       "destination": "/index.html"
     }
   ]
