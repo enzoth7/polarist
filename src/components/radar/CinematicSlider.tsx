@@ -7,6 +7,7 @@ type CinematicSliderItem = {
   image: string;
   accent: string;
   glow: string;
+  link?: string;
 };
 
 type CinematicSliderProps = {

@@ -23,7 +23,8 @@ const Trends = () => {
             <LuminaInteractiveList slides={trendItems.map(item => ({
               title: item.title,
               description: item.description,
-              media: item.image
+              media: item.image,
+              link: item.link
             }))} />
           )}
         </section>

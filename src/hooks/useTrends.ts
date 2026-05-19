@@ -13,6 +13,7 @@ type TrendRow = {
   glow: string;
   sort_order: number;
   created_at: string;
+  link?: string;
 };
 
 const mapTrendRow = (row: TrendRow): CinematicSliderItem => ({
@@ -21,12 +22,13 @@ const mapTrendRow = (row: TrendRow): CinematicSliderItem => ({
   image: toModernImageAsset(row.image) ?? row.image,
   accent: row.accent,
   glow: row.glow,
+  link: row.link,
 });
 
 async function fetchTrends(): Promise<CinematicSliderItem[]> {
   const { data, error } = await supabase
     .from("trends")
-    .select("id, title, description, image, accent, glow, sort_order, created_at")
+    .select("id, title, description, image, accent, glow, sort_order, created_at, link")
     .order("sort_order", { ascending: true });
 
   if (error) throw error;
