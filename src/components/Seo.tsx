@@ -80,6 +80,12 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
     description:
       "Accede a recursos de IA investigados, filtrados y listos para usar. Polarist reune material util para aprender y trabajar con mas criterio.",
   },
+  "/countdown": {
+    title: "Recursos pronto | Polarist",
+    description:
+      "Estamos ajustando los ultimos detalles de la seccion de recursos de Polarist. Revisa la cuenta regresiva para saber cuando vuelve a estar disponible.",
+    robots: "noindex, nofollow",
+  },
   "/community": {
     title: "Comunidad de IA | Polarist",
     description:

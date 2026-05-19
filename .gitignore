@@ -51,6 +51,7 @@ coverage/
 
 # SQL files (may contain sensitive schema)
 *.sql
+!supabase/migrations/20260518_create_site_config.sql
 
 # Temporary files
 .tmp/

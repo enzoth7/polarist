@@ -94,17 +94,18 @@ const Header = () => {
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
   const isAuthenticated = status === "authenticated";
+  const resourcesNavRoute = routes.resourcesCountdown;
   const navItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appResources, showAlways: true },
+    { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appResources, showAlways: true },
+    { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Biblioteca", to: routes.appProfile, showAlways: true },
   ];
 
@@ -142,14 +143,14 @@ const Header = () => {
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appResources, showAlways: true },
+    { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: profileRoute, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
-    { label: "Recursos", to: routes.appResources, showAlways: true },
+    { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
     { label: "Biblioteca", to: routes.appProfile, showAlways: true },
   ];

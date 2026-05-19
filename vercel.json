@@ -72,7 +72,12 @@
     },
     {
       "source": "/recursos-pronto",
-      "destination": "/resources",
+      "destination": "/countdown",
+      "permanent": true
+    },
+    {
+      "source": "/count-town",
+      "destination": "/countdown",
       "permanent": true
     }
   ],
@@ -107,6 +112,10 @@
     },
     {
       "source": "/resources",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/countdown",
       "destination": "/index.html"
     },
     {
