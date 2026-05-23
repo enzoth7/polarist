@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowLeft, Camera, Loader2, LockKeyhole, Mail, MapPin, UserRound } from "lucide-react";
+import { ArrowLeft, Bell, BellOff, Camera, Loader2, LockKeyhole, Mail, MapPin, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -72,6 +72,8 @@ const Settings = () => {
   const [localAvatarUrl, setLocalAvatarUrl] = useState("");
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [newsletterSubscribed, setNewsletterSubscribed] = useState(true);
+  const [isSavingNewsletter, setIsSavingNewsletter] = useState(false);
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
 
@@ -83,6 +85,47 @@ const Settings = () => {
     setEmail(profile?.email || "");
     setLocalAvatarUrl(profile?.avatarUrl || avatarUrl);
   }, [profile, avatarUrl]);
+
+  // Fetch newsletter_subscribed directamente (campo no incluido en PolaristUserProfile)
+  useEffect(() => {
+    if (!profile?.id) return;
+    supabase
+      .from("polarist_usuarios")
+      .select("newsletter_subscribed")
+      .eq("id", profile.id)
+      .single()
+      .then(({ data }) => {
+        if (data && typeof data.newsletter_subscribed === "boolean") {
+          setNewsletterSubscribed(data.newsletter_subscribed);
+        }
+      });
+  }, [profile?.id]);
+
+  const handleNewsletterToggle = async () => {
+    if (!profile?.id || isSavingNewsletter) return;
+    const nextValue = !newsletterSubscribed;
+    setNewsletterSubscribed(nextValue);
+    setIsSavingNewsletter(true);
+    try {
+      const { error } = await supabase
+        .from("polarist_usuarios")
+        .update({ newsletter_subscribed: nextValue })
+        .eq("id", profile.id);
+      if (error) throw error;
+      showBubbleToast({
+        title: nextValue ? "Suscripción activada" : "Suscripción cancelada",
+        description: nextValue
+          ? "Vas a recibir las novedades de IA cada semana."
+          : "No recibirás más el newsletter semanal.",
+        tone: nextValue ? "success" : "neutral",
+      });
+    } catch {
+      setNewsletterSubscribed(!nextValue);
+      showBubbleToast({ title: "Error al guardar", description: "Intentalo de nuevo.", tone: "danger" });
+    } finally {
+      setIsSavingNewsletter(false);
+    }
+  };
 
   const onAvatarUpload = async (file: File) => {
     if (!profile) return { success: false };
@@ -309,6 +352,63 @@ const Settings = () => {
                 </div>
                 <p className="text-[11px] font-medium text-[#F6F6F6]/30 mt-2" style={sequelStyle}>Dejalo vacío si no querés cambiar la contraseña.</p>
               </div>
+            </div>
+          </section>
+
+          {/* ─── Comunicaciones ───────────────────────────────── */}
+          <section className={cardClass}>
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold tracking-tight text-[#F6F6F6]" style={sequelStyle}>Comunicaciones</h2>
+              <p className="mt-1 text-[13px] font-medium text-[#F6F6F6]/40" style={sequelStyle}>
+                Gestioná qué correos querés recibir de Polarist.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between gap-6 rounded-2xl bg-white/[0.04] px-5 py-4">
+              <div className="flex items-start gap-4">
+                <div
+                  className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
+                  style={{ background: newsletterSubscribed ? 'rgba(202,254,91,0.12)' : 'rgba(246,246,246,0.06)' }}
+                >
+                  {newsletterSubscribed
+                    ? <Bell className="h-5 w-5" style={{ color: '#CAFE5B' }} />
+                    : <BellOff className="h-5 w-5 text-[#F6F6F6]/30" />}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-[#F6F6F6]" style={sequelStyle}>
+                    Newsletter semanal de IA
+                  </p>
+                  <p className="mt-0.5 text-[12px] font-medium text-[#F6F6F6]/40" style={sequelStyle}>
+                    Novedades y tendencias de inteligencia artificial, una vez por semana.
+                  </p>
+                </div>
+              </div>
+
+              {/* Toggle switch */}
+              <button
+                id="newsletter-toggle"
+                type="button"
+                role="switch"
+                aria-checked={newsletterSubscribed}
+                aria-label="Suscripción al newsletter"
+                disabled={isSavingNewsletter}
+                onClick={handleNewsletterToggle}
+                className="relative shrink-0 transition-opacity duration-150"
+                style={{ opacity: isSavingNewsletter ? 0.5 : 1 }}
+              >
+                <div
+                  className="h-7 w-12 rounded-full transition-colors duration-300"
+                  style={{
+                    background: newsletterSubscribed ? '#CAFE5B' : 'rgba(246,246,246,0.12)',
+                  }}
+                />
+                <div
+                  className="absolute top-1 h-5 w-5 rounded-full bg-[#010101] shadow-md transition-all duration-300"
+                  style={{
+                    left: newsletterSubscribed ? 'calc(100% - 1.5rem)' : '0.25rem',
+                  }}
+                />
+              </button>
             </div>
           </section>
 
