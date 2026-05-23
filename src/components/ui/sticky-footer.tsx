@@ -97,7 +97,7 @@ export function StickyFooter({ className, ...props }: StickyFooterProps) {
 }
 
 const socialLinks = [
-	{ title: 'Instagram', href: 'https://instagram.com/polarist.uy/', icon: InstagramIcon },
+	{ title: 'Instagram', href: 'https://instagram.com/polarist.app/', icon: InstagramIcon },
 ];
 
 const footerLinkGroups: FooterLinkGroup[] = [
