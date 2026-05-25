@@ -40,66 +40,60 @@ const WEBSITE_JSON_LD = {
 
 const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/": {
-    title: "Polarist | IA aplicada a negocios, recursos y herramientas",
+    title: "Polarist | Tu camino más fácil hacia la IA",
     description:
-      "Descubri herramientas, tendencias y recursos de inteligencia artificial para negocios, equipos y personas que quieren aplicar IA con criterio practico.",
+      "Polarist es una plataforma educativa y de recursos orientada a personas y negocios que buscan atajos prácticos para implementar la Inteligencia Artificial.",
     jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
   },
   "/about": {
-    title: "Sobre Polarist | IA util para negocios reales",
+    title: "Polarist | ¿Quiénes somos?",
     description:
-      "Conoce la mision de Polarist y como acercamos herramientas, recursos y criterio practico sobre inteligencia artificial para negocios reales.",
+      "Somos un equipo efocado en eliminar la fricción entre la IA y los negocios tradicionales.",
   },
   "/contact": {
-    title: "Contacto Polarist | Consultas sobre IA, recursos y herramientas",
+    title: "Polarist | Contacto",
     description:
-      "Contactate con Polarist para consultas, soporte o sugerencias sobre herramientas de IA, recursos, tendencias y comunidad.",
+      "Contáctanos para consultas, soporte o sugerencias sobre herramientas de IA, recursos, tendencias y comunidad.",
   },
   "/privacy": {
-    title: "Politica de Privacidad | Polarist",
+    title: "Polarist | Política de Privacidad",
     description:
       "Lee la politica de privacidad de Polarist y como manejamos datos, navegacion, comunidad, sesiones y comunicaciones dentro de la plataforma.",
   },
   "/terms": {
-    title: "Terminos y Condiciones | Polarist",
+    title: "Polarist | Términos y Condiciones",
     description:
       "Consulta los terminos y condiciones de uso de Polarist, incluyendo acceso a la plataforma, comunidad, contenidos, cambios y responsabilidad.",
   },
   "/trends": {
-    title: "Tendencias de IA | Polarist",
+    title: "Polarist | Tendencias",
     description:
-      "Explora tendencias de inteligencia artificial curadas por Polarist para entender que cambia, que importa y que conviene aplicar en negocios.",
+      "Explora las últimas tendencias de inteligencia artificial seleccionadas por nosotros.",
   },
   "/tools": {
-    title: "Herramientas de IA | Polarist",
+    title: "Polarist | Herramientas",
     description:
-      "Descubri herramientas de IA organizadas por casos de uso: chatbots, automatizacion, creacion de contenido, desarrollo, marketing y productividad.",
+      "Descubrí herramientas de IA organizadas por casos de uso: chatbots, automatizacion, creacion de contenido, desarrollo, marketing y productividad.",
   },
   "/resources": {
-    title: "Recursos de IA | Polarist",
+    title: "Polarist | Recursos",
     description:
-      "Accede a recursos de IA investigados, filtrados y listos para usar. Polarist reune material util para aprender y trabajar con mas criterio.",
-  },
-  "/countdown": {
-    title: "Recursos pronto | Polarist",
-    description:
-      "Estamos ajustando los ultimos detalles de la seccion de recursos de Polarist. Revisa la cuenta regresiva para saber cuando vuelve a estar disponible.",
-    robots: "noindex, nofollow",
+      "Aprendé lo esencial de IA para empezar con criterio, conceptos útiles y una base sólida desde el día uno.",
   },
   "/community": {
-    title: "Comunidad de IA | Polarist",
+    title: "Polarist | Comunidad",
     description:
-      "Segui la actividad de la comunidad de Polarist y mantenete cerca de eventos, lanzamientos y espacios para aprender sobre IA aplicada.",
+      "Seguí la actividad de la comunidad de Polarist y mantenete cerca de eventos, lanzamientos y espacios para aprender sobre IA aplicada.",
   },
   "/login": {
-    title: "Iniciar sesion | Polarist",
+    title: "Polarist |Iniciar sesión",
     description: "Ingresa a tu cuenta de Polarist.",
     robots: "noindex, nofollow",
   },
-  "/settings": {
-    title: "Configuracion | Polarist",
-    description: "Configuracion de cuenta de Polarist.",
-    robots: "noindex, nofollow",
+  "/aiagents": {
+    title: "Polarist | Agentes de IA",
+    description:
+      "Descubrí qué es un agente de IA, cómo se diferencia de un chatbot y cómo puede automatizar tareas reales en tu negocio. Aprende a construir agentes autónomos con Polarist.",
   },
 };
 
