@@ -14,7 +14,7 @@ const AboutUs = () => {
     <LegalPageLayout
       eyebrow="Sobre Polarist"
       title="¿Quiénes somos?"
-      description="Somos un equipo obsesionado con eliminar la fricción entre la IA y los negocios tradicionales."
+      description="Somos un equipo efocado en eliminar la fricción entre la IA y los negocios tradicionales."
       showSecondaryGlow={false}
     >
       <Accordion type="single" collapsible className="w-full">
