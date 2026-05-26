@@ -173,7 +173,14 @@ export function CommunityCalendar({
     return events.some((e) => getStartOfDay(new Date(e.event_date)) >= today);
   }, [events, today]);
 
+  const isPrevMonthDisabled = useMemo(() => {
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    return displayYear < currentYear || (displayYear === currentYear && displayMonth <= currentMonth);
+  }, [displayYear, displayMonth, currentDate]);
+
   const handlePrevMonth = () => {
+    if (isPrevMonthDisabled) return;
     setDisplayMonth((prev) => {
       if (prev === 0) {
         setDisplayYear((y) => y - 1);
@@ -430,7 +437,13 @@ export function CommunityCalendar({
                             <button
                               type="button"
                               onClick={handlePrevMonth}
-                              className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-black/[0.05] active:scale-95 text-[#010101]/60 hover:text-[#010101] cursor-pointer"
+                              disabled={isPrevMonthDisabled}
+                              className={cn(
+                                "flex h-5 w-5 items-center justify-center rounded transition-colors text-[#010101]/60",
+                                isPrevMonthDisabled
+                                  ? "opacity-25 cursor-not-allowed"
+                                  : "hover:bg-black/[0.05] hover:text-[#010101] active:scale-95 cursor-pointer"
+                              )}
                               aria-label="Mes anterior"
                             >
                               <ChevronLeft className="h-3.5 w-3.5" />
