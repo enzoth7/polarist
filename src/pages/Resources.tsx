@@ -255,13 +255,6 @@ const Resources = () => {
 /* ── Folder Explorer ── */
 const FOLDER_ORDER = ["Skills", "Archivos para agentes", "Cuadernos NotebookLM", "Otros"] as const;
 
-const FOLDER_ICONS: Record<string, string> = {
-  Skills: "⚡",
-  "Archivos para agentes": "🤖",
-  "Cuadernos NotebookLM": "📓",
-  Otros: "📎",
-};
-
 function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
   const [activeFolder, setActiveFolder] = useState<string | null>(null);
 
@@ -316,21 +309,18 @@ function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
               <button
                 type="button"
                 onClick={() => setActiveFolder(isOpen ? null : folder)}
-                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-300 hover:bg-white/[0.04]"
+                className="relative flex w-full items-center justify-center px-6 py-5 transition-colors duration-300 hover:bg-white/[0.04]"
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-lg">{FOLDER_ICONS[folder] ?? "📁"}</span>
-                  <p
-                    className="text-[16px] font-bold tracking-[-0.01em] text-[#F6F6F6]"
-                    style={{ fontFamily: SANS }}
-                  >
-                    {folder}
-                  </p>
-                </div>
+                <p
+                  className="text-[16px] font-bold tracking-[-0.01em] text-[#F6F6F6] text-center"
+                  style={{ fontFamily: SANS }}
+                >
+                  {folder}
+                </p>
                 <motion.span
                   animate={{ rotate: isOpen ? 45 : 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="shrink-0 text-[22px] font-light leading-none text-[#F6F6F6]/50"
+                  className="absolute right-6 text-[22px] font-light leading-none text-[#F6F6F6]/50"
                   style={{ fontFamily: SANS }}
                 >
                   +
