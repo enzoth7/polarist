@@ -182,7 +182,7 @@ const Community = () => {
             </div>
 
             {/* Carousel Frame */}
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[24px] border border-white/[0.06] bg-zinc-950 p-[1px] shadow-2xl">
+            <div className="relative aspect-[4/5] sm:aspect-[16/10] w-full overflow-hidden rounded-[24px] border border-white/[0.06] bg-zinc-950 p-[1px] shadow-2xl">
               <div className="relative h-full w-full overflow-hidden rounded-[23px]">
                 {/* Active Slide Image */}
                 <AnimatePresence mode="wait">
@@ -206,7 +206,7 @@ const Community = () => {
 
                 {/* Event Content Overlay (restricted width) */}
                 <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8 flex flex-col justify-end pointer-events-none z-10">
-                  <div className="max-w-[52%] sm:max-w-[55%] md:max-w-[60%] flex flex-col pointer-events-auto">
+                  <div className="max-w-[72%] sm:max-w-[55%] md:max-w-[60%] flex flex-col pointer-events-auto">
                     <div className="mb-2.5 flex flex-wrap items-center gap-3 text-[11px] text-[#F6F6F6] font-medium" style={{ fontFamily: "var(--font-sequel, sans-serif)" }}>
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-3.5 w-3.5 text-[#CAFE5B] shrink-0" />

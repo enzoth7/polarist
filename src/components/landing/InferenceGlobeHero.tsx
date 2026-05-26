@@ -373,7 +373,7 @@ const InferenceGlobeHero = () => {
 
       <div className="pointer-events-none absolute inset-0 z-10 flex w-full h-full items-center justify-center overflow-hidden">
         {isMobile ? (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center" style={{ transform: 'translateY(-10%)' }}>
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center" style={{ transform: 'translateY(-18%)' }}>
             <StaticGlobe width="120%" height="120%" className="max-w-[400px] max-h-[400px]" />
           </div>
         ) : (
