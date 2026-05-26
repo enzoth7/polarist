@@ -301,18 +301,18 @@ function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
               className="overflow-hidden"
               style={{
                 borderRadius: "20px",
-                border: "1px solid rgba(255, 255, 255, 0.08)",
-                background: "rgba(255, 255, 255, 0.02)",
+                border: "1px solid rgba(202, 254, 91, 0.2)",
+                background: "#CAFE5B",
               }}
             >
               {/* Folder header */}
               <button
                 type="button"
                 onClick={() => setActiveFolder(isOpen ? null : folder)}
-                className="relative flex w-full items-center justify-center px-6 py-5 transition-colors duration-300 hover:bg-white/[0.04]"
+                className="relative flex w-full items-center justify-center px-6 py-5 transition-colors duration-300 hover:bg-black/[0.04]"
               >
                 <p
-                  className="text-[16px] font-bold tracking-[-0.01em] text-[#F6F6F6] text-center"
+                  className="text-[20px] font-bold tracking-[-0.01em] text-[#010101] text-center"
                   style={{ fontFamily: SANS }}
                 >
                   {folder}
@@ -320,7 +320,7 @@ function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
                 <motion.span
                   animate={{ rotate: isOpen ? 45 : 0 }}
                   transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                  className="absolute right-6 text-[22px] font-light leading-none text-[#F6F6F6]/50"
+                  className="absolute right-6 text-[22px] font-light leading-none text-[#010101]/50"
                   style={{ fontFamily: SANS }}
                 >
                   +
@@ -336,7 +336,7 @@ function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ type: "spring", stiffness: 350, damping: 35 }}
-                    className="overflow-hidden"
+                    className="overflow-hidden bg-[#010101]/95 backdrop-blur-sm"
                   >
                     <div className="border-t border-white/[0.06] px-6 pb-4 pt-2">
                       {items.map((item, index) => (
