@@ -95,6 +95,11 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
     description:
       "Descubrí qué es un agente de IA, cómo se diferencia de un chatbot y cómo puede automatizar tareas reales en tu negocio. Aprende a construir agentes autónomos con Polarist.",
   },
+  "/services": {
+    title: "Polarist | Servicios de Inteligencia Artificial para Empresas",
+    description:
+      "Automatizaciones de procesos, diseño e integración de agentes de IA y consultoría avanzada para optimizar flujos de trabajo corporativos. Descubrí cómo transformamos tu negocio con IA.",
+  },
 };
 
 const PRIVATE_ROUTE_PATTERNS = ["/library", "/settings"];
