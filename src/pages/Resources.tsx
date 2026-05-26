@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { ExternalLink, Download } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 import { FALLBACK_RESOURCE_IMAGE, ResourceDetail } from "@/components/resources/ResourceDetail";
 import Modal from "@/components/ui/modal-drop";
@@ -244,31 +245,127 @@ const Resources = () => {
         <ResourceShowcase items={showcaseItems} />
 
         {downloads.length > 0 ? (
-          <div className="mt-32 w-full max-w-4xl">
-            <h2
-              style={{
-                fontFamily: SANS,
-                fontSize: "clamp(2rem, 5vw, 3.2rem)",
-                fontWeight: 700,
-                letterSpacing: "-0.04em",
-                lineHeight: 1,
-                color: "#F6F6F6",
-                textAlign: "center",
-                marginBottom: "2.5rem",
-              }}
-            >
-              Links externos y descargables
-            </h2>
-            <div>
-              {downloads.map((item, index) => (
-                <DownloadRow key={item.id} item={item} isLast={index === downloads.length - 1} />
-              ))}
-            </div>
-          </div>
+          <DownloadFolderExplorer downloads={downloads} />
         ) : null}
       </div>
     </>
   );
 };
+
+/* ── Folder Explorer ── */
+const FOLDER_ORDER = ["Skills", "Archivos para agentes", "Cuadernos NotebookLM", "Otros"] as const;
+
+const FOLDER_ICONS: Record<string, string> = {
+  Skills: "⚡",
+  "Archivos para agentes": "🤖",
+  "Cuadernos NotebookLM": "📓",
+  Otros: "📎",
+};
+
+function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
+  const [activeFolder, setActiveFolder] = useState<string | null>(null);
+
+  const grouped = useMemo(() => {
+    const map: Record<string, DownloadItem[]> = {};
+    for (const folder of FOLDER_ORDER) {
+      map[folder] = [];
+    }
+    for (const item of downloads) {
+      const key = FOLDER_ORDER.includes(item.folder as any) ? item.folder : "Otros";
+      map[key].push(item);
+    }
+    return map;
+  }, [downloads]);
+
+  const nonEmptyFolders = FOLDER_ORDER.filter((f) => grouped[f].length > 0);
+
+  return (
+    <div className="mt-32 w-full max-w-4xl">
+      <h2
+        style={{
+          fontFamily: SANS,
+          fontSize: "clamp(2rem, 5vw, 3.2rem)",
+          fontWeight: 700,
+          letterSpacing: "-0.04em",
+          lineHeight: 1,
+          color: "#F6F6F6",
+          textAlign: "center",
+          marginBottom: "2.5rem",
+        }}
+      >
+        Links externos y descargables
+      </h2>
+
+      <div className="space-y-3">
+        {nonEmptyFolders.map((folder) => {
+          const isOpen = activeFolder === folder;
+          const items = grouped[folder];
+
+          return (
+            <motion.div
+              key={folder}
+              layout
+              className="overflow-hidden"
+              style={{
+                borderRadius: "20px",
+                border: "1px solid rgba(255, 255, 255, 0.08)",
+                background: "rgba(255, 255, 255, 0.02)",
+              }}
+            >
+              {/* Folder header */}
+              <button
+                type="button"
+                onClick={() => setActiveFolder(isOpen ? null : folder)}
+                className="flex w-full items-center justify-between gap-4 px-6 py-5 text-left transition-colors duration-300 hover:bg-white/[0.04]"
+              >
+                <div className="flex items-center gap-3">
+                  <span className="text-lg">{FOLDER_ICONS[folder] ?? "📁"}</span>
+                  <p
+                    className="text-[16px] font-bold tracking-[-0.01em] text-[#F6F6F6]"
+                    style={{ fontFamily: SANS }}
+                  >
+                    {folder}
+                  </p>
+                </div>
+                <motion.span
+                  animate={{ rotate: isOpen ? 45 : 0 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                  className="shrink-0 text-[22px] font-light leading-none text-[#F6F6F6]/50"
+                  style={{ fontFamily: SANS }}
+                >
+                  +
+                </motion.span>
+              </button>
+
+              {/* Folder content */}
+              <AnimatePresence initial={false}>
+                {isOpen ? (
+                  <motion.div
+                    key="content"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ type: "spring", stiffness: 350, damping: 35 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="border-t border-white/[0.06] px-6 pb-4 pt-2">
+                      {items.map((item, index) => (
+                        <DownloadRow
+                          key={item.id}
+                          item={item}
+                          isLast={index === items.length - 1}
+                        />
+                      ))}
+                    </div>
+                  </motion.div>
+                ) : null}
+              </AnimatePresence>
+            </motion.div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default Resources;

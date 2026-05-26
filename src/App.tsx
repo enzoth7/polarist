@@ -31,6 +31,8 @@ import Trends from "./pages/Trends";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import Library from "./pages/Library";
+import Agents from "./pages/Agents";
+import Services from "./pages/Services";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +105,7 @@ const AppRoutes = () => {
         <Route path={routes.terms} element={<TermsConditions />} />
         <Route path={routes.about} element={<AboutUs />} />
         <Route path={routes.contact} element={<Contact />} />
+        <Route path={routes.agents} element={<Agents />} />
       </Route>
 
       <Route path={routes.login} element={<Login />} />
@@ -110,6 +113,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
 
       <Route element={<MobileLayout />}>
+        <Route path={routes.services} element={<Services />} />
         <Route path={routes.appTrends} element={<Trends />} />
         <Route path={routes.appTools} element={<Tools />} />
         <Route path={routes.appResources} element={<Resources />} />

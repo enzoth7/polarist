@@ -37,7 +37,7 @@ const DesktopNavItem = ({ label, to }: { label: string; to: string }) => (
     end
     className={({ isActive }) =>
       cn(
-        "relative z-[1] pointer-events-auto px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
+        "relative z-[1] pointer-events-auto px-2 lg:px-3 xl:px-4 py-2 text-[13px] lg:text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]",
         isActive && "text-[#1d1d1f]",
       )
     }
@@ -68,7 +68,7 @@ const DesktopCommunityItem = () => {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="relative z-[110] px-4 py-2 text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]"
+          className="relative z-[110] px-2 lg:px-3 xl:px-4 py-2 text-[13px] lg:text-[14px] font-normal tracking-[0.01em] text-[#6e6e73] transition-colors hover:text-[#1d1d1f]"
           style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
         >
           Comunidad
@@ -79,7 +79,10 @@ const DesktopCommunityItem = () => {
         sideOffset={16}
         className="z-[110] w-auto border-0 bg-transparent p-0 shadow-none"
       >
-        <CommunityCalendar />
+        <CommunityCalendar 
+          showExploreButton={true} 
+          onExploreClick={() => handleOpenChange(false)} 
+        />
       </PopoverContent>
     </Popover>
   );
@@ -100,13 +103,13 @@ const Header = () => {
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
-    { label: "Biblioteca", to: profileRoute, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
-    { label: "Biblioteca", to: routes.appProfile, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
   ];
 
   let greeting = "Hola";
@@ -145,14 +148,16 @@ const Header = () => {
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Biblioteca", to: profileRoute, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
+    { label: "Agentes de IA", to: routes.agents, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Biblioteca", to: routes.appProfile, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
+    { label: "Agentes de IA", to: routes.agents, showAlways: true },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -160,7 +165,7 @@ const Header = () => {
 
   return (
     <header className="sticky top-0 isolate z-[1000] w-full border-b border-black/5 bg-[#F6F6F6] backdrop-blur-lg saturate-150 transition-all duration-300">
-      <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-2.5 md:max-w-[2000px] md:grid-cols-3 md:px-10 lg:px-14 xl:px-16">
+      <div className="mx-auto grid grid-cols-[auto_1fr_auto] items-center gap-2 px-4 py-2.5 md:max-w-[2000px] md:grid-cols-[1fr_auto_1fr] md:px-6 lg:px-10 xl:px-16">
         {/* Lado Izquierdo */}
         <div className="flex items-center justify-start">
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
@@ -180,7 +185,8 @@ const Header = () => {
                 user={isAuthenticated ? {
                   name: cleanFullName || "Usuario",
                   email: user?.email || "",
-                  avatarUrl: avatarUrl || "/avatar.webp"
+                  avatarUrl: avatarUrl || "/avatar.webp",
+                  profileRoute: profileRoute
                 } : undefined}
                 navItems={mobileNavItems.map((item) => ({
                   label: item.label,
@@ -220,27 +226,41 @@ const Header = () => {
           </Link>
         </div>
 
-        <nav className="relative z-[1] hidden items-center justify-center gap-5 md:flex lg:gap-6">
+        <nav className="relative z-[1] hidden items-center justify-center gap-1 md:flex lg:gap-3 xl:gap-5">
           {navItems.map((item) => (
             <div key={item.label} className="contents">
               <DesktopNavItem {...item} />
               {item.label === "Recursos" ? <DesktopCommunityItem /> : null}
             </div>
           ))}
+          <NavLink
+            to={routes.agents}
+            className={({ isActive }) =>
+              cn(
+                "hidden md:inline-flex items-center rounded-full px-2.5 py-1 text-[11px] lg:px-4 lg:py-1.5 lg:text-[13px] font-bold tracking-[0.01em] transition-all duration-300 whitespace-nowrap ml-1 lg:ml-2.5",
+                isActive
+                  ? "bg-[#CAFE5B] text-[#010101] shadow-[0_0_16px_rgba(202,254,91,0.4)]"
+                  : "bg-[#CAFE5B]/90 text-[#010101] hover:bg-[#CAFE5B] hover:shadow-[0_0_20px_rgba(202,254,91,0.35)] hover:scale-[1.04]"
+              )
+            }
+            style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
+          >
+            Agentes de IA
+          </NavLink>
         </nav>
 
         {/* Lado Derecho */}
-        <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center justify-end gap-1.5 lg:gap-3">
           {isAuthenticated ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
                   type="button"
-                  className="hidden items-center gap-2 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex"
+                  className="hidden items-center gap-1.5 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex"
                   aria-label="Abrir menú de perfil"
                 >
                   <span 
-                    className="whitespace-nowrap text-[15px] font-bold tracking-[-0.01em] text-[#1d1d1f] md:text-base"
+                    className="whitespace-nowrap text-[13px] lg:text-[15px] font-bold tracking-[-0.01em] text-[#1d1d1f] md:text-base"
                     style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
                   >
                     {desktopGreetingLabel}
@@ -294,6 +314,13 @@ const Header = () => {
                 <DropdownMenuSeparator className="bg-zinc-100 my-1" />
 
                 <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>
+                  <Link to={profileRoute}>
+                    <Library className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
+                    Biblioteca
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>
                   <Link to={routes.appSettings}>
                     <Settings className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
                     Configuración
@@ -315,7 +342,7 @@ const Header = () => {
           ) : (
             <Button
               asChild
-              className="hidden h-10 rounded-full bg-primary px-7 text-[14px] font-bold tracking-[0.01em] text-primary-foreground transition-all hover:bg-primary/90 md:inline-flex shadow-lg shadow-black/5"
+              className="hidden h-9 lg:h-10 rounded-full bg-primary px-4 lg:px-7 text-[12px] lg:text-[14px] font-bold tracking-[0.01em] text-primary-foreground transition-all hover:bg-primary/90 md:inline-flex shadow-lg shadow-black/5"
             >
               <Link to={routes.login}>
                 Iniciar sesión

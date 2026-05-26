@@ -537,7 +537,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
             id="mainLink"
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center justify-center rounded-full bg-white text-[#010101] px-8 py-3.5 text-xs md:text-sm font-semibold tracking-[0.02em] shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 hover:bg-white/90 hover:scale-[1.04] hover:shadow-[0_12px_40px_rgba(255,255,255,0.25)] active:scale-[0.98] pointer-events-auto"
+            className="mt-8 self-center md:self-start inline-flex items-center justify-center rounded-full bg-white text-[#010101] px-8 py-3.5 text-xs md:text-sm font-semibold tracking-[0.02em] shadow-[0_8px_30px_rgba(255,255,255,0.1)] transition-all duration-300 hover:bg-white/90 hover:scale-[1.04] hover:shadow-[0_12px_40px_rgba(255,255,255,0.25)] active:scale-[0.98] pointer-events-auto"
             style={{
               fontFamily: 'var(--font-sequel, sans-serif)',
             }}

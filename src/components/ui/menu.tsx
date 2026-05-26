@@ -17,6 +17,7 @@ interface UserProfile {
   name: string;
   email: string;
   avatarUrl: string;
+  profileRoute?: string;
 }
 
 interface UserProfileSidebarProps {
@@ -75,16 +76,22 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
         {/* User Info Header - Only shown if user prop is provided */}
         {user ? (
           <>
-            <motion.div variants={itemVariants} className="flex items-center space-x-4 p-2">
-              <img
-                src={user.avatarUrl}
-                alt={`${user.name}'s avatar`}
-                className="h-12 w-12 rounded-full object-cover"
-              />
-              <div className="flex flex-col truncate">
-                <span className="font-semibold text-lg">{user.name}</span>
-                <span className="text-sm text-muted-foreground truncate">{user.email}</span>
-              </div>
+            <motion.div variants={itemVariants} className="flex items-center p-2">
+              <Link 
+                to={user.profileRoute || '#'} 
+                onClick={onItemClick}
+                className="flex items-center space-x-4 w-full group hover:opacity-80 transition-opacity"
+              >
+                <img
+                  src={user.avatarUrl}
+                  alt={`${user.name}'s avatar`}
+                  className="h-12 w-12 rounded-full object-cover"
+                />
+                <div className="flex flex-col truncate">
+                  <span className="font-semibold text-lg text-[#010101] transition-colors">{user.name}</span>
+                  <span className="text-sm font-medium text-muted-foreground truncate hover:text-[#CAFE5B] transition-colors">Accedé a tu Biblioteca</span>
+                </div>
+              </Link>
             </motion.div>
             <motion.div variants={itemVariants} className="my-4 border-t border-border" />
           </>
@@ -101,15 +108,27 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
             <React.Fragment key={index}>
               {item.isSeparator && <motion.div variants={itemVariants} className="h-6" />}
               <motion.div variants={itemVariants}>
-                <Link
-                  to={item.href}
-                  onClick={onItemClick}
-                  className="group flex items-center rounded-md px-3.5 py-3 text-base font-medium text-[#010101] transition-colors hover:bg-black/5"
-                >
-                  {item.icon && <span className="mr-3 h-5 w-5">{item.icon}</span>}
-                  <span>{item.label}</span>
-                  <ChevronRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
-                </Link>
+                {item.label === "Agentes de IA" || item.label === "Agentes IA" ? (
+                  <div className="px-3.5 py-3 flex justify-start">
+                    <Link
+                      to={item.href}
+                      onClick={onItemClick}
+                      className="inline-flex items-center justify-center rounded-full bg-[#CAFE5B] px-8 py-3.5 text-base font-bold text-[#010101] shadow-[0_4px_16px_rgba(202,254,91,0.25)] transition-all duration-300 active:scale-[0.98] hover:shadow-[0_4px_20px_rgba(202,254,91,0.38)]"
+                    >
+                      <span>{item.label}</span>
+                    </Link>
+                  </div>
+                ) : (
+                  <Link
+                    to={item.href}
+                    onClick={onItemClick}
+                    className="group flex items-center rounded-md px-3.5 py-3 text-base font-medium text-[#010101] transition-colors hover:bg-black/5"
+                  >
+                    {item.icon && <span className="mr-3 h-5 w-5">{item.icon}</span>}
+                    <span>{item.label}</span>
+                    <ChevronRight className="ml-auto h-4 w-4 opacity-0 transition-opacity group-hover:opacity-100" />
+                  </Link>
+                )}
               </motion.div>
             </React.Fragment>
           ))}

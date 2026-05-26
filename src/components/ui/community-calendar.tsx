@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { ChevronLeft } from "lucide-react";
 
@@ -142,7 +142,13 @@ function BentoCard({ children, className = "" }: { children: React.ReactNode; cl
 
 // ── CommunityCalendar ────────────────────────────────────────────────────────
 
-export function CommunityCalendar() {
+export function CommunityCalendar({
+  showExploreButton = false,
+  onExploreClick,
+}: {
+  showExploreButton?: boolean;
+  onExploreClick?: () => void;
+}) {
   const navigate = useNavigate();
   const { user, profile } = useAuth();
   const { setPageFocusOverlayOpen } = usePageFocusOverlay();
@@ -405,6 +411,16 @@ export function CommunityCalendar() {
                     <p className="mt-2 text-[11px] leading-4 text-muted-foreground md:text-xs">
                       Presiona la fecha en verde para poder registrarte.
                     </p>
+                    {showExploreButton && (
+                      <Link
+                        to={routes.appCommunity}
+                        onClick={onExploreClick}
+                        className="mt-3.5 flex h-10 w-full items-center justify-center rounded-full bg-[#010101] text-[12px] font-bold tracking-tight text-[#F6F6F6] transition-all hover:bg-black/90 hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+                        style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+                      >
+                        Conoce más nuestra comunidad
+                      </Link>
+                    )}
                   </div>
                 </BentoCard>
               </div>

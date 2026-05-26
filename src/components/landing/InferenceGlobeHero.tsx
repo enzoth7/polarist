@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { Link } from "react-router-dom";
 import { MaskedSlideReveal } from "@/components/ui/masked-slide-reveal";
 import { ShinyButton } from "@/components/ui/shiny-button";
+import { StaticGlobe } from "@/components/ui/StaticGlobe";
 
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -19,21 +20,29 @@ const InferenceGlobeHero = () => {
 
   useGSAP(
     () => {
-      const sphereTarget = sphereTargetRef.current;
       const titleEl = titleRef.current;
       const ctaEl = ctaRef.current;
-
-      if (!sphereTarget || !titleEl || !ctaEl) {
-        return;
-      }
-
       const rootEl = rootRef.current;
 
-      if (!rootEl) {
+      if (!titleEl || !ctaEl || !rootEl) {
         return;
       }
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (isMobile) {
+        const introTl = gsap.timeline();
+        if (!prefersReducedMotion) {
+          introTl.to(titleEl, { duration: 1.2, opacity: 1, y: 0, ease: "power4.out" }, 0.5);
+          introTl.to(ctaEl, { duration: 0.8, opacity: 1, scale: 1, y: 0, ease: "back.out(1.7)" }, "-=0.55");
+        } else {
+          gsap.set([titleEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
+        }
+        return () => introTl.kill();
+      }
+
+      const sphereTarget = sphereTargetRef.current;
+      if (!sphereTarget) return;
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -363,11 +372,17 @@ const InferenceGlobeHero = () => {
       </div>
 
       <div className="pointer-events-none absolute inset-0 z-10 flex w-full h-full items-center justify-center overflow-hidden">
-        <div
-          ref={sphereTargetRef}
-          className="absolute inset-0 w-full h-full"
-          style={{ transform: isMobile ? 'translateY(-22%)' : 'translateX(21%) scale(1.1)' }}
-        />
+        {isMobile ? (
+          <div className="absolute inset-0 w-full h-full flex items-center justify-center" style={{ transform: 'translateY(-10%)' }}>
+            <StaticGlobe width="120%" height="120%" className="max-w-[400px] max-h-[400px]" />
+          </div>
+        ) : (
+          <div
+            ref={sphereTargetRef}
+            className="absolute inset-0 w-full h-full"
+            style={{ transform: 'translateX(21%) scale(1.1)' }}
+          />
+        )}
       </div>
     </div>
   );
