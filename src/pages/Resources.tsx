@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, Download } from "lucide-react";
+import { ExternalLink, Download, Folder } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { FALLBACK_RESOURCE_IMAGE, ResourceDetail } from "@/components/resources/ResourceDetail";
@@ -24,9 +24,6 @@ async function forceDownload(url: string) {
   URL.revokeObjectURL(blobUrl);
 }
 
-const LINK_THUMB = "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?auto=format&fit=crop&w=80&q=70";
-const SKILL_THUMB = "https://images.unsplash.com/photo-1517842645767-c639042777db?auto=format&fit=crop&w=80&q=70";
-
 function DownloadRow({ item, isLast }: { item: DownloadItem; isLast: boolean }) {
   const isDownload = item.type === "download";
   const [loading, setLoading] = useState(false);
@@ -45,13 +42,8 @@ function DownloadRow({ item, isLast }: { item: DownloadItem; isLast: boolean }) 
     <div>
       <div className="flex items-center justify-between gap-4 rounded-xl py-4 transition-colors duration-300 hover:bg-white/[0.05]">
         <div className="flex min-w-0 items-center gap-4">
-          <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl">
-            <img
-              src={item.imageUrl ?? (isDownload ? SKILL_THUMB : LINK_THUMB)}
-              alt=""
-              className="h-full w-full object-cover"
-              style={{ filter: "grayscale(0.3) brightness(0.75)" }}
-            />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/5 text-[#F6F6F6]/80">
+            <Folder className="h-5 w-5 fill-[#F6F6F6]/60 text-transparent" />
           </div>
           <div className="min-w-0">
             <p
