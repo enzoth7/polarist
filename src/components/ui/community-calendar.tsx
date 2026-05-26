@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { EventCountdownCard } from "@/components/ui/event-countdown-card";
 import { Button } from "@/components/ui/button";
@@ -168,6 +168,30 @@ export function CommunityCalendar({
   const [registrationName, setRegistrationName] = useState("");
   const [registrationEmail, setRegistrationEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const hasFutureEvents = useMemo(() => {
+    return events.some((e) => getStartOfDay(new Date(e.event_date)) >= today);
+  }, [events, today]);
+
+  const handlePrevMonth = () => {
+    setDisplayMonth((prev) => {
+      if (prev === 0) {
+        setDisplayYear((y) => y - 1);
+        return 11;
+      }
+      return prev - 1;
+    });
+  };
+
+  const handleNextMonth = () => {
+    setDisplayMonth((prev) => {
+      if (prev === 11) {
+        setDisplayYear((y) => y + 1);
+        return 0;
+      }
+      return prev + 1;
+    });
+  };
 
   useEffect(() => {
     const timeoutId = window.setTimeout(() => {
@@ -394,12 +418,32 @@ export function CommunityCalendar({
 
                     <div className="mx-auto mt-2 flex-1 min-h-0 w-[340px]">
                       <div className="flex h-full flex-col rounded-2xl border border-black/[0.05] bg-white px-4 py-3.5 shadow-inner">
-                        <div className="flex items-center space-x-2">
-                          <p className="text-xs font-medium capitalize text-[#010101]">
-                            {MONTH_NAMES[displayMonth]}, {displayYear}
-                          </p>
-                          <span className="h-1 w-1 rounded-full bg-[#c5cad5]" />
-                          <p className="text-[11px] text-muted-foreground">Charlas y encuentros</p>
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <p className="text-xs font-medium capitalize text-[#010101]">
+                              {MONTH_NAMES[displayMonth]}, {displayYear}
+                            </p>
+                            <span className="h-1 w-1 rounded-full bg-[#c5cad5]" />
+                            <p className="text-[11px] text-muted-foreground">Charlas y encuentros</p>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <button
+                              type="button"
+                              onClick={handlePrevMonth}
+                              className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-black/[0.05] active:scale-95 text-[#010101]/60 hover:text-[#010101] cursor-pointer"
+                              aria-label="Mes anterior"
+                            >
+                              <ChevronLeft className="h-3.5 w-3.5" />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleNextMonth}
+                              className="flex h-5 w-5 items-center justify-center rounded transition-colors hover:bg-black/[0.05] active:scale-95 text-[#010101]/60 hover:text-[#010101] cursor-pointer"
+                              aria-label="Mes siguiente"
+                            >
+                              <ChevronRight className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         </div>
                         <div className="mt-3 grid flex-1 grid-cols-7 place-items-center gap-1.5">
                           {isLoading ? (
@@ -408,9 +452,15 @@ export function CommunityCalendar({
                         </div>
                       </div>
                     </div>
-                    <p className="mt-2 text-[11px] leading-4 text-muted-foreground md:text-xs">
-                      Presiona la fecha en verde para poder registrarte.
-                    </p>
+                    {hasFutureEvents ? (
+                      <p className="mt-2 text-[11px] leading-4 text-muted-foreground md:text-xs">
+                        Presiona la fecha en verde para poder registrarte.
+                      </p>
+                    ) : (
+                      <p className="mt-2 text-[11px] font-semibold leading-4 md:text-xs text-[#5c8812]">
+                        No hay eventos disponibles en este momento
+                      </p>
+                    )}
                     {showExploreButton && (
                       <Link
                         to={routes.appCommunity}

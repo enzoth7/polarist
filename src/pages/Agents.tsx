@@ -729,11 +729,11 @@ const Agents = () => {
               color: "rgba(246, 246, 246, 0.5)",
             }}
           >
-            Las mejores herramientas integradas con Supabase para comenzar a desarrollar y automatizar tus propios empleados digitales.
+            Las mejores herramientas para comenzar a desarrollar y automatizar tus propios agentes digitales.
           </p>
         </div>
 
-        <div className="mx-auto max-w-[1100px] flex flex-wrap items-start justify-center gap-6">
+        <div className="mx-auto max-w-[1200px] flex flex-wrap items-start justify-center gap-6">
           {agentPlatforms.map((platform) => (
             <div
               key={platform.name}
