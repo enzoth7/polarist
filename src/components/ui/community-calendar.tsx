@@ -453,11 +453,11 @@ export function CommunityCalendar({
                       </div>
                     </div>
                     {hasFutureEvents ? (
-                      <p className="mt-2 text-[11px] leading-4 text-muted-foreground md:text-xs">
+                      <p className="mt-2 text-[11px] font-bold leading-4 md:text-xs text-[#8CBF26]">
                         Presiona la fecha en verde para poder registrarte.
                       </p>
                     ) : (
-                      <p className="mt-2 text-[11px] font-semibold leading-4 md:text-xs text-[#5c8812]">
+                      <p className="mt-2 text-[11px] font-bold leading-4 md:text-xs text-[#EF4444]">
                         No hay eventos disponibles en este momento
                       </p>
                     )}
