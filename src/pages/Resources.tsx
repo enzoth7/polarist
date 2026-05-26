@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ExternalLink, Download, Folder } from "lucide-react";
+import { ExternalLink, Download, File } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { FALLBACK_RESOURCE_IMAGE, ResourceDetail } from "@/components/resources/ResourceDetail";
@@ -42,9 +42,7 @@ function DownloadRow({ item, isLast }: { item: DownloadItem; isLast: boolean }) 
     <div>
       <div className="flex items-center justify-between gap-4 rounded-xl py-4 transition-colors duration-300 hover:bg-white/[0.05]">
         <div className="flex min-w-0 items-center gap-4">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white/[0.04] border border-white/5 text-[#F6F6F6]/80">
-            <Folder className="h-5 w-5 fill-[#F6F6F6]/60 text-transparent" />
-          </div>
+          <File className="h-7 w-7 shrink-0 fill-[#F6F6F6] text-transparent" />
           <div className="min-w-0">
             <p
               className="text-[15px] font-semibold leading-tight tracking-[-0.01em] text-[#F6F6F6]"
