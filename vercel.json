@@ -137,6 +137,14 @@
     {
       "source": "/settings",
       "destination": "/index.html"
+    },
+    {
+      "source": "/aiagents",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/services",
+      "destination": "/index.html"
     }
   ]
 }
