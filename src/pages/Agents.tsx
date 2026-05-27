@@ -31,24 +31,36 @@ const bk = {
   rPill: "999px",
 };
 
-/* ── Datos de las 3 partes de un Agente ── */
+/* ── Los 5 pilares de un Agente ── */
 const anatomyParts = [
+  {
+    title: "Trigger & Loop",
+    description:
+      "Es el reloj y horario del asistente. Decide en qué momento se 'despierta' para trabajar. Puede iniciar por un horario fijo, reaccionar cuando ocurre algo nuevo, o simplemente funcionar sin parar.",
+    imgUrl: "/images/agents/trigger.mp4",
+  },
+  {
+    title: "Contexto & Identidad",
+    description:
+      "Define la personalidad del asistente y las reglas que debe respetar. Le da acceso a los documentos de tu empresa para que siempre responda con datos reales y nunca invente información.",
+    imgUrl: "/images/agents/context.webm",
+  },
   {
     title: "Cerebro (LLM)",
     description:
-      "El modelo de lenguaje es el motor de razonamiento. Analiza la situación, decide qué acción tomar y genera respuestas con contexto. Es lo que le da la capacidad de pensar.",
+      "Es la inteligencia principal, la mente del asistente. Se encarga de leer la información, entender muy bien lo que le pides, pensar el mejor plan y tomar las decisiones correctas para ayudarte.",
     imgUrl: "/images/agents/brain.webm",
   },
   {
-    title: "Memoria",
+    title: "Skills",
     description:
-      "Sin memoria, cada interacción empieza de cero. La memoria permite al agente recordar conversaciones pasadas, preferencias del usuario y datos críticos del negocio.",
-    imgUrl: "/images/agents/memory.webm",
+      "Son las habilidades que el asistente sabe hacer paso a paso, como redactar o resumir. Le permiten recordar cosas, buscar datos en internet por sí solo y aprender a mejorar constantemente.",
+    imgUrl: "/images/agents/skills.mp4",
   },
   {
-    title: "Herramientas",
+    title: "Herramientas & Conectores",
     description:
-      "Las herramientas son las manos del agente. Le permiten enviar emails, consultar bases de datos, actualizar CRMs, agendar reuniones y ejecutar cualquier acción en el mundo real.",
+      "Son las manos del asistente. Le sirven para conectarse y usar los programas que empleas a diario, como tu correo electrónico, tus chats o tus carpetas, haciendo el trabajo directamente por ti.",
     imgUrl: "/images/agents/tools1.webm",
   },
 ] as const;
@@ -501,7 +513,7 @@ const Agents = () => {
               color: bk.white,
             }}
           >
-            Las 3 partes de un
+            Los 5 pilares de un
             <div style={{ color: bk.green, display: "inline" }}> Agente</div>
           </h2>
           <p
@@ -512,11 +524,11 @@ const Agents = () => {
               color: "rgba(246, 246, 246, 0.5)",
             }}
           >
-            Un agente combina tres pilares fundamentales para operar de forma autónoma.
+            Un agente empresarial de alto rendimiento combina cinco pilares fundamentales para operar de forma totalmente autónoma.
           </p>
         </div>
 
-        <div className="mx-auto max-w-[1200px] grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-6">
+        <div className="mx-auto max-w-[1200px] grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {anatomyParts.map((part) => (
             <div key={part.title} className="anatomy-card">
               <GlowCard
@@ -604,14 +616,16 @@ const Agents = () => {
           <defs>
             <pattern
               id="agents-grid"
-              width="72"
+              width="120"
               height="72"
               patternUnits="userSpaceOnUse"
             >
-              <path
-                d="M 72 0 L 0 0 0 72"
-                fill="none"
-                stroke="rgba(202,254,91,0.08)"
+              <line
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="72"
+                stroke="rgba(255, 255, 255, 0.05)"
                 strokeWidth="0.8"
               />
             </pattern>
@@ -652,13 +666,13 @@ const Agents = () => {
               className="text-center text-xs font-semibold uppercase tracking-[0.15em]"
               style={{ fontFamily: bk.fontSans, color: "rgba(246, 246, 246, 0.3)" }}
             >
-              Chatbot
+              CHATBOT
             </div>
             <div
               className="text-center text-xs font-semibold uppercase tracking-[0.15em]"
               style={{ fontFamily: bk.fontSans, color: bk.green }}
             >
-              Agente IA
+              AGENTE IA
             </div>
           </div>
 
@@ -686,7 +700,7 @@ const Agents = () => {
                   {row.chatbot}
                 </div>
                 <div
-                  className="text-center text-xs font-medium leading-relaxed"
+                  className="text-center text-xs font-bold leading-relaxed"
                   style={{ fontFamily: bk.fontSans, color: bk.white }}
                 >
                   {row.agent}
@@ -729,7 +743,7 @@ const Agents = () => {
               color: "rgba(246, 246, 246, 0.5)",
             }}
           >
-            Las mejores herramientas para comenzar a desarrollar y automatizar tus propios agentes digitales.
+            Estos son los mejores arneses (agent harness) para comenzar a desarrollar y automatizar tus propios agentes digitales.
           </p>
         </div>
 
