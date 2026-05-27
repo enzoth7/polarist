@@ -496,12 +496,12 @@ const Agents = () => {
       <div
         ref={anatomyRef}
         className={cn(
-          "relative z-[15] px-6 lg:px-20",
+          "relative z-[15] px-6 lg:px-10 xl:px-16",
           isMobile ? "pt-16 pb-16" : "py-28 sm:px-10"
         )}
         style={{ background: bk.black }}
       >
-        <div className={cn("mx-auto max-w-[1200px] text-center", isMobile ? "mb-10" : "mb-16")}>
+        <div className={cn("mx-auto max-w-[1450px] xl:max-w-[1650px] text-center", isMobile ? "mb-10" : "mb-16")}>
           <h2
             className="anatomy-title leading-none"
             style={{
@@ -528,13 +528,13 @@ const Agents = () => {
           </p>
         </div>
 
-        <div className="mx-auto max-w-[1200px] grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mx-auto max-w-[1450px] xl:max-w-[1650px] 2xl:max-w-[1750px] grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
           {anatomyParts.map((part) => (
             <div key={part.title} className="anatomy-card">
               <GlowCard
                 customSize
                 glowColor="polarist"
-                className="h-full w-full !p-0 overflow-hidden cursor-pointer group"
+                className="h-full w-full !p-0 overflow-hidden cursor-pointer group min-h-[430px] sm:min-h-[455px] lg:min-h-[475px] xl:min-h-[510px] 2xl:min-h-[530px]"
                 style={{
                   borderRadius: bk.rLg,
                   background: "rgba(255, 255, 255, 0.02)",
@@ -574,9 +574,9 @@ const Agents = () => {
                   </div>
 
                   {/* Content */}
-                  <div className="flex flex-col gap-3 px-7 pb-8 pt-2">
+                  <div className="flex flex-col gap-3 px-5 xl:px-7 pb-8 pt-2">
                     <h3
-                      className="text-xl font-bold tracking-tight"
+                      className="text-lg lg:text-[14px] xl:text-[17px] 2xl:text-xl font-bold tracking-tight whitespace-nowrap"
                       style={{ fontFamily: bk.fontSans, color: bk.white }}
                     >
                       {part.title}
