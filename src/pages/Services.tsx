@@ -183,7 +183,7 @@ const Services = () => {
             className="text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]/70 font-light max-w-3xl"
             style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
           >
-            No buscamos implementar Inteligencia Artificail en todos los lados ya que creemos que <strong className="text-[#F6F6F6] font-semibold">el criterio humano es muy importante</strong>. Queremos potenciar las habilidades se puedan potenciar las habilidades humanas y que las empresas pueda obtener un beneficio mucho más tangible y real.
+            No buscamos implementar Inteligencia Artificial en todos los lados ya que creemos que <strong className="text-[#F6F6F6] font-semibold">el criterio humano es muy importante</strong>. Queremos potenciar las habilidades humanas y que las empresas puedan obtener un beneficio mucho más tangible y real.
           </p>
         </motion.div>
 

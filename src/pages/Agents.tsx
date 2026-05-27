@@ -954,6 +954,7 @@ const Agents = () => {
       <PolaristInterstitialReveal
         title="¿Cómo construimos un agente?"
         description="Conectamos un modelo de lenguaje con las herramientas de tu negocio. Definimos su objetivo, le damos memoria y lo entrenamos con tus datos. El resultado: un empleado digital que trabaja 24/7 sin descanso."
+        singleLine
       />
 
       {/* ═══ CTA FINAL ═══ */}

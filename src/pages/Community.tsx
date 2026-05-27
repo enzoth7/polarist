@@ -28,7 +28,7 @@ const CAROUSEL_EVENTS = [
   {
     title: "La forma más simple de usar IA en tu vida",
     description: "Charla sobre el avance y la actualidad de la IA con actividades prácticas y ejemplos para poder aplicarlo en negocios.",
-    image: "/images/events/Pymes1.jpg",
+    image: "/images/events/Pymes11.jpg",
     date: "Mayo 2026",
     location: "Centro PYMES",
     hueRotate: "hue-rotate-0",
@@ -36,7 +36,7 @@ const CAROUSEL_EVENTS = [
   {
     title: "La forma más simple de usar IA en tu vida",
     description: "Charla sobre el avance y la actualidad de la IA con actividades prácticas y ejemplos para poder aplicarlo en negocios.",
-    image: "/images/events/Pymes2.jpg",
+    image: "/images/events/Pymes22.jpg",
     date: "Mayo 2026",
     location: "Centro PYMES",
     hueRotate: "hue-rotate-0",
@@ -44,7 +44,7 @@ const CAROUSEL_EVENTS = [
   {
     title: "La forma más simple de usar IA en tu vida",
     description: "Charla sobre el avance y la actualidad de la IA con actividades prácticas y ejemplos para poder aplicarlo en negocios.",
-    image: "/images/events/Pymes3.jpg",
+    image: "/images/events/Pymes33.jpg",
     date: "Mayo 2026",
     location: "Centro PYMES",
     hueRotate: "hue-rotate-0",
@@ -96,6 +96,16 @@ const Community = () => {
     } catch {
       return dateString;
     }
+  };
+
+  const formatTitle = (title: string) => {
+    const words = title.trim().split(/\s+/);
+    if (words.length <= 3) {
+      return words.join("\u00a0");
+    }
+    const firstPart = words.slice(0, -3).join(" ");
+    const lastPart = words.slice(-3).join("\u00a0");
+    return `${firstPart} ${lastPart}`;
   };
 
   const handleNext = () => {
@@ -319,17 +329,11 @@ const Community = () => {
         <motion.div variants={itemVariants} className="w-full">
           <div className="text-center mb-12">
             <h2
-              className="text-3xl md:text-4xl font-medium mb-4 text-[#F6F6F6]"
+              className="text-4xl md:text-6xl font-medium mb-4 text-[#F6F6F6]"
               style={{ fontFamily: "var(--font-serif, serif)" }}
             >
-              Reuniones & Zooms pasados
+              Meetings anteriores
             </h2>
-            <p
-              className="text-sm text-zinc-500 max-w-lg mx-auto"
-              style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
-            >
-              Reviví nuestras sesiones virtuales. Accedé a las grabaciones exclusivas y recursos prácticos de nuestros encuentros interactivos.
-            </p>
           </div>
 
           <div className="w-full max-w-5xl mx-auto divide-y divide-white/10 mt-6">
@@ -368,10 +372,13 @@ const Community = () => {
                         {/* Title (Bold, in Sequel Sans with sliding animation) */}
                         <div className="min-w-0 transition-transform duration-300 group-hover:translate-x-1.5 flex-1">
                           <strong 
-                            className="text-[15px] font-bold tracking-tight text-[#F6F6F6] leading-snug group-hover:text-white transition-colors duration-300 block"
-                            style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+                            className="text-[14px] xs:text-[15px] font-bold tracking-tight text-[#F6F6F6] leading-snug group-hover:text-white transition-colors duration-300 block"
+                            style={{ 
+                              fontFamily: "var(--font-sequel, sans-serif)",
+                              textWrap: "balance"
+                            }}
                           >
-                            {recording.title}
+                            {formatTitle(recording.title)}
                           </strong>
                         </div>
 

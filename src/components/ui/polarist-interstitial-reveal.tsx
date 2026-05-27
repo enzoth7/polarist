@@ -8,6 +8,7 @@ interface PolaristInterstitialRevealProps {
   title: string;
   description: string;
   className?: string;
+  singleLine?: boolean;
 }
 
 const splitTitle = (title: string) => {
@@ -25,11 +26,15 @@ export function PolaristInterstitialReveal({
   title,
   description,
   className,
+  singleLine = false,
 }: PolaristInterstitialRevealProps) {
   const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const [hasEnteredView, setHasEnteredView] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
-  const titleLines = useMemo(() => splitTitle(title), [title]);
+  const titleLines = useMemo(() => {
+    if (singleLine) return [title];
+    return splitTitle(title);
+  }, [title, singleLine]);
   const descriptionLines = useMemo(() => {
     const midpoint = Math.ceil(description.length / 2);
     const splitIndex = description.indexOf(" ", midpoint);
@@ -86,27 +91,12 @@ export function PolaristInterstitialReveal({
         className,
       )}
     >
-      <div className="absolute inset-0 opacity-70">
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#CAFE5B]/10 via-[#CAFE5B]/4 to-transparent blur-3xl" />
-        <div className="absolute left-1/2 top-1/2 h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#CAFE5B]/[0.05] blur-3xl" />
-      </div>
-
-      <svg className="pointer-events-none absolute inset-0 h-full w-full opacity-35" aria-hidden="true">
-        <defs>
-          <pattern id="polarist-grid" width="72" height="72" patternUnits="userSpaceOnUse">
-            <path d="M 72 0 L 0 0 0 72" fill="none" stroke="rgba(202,254,91,0.12)" strokeWidth="0.8" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#polarist-grid)" />
-        <line x1="15%" y1="0" x2="15%" y2="100%" stroke="rgba(255,255,255,0.06)" strokeDasharray="6 10" />
-        <line x1="85%" y1="0" x2="85%" y2="100%" stroke="rgba(255,255,255,0.06)" strokeDasharray="6 10" />
-        <line x1="0" y1="28%" x2="100%" y2="28%" stroke="rgba(255,255,255,0.05)" strokeDasharray="6 10" />
-        <line x1="0" y1="72%" x2="100%" y2="72%" stroke="rgba(255,255,255,0.05)" strokeDasharray="6 10" />
-      </svg>
-
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center text-center">
         <h2
-          className="max-w-5xl text-[clamp(3.1rem,7.4vw,6.5rem)] font-semibold leading-[0.9] tracking-[-0.055em] !text-[#F6F6F6]"
+          className={cn(
+            "max-w-5xl font-semibold leading-[0.9] tracking-[-0.055em] !text-[#F6F6F6]",
+            singleLine ? "text-[clamp(2.2rem,4.8vw,4.5rem)]" : "text-[clamp(3.1rem,7.4vw,6.5rem)]"
+          )}
           style={{ fontFamily: "var(--font-sans)" }}
         >
           {titleLines.map((line, lineIndex) => {
@@ -119,7 +109,10 @@ export function PolaristInterstitialReveal({
                   text={line}
                   delay={currentDelay}
                   animateOnce={hasEnteredView}
-                  className="justify-center !text-[#CAFE5B]"
+                  className={cn(
+                    "justify-center !text-[#CAFE5B]",
+                    singleLine && "md:flex-nowrap md:whitespace-nowrap"
+                  )}
                 />
               </div>
             );
@@ -127,7 +120,7 @@ export function PolaristInterstitialReveal({
         </h2>
 
         <div
-          className="mt-10 max-w-6xl text-balance text-[1.12rem] leading-8 !text-[#F6F6F6] md:text-[1.5rem] md:leading-[1.55] lg:max-w-[86rem]"
+          className="mt-10 max-w-6xl text-balance text-[0.95rem] leading-[1.7] !text-[#F6F6F6]/85 md:text-[1.3rem] md:leading-[1.6] lg:max-w-[86rem]"
           style={{ fontFamily: "var(--font-sans)" }}
         >
           {description.split(". ").map((line, index, array) => {

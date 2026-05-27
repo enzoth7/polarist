@@ -33,7 +33,7 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
       </div>
 
       {/* ── Desktop: layout 2 paneles ── */}
-      <div className="hidden md:flex md:flex-row items-start gap-16 lg:gap-32 select-none w-full max-w-7xl mx-auto py-8 px-6">
+      <div className="hidden md:flex md:flex-row items-center gap-16 lg:gap-32 select-none w-full max-w-7xl mx-auto py-8 px-6">
         {/* Izquierda: lista de títulos */}
         <div className="flex flex-col gap-8 flex-1 w-full">
           {items.map((item) => (
@@ -48,7 +48,8 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
 
         {/* Derecha: grid de fotos */}
         <div className="flex gap-3 flex-shrink-0 overflow-visible p-6">
-          <div className="flex flex-col gap-3 -mt-[98px]">
+          {/* Columna 1 (izquierda): 3 filas */}
+          <div className="flex flex-col gap-3">
             {col1.map((item) => (
               <PhotoCard
                 key={item.id}
@@ -59,8 +60,10 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
               />
             ))}
           </div>
-          <div className="flex flex-col gap-3">
-            {col2.map((item) => (
+          
+          {/* Columna 2 (medio): 2 filas, centrada verticalmente */}
+          <div className="flex flex-col gap-3 self-center">
+            {col3.map((item) => (
               <PhotoCard
                 key={item.id}
                 item={item}
@@ -70,8 +73,10 @@ export default function ResourceShowcase({ items }: ResourceShowcaseProps) {
               />
             ))}
           </div>
+
+          {/* Columna 3 (derecha): 3 filas */}
           <div className="flex flex-col gap-3">
-            {col3.map((item) => (
+            {col2.map((item) => (
               <PhotoCard
                 key={item.id}
                 item={item}
@@ -99,7 +104,6 @@ function MobileCard({ item }: { item: ShowcaseItem }) {
           src={item.image}
           alt={item.title}
           className="h-full w-full object-cover"
-          style={{ filter: 'grayscale(0.5) brightness(0.8)' }}
         />
       </div>
       <div className="min-w-0 flex-1">
@@ -153,28 +157,11 @@ function PhotoCard({
         className="w-full h-full object-cover transition-all duration-700"
         style={{
           filter: isActive
-            ? 'grayscale(0) brightness(1.05) saturate(1.1)'
-            : 'grayscale(0.85) brightness(0.65)',
+            ? 'brightness(1.05) saturate(1.1)'
+            : 'none',
           transform: isActive ? 'scale(1.06)' : 'scale(1)',
         }}
       />
-      {/* Overlay de título en la imagen */}
-      <div
-        className={cn(
-          'absolute inset-0 flex flex-col justify-end p-3 transition-opacity duration-300',
-          isActive ? 'opacity-100' : 'opacity-0',
-        )}
-        style={{
-          background: 'linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%)',
-        }}
-      >
-        <span
-          className="text-[#CAFE5B] text-[9px] font-bold uppercase tracking-[0.2em] leading-none mb-1"
-          style={{ fontFamily: 'var(--font-serif)' }}
-        >
-          {item.eyebrow}
-        </span>
-      </div>
     </div>
   );
 }
