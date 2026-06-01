@@ -6,7 +6,7 @@ const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "";
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
 
 const APP_URL = "https://polarist.app";
-const FROM_EMAIL = "Polarist <contacto@polarist.app>";
+const FROM_EMAIL = "Polarist <contactopolarist@gmail.com>";
 
 // ─── Resend helper ────────────────────────────────────────────────────────────
 async function sendViaResend(payload: object) {

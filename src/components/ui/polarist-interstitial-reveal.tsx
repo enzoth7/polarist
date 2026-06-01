@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MaskedSlideReveal } from "@/components/ui/masked-slide-reveal";
 
@@ -87,14 +88,14 @@ export function PolaristInterstitialReveal({
     <section
       ref={sectionRef}
       className={cn(
-        "relative isolate overflow-hidden bg-[#010101] px-6 pb-12 pt-24 sm:px-10 sm:pb-14 sm:pt-28 lg:px-16 lg:pb-16 lg:pt-32",
+        "relative isolate overflow-hidden bg-[#010101] px-6 pb-24 pt-24 sm:px-10 sm:pb-28 sm:pt-28 lg:px-16 lg:pb-32 lg:pt-32",
         className,
       )}
     >
       <div className="relative z-10 mx-auto flex max-w-6xl flex-col items-center text-center">
         <h2
           className={cn(
-            "max-w-5xl font-semibold leading-[0.9] tracking-[-0.055em] !text-[#F6F6F6]",
+            "max-w-5xl font-semibold leading-[0.8] tracking-[-0.08em] !text-[#F6F6F6]",
             singleLine ? "text-[clamp(2.2rem,4.8vw,4.5rem)]" : "text-[clamp(3.1rem,7.4vw,6.5rem)]"
           )}
           style={{ fontFamily: "var(--font-sans)" }}
@@ -104,7 +105,7 @@ export function PolaristInterstitialReveal({
             wordDelay += line.split(/\s+/).length * 0.08 + 0.28;
 
             return (
-              <div key={`${line}-${lineIndex}`} className={lineIndex > 0 ? "mt-2 md:mt-3" : ""}>
+              <div key={`${line}-${lineIndex}`} className={lineIndex > 0 ? "-mt-2 md:-mt-5 lg:-mt-7" : ""}>
                 <MaskedSlideReveal
                   text={line}
                   delay={currentDelay}
@@ -119,23 +120,20 @@ export function PolaristInterstitialReveal({
           })}
         </h2>
 
-        <div
-          className="mt-10 max-w-6xl text-balance text-[0.95rem] leading-[1.7] !text-[#F6F6F6]/85 md:text-[1.3rem] md:leading-[1.6] lg:max-w-[86rem]"
-          style={{ fontFamily: "var(--font-sans)" }}
-        >
+        <div className="mt-16 md:mt-20 flex flex-col gap-6 w-full">
           {description.split(". ").map((line, index, array) => {
             const lineText = index < array.length - 1 ? line + "." : line;
-            const lineDelay = wordDelay + index * 0.4; // Slightly more delay for the second paragraph
-
             return (
-              <div key={index} className={index > 0 ? "mt-6" : ""}>
-                <MaskedSlideReveal
-                  text={lineText}
-                  delay={lineDelay}
-                  animateOnce={hasEnteredView}
-                  className="justify-center !text-[#F6F6F6]"
-                />
-              </div>
+              <motion.p
+                key={index}
+                initial={{ opacity: 0, y: 15 }}
+                animate={hasEnteredView ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
+                transition={{ duration: 0.8, delay: 0.3 + index * 0.15, ease: "easeOut" }}
+                className="max-w-2xl md:max-w-5xl mx-auto text-balance text-[1.05rem] leading-relaxed md:text-[1.3rem] md:leading-[1.65] !text-[#F6F6F6]/85"
+                style={{ fontFamily: "var(--font-sans)", fontWeight: 400 }}
+              >
+                {lineText}
+              </motion.p>
             );
           })}
         </div>

@@ -461,7 +461,7 @@ const Agents = () => {
             <br />
             <MaskedSlideReveal text="chatea." delay={0.5} />
             <div style={{ display: "inline", color: bk.green }}>
-              <MaskedSlideReveal text=" Se delega." delay={0.65} />
+              <MaskedSlideReveal text="Se delega." delay={0.65} />
             </div>
           </h1>
 
@@ -495,7 +495,7 @@ const Agents = () => {
       <div ref={interstitialRef} className="scroll-mt-24">
         <PolaristInterstitialReveal
           title="¿Qué es un Agente de IA?"
-          description="Un agente de IA es un sistema autónomo que combina un modelo de lenguaje con memoria y herramientas para ejecutar tareas complejas de forma independiente. No necesita que le digas cada paso: él decide cómo resolver el problema."
+          description="Un agente es un sistema autónomo diseñado para alcanzar objetivos específicos, capaz de percibir su entorno, tomar decisiones y ejecutar acciones encadenadas sin supervisión constante."
         />
       </div>
 
@@ -640,7 +640,7 @@ const Agents = () => {
           <rect width="100%" height="100%" fill="url(#agents-grid)" />
         </svg>
 
-        <div className="relative z-10 mx-auto max-w-[900px]">
+        <div className="relative z-10 mx-auto max-w-[1100px]">
           <div className={cn("text-center", isMobile ? "mb-10" : "mb-16")}>
             <h2
               className="comparison-title leading-none"
@@ -663,20 +663,20 @@ const Agents = () => {
 
           {/* Table header */}
           <div
-            className="mb-4 grid grid-cols-[1.2fr_1fr_1fr] gap-4 px-6 md:gap-6"
+            className="mb-5 grid grid-cols-[1.2fr_1fr_1fr] gap-4 px-6 md:gap-8"
           >
             <div
               className="text-xs font-semibold uppercase tracking-[0.15em]"
               style={{ fontFamily: bk.fontSans, color: "rgba(246, 246, 246, 0.3)" }}
             />
             <div
-              className="text-center text-xs font-semibold uppercase tracking-[0.15em]"
-              style={{ fontFamily: bk.fontSans, color: "rgba(246, 246, 246, 0.3)" }}
+              className="text-center text-[13px] md:text-sm font-semibold uppercase tracking-[0.15em]"
+              style={{ fontFamily: bk.fontSans, color: "rgba(246, 246, 246, 0.5)" }}
             >
               CHATBOT
             </div>
             <div
-              className="text-center text-xs font-semibold uppercase tracking-[0.15em]"
+              className="text-center text-[13px] md:text-sm font-bold uppercase tracking-[0.15em]"
               style={{ fontFamily: bk.fontSans, color: bk.green }}
             >
               AGENTE IA
@@ -684,30 +684,30 @@ const Agents = () => {
           </div>
 
           {/* Rows */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             {comparisonRows.map((row) => (
               <div
                 key={row.aspect}
-                className="comparison-row glass-brand grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 px-6 py-5 md:gap-6"
-                style={{ borderRadius: "16px" }}
+                className="comparison-row glass-brand grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 px-6 py-6 md:py-7 md:gap-8 transition-colors duration-300 hover:bg-white/[0.04]"
+                style={{ borderRadius: "20px" }}
               >
                 <div
-                  className="text-sm font-bold"
+                  className="text-sm md:text-base lg:text-[17px] font-bold"
                   style={{ fontFamily: bk.fontSans, color: bk.white }}
                 >
                   {row.aspect}
                 </div>
                 <div
-                  className="text-center text-xs leading-relaxed"
+                  className="text-center text-xs md:text-sm lg:text-base leading-relaxed"
                   style={{
                     fontFamily: bk.fontSans,
-                    color: "rgba(246, 246, 246, 0.4)",
+                    color: "rgba(246, 246, 246, 0.68)",
                   }}
                 >
                   {row.chatbot}
                 </div>
                 <div
-                  className="text-center text-xs font-bold leading-relaxed"
+                  className="text-center text-xs md:text-sm lg:text-base font-bold leading-relaxed"
                   style={{ fontFamily: bk.fontSans, color: bk.white }}
                 >
                   {row.agent}
@@ -967,7 +967,6 @@ const Agents = () => {
       {/* ═══ CTA FINAL ═══ */}
       <FinalCTA
         title="¿Querés construir un agente para tu empresa?"
-        description="Dejá que la IA trabaje por vos. Empezá hoy."
         buttonText="Contactanos"
         to={routes.contact}
       />

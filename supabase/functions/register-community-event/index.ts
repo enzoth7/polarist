@@ -123,7 +123,7 @@ Deno.serve(async (req: Request) => {
 
     // Mail 1: Confirmación inmediata
     await sendViaResend({
-      from: "Polarist <contacto@polarist.app>",
+      from: "Polarist <contactopolarist@gmail.com>",
       to: [email],
       subject: "✅ Registro confirmado",
       html: getEmailTemplate(
@@ -148,7 +148,7 @@ Deno.serve(async (req: Request) => {
     // Solo programar si el momento de envío está en el futuro
     if (new Date(reminder24hAt).getTime() > Date.now()) {
       await sendViaResend({
-        from: "Polarist <contacto@polarist.app>",
+        from: "Polarist <contactopolarist@gmail.com>",
         to: [email],
         subject: "⏰ Tu evento es mañana",
         html: getEmailTemplate(
@@ -170,7 +170,7 @@ Deno.serve(async (req: Request) => {
     // Solo programar si el momento de envío está en el futuro
     if (new Date(reminder1hAt).getTime() > Date.now()) {
       await sendViaResend({
-        from: "Polarist <contacto@polarist.app>",
+        from: "contactopolarist@gmail.com>",
         to: [email],
         subject: `⚡ En 1 hora comienza: ${event.title}`,
         html: getEmailTemplate(
@@ -192,7 +192,7 @@ Deno.serve(async (req: Request) => {
     // Solo programar si el momento de envío está en el futuro
     if (new Date(reminder5mAt).getTime() > Date.now()) {
       await sendViaResend({
-        from: "Polarist <contacto@polarist.app>",
+        from: "Polarist <contactopolarist@gmail.com>",
         to: [email],
         subject: `🚨 En 5 minutos comienza: ${event.title}`,
         html: getEmailTemplate(
@@ -211,8 +211,8 @@ Deno.serve(async (req: Request) => {
 
     // Notificación interna
     await sendViaResend({
-      from: "Polarist <contacto@polarist.app>",
-      to: ["contacto@polarist.app"],
+      from: "Polarist <contactopolarist@gmail.com>",
+      to: ["contactopolarist@gmail.com"],
       subject: `Nuevo registro: ${name}`,
       html: `<p><strong>Nombre:</strong> ${name}</p>
              <p><strong>Email:</strong> ${email}</p>

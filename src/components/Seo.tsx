@@ -25,7 +25,7 @@ const ORGANIZATION_JSON_LD = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "contacto@polarist.app",
+    email: "contactopolarist@gmail.com",
   },
 };
 
@@ -42,7 +42,7 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/": {
     title: "Polarist | Tu camino más fácil hacia la IA",
     description:
-      "Polarist es una plataforma educativa y de recursos orientada a personas y negocios que buscan atajos prácticos para implementar la Inteligencia Artificial.",
+      "Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.",
     jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
   },
   "/about": {
@@ -88,7 +88,7 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/aiagents": {
     title: "Polarist | Agentes de IA",
     description:
-      "Descubrí qué es un agente de IA, cómo se diferencia de un chatbot y cómo puede automatizar tareas reales en tu negocio. Aprende a construir agentes autónomos con Polarist.",
+      "Descubrí qué es un agente de IA, cómo se diferencia de un chatbot y cómo implementarlo en tu flujo de negocio.",
   },
   "/services": {
     title: "Polarist | Servicios de Inteligencia Artificial para Empresas",

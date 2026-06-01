@@ -345,10 +345,10 @@ export default function SpatialProductShowcase() {
 
   return (
     <div className="relative w-full bg-[#010101] text-zinc-100" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-      <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-8 px-8 py-16 md:gap-10 md:px-20 md:py-20 lg:px-28">
+      <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-8 px-8 pt-8 pb-16 md:gap-10 md:px-20 md:pt-10 md:pb-20 lg:px-28">
         
         {/* Header */}
-        <div className="w-full text-center">
+        <div className="w-full text-center mb-8 md:mb-12 lg:mb-16">
           <h2 className="text-3xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             ¿Para quién es Polarist?
           </h2>
