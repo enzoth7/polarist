@@ -262,11 +262,11 @@ const Contact = () => {
                 className="text-[17px] font-semibold text-[#F6F6F6]/90 select-all"
                 style={sequelStyle}
               >
-                contactopolarist@gmail.com
+                contacto@polarist.app
               </span>
               <button
                 type="button"
-                onClick={() => handleCopy("contactopolarist@gmail.com")}
+                onClick={() => handleCopy("contacto@polarist.app")}
                 className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white hover:border-white/20 transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-sm"
                 title="Copiar email"
               >
