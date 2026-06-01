@@ -25,7 +25,7 @@ const ORGANIZATION_JSON_LD = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer support",
-    email: "contacto@polarist.app",
+    email: "contactopolarist@gmail.com",
   },
 };
 
