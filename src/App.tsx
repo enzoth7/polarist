@@ -27,7 +27,6 @@ import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 import ResourcesCountdown from "./pages/ResourcesCountdown";
-import Trends from "./pages/Trends";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import Library from "./pages/Library";
@@ -114,7 +113,6 @@ const AppRoutes = () => {
 
       <Route element={<MobileLayout />}>
         <Route path={routes.services} element={<Services />} />
-        <Route path={routes.appTrends} element={<Trends />} />
         <Route path={routes.appTools} element={<Tools />} />
         <Route path={routes.appResources} element={<Resources />} />
         <Route path={routes.appCommunity} element={<Community />} />

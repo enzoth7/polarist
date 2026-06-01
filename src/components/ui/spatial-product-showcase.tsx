@@ -311,26 +311,21 @@ const Switcher = ({
   const options = Object.values(PRODUCT_DATA).map(p => ({ id: p.id, label: p.label }));
 
   return (
-    <div className="pointer-events-none absolute inset-x-0 bottom-24 z-50 flex justify-center md:bottom-24">
-      <motion.div layout className="pointer-events-auto flex items-center gap-7">
+    <div className="flex justify-center">
+      <motion.div layout className="pointer-events-auto flex items-center gap-3 rounded-full border border-white/10 bg-[#010101] p-1.5">
         {options.map((opt) => (
           <motion.button
             key={opt.id}
             onClick={() => onToggle(opt.id)}
             whileTap={{ scale: 0.96 }}
-            className="relative flex items-center justify-center px-1 py-2 text-xs font-bold uppercase tracking-widest focus:outline-none"
-            style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
+            className="relative rounded-full px-5 py-2 text-xs font-bold uppercase tracking-widest focus:outline-none transition-all duration-300"
+            style={{
+              fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif",
+              background: activeId === opt.id ? '#CAFE5B' : 'transparent',
+              color: activeId === opt.id ? '#010101' : 'rgba(246,246,246,0.4)',
+            }}
           >
-            <span className={`relative z-10 transition-colors duration-300 ${activeId === opt.id ? 'text-white' : 'text-zinc-500 hover:text-zinc-300'}`}>
-              {opt.label}
-            </span>
-            {activeId === opt.id && (
-              <motion.span
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="absolute -bottom-1 h-1 w-6 rounded-full bg-white/45"
-              />
-            )}
+            {opt.label}
           </motion.button>
         ))}
       </motion.div>
@@ -349,15 +344,17 @@ export default function SpatialProductShowcase() {
   const isLeft = activeSide === 'left';
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col items-center justify-start overflow-hidden bg-[#010101] pb-32 pt-24 text-zinc-100 selection:bg-zinc-800 md:justify-center md:pb-24 md:pt-12" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-      {/* Header */}
-      <div className="absolute top-14 z-20 w-full px-4 text-center md:top-12">
-         <h2 className="text-3xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+    <div className="relative w-full bg-[#010101] text-zinc-100" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+      <div className="mx-auto flex w-full max-w-[1720px] flex-col gap-8 px-8 py-16 md:gap-10 md:px-20 md:py-20 lg:px-28">
+        
+        {/* Header */}
+        <div className="w-full text-center">
+          <h2 className="text-3xl font-bold text-white tracking-tight md:text-6xl" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             ¿Para quién es Polarist?
-         </h2>
-      </div>
+          </h2>
+        </div>
 
-      <main className="relative z-10 mx-auto mt-0 flex w-full max-w-[1720px] flex-col justify-center px-8 pb-8 md:mt-4 md:px-20 lg:px-28">
+        {/* Content */}
         <motion.div
           layout
           transition={{ type: 'spring', bounce: 0, duration: 0.9 }}
@@ -365,10 +362,7 @@ export default function SpatialProductShowcase() {
             isLeft ? 'md:flex-row-reverse' : 'md:flex-row'
           }`}
         >
-          {/* Visual Column */}
           <ProductVisual data={currentData} isLeft={isLeft} />
-
-          {/* Content Column */}
           <motion.div layout="position" className="w-full max-w-2xl">
             <AnimatePresence mode="wait">
               <ProductDetails 
@@ -379,9 +373,10 @@ export default function SpatialProductShowcase() {
             </AnimatePresence>
           </motion.div>
         </motion.div>
-      </main>
 
-      <Switcher activeId={activeSide} onToggle={setActiveSide} />
+        {/* Switcher */}
+        <Switcher activeId={activeSide} onToggle={setActiveSide} />
+      </div>
     </div>
   );
 }

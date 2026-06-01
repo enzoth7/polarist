@@ -65,11 +65,6 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
     description:
       "Consulta los terminos y condiciones de uso de Polarist, incluyendo acceso a la plataforma, comunidad, contenidos, cambios y responsabilidad.",
   },
-  "/trends": {
-    title: "Polarist | Tendencias",
-    description:
-      "Explora las últimas tendencias de inteligencia artificial seleccionadas por nosotros.",
-  },
   "/tools": {
     title: "Polarist | Herramientas",
     description:

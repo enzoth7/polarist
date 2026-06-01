@@ -268,7 +268,12 @@ const Agents = () => {
   const comparisonRef = useRef<HTMLDivElement>(null);
   const useCasesRef = useRef<HTMLDivElement>(null);
   const platformsSectionRef = useRef<HTMLDivElement>(null);
+  const interstitialRef = useRef<HTMLDivElement>(null);
   const [selectedPlatform, setSelectedPlatform] = useState<any>(null);
+
+  const scrollToWhatIsAgent = () => {
+    interstitialRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   const { data: allTools = [] } = useToolsQuery();
   const agentPlatforms = allTools.filter((t) => t.category === "Agentes de IA");
@@ -476,21 +481,23 @@ const Agents = () => {
           {/* CTA */}
           <div className="mt-12">
             <ShinyButton
-              asChild
+              onClick={scrollToWhatIsAgent}
               className="inline-flex px-10 py-4 text-[16px] font-semibold tracking-[0.5px] no-underline"
               style={{ fontFamily: bk.fontSans }}
             >
-              <Link to={routes.contact}>Quiero construir un agente</Link>
+              Quiero construir un agente
             </ShinyButton>
           </div>
         </div>
       </section>
 
       {/* ═══ QUÉ ES UN AGENTE (Interstitial) ═══ */}
-      <PolaristInterstitialReveal
-        title="¿Qué es un Agente de IA?"
-        description="Un agente de IA es un sistema autónomo que combina un modelo de lenguaje con memoria y herramientas para ejecutar tareas complejas de forma independiente. No necesita que le digas cada paso: él decide cómo resolver el problema."
-      />
+      <div ref={interstitialRef} className="scroll-mt-24">
+        <PolaristInterstitialReveal
+          title="¿Qué es un Agente de IA?"
+          description="Un agente de IA es un sistema autónomo que combina un modelo de lenguaje con memoria y herramientas para ejecutar tareas complejas de forma independiente. No necesita que le digas cada paso: él decide cómo resolver el problema."
+        />
+      </div>
 
       {/* ═══ ANATOMÍA ═══ */}
       <div
@@ -959,9 +966,9 @@ const Agents = () => {
 
       {/* ═══ CTA FINAL ═══ */}
       <FinalCTA
-        title="¿Listo para tu primer agente?"
+        title="¿Querés construir un agente para tu empresa?"
         description="Dejá que la IA trabaje por vos. Empezá hoy."
-        buttonText="Crear mi agente"
+        buttonText="Contactanos"
         to={routes.contact}
       />
 

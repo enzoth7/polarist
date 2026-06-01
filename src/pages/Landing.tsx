@@ -7,12 +7,10 @@ import InferenceGlobeHero from "@/components/landing/InferenceGlobeHero";
 import { routes } from "@/lib/routes";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { GlowCard } from "@/components/ui/spotlight-card";
-import ScrollExpansionDemo from "@/components/landing/ScrollExpansionDemo";
 import SpatialProductShowcase from "@/components/ui/spatial-product-showcase";
 import { InteractiveFeatureCard } from "@/components/ui/interactive-feature-card";
 import FlipHover from "@/components/ui/flip-hover";
 import Preloader from "@/components/ui/preloader";
-import { PolaristInterstitialReveal } from "@/components/ui/polarist-interstitial-reveal";
 import { isVideoAsset } from "@/lib/assetPaths";
 import { cn } from "@/lib/utils";
 gsap.registerPlugin(ScrollTrigger);
@@ -57,14 +55,6 @@ const problemBlocks = [
     imgUrl: "/images/landing/sabemos-que-hacer.webm",
     tag: "Procesos",
     stat: "60% Riesgo"
-  },
-  {
-    title: "Tenemos mucha información y no le damos uso",
-    description:
-      "Guardamos datos, tenemos información dispersa y la dejamos allí para usarla en el futuro, pero nunca lo terminamos haciendo porque no sabemos cómo organizarla y darle el valor correspondiente",
-    imgUrl: "/images/landing/tenemos-mucha-informacion.webm",
-    tag: "Adopción",
-    stat: "Barrera AI"
   },
   {
     title: "Leemos de IA y colapsamos",
@@ -226,7 +216,7 @@ const Landing = () => {
       </div>
 
       {/* ─── PROBLEMAS ─── */}
-      <div ref={problemsSectionRef} className={cn("relative z-[15] px-6 lg:px-20", isMobile ? "pt-10 pb-24" : "py-24 sm:px-10")} style={{ background: bk.pureWhite }}>
+      <div id="landing-problems" ref={problemsSectionRef} className={cn("relative z-[15] px-6 lg:px-20", isMobile ? "pt-10 pb-24" : "py-24 sm:px-10")} style={{ background: bk.pureWhite }}>
         <div className={cn("mx-auto max-w-[1200px] text-center", isMobile ? "mb-10" : "mb-14")}>
           <h2
             className="section-title leading-none"
@@ -289,14 +279,6 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* ─── SCROLL EXPANSION HERO ─── */}
-      <ScrollExpansionDemo />
-
-      <PolaristInterstitialReveal
-        title="Polarist"
-        description="Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología."
-      />
-
       {/* ─── SOLUCIONES ─── */}
       <div
         ref={videoSectionRef}
@@ -323,7 +305,12 @@ const Landing = () => {
       </section>
 
       {/* ─── CTA FINAL ─── */}
-      <FinalCTA />
+      <FinalCTA
+        title="¿Querés los resultados de la IA pero no tenes tiempo?"
+        description="Delegá la implementación técnica en nosotros. Diseñamos, integramos y escalamos soluciones a medida para tu empresa mientras vos te enfocás en lo que te interesa."
+        buttonText="Ver nuestros servicios"
+        to={routes.services}
+      />
     </div>
   );
 };

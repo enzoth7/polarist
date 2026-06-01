@@ -52,8 +52,8 @@ const MobileLayout = () => {
     if (deltaX > 70 && deltaY < 50) {
       if (window.history.length > 1) {
         navigate(-1);
-      } else if (location.pathname !== routes.appTrends) {
-        navigate(routes.appTrends);
+      } else if (location.pathname !== routes.appTools) {
+        navigate(routes.appTools);
       }
     }
 

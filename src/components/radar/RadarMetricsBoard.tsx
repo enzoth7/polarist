@@ -33,8 +33,8 @@ const CARD_CONFIG: Record<
     accentClassName: "bg-amber-400",
   },
   price: {
-    title: "Precio",
-    subtitle: "Más bajo es mejor",
+    title: "Precio de API",
+    subtitle: "USD por 1M tokens · Más bajo es mejor",
     accentClassName: "bg-orange-500",
   },
 };

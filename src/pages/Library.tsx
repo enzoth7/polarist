@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Link, useParams } from "react-router-dom";
-import { CalendarDays, ChevronLeft, ChevronRight, Clock3, FolderOpen } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, Clock3, FolderOpen, Settings, LogOut } from "lucide-react";
 
 import {
   FALLBACK_RESOURCE_IMAGE,
@@ -97,7 +97,7 @@ const formatEventTimeLabel = (value?: string | null) => {
 
 
 const ProfileHeaderSkeleton = () => (
-  <div className="w-full md:inline-block md:min-w-[980px] md:max-w-fit overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
+  <div className="w-full overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
     <div className="grid gap-8 lg:grid-cols-[320px_minmax(0,1.2fr)] lg:items-center">
       <div className="flex justify-center lg:justify-start">
         <div className="h-[190px] w-[190px] animate-pulse rounded-[28px] bg-black/[0.05]" />
@@ -422,7 +422,7 @@ const SavedEventCard = ({
 
 const Library = () => {
   const { username: urlUsername } = useParams<{ username: string }>();
-  const { user, profile: authProfile } = useAuth();
+  const { user, profile: authProfile, logout } = useAuth();
   
   // Si no hay username en la URL, intentamos usar el del perfil autenticado
   const username = urlUsername || authProfile?.username;
@@ -722,8 +722,8 @@ const Library = () => {
           {profileLoading ? (
             <ProfileHeaderSkeleton />
           ) : (
-            <div className="w-full md:inline-block md:min-w-[980px] md:max-w-fit overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
-              <div className="grid gap-4 lg:grid-cols-[320px_minmax(0,1.2fr)] lg:items-end">
+            <div className="w-full overflow-hidden rounded-[32px] border border-black/10 bg-white px-6 py-8 shadow-[0_20px_60px_rgba(0,0,0,0.18)] md:px-8">
+              <div className={cn("grid gap-6 items-center lg:items-end", isOwnProfile ? "lg:grid-cols-[auto_1fr_auto]" : "lg:grid-cols-[auto_1fr]")}>
                 <div className="flex justify-center lg:justify-start">
                   {profile?.avatar_url ? (
                     <div className="mx-auto lg:mx-0 h-[190px] w-[190px] overflow-hidden rounded-[26px]">
@@ -743,7 +743,7 @@ const Library = () => {
                   )}
                 </div>
 
-                <div className="min-w-0 text-center lg:text-left lg:-ml-8 lg:self-end">
+                <div className="min-w-0 text-center lg:text-left lg:-ml-4 lg:self-end">
                   <h1
                     className="text-[clamp(2.5rem,4.8vw,3.8rem)] leading-[0.9] tracking-[-0.07em] text-[#010101]"
                     style={sequel700}
@@ -762,6 +762,27 @@ const Library = () => {
                     />
                   </div>
                 </div>
+
+                {isOwnProfile && (
+                  <div className="flex flex-col sm:flex-row gap-3 items-center justify-center lg:justify-end lg:self-end lg:pb-1">
+                    <Link
+                      to={routes.appSettings}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-black/10 text-sm font-semibold text-[#010101] hover:bg-black/5 active:scale-[0.98] transition-all"
+                      style={sequel600}
+                    >
+                      <Settings className="h-4 w-4" />
+                      Configuración
+                    </Link>
+                    <button
+                      onClick={() => void logout()}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-red-500/20 text-sm font-semibold text-red-500 hover:bg-red-50 active:scale-[0.98] transition-all"
+                      style={sequel600}
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Cerrar Sesión
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           )}

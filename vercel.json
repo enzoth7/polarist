@@ -37,7 +37,7 @@
     },
     {
       "source": "/app/radar",
-      "destination": "/trends",
+      "destination": "/tools",
       "permanent": true
     },
     {
@@ -62,7 +62,12 @@
     },
     {
       "source": "/radar",
-      "destination": "/trends",
+      "destination": "/tools",
+      "permanent": true
+    },
+    {
+      "source": "/trends",
+      "destination": "/tools",
       "permanent": true
     },
     {
@@ -100,10 +105,6 @@
     },
     {
       "source": "/terms",
-      "destination": "/index.html"
-    },
-    {
-      "source": "/trends",
       "destination": "/index.html"
     },
     {

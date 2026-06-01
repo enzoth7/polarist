@@ -10,10 +10,12 @@ import { ExpandableCard } from "@/components/ui/expandable-card";
 import { ToolLogo } from "@/components/tools/ToolLogo";
 import { RadarMetricsBoard } from "@/components/radar/RadarMetricsBoard";
 import { FinalCTA } from "@/components/layout/FinalCTA";
+import { LuminaInteractiveList } from "@/components/ui/lumina-interactive-list";
 
 import { useAuth } from "@/hooks/useAuth";
 import { useToolInteractions } from "@/hooks/useToolInteractions";
 import { getToolHref, type ToolItem, useToolsQuery } from "@/hooks/useTools";
+import { useTrends } from "@/hooks/useTrends";
 import { isVideoAsset } from "@/lib/assetPaths";
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -290,10 +292,41 @@ function ToolHeaderActions({
   );
 }
 
-function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
+function ToolEditorialDetail({
+  tool,
+  interactions,
+  toolName,
+}: {
+  tool: ResolvedTool;
+  interactions: ToolInteractions;
+  toolName: string;
+}) {
+  const navigate = useNavigate();
+  const { status } = useAuth();
   const detailSections = buildToolDetailSections(tool);
   const description = tool.tool.description?.trim();
   const kind = tool.tool.kind?.trim();
+
+  const isFavorited = interactions.isFavorited(toolName);
+  const isSaved = interactions.isSaved(toolName);
+  const favoriteCount = interactions.getFavoriteCount(toolName);
+  const isFavoritePending = interactions.isFavoritePending(toolName);
+  const isSavePending = interactions.isSavePending(toolName);
+  const requiresLogin = status !== "authenticated";
+
+  const handleFavorite = async () => {
+    if (requiresLogin) { navigate(routes.login); return; }
+    try { await interactions.toggleFavorite(toolName); } catch (error) {
+      if ((error as Error).message === "AUTH_REQUIRED") navigate(routes.login);
+    }
+  };
+
+  const handleSave = async () => {
+    if (requiresLogin) { navigate(routes.login); return; }
+    try { await interactions.toggleSave(toolName); } catch (error) {
+      if ((error as Error).message === "AUTH_REQUIRED") navigate(routes.login);
+    }
+  };
 
   return (
     <div className="w-full overflow-x-hidden space-y-10 text-[#F6F6F6]" style={sequelTextStyle}>
@@ -315,18 +348,71 @@ function ToolEditorialDetail({ tool }: { tool: ResolvedTool }) {
             ) : null}
           </div>
 
-          <div className="flex justify-start pt-0">
+          {/* Fila de acciones: Página oficial + Like + Guardar */}
+          <div className="flex flex-wrap items-center gap-3 pt-0">
             {tool.href ? (
               <a
                 href={tool.href}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-[#010101] px-6 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#F6F6F6] transition hover:scale-[1.03] hover:bg-[#1b1b1b]"
+                className="inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-black uppercase tracking-[0.14em] transition hover:scale-[1.04] hover:brightness-110"
+                style={{ background: '#CAFE5B', color: '#010101', fontFamily: 'Sequel Sans' }}
               >
                 Página oficial
                 <ExternalLink className="h-3.5 w-3.5" />
               </a>
             ) : null}
+
+            {/* Me gusta — ícono rojo */}
+            <button
+              type="button"
+              onClick={handleFavorite}
+              disabled={isFavoritePending}
+              aria-label={isFavorited ? "Quitar de favoritos" : "Agregar a favoritos"}
+              aria-pressed={isFavorited}
+              className="inline-flex items-center gap-1.5 p-1 transition-all hover:scale-110 disabled:opacity-60"
+            >
+              <motion.span
+                key={isFavorited ? "fav-on" : "fav-off"}
+                whileTap={{ scale: 0.82 }}
+                animate={{ scale: isFavorited ? [1, 1.25, 1] : 1 }}
+                transition={{ type: "spring", stiffness: 520, damping: 16 }}
+                className="inline-flex"
+              >
+                <Heart
+                  strokeWidth={2}
+                  className="h-6 w-6 transition-colors"
+                  style={{ color: '#ef4444', fill: isFavorited ? '#ef4444' : 'transparent' }}
+                />
+              </motion.span>
+              {favoriteCount > 0 ? (
+                <span className="text-sm font-semibold tabular-nums" style={{ color: '#ef4444' }}>{favoriteCount}</span>
+              ) : null}
+            </button>
+
+            {/* Guardar — ícono amarillo miel */}
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={isSavePending}
+              aria-label={isSaved ? "Quitar de guardados" : "Guardar"}
+              aria-pressed={isSaved}
+              className="inline-flex items-center gap-1.5 p-1 transition-all hover:scale-110 disabled:opacity-60"
+            >
+              <motion.span
+                key={isSaved ? "save-on" : "save-off"}
+                whileTap={{ scale: 0.82 }}
+                animate={{ scale: isSaved ? [1, 1.25, 1] : 1 }}
+                transition={{ type: "spring", stiffness: 520, damping: 16 }}
+                className="inline-flex"
+              >
+                <Bookmark
+                  strokeWidth={2}
+                  className="h-6 w-6 transition-colors"
+                  style={{ color: '#F5A623', fill: isSaved ? '#F5A623' : 'transparent' }}
+                />
+              </motion.span>
+            </button>
           </div>
         </div>
 
@@ -468,9 +554,7 @@ function CategoryDetail({
                   classNameExpanded={
                     "[&_h3]:text-[#F6F6F6] [&_p]:text-[#F6F6F6] !h-auto !max-w-full sm:!max-h-[860px] sm:!max-w-[1320px] !bg-[#010101] !border-white/10"
                   }
-                  expandedHeaderActions={
-                    <ToolHeaderActions toolName={tool.tool.name} interactions={interactions} />
-                  }
+                  expandedHeaderActions={null}
                   media={
                     <div className="flex h-full w-full items-center justify-center px-4 py-4 md:px-5 md:py-5">
                       <ToolLogo
@@ -482,7 +566,7 @@ function CategoryDetail({
                     </div>
                   }
                 >
-                  <ToolEditorialDetail tool={tool} />
+                  <ToolEditorialDetail tool={tool} interactions={interactions} toolName={tool.tool.name} />
                 </ExpandableCard>
               </motion.div>
             ))}
@@ -496,6 +580,7 @@ function CategoryDetail({
 const Tools = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { data: officialTools = [] } = useToolsQuery();
+  const { data: trendItems = [], isLoading: trendsLoading } = useTrends();
 
   const selectedCategory = selectedId ? CATEGORIES.find((category) => category.id === selectedId) ?? null : null;
 
@@ -632,12 +717,54 @@ const Tools = () => {
         </div>
       </div>
 
-      <FinalCTA
-        title="Mantente en la vanguardia"
-        description="Explora las últimas tendencias en el mercado"
-        buttonText="Ver tendencias"
-        to={routes.appTrends}
-      />
+      {/* ─── TENDENCIAS ─── */}
+      <div className="w-full bg-[#010101]">
+        <div style={{ maxWidth: 1400, margin: "0 auto", paddingTop: 32, paddingBottom: 0 }}>
+          <h2
+            style={{
+              fontFamily: "Sequel Sans",
+              fontWeight: 700,
+              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              lineHeight: 1.05,
+              letterSpacing: "-0.04em",
+              color: "#F6F6F6",
+              marginBottom: 48,
+              textAlign: "center",
+            }}
+          >
+            Tendencias
+          </h2>
+          <p
+            style={{
+              fontFamily: "Sequel Sans",
+              fontWeight: 400,
+              fontSize: "clamp(15px, 4vw, 18px)",
+              lineHeight: 1.6,
+              color: BK.white,
+              textAlign: "center",
+              maxWidth: "600px",
+              margin: "0 auto",
+              marginBottom: 48,
+            }}
+          >
+            Enterate de lo más importante y útil que está pasando en el mundo de la inteligencia artificial.
+          </p>
+        </div>
+        {trendsLoading ? (
+          <div className="flex h-[clamp(400px,60vh,700px)] items-center justify-center">
+            <span className="text-sm text-white/55">Cargando tendencias...</span>
+          </div>
+        ) : trendItems.length > 0 ? (
+          <LuminaInteractiveList
+            slides={trendItems.map((item) => ({
+              title: item.title,
+              description: item.description,
+              media: item.image,
+              link: item.link,
+            }))}
+          />
+        ) : null}
+      </div>
     </>
   );
 };

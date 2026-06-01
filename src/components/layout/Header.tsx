@@ -6,13 +6,7 @@ import { UserProfileSidebar } from "@/components/ui/menu";
 import BrandLogo from "@/components/BrandLogo";
 import { Button } from "@/components/ui/button";
 import { CommunityCalendar } from "@/components/ui/community-calendar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// DropdownMenu no longer used as we link directly to Library
 import { useAuth } from "@/hooks/useAuth";
 import { getAppUserProfileRoute, routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -100,13 +94,11 @@ const Header = () => {
   const resourcesNavRoute = routes.resourcesCountdown;
   const navItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Servicios", to: routes.services, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Servicios", to: routes.services, showAlways: true },
@@ -144,7 +136,6 @@ const Header = () => {
 
   const mobileNavItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
@@ -152,7 +143,6 @@ const Header = () => {
     { label: "Agentes de IA", to: routes.agents, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
-    { label: "Tendencias", to: routes.appTrends, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
@@ -252,93 +242,29 @@ const Header = () => {
         {/* Lado Derecho */}
         <div className="flex items-center justify-end gap-1.5 lg:gap-3">
           {isAuthenticated ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button
-                  type="button"
-                  className="hidden items-center gap-1.5 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex"
-                  aria-label="Abrir menú de perfil"
-                >
-                  <span 
-                    className="whitespace-nowrap text-[13px] lg:text-[15px] font-bold tracking-[-0.01em] text-[#1d1d1f] md:text-base"
-                    style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
-                  >
-                    {desktopGreetingLabel}
-                  </span>
-                  <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
-                    {avatarUrl && avatarUrl !== "/avatar.webp" ? (
-                      <img 
-                        src={avatarUrl} 
-                        alt={cleanFullName || "Avatar"} 
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
-                    )}
-                  </span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-72 p-3 bg-white border border-zinc-100 rounded-2xl shadow-[0_24px_64px_rgba(0,0,0,0.12)] backdrop-blur-sm"
+            <Link
+              to={profileRoute}
+              className="hidden items-center gap-1.5 whitespace-nowrap p-0 transition-opacity hover:opacity-80 md:inline-flex no-underline"
+              aria-label="Ir a mi biblioteca"
+            >
+              <span 
+                className="whitespace-nowrap text-[13px] lg:text-[15px] font-bold tracking-[-0.01em] text-[#1d1d1f] md:text-base"
+                style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
               >
-                {/* Cabecera con avatar + nombre */}
-                <div className="flex items-center gap-3 px-3 py-2.5 mb-1">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-[#f6f6f6] text-zinc-700">
-                    {avatarUrl && avatarUrl !== "/avatar.webp" ? (
-                      <img 
-                        src={avatarUrl} 
-                        alt={cleanFullName || "Avatar"} 
-                        className="h-full w-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
-                    )}
-                  </div>
-                  <div className="min-w-0">
-                    <p 
-                      className="truncate text-[13px] font-bold tracking-[-0.02em] text-zinc-900"
-                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
-                    >
-                      {cleanFullName || "Mi perfil"}
-                    </p>
-                    <p 
-                      className="text-[11px] font-medium text-zinc-400 truncate"
-                      style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
-                    >
-                      {user?.email || ""}
-                    </p>
-                  </div>
-                </div>
-
-                <DropdownMenuSeparator className="bg-zinc-100 my-1" />
-
-                <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>
-                  <Link to={profileRoute}>
-                    <Library className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
-                    Biblioteca
-                  </Link>
-                </DropdownMenuItem>
-
-                <DropdownMenuItem asChild className="cursor-pointer text-[13px] font-bold tracking-tight text-zinc-700 focus:bg-zinc-50 focus:text-zinc-900 py-2.5 px-3 rounded-xl gap-2.5" style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}>
-                  <Link to={routes.appSettings}>
-                    <Settings className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
-                    Configuración
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onSelect={(event) => {
-                    event.preventDefault();
-                    void handleLogout();
-                  }}
-                  className="cursor-pointer text-[13px] font-bold tracking-tight text-red-500 focus:bg-red-50 focus:text-red-600 py-2.5 px-3 rounded-xl gap-2.5"
-                  style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
-                >
-                  <LogOut className="h-[16px] w-[16px] shrink-0" strokeWidth={2.5} />
-                  {isSigningOut ? "Cerrando sesión..." : "Cerrar sesión"}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+                {desktopGreetingLabel}
+              </span>
+              <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-black/10 bg-[#F6F6F6] text-[#1d1d1f]/68">
+                {avatarUrl && avatarUrl !== "/avatar.webp" ? (
+                  <img 
+                    src={avatarUrl} 
+                    alt={cleanFullName || "Avatar"} 
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <User className="h-[17px] w-[17px]" strokeWidth={1.9} />
+                )}
+              </span>
+            </Link>
           ) : (
             <Button
               asChild

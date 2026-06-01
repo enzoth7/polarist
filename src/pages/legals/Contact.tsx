@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { CheckCircle2, Copy, Check } from "lucide-react";
@@ -40,6 +40,10 @@ const Contact = () => {
 
   const sequelStyle = { fontFamily: "var(--font-sequel, sans-serif)" };
   const serifStyle = { fontFamily: "var(--font-serif, serif)" };
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" as ScrollBehavior });
+  }, []);
 
   const handleCopy = (email: string) => {
     navigator.clipboard.writeText(email);

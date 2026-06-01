@@ -15,8 +15,16 @@ const InferenceGlobeHero = () => {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const sphereTargetRef = useRef<HTMLDivElement>(null);
+  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   const isMobile = typeof window !== 'undefined' ? window.matchMedia("(max-width: 768px)").matches : false;
+
+  const handleScrollDown = () => {
+    const nextSection = document.getElementById("landing-problems");
+    if (nextSection) {
+      nextSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
 
   useGSAP(
     () => {
@@ -277,11 +285,16 @@ const InferenceGlobeHero = () => {
           { duration: 0.8, opacity: 1, scale: 1, y: 0, ease: "back.out(1.7)" },
           "-=0.55",
         );
+        introTl.to(
+          scrollIndicatorRef.current,
+          { duration: 0.8, opacity: 1, y: 0, ease: "power2.out" },
+          "-=0.4"
+        );
 
         gsap.fromTo(wovenPoints.position, { y: -2 }, { y: 0, duration: 2, ease: "power2.out" });
         gsap.fromTo(wovenMaterial, { opacity: 0 }, { opacity: 0.92, duration: 2, ease: "power2.out" });
       } else {
-        gsap.set([titleEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
+        gsap.set([titleEl, ctaEl, scrollIndicatorRef.current], { opacity: 1, y: 0, scale: 1 });
       }
 
       const handlePointerMove = (event: PointerEvent) => {
@@ -334,7 +347,7 @@ const InferenceGlobeHero = () => {
   );
 
   return (
-    <div ref={rootRef} className="relative h-screen w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
+    <div ref={rootRef} className="relative h-[100dvh] w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
       
 
       <div className={cn(
@@ -359,14 +372,36 @@ const InferenceGlobeHero = () => {
             </div>
           </h1>
 
-          <div ref={ctaRef} className={cn("pointer-events-auto mt-12 translate-y-4 scale-[0.92] opacity-0 flex", isMobile ? "justify-center" : "justify-start")}>
+          <p
+            className={cn("mt-6 max-w-xl leading-relaxed", isMobile ? "text-center" : "text-left")}
+            style={{ fontFamily: 'var(--font-sans)', fontSize: isMobile ? '15px' : '18px', fontWeight: 400, color: 'rgba(246,246,246,0.65)', letterSpacing: '0px' }}
+          >
+            Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología. 
+          </p>
+
+          <div ref={ctaRef} className={cn("pointer-events-auto mt-10 translate-y-4 scale-[0.92] opacity-0 flex items-center gap-4", isMobile ? "justify-center flex-wrap" : "justify-start")}>
             <ShinyButton
               asChild
               className="inline-flex px-10 py-4 text-[16px] font-semibold tracking-[0.5px] no-underline"
               style={{ fontFamily: "var(--font-sans)" }}
             >
-              <Link to={routes.login}>Comenzar</Link>
+              <Link to={routes.contact}>Contáctanos</Link>
             </ShinyButton>
+
+            <Link
+              to={routes.appCommunity}
+              className="inline-flex items-center justify-center px-10 text-[16px] font-semibold tracking-[0.5px] transition-all hover:scale-[1.03] hover:bg-white/90 active:scale-[0.98]"
+              style={{
+                fontFamily: "var(--font-sans)",
+                background: "#F6F6F6",
+                color: "#010101",
+                height: "56px",
+                borderRadius: "var(--r-pill, 999px)",
+                whiteSpace: "nowrap",
+              }}
+            >
+              Conocé más de nosotros
+            </Link>
           </div>
         </div>
       </div>
@@ -383,6 +418,40 @@ const InferenceGlobeHero = () => {
             style={{ transform: 'translateX(21%) scale(1.1)' }}
           />
         )}
+      </div>
+
+      {/* Scroll mouse indicator */}
+      <style>{`
+        @keyframes mouse-wheel {
+          0% {
+            transform: translateY(0);
+            opacity: 0;
+          }
+          15% {
+            opacity: 1;
+          }
+          50% {
+            transform: translateY(6px);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(12px);
+            opacity: 0;
+          }
+        }
+        .animate-mouse-wheel {
+          animation: mouse-wheel 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        }
+      `}</style>
+      <div 
+        ref={scrollIndicatorRef}
+        onClick={handleScrollDown}
+        className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-2 select-none group opacity-0 translate-y-2 transition-all duration-300"
+        title="Deslizar hacia abajo"
+      >
+        <div className="w-[20px] h-[34px] rounded-full border-[1.5px] border-white/20 flex justify-center p-1 group-hover:border-white/40 transition-colors duration-300">
+          <div className="w-[3px] h-[6px] rounded-full bg-white/72 animate-mouse-wheel" />
+        </div>
       </div>
     </div>
   );
