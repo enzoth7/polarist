@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { ExternalLink, Download, File } from "lucide-react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { ExternalLink, Download, File, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { FALLBACK_RESOURCE_IMAGE, ResourceDetail } from "@/components/resources/ResourceDetail";
@@ -92,6 +92,19 @@ const Resources = () => {
   const { data: downloads = [] } = useResourceDownloadsQuery();
   const [openedResourceId, setOpenedResourceId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.play().catch((err) => {
+          console.error("Error playing video:", err);
+        });
+      } else {
+        videoRef.current.pause();
+      }
+    }
+  }, [isPlaying]);
 
   const openedResource = resources.find((resource) => resource.id === openedResourceId) ?? null;
 
@@ -126,17 +139,18 @@ const Resources = () => {
         ) : null}
       </Modal>
 
-      <div className="flex min-h-screen flex-col items-center justify-start bg-[#010101] px-4 pb-32 pt-24">
-        <div className="mb-24 w-full max-w-4xl space-y-12">
+      <div className="flex min-h-screen flex-col items-center justify-start bg-[#010101] px-4 pb-32 pt-24 md:pt-32">
+        <div className="mb-24 w-full max-w-4xl">
           <h2
             style={{
               fontFamily: "var(--font-sequel, sans-serif)",
-              fontSize: "clamp(2rem, 5vw, 3.2rem)",
+              fontSize: "clamp(2rem, 5vw, 3.5rem)",
               fontWeight: 700,
               letterSpacing: "-0.04em",
               lineHeight: 1.1,
               color: "#CAFE5B",
               textAlign: "center",
+              marginBottom: "clamp(96px, 8vw, 128px)",
             }}
           >
             ¿Para qué sirven los recursos?
@@ -145,47 +159,32 @@ const Resources = () => {
           <div className="mx-auto w-full max-w-4xl px-4">
             <div
               onClick={() => setIsPlaying(true)}
-              className="group relative aspect-video w-full overflow-hidden cursor-pointer"
+              className="group relative aspect-video w-full overflow-hidden cursor-pointer bg-black"
               style={{
                 borderRadius: "24px",
                 border: "1px solid rgba(255,255,255,0.08)",
-                background:
-                  "linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%)",
               }}
             >
-              {isPlaying ? (
-                <video
-                  src="/videos/tutorialrecursos.webm"
-                  controls
-                  autoPlay
-                  playsInline
-                  className="h-full w-full object-cover animate-fade-in"
-                  style={{ borderRadius: "23px" }}
-                />
-              ) : (
-                <>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#CAFE5B]/20 bg-[#CAFE5B]/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-[#CAFE5B]/20">
-                      <div
-                        style={{
-                          width: 0,
-                          height: 0,
-                          borderTop: "10px solid transparent",
-                          borderBottom: "10px solid transparent",
-                          borderLeft: "16px solid #CAFE5B",
-                          marginLeft: "4px",
-                        }}
-                      />
-                    </div>
-                  </div>
+              <video
+                ref={videoRef}
+                src="/videos/tutorialrecursos2.webm"
+                preload="metadata"
+                playsInline
+                controls={isPlaying}
+                className={`h-full w-full transition-all duration-700 ${
+                  isPlaying ? "object-contain blur-0 opacity-100" : "object-cover blur-[10px] opacity-40"
+                }`}
+                style={{ borderRadius: "23px" }}
+              />
+
+              {!isPlaying && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/10">
                   <div
-                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 50% 50%, rgba(202,254,91,0.05) 0%, transparent 70%)",
-                    }}
-                  />
-                </>
+                    className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F6F6F6] text-[#010101] shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:bg-white"
+                  >
+                    <Play className="h-6 w-6 fill-current ml-1" />
+                  </div>
+                </div>
               )}
             </div>
           </div>

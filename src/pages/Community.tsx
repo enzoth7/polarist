@@ -351,9 +351,12 @@ const Community = () => {
                 const formattedNum = String(chronologicalNumber).padStart(2, "0");
                 
                 return (
-                  <div
+                  <a
                     key={recording.id}
-                    className="group flex flex-row items-center justify-between gap-4 py-5 px-4 -mx-4 rounded-2xl transition-all duration-300 border-b border-white/[0.04] hover:bg-white/[0.02] hover:border-white/10 hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)]"
+                    href={recording.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group flex flex-row items-center justify-between gap-4 py-5 px-4 -mx-4 rounded-2xl transition-all duration-300 border-b border-white/[0.04] hover:bg-white/[0.02] hover:border-white/10 hover:shadow-[0_4px_24px_rgba(0,0,0,0.4)] no-underline"
                   >
                     {/* Left/Middle Content: Number + Title + Date + Duration */}
                     <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -372,7 +375,7 @@ const Community = () => {
                         {/* Title (Bold, in Sequel Sans with sliding animation) */}
                         <div className="min-w-0 transition-transform duration-300 group-hover:translate-x-1.5 flex-1">
                           <strong 
-                            className="text-[14px] xs:text-[15px] font-bold tracking-tight text-[#F6F6F6] leading-snug group-hover:text-white transition-colors duration-300 block"
+                            className="text-[14px] xs:text-[15px] font-bold tracking-tight text-[#F6F6F6] leading-snug group-hover:text-white transition-colors duration-300 block text-left"
                             style={{ 
                               fontFamily: "var(--font-sequel, sans-serif)",
                               textWrap: "balance"
@@ -396,18 +399,15 @@ const Community = () => {
 
                     {/* Right Action: Premium Adaptive Button */}
                     <div className="flex-shrink-0">
-                      <a
-                        href={recording.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-full border border-white/10 text-[#F6F6F6] transition-all duration-300 hover:bg-[#CAFE5B] hover:text-[#010101] hover:border-[#CAFE5B] hover:scale-105 active:scale-95 cursor-pointer shadow-md h-9 w-9 md:h-auto md:w-auto md:px-5 md:py-2 md:gap-1.5 text-xs font-bold tracking-tight"
+                      <div
+                        className="inline-flex items-center justify-center rounded-full border border-white/10 text-[#F6F6F6] transition-all duration-300 group-hover:bg-[#CAFE5B] group-hover:text-[#010101] group-hover:border-[#CAFE5B] group-hover:scale-105 active:scale-95 cursor-pointer shadow-md h-9 w-9 md:h-auto md:w-auto md:px-5 md:py-2 md:gap-1.5 text-xs font-bold tracking-tight"
                         style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
                       >
                         <p className="hidden md:inline">Ver video</p>
                         <Play className="h-3.5 w-3.5 fill-current md:h-3 md:w-3 md:ml-0.5" />
-                      </a>
+                      </div>
                     </div>
-                  </div>
+                  </a>
                 );
               })
             ) : (

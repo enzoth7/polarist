@@ -105,6 +105,18 @@ const Landing = () => {
   useGSAP(
     () => {
       if (videoSectionRef.current) {
+        gsap.from(".section-title-solutions", {
+          scrollTrigger: {
+            trigger: videoSectionRef.current,
+            start: "top 85%",
+            toggleActions: "play reverse play reverse",
+          },
+          opacity: 0,
+          y: 40,
+          duration: 0.9,
+          ease: "power3.out",
+        });
+
         gsap.from(".solutions-grid", {
           scrollTrigger: {
             trigger: videoSectionRef.current,
@@ -265,11 +277,11 @@ const Landing = () => {
                 <div className={cn("flex-1 flex flex-col w-full justify-center", isMobile ? "items-center text-center" : "items-start text-left")}>
                   <h3 
                     className="text-balance"
-                    style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '24px' : 'clamp(28px, 4vw, 40px)', letterSpacing: '-1px', lineHeight: 1.15, color: bk.black, marginBottom: '20px' }}
+                    style={{ fontFamily: bk.fontSans, fontWeight: 700, fontSize: isMobile ? '20px' : 'clamp(20px, 2.5vw, 28px)', letterSpacing: '-0.5px', lineHeight: 1.15, color: bk.black, marginBottom: '16px' }}
                   >
                     {problem.title}
                   </h3>
-                  <p style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: '18px', lineHeight: 1.6, color: 'rgba(1,1,1,0.6)' }}>
+                  <p style={{ fontFamily: bk.fontSans, fontWeight: 400, fontSize: isMobile ? '14px' : '15px', lineHeight: 1.6, color: 'rgba(1,1,1,0.6)' }}>
                     {problem.description}
                   </p>
                 </div>
@@ -286,6 +298,22 @@ const Landing = () => {
         style={{ perspective: "1200px", background: bk.black }}
       >
         <section className={cn("relative z-20 flex w-full flex-col items-center justify-center px-6 pt-14 sm:px-10 sm:pt-18 lg:px-16 lg:pt-20", isMobile ? "pb-4" : "pb-12 sm:pb-14 lg:pb-16")} style={{ background: bk.black }}>
+          <div className={cn("mx-auto max-w-[1200px] text-center w-full", isMobile ? "mb-10" : "mb-14")}>
+            <h2
+              className="section-title-solutions leading-none"
+              style={{
+                fontFamily: bk.fontSans,
+                fontWeight: 700,
+                fontSize: isMobile ? '25px' : 'clamp(24px, 7vw, 52px)',
+                letterSpacing: '-1px',
+                lineHeight: 1.1,
+                color: bk.white
+              }}
+            >
+              Para eso creamos <div style={{ display: 'inline', color: bk.green }}>Polarist</div>
+            </h2>
+          </div>
+
           <div className="solutions-grid grid w-full max-w-[95vw] grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-5 lg:gap-6 xl:max-w-[85vw]">
             {featureBlocks.map((block) => (
               <InteractiveFeatureCard
@@ -307,7 +335,13 @@ const Landing = () => {
       {/* ─── CTA FINAL ─── */}
       <FinalCTA
         title="¿Querés los resultados de la IA pero no tenes tiempo?"
-        description="Delegá la implementación técnica en nosotros. Diseñamos, integramos y escalamos soluciones a medida para tu empresa mientras vos te enfocás en lo que te interesa."
+        description={
+          <>
+            Delegá la implementación técnica en nosotros. Diseñamos, integramos y escalamos soluciones
+            <br />
+            a medida para tu empresa mientras vos te enfocás en lo que te interesa.
+          </>
+        }
         buttonText="Ver nuestros servicios"
         to={routes.services}
       />

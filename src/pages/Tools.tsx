@@ -619,7 +619,7 @@ const Tools = () => {
               style={{
                 fontFamily: "Sequel Sans",
                 fontWeight: 700,
-                fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+                fontSize: "clamp(2rem, 5vw, 3.5rem)",
                 lineHeight: 1.05,
                 letterSpacing: "-0.04em",
                 color: BK.white,
@@ -724,7 +724,7 @@ const Tools = () => {
             style={{
               fontFamily: "Sequel Sans",
               fontWeight: 700,
-              fontSize: "clamp(1.8rem, 4vw, 2.8rem)",
+              fontSize: "clamp(2rem, 5vw, 3.5rem)",
               lineHeight: 1.05,
               letterSpacing: "-0.04em",
               color: "#F6F6F6",
@@ -742,9 +742,9 @@ const Tools = () => {
               lineHeight: 1.6,
               color: BK.white,
               textAlign: "center",
-              maxWidth: "600px",
+              maxWidth: "1000px",
               margin: "0 auto",
-              marginBottom: 48,
+              marginBottom: "clamp(48px, 8vw, 96px)",
             }}
           >
             Enterate de lo más importante y útil que está pasando en el mundo de la inteligencia artificial.

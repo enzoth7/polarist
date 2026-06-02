@@ -63,10 +63,10 @@ const Services = () => {
               fontSize: "clamp(16px, 2vw, 18px)",
               fontWeight: 400,
               lineHeight: 1.55,
-              color: "rgba(246,246,246,0.5)",
+              color: "#F6F6F6",
             }}
           >
-            Implementamos IA y automatizaciones reales para que tu negocio rinda más, con menos esfuerzo.
+            Implementamos IA y automatizaciones reales para que tu negocio rinda más.
           </p>
         </motion.div>
 

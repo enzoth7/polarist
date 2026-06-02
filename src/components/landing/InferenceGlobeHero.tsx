@@ -9,6 +9,7 @@ import { StaticGlobe } from "@/components/ui/StaticGlobe";
 
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
+import { ChevronDown } from "lucide-react";
 
 const InferenceGlobeHero = () => {
   const rootRef = useRef<HTMLDivElement>(null);
@@ -347,18 +348,32 @@ const InferenceGlobeHero = () => {
   );
 
   return (
-    <div ref={rootRef} className="relative h-[100dvh] w-full overflow-hidden" style={{ background: 'var(--polarist-black, #010101)' }}>
-      
+    <div 
+      ref={rootRef} 
+      className={cn(
+        "relative h-[100dvh] w-full overflow-hidden",
+        isMobile ? "flex flex-col justify-start pt-4 pb-12" : ""
+      )} 
+      style={{ background: 'var(--polarist-black, #010101)' }}
+    >
+      {isMobile ? (
+        /* Mobile Sphere Container at the top to prevent overlap */
+        <div className="w-full flex items-center justify-center shrink-0 h-[34dvh] min-h-[270px] z-10 pt-2">
+          <StaticGlobe width="100%" height="100%" className="max-w-[320px] max-h-[320px]" />
+        </div>
+      ) : null}
 
       <div className={cn(
-        "relative z-20 flex h-full w-full flex-col justify-end pb-[23vh] md:pb-[28vh] px-8 md:px-16 lg:px-24",
-        isMobile ? "items-center" : "items-start"
+        "relative z-20 flex px-8 md:px-16 lg:px-24",
+        isMobile 
+          ? "w-full flex-col flex-1 justify-start items-center pb-2 pt-4" 
+          : "h-full w-full flex-col justify-end pb-[28vh] items-start"
       )}>
         <div className="pointer-events-none w-full max-w-4xl">
           <h1
             ref={titleRef}
             className="translate-y-6 opacity-0"
-            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.5rem,7vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.88, color: 'var(--polarist-white, #F6F6F6)' }}
+            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.1rem,6.5vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.88, color: 'var(--polarist-white, #F6F6F6)' }}
           >
             <div className={cn("block", isMobile ? "text-center" : "text-left")}>
               <MaskedSlideReveal text="Tu camino más" delay={0.6} />
@@ -373,29 +388,43 @@ const InferenceGlobeHero = () => {
           </h1>
 
           <p
-            className={cn("mt-6 max-w-xl leading-relaxed", isMobile ? "text-center" : "text-left")}
-            style={{ fontFamily: 'var(--font-sans)', fontSize: isMobile ? '15px' : '18px', fontWeight: 400, color: 'rgba(246,246,246,0.65)', letterSpacing: '0px' }}
+            className={cn("mt-5 max-w-xl leading-relaxed", isMobile ? "text-center mx-auto" : "text-left")}
+            style={{ fontFamily: 'var(--font-sans)', fontSize: isMobile ? '14px' : '18px', fontWeight: 400, color: 'rgba(246,246,246,0.65)', letterSpacing: '0px' }}
           >
-            Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología. 
+            Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto. 
           </p>
 
-          <div ref={ctaRef} className={cn("pointer-events-auto mt-10 translate-y-4 scale-[0.92] opacity-0 flex items-center gap-4", isMobile ? "justify-center flex-wrap" : "justify-start")}>
+          <div 
+            ref={ctaRef} 
+            className={cn(
+              "pointer-events-auto translate-y-4 scale-[0.92] opacity-0 flex",
+              isMobile 
+                ? "flex-col-reverse w-full max-w-[290px] mx-auto gap-3 mt-12 items-stretch" 
+                : "flex-row items-center gap-4 justify-start mt-10"
+            )}
+          >
             <ShinyButton
               asChild
-              className="inline-flex px-10 py-4 text-[16px] font-semibold tracking-[0.5px] no-underline"
+              className={cn(
+                "inline-flex justify-center font-semibold tracking-[0.5px] no-underline",
+                isMobile ? "py-3 text-[15px]" : "px-10 py-4 text-[16px]"
+              )}
               style={{ fontFamily: "var(--font-sans)" }}
             >
-              <Link to={routes.contact}>Contáctanos</Link>
+              <Link to={routes.services}>Servicios</Link>
             </ShinyButton>
 
             <Link
               to={routes.appCommunity}
-              className="inline-flex items-center justify-center px-10 text-[16px] font-semibold tracking-[0.5px] transition-all hover:scale-[1.03] hover:bg-white/90 active:scale-[0.98]"
+              className={cn(
+                "inline-flex items-center justify-center font-semibold tracking-[0.5px] transition-all hover:scale-[1.03] hover:bg-white/90 active:scale-[0.98]",
+                isMobile ? "text-[15px]" : "px-10 text-[16px]"
+              )}
               style={{
                 fontFamily: "var(--font-sans)",
                 background: "#F6F6F6",
                 color: "#010101",
-                height: "56px",
+                height: isMobile ? "48px" : "56px",
                 borderRadius: "var(--r-pill, 999px)",
                 whiteSpace: "nowrap",
               }}
@@ -406,52 +435,45 @@ const InferenceGlobeHero = () => {
         </div>
       </div>
 
-      <div className="pointer-events-none absolute inset-0 z-10 flex w-full h-full items-center justify-center overflow-hidden">
-        {isMobile ? (
-          <div className="absolute inset-0 w-full h-full flex items-center justify-center" style={{ transform: 'translateY(-18%)' }}>
-            <StaticGlobe width="120%" height="120%" className="max-w-[400px] max-h-[400px]" />
-          </div>
-        ) : (
+      {!isMobile ? (
+        /* Desktop-only absolute-positioned Three.js sphere container */
+        <div className="pointer-events-none absolute inset-0 z-10 flex w-full h-full items-center justify-center overflow-hidden">
           <div
             ref={sphereTargetRef}
             className="absolute inset-0 w-full h-full"
             style={{ transform: 'translateX(21%) scale(1.1)' }}
           />
-        )}
-      </div>
+        </div>
+      ) : null}
 
-      {/* Scroll mouse indicator */}
+      {/* Scroll chevrons indicator */}
       <style>{`
-        @keyframes mouse-wheel {
+        @keyframes scroll-chevron {
           0% {
             transform: translateY(0);
-            opacity: 0;
-          }
-          15% {
-            opacity: 1;
+            opacity: 0.25;
           }
           50% {
             transform: translateY(6px);
-            opacity: 1;
+            opacity: 0.85;
           }
           100% {
-            transform: translateY(12px);
-            opacity: 0;
+            transform: translateY(0);
+            opacity: 0.25;
           }
         }
-        .animate-mouse-wheel {
-          animation: mouse-wheel 1.8s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+        .animate-scroll-chevron {
+          animation: scroll-chevron 2s ease-in-out infinite;
         }
       `}</style>
       <div 
         ref={scrollIndicatorRef}
         onClick={handleScrollDown}
-        className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-2 select-none group opacity-0 translate-y-2 transition-all duration-300"
+        className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-0 select-none group opacity-0 translate-y-2 transition-all duration-300"
         title="Deslizar hacia abajo"
       >
-        <div className="w-[20px] h-[34px] rounded-full border-[1.5px] border-white/20 flex justify-center p-1 group-hover:border-white/40 transition-colors duration-300">
-          <div className="w-[3px] h-[6px] rounded-full bg-white/72 animate-mouse-wheel" />
-        </div>
+        <ChevronDown className="h-6 w-6 text-white/50 group-hover:text-[#CAFE5B] transition-colors duration-300 animate-scroll-chevron" />
+        <ChevronDown className="h-6 w-6 text-white/30 group-hover:text-[#CAFE5B] transition-colors duration-300 animate-scroll-chevron [animation-delay:0.25s] -mt-3.5" />
       </div>
     </div>
   );

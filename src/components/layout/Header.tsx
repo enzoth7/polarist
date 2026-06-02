@@ -94,14 +94,14 @@ const Header = () => {
   const resourcesNavRoute = routes.appResources;
   const navItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
-    { label: "Servicios", to: routes.services, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
-    { label: "Servicios", to: routes.services, showAlways: true },
   ];
 
   let greeting = "Hola";
@@ -136,17 +136,17 @@ const Header = () => {
 
   const mobileNavItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Agentes de IA", to: routes.agents, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
+    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Agentes de IA", to: routes.agents, showAlways: true },
   ];
 

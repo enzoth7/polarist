@@ -508,7 +508,7 @@ export function LuminaInteractiveList({ slides }: LuminaInteractiveListProps) {
 
         <div className="slide-content absolute inset-0 flex flex-col items-start justify-start z-10 pointer-events-none px-8 md:px-16 lg:px-24 pt-40 md:pt-32 lg:pt-36 drop-shadow-2xl w-full max-w-7xl mx-auto">
           <h1
-            className="slide-title text-[clamp(28px,5.5vw,40px)] md:text-[clamp(40px,5.5vw,56px)] lg:text-7xl xl:text-8xl text-white mb-6 text-left leading-[1.15] tracking-[-0.03em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
+            className="slide-title text-[clamp(24px,4.5vw,34px)] md:text-[clamp(34px,4.5vw,44px)] lg:text-[40px] xl:text-[50px] text-white mb-6 text-left leading-[1.15] tracking-[-0.03em] drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
             style={{
               fontFamily: '"Arno Pro", serif',
               fontWeight: 400,

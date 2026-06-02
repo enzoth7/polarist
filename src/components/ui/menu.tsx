@@ -109,15 +109,14 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
               {item.isSeparator && <motion.div variants={itemVariants} className="h-6" />}
               <motion.div variants={itemVariants}>
                 {item.label === "Agentes de IA" || item.label === "Agentes IA" ? (
-                  <div className="px-3.5 py-3 flex justify-start">
-                    <Link
-                      to={item.href}
-                      onClick={onItemClick}
-                      className="inline-flex items-center justify-center rounded-full bg-[#CAFE5B] px-8 py-3.5 text-base font-bold text-[#010101] shadow-[0_4px_16px_rgba(202,254,91,0.25)] transition-all duration-300 active:scale-[0.98] hover:shadow-[0_4px_20px_rgba(202,254,91,0.38)]"
-                    >
-                      <span>{item.label}</span>
-                    </Link>
-                  </div>
+                  <Link
+                    to={item.href}
+                    onClick={onItemClick}
+                    className="group flex w-fit items-center rounded-md px-3.5 py-3 text-base font-bold bg-[#CAFE5B] text-[#010101] shadow-[0_2px_8px_rgba(202,254,91,0.15)] transition-all duration-300 active:scale-[0.99] hover:bg-[#B9F04D] hover:shadow-[0_2px_12px_rgba(202,254,91,0.25)]"
+                  >
+                    {item.icon && <span className="mr-3 h-5 w-5">{item.icon}</span>}
+                    <span>{item.label}</span>
+                  </Link>
                 ) : (
                   <Link
                     to={item.href}

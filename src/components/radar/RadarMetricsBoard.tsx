@@ -280,32 +280,6 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
     <article
       className={cn(METRIC_CARD_CLASS, "relative cursor-default transition-colors duration-300 hover:border-[#CAFE5B]/30")}
     >
-      <div
-        className="absolute top-4 right-4 md:top-6 md:right-6"
-        style={{
-          minWidth: 'clamp(40px, 8vw, 56px)',
-          height: 'clamp(22px, 5vw, 30px)',
-          borderRadius: 8,
-          border: '1px solid rgba(202,254,91,0.24)',
-          background: 'rgba(1,1,1,0.72)',
-          color: hoveredEntry ? '#CAFE5B' : 'rgba(246,246,246,0.42)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          fontSize: 'clamp(9px, 2.5vw, 12px)',
-          fontWeight: 800,
-          fontFamily: 'var(--font-sans)',
-          lineHeight: 1,
-          letterSpacing: '0.02em',
-          pointerEvents: 'none',
-          zIndex: 3,
-          boxShadow: hoveredEntry ? '0 10px 28px rgba(202,254,91,0.14)' : 'none',
-          transition: 'color 0.18s ease, box-shadow 0.18s ease',
-        }}
-      >
-        {hoveredEntry?.displayValue ?? '—'}
-      </div>
-
       {/* Header centrado */}
       <div className="flex flex-col items-center text-center gap-1">
         <h3 style={{ fontFamily: 'var(--font-sans)', fontWeight: 700, fontSize: '36px', letterSpacing: '-1px', lineHeight: 1.05, color: '#F6F6F6' }}>
@@ -314,6 +288,33 @@ function MetricCard({ card }: { card: RadarMetricCard }) {
         <p style={{ fontFamily: 'var(--font-sans)', fontWeight: 400, fontSize: '13px', lineHeight: 1, color: '#F6F6F6' }} className="mt-1">
           {config.subtitle}
         </p>
+
+        {/* El badge de valor centrado abajo del texto */}
+        <div
+          className="mt-3"
+          style={{
+            minWidth: '64px',
+            height: '28px',
+            borderRadius: 8,
+            border: '1px solid rgba(202,254,91,0.24)',
+            background: 'rgba(1,1,1,0.72)',
+            color: hoveredEntry ? '#CAFE5B' : 'rgba(246,246,246,0.42)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '13px',
+            fontWeight: 800,
+            fontFamily: 'var(--font-sans)',
+            lineHeight: 1,
+            letterSpacing: '0.02em',
+            pointerEvents: 'none',
+            boxShadow: hoveredEntry ? '0 10px 28px rgba(202,254,91,0.14)' : 'none',
+            transition: 'color 0.18s ease, box-shadow 0.18s ease',
+            padding: '0 12px',
+          }}
+        >
+          {hoveredEntry?.displayValue ?? '—'}
+        </div>
       </div>
 
       {/* Gráfico custom */}
@@ -343,7 +344,7 @@ export function RadarMetricsBoard() {
             style={{ 
               fontFamily: 'var(--font-sans)', 
               fontWeight: 700, 
-              fontSize: 'clamp(24px, 6vw, 44px)', 
+              fontSize: 'clamp(2rem, 5vw, 3.5rem)', 
               letterSpacing: '-1px', 
               lineHeight: 1.1, 
               color: '#F6F6F6',

@@ -5,7 +5,7 @@ import { routes } from "@/lib/routes";
 
 interface FinalCTAProps {
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   buttonText?: string;
   to?: string;
 }

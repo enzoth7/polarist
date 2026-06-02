@@ -93,7 +93,7 @@ const PRODUCT_DATA: Record<ProductId, ProductData> = {
     points: [
       {
         id: "right-1",
-        title: "Sí buscás un curso técnico profundo",
+        title: "Sí buscás un curso técnico",
         content:
           "No te vamos a enseñar a programar ni te vamos a explicar la matemática detrás de la inteligencia artificial. El enfoque está en aplicar, no en teorizar.",
       },
@@ -288,7 +288,7 @@ const ProductDetails = ({ data, isLeft }: { data: ProductData; isLeft: boolean }
                 </AccordionPrimitive.Trigger>
               </AccordionPrimitive.Header>
               <AccordionContent
-                className={`max-w-[74ch] pb-4 text-[13.5px] leading-6 text-white/88 md:text-[14px] md:leading-6 ${isLeft ? 'text-left' : 'ml-auto text-right'}`}
+                className="max-w-[74ch] pb-4 text-[13.5px] leading-6 text-white/88 md:text-[14px] md:leading-6 text-left"
                 style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}
               >
                 {point.content}

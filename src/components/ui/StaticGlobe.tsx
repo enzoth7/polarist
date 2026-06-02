@@ -35,15 +35,7 @@ export const StaticGlobe = ({ width = 340, height = 340, className }: StaticGlob
       positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
       positions[i * 3 + 2] = radius * Math.cos(phi);
 
-      const color = new THREE.Color();
-      const rand = Math.random();
-      if (rand < 0.2) {
-        color.setHex(0xCAFE5B);
-      } else if (rand < 0.8) {
-        color.setHex(0xFFFFFF);
-      } else {
-        color.setHex(0xAAAAAA);
-      }
+      const color = new THREE.Color(0xFFFFFF);
 
       colors[i * 3] = color.r;
       colors[i * 3 + 1] = color.g;
