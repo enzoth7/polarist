@@ -26,7 +26,6 @@ import Resources from "./pages/Resources";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
-import ResourcesCountdown from "./pages/ResourcesCountdown";
 import Settings from "./pages/Settings";
 import Tools from "./pages/Tools";
 import Library from "./pages/Library";
@@ -108,7 +107,6 @@ const AppRoutes = () => {
       </Route>
 
       <Route path={routes.login} element={<Login />} />
-      <Route path={routes.resourcesCountdown} element={<ResourcesCountdown />} />
       <Route path="/signup" element={<Navigate to={routes.login} replace />} />
 
       <Route element={<MobileLayout />}>

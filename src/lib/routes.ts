@@ -5,7 +5,6 @@ export const routes = {
   about: "/about",
   contact: "/contact",
   login: "/login",
-  resourcesCountdown: "/countdown",
   appTools: "/tools",
   appResources: "/resources",
   appCommunity: "/community",
@@ -30,6 +29,4 @@ export const legacyAppRoutes = [
   { from: "/radar", to: "/tools" },
   { from: "/trends", to: "/tools" },
   { from: "/guides", to: "/resources" },
-  { from: "/recursos-pronto", to: "/countdown" },
-  { from: "/count-town", to: "/countdown" },
 ] as const;
