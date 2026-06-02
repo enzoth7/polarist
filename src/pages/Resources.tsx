@@ -91,6 +91,7 @@ const Resources = () => {
   const { data: resources = [] } = useResourcesQuery();
   const { data: downloads = [] } = useResourceDownloadsQuery();
   const [openedResourceId, setOpenedResourceId] = useState<string | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const openedResource = resources.find((resource) => resource.id === openedResourceId) ?? null;
 
@@ -143,7 +144,8 @@ const Resources = () => {
 
           <div className="mx-auto w-full max-w-4xl px-4">
             <div
-              className="group relative aspect-video w-full overflow-hidden"
+              onClick={() => setIsPlaying(true)}
+              className="group relative aspect-video w-full overflow-hidden cursor-pointer"
               style={{
                 borderRadius: "24px",
                 border: "1px solid rgba(255,255,255,0.08)",
@@ -151,34 +153,41 @@ const Resources = () => {
                   "linear-gradient(145deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%)",
               }}
             >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#CAFE5B]/20 bg-[#CAFE5B]/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-[#CAFE5B]/20">
+              {isPlaying ? (
+                <video
+                  src="/videos/tutorialrecursos.webm"
+                  controls
+                  autoPlay
+                  playsInline
+                  className="h-full w-full object-cover animate-fade-in"
+                  style={{ borderRadius: "23px" }}
+                />
+              ) : (
+                <>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[#CAFE5B]/20 bg-[#CAFE5B]/10 transition-all duration-500 group-hover:scale-110 group-hover:bg-[#CAFE5B]/20">
+                      <div
+                        style={{
+                          width: 0,
+                          height: 0,
+                          borderTop: "10px solid transparent",
+                          borderBottom: "10px solid transparent",
+                          borderLeft: "16px solid #CAFE5B",
+                          marginLeft: "4px",
+                        }}
+                      />
+                    </div>
+                  </div>
                   <div
+                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
                     style={{
-                      width: 0,
-                      height: 0,
-                      borderTop: "10px solid transparent",
-                      borderBottom: "10px solid transparent",
-                      borderLeft: "16px solid #CAFE5B",
-                      marginLeft: "4px",
+                      background:
+                        "radial-gradient(circle at 50% 50%, rgba(202,254,91,0.05) 0%, transparent 70%)",
                     }}
                   />
-                </div>
-              </div>
-              <div
-                className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-                style={{
-                  background:
-                    "radial-gradient(circle at 50% 50%, rgba(202,254,91,0.05) 0%, transparent 70%)",
-                }}
-              />
+                </>
+              )}
             </div>
-            <p
-              className="mt-4 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-[#F6F6F6]/30"
-              style={{ fontFamily: "var(--font-sequel)" }}
-            >
-              Tutorial: Cómo usar los recursos
-            </p>
           </div>
         </div>
 

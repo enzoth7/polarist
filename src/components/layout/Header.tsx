@@ -91,7 +91,7 @@ const Header = () => {
   const profileRoute =
     profile?.username?.trim() ? getAppUserProfileRoute(profile.username.trim()) : routes.appProfile;
   const isAuthenticated = status === "authenticated";
-  const resourcesNavRoute = routes.resourcesCountdown;
+  const resourcesNavRoute = routes.appResources;
   const navItems = isAuthenticated ? [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },

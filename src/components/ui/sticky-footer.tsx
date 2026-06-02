@@ -110,7 +110,7 @@ const LinkedinCustomIcon = ({ className }: { className?: string }) => (
 
 const socialLinks = [
 	{ title: 'Instagram', href: 'https://instagram.com/polarist.app/', icon: InstagramIcon },
-	{ title: 'YouTube', href: 'https://www.youtube.com/@PolaristApp', icon: YoutubeIcon },
+	{ title: 'YouTube', href: 'https://www.youtube.com/@Polarist_App', icon: YoutubeIcon },
 	{ title: 'LinkedIn', href: 'https://www.linkedin.com/company/polarist/', icon: LinkedinCustomIcon },
 ];
 
