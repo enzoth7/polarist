@@ -127,54 +127,19 @@ const Resources = () => {
 
       <div className="flex min-h-screen flex-col items-center justify-start bg-[#010101] px-4 pb-32 pt-24">
         <div className="mb-24 w-full max-w-4xl space-y-12">
-          <div className="space-y-6 text-center">
-            <p
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                color: "#F6F6F6",
-                fontSize: "16px",
-                lineHeight: "1.7",
-                fontWeight: 400,
-                maxWidth: "800px",
-                marginInline: "auto",
-              }}
-            >
-              Toda la información de estos capítulos ya fue investigada, filtrada y validada por
-              nosotros. El objetivo es que la leas y la analices para formar tu propio criterio
-              antes de usar cualquier herramienta.
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                color: "#F6F6F6",
-                fontSize: "16px",
-                lineHeight: "1.7",
-                fontWeight: 400,
-                maxWidth: "800px",
-                marginInline: "auto",
-              }}
-            >
-              <span style={{ fontWeight: 700, color: "#CAFE5B" }}>¿La mejor parte?</span> Si la
-              información te sirve, no tenés que perder tiempo explicándosela a tu inteligencia
-              artificial desde cero.
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                color: "#F6F6F6",
-                fontSize: "16px",
-                lineHeight: "1.7",
-                fontWeight: 400,
-                maxWidth: "800px",
-                marginInline: "auto",
-              }}
-            >
-              En el tutorial de acá abajo te mostramos cómo cargar los archivos que dejamos al
-              final de cada capítulo directamente en tu IA favorita. Así, tu modelo arranca
-              pensando con toda esta base al instante, acelerando tus procesos y ahorrándote horas
-              de prueba y error.
-            </p>
-          </div>
+          <h2
+            style={{
+              fontFamily: "var(--font-sequel, sans-serif)",
+              fontSize: "clamp(2rem, 5vw, 3.2rem)",
+              fontWeight: 700,
+              letterSpacing: "-0.04em",
+              lineHeight: 1.1,
+              color: "#CAFE5B",
+              textAlign: "center",
+            }}
+          >
+            ¿Para qué sirven los recursos?
+          </h2>
 
           <div className="mx-auto w-full max-w-4xl px-4">
             <div
