@@ -42,7 +42,7 @@ const Services = () => {
         animate="visible"
         className="z-10 w-full max-w-5xl flex flex-col items-center"
       >
-        <motion.div variants={itemVariants} className="text-center mb-16">
+        <motion.div variants={itemVariants} className="text-center mb-16 flex flex-col items-center max-w-4xl px-4 mx-auto">
           <h1
             className="mb-4"
             style={{
@@ -57,124 +57,17 @@ const Services = () => {
             Servicios a tu medida
           </h1>
           <p
-            className="mx-auto max-w-2xl"
+            className="mx-auto max-w-2xl mb-16 text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]"
             style={{
               fontFamily: "var(--font-sequel, sans-serif)",
-              fontSize: "clamp(16px, 2vw, 18px)",
               fontWeight: 400,
-              lineHeight: 1.55,
-              color: "#F6F6F6",
             }}
           >
             Implementamos IA y automatizaciones reales para que tu negocio rinda más.
           </p>
-        </motion.div>
 
-        <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 mb-16">
-          {/* Card: Soluciones */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col rounded-3xl p-10 lg:p-14 shadow-2xl transition-transform hover:-translate-y-2"
-            style={{ backgroundColor: "#F6F6F6" }}
-          >
-            <h2
-              className="text-center mb-10"
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                fontSize: "clamp(32px, 5vw, 42px)",
-                fontWeight: 700,
-                letterSpacing: "-1px",
-                color: "#010101",
-              }}
-            >
-              Soluciones
-            </h2>
-            <ul className="flex flex-col gap-8 flex-1 justify-center">
-              <li className="flex items-start gap-4">
-                <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#010101]" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#010101",
-                  }}
-                >
-                  <strong className="font-bold">Automatización</strong> inteligente de los procesos
-                </p>
-              </li>
-              <li className="flex items-start gap-4">
-                <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#010101]" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#010101",
-                  }}
-                >
-                  <strong className="font-bold">Chatbots avanzados</strong> que interactúan, ejecutan y califican
-                </p>
-              </li>
-            </ul>
-          </motion.div>
-
-          {/* Card: Asesorías */}
-          <motion.div
-            variants={itemVariants}
-            className="flex flex-col rounded-3xl p-10 lg:p-14 shadow-[0_0_60px_rgba(202,254,91,0.15)] transition-transform hover:-translate-y-2"
-            style={{ backgroundColor: "#CAFE5B" }}
-          >
-            <h2
-              className="text-center mb-10"
-              style={{
-                fontFamily: "var(--font-sequel, sans-serif)",
-                fontSize: "clamp(32px, 5vw, 42px)",
-                fontWeight: 700,
-                letterSpacing: "-1px",
-                color: "#010101",
-              }}
-            >
-              Asesorías
-            </h2>
-            <ul className="flex flex-col gap-8 flex-1 justify-center">
-              <li className="flex items-start gap-4">
-                <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#010101]" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#010101",
-                  }}
-                >
-                  <strong className="font-bold">Potenciar el trabajo humano</strong> para rendir más y ahorrar tiempo
-                </p>
-              </li>
-              <li className="flex items-start gap-4">
-                <div className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#010101]" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#010101",
-                  }}
-                >
-                  <strong className="font-bold">Empezar a usar</strong> estas nuevas tecnologías sin fricción
-                </p>
-              </li>
-            </ul>
-          </motion.div>
-        </div>
-
-        <motion.div variants={itemVariants} className="mb-24 flex flex-col items-center text-center max-w-4xl px-4 mt-8">
           <h3 
-            className="mb-12 text-4xl md:text-5xl lg:text-6xl font-normal tracking-normal text-[#F6F6F6]"
+            className="mb-6 text-3xl md:text-4xl lg:text-5xl font-normal tracking-wide text-[#F6F6F6]"
             style={{ fontFamily: "var(--font-serif, serif)" }}
           >
             Criterio y responsabilidad
@@ -187,14 +80,151 @@ const Services = () => {
           </p>
         </motion.div>
 
-        <motion.div variants={itemVariants} className="flex justify-center">
-          <ShinyButton
-            asChild
-            className="inline-flex px-12 py-5 text-[17px] font-bold tracking-[0.5px] no-underline"
-            style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+        <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 mb-24 relative">
+          {/* Card: Soluciones */}
+          <motion.div
+            variants={itemVariants}
+            className="group flex flex-col rounded-[2rem] p-10 lg:p-16 border border-[#F6F6F6]/10 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#CAFE5B]/50 hover:shadow-[0_0_40px_rgba(202,254,91,0.08)]"
+            style={{ backgroundColor: "transparent" }}
           >
-            <Link to={routes.contact}>Contáctanos</Link>
-          </ShinyButton>
+            <h2
+              className="text-center mb-12"
+              style={{
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontSize: "clamp(32px, 5vw, 42px)",
+                fontWeight: 700,
+                letterSpacing: "-1px",
+                color: "#F6F6F6",
+              }}
+            >
+              Soluciones
+            </h2>
+            <ul className="flex flex-col gap-10 flex-1 justify-center">
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
+                <p
+                  style={{
+                    fontFamily: "var(--font-sequel, sans-serif)",
+                    fontSize: "clamp(18px, 2.5vw, 22px)",
+                    fontWeight: 400,
+                    lineHeight: 1.4,
+                    color: "#F6F6F6",
+                  }}
+                >
+                  <strong className="font-bold text-[#CAFE5B]">Automatización</strong> inteligente de los procesos
+                </p>
+              </li>
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
+                <p
+                  style={{
+                    fontFamily: "var(--font-sequel, sans-serif)",
+                    fontSize: "clamp(18px, 2.5vw, 22px)",
+                    fontWeight: 400,
+                    lineHeight: 1.4,
+                    color: "#F6F6F6",
+                  }}
+                >
+                  <strong className="font-bold text-[#CAFE5B]">Agentes Conversacionales</strong> que interactúan, ejecutan y califican
+                </p>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* Card: Asesorías */}
+          <motion.div
+            variants={itemVariants}
+            className="group flex flex-col rounded-[2rem] p-10 lg:p-16 border border-[#F6F6F6]/10 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#CAFE5B]/50 hover:shadow-[0_0_40px_rgba(202,254,91,0.08)]"
+            style={{ backgroundColor: "transparent" }}
+          >
+            <h2
+              className="text-center mb-12"
+              style={{
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontSize: "clamp(32px, 5vw, 42px)",
+                fontWeight: 700,
+                letterSpacing: "-1px",
+                color: "#F6F6F6",
+              }}
+            >
+              Asesorías
+            </h2>
+            <ul className="flex flex-col gap-10 flex-1 justify-center">
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
+                <p
+                  style={{
+                    fontFamily: "var(--font-sequel, sans-serif)",
+                    fontSize: "clamp(18px, 2.5vw, 22px)",
+                    fontWeight: 400,
+                    lineHeight: 1.4,
+                    color: "#F6F6F6",
+                  }}
+                >
+                  <strong className="font-bold text-[#CAFE5B]">Potenciar el trabajo humano</strong> para rendir más y ahorrar tiempo
+                </p>
+              </li>
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
+                <p
+                  style={{
+                    fontFamily: "var(--font-sequel, sans-serif)",
+                    fontSize: "clamp(18px, 2.5vw, 22px)",
+                    fontWeight: 400,
+                    lineHeight: 1.4,
+                    color: "#F6F6F6",
+                  }}
+                >
+                  <strong className="font-bold text-[#CAFE5B]">Empezar a usar</strong> estas nuevas tecnologías sin fricción
+                </p>
+              </li>
+            </ul>
+          </motion.div>
+        </div>
+
+
+        <motion.div variants={itemVariants} className="flex flex-col items-center gap-6 mt-8">
+          <div className="text-center px-4">
+            <h3 
+              className="mb-8 md:whitespace-nowrap"
+              style={{
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontSize: "clamp(28px, 5vw, 48px)",
+                fontWeight: 700,
+                letterSpacing: "-2px",
+                lineHeight: 1.1,
+                color: "#F6F6F6",
+              }}
+            >
+              ¿Querés ver cómo te <span className="block md:inline">podemos ayudar?</span>
+            </h3>
+            <p
+              className="text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]/70 font-light max-w-3xl mx-auto"
+              style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+            >
+              Completá este breve formulario contándonos sobre tu empresa y nos pondremos en contacto con vos.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 justify-center w-full sm:w-auto">
+            <ShinyButton
+              asChild
+              className="inline-flex w-full sm:w-auto justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline"
+              style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
+            >
+              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdHrdP8Mu63cawo3uFjFoQCmyWXCvyu9bd5FEjePPvDjoGELQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">
+                Completar formulario gratis
+              </a>
+            </ShinyButton>
+            
+            <Link 
+              to={routes.contact}
+              className="inline-flex w-full sm:w-auto items-center justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline text-white hover:bg-white/10 transition-all border border-white/20"
+              style={{ fontFamily: "var(--font-sequel, sans-serif)", borderRadius: "999px" }}
+            >
+              Contáctanos
+            </Link>
+          </div>
         </motion.div>
       </motion.div>
     </div>
