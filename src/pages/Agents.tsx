@@ -97,9 +97,7 @@ const useCases = [
 const comparisonRows = [
   { aspect: "Autonomía", chatbot: "Responde solo cuando le preguntas", agent: "Actúa proactivamente sin que lo pidas" },
   { aspect: "Herramientas", chatbot: "Solo genera texto", agent: "Ejecuta acciones reales (emails, CRM, APIs)" },
-  { aspect: "Memoria", chatbot: "Empieza de cero en cada conversación", agent: "Recuerda contexto y preferencias" },
   { aspect: "Decisiones", chatbot: "Sigue instrucciones literales", agent: "Razona, planifica y elige la mejor acción" },
-  { aspect: "Integración", chatbot: "Aislado en una ventana de chat", agent: "Conectado a tu ecosistema de trabajo" },
 ];
 
 /* ── Floating Particles Canvas ── */
@@ -561,14 +559,14 @@ const Agents = () => {
                         loop
                         muted
                         playsInline
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="pointer-events-none h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                         style={{ opacity: 0.7 }}
                       />
                     ) : (
                       <img
                         src={part.imgUrl}
                         alt={part.title}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        className="pointer-events-none h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                         style={{ opacity: 0.7, mixBlendMode: "screen" }}
                       />
                     )}
@@ -657,7 +655,7 @@ const Agents = () => {
               <div style={{ color: "rgba(246, 246, 246, 0.35)", display: "inline" }}>
                 {" "}vs{" "}
               </div>
-              <div style={{ color: bk.green, display: "inline" }}>Agente</div>
+              <div style={{ color: "#A78BFA", display: "inline" }}>Agente</div>
             </h2>
           </div>
 
@@ -677,7 +675,7 @@ const Agents = () => {
             </div>
             <div
               className="text-center text-[13px] md:text-sm font-bold uppercase tracking-[0.15em]"
-              style={{ fontFamily: bk.fontSans, color: bk.green }}
+              style={{ fontFamily: bk.fontSans, color: "#A78BFA" }}
             >
               AGENTE IA
             </div>
@@ -688,8 +686,8 @@ const Agents = () => {
             {comparisonRows.map((row) => (
               <div
                 key={row.aspect}
-                className="comparison-row glass-brand grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 px-6 py-6 md:py-7 md:gap-8 transition-colors duration-300 hover:bg-white/[0.04]"
-                style={{ borderRadius: "20px" }}
+                className="comparison-row grid grid-cols-[1.2fr_1fr_1fr] items-center gap-4 px-6 py-6 md:py-7 md:gap-8 border border-white/10 transition-colors duration-300 hover:border-[#A78BFA]/50"
+                style={{ borderRadius: "20px", background: "transparent" }}
               >
                 <div
                   className="text-sm md:text-base lg:text-[17px] font-bold"
@@ -851,8 +849,8 @@ const Agents = () => {
       {/* ═══ CASOS DE USO ═══ */}
       <div
         ref={useCasesRef}
-        className="relative z-20 overflow-hidden"
-        style={{ perspective: "1200px", background: bk.black }}
+        className="relative z-20"
+        style={{ background: bk.black }}
       >
         <section
           className={cn(
@@ -917,14 +915,14 @@ const Agents = () => {
                           loop
                           muted
                           playsInline
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="pointer-events-none h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                           style={{ opacity: 0.9 }}
                         />
                       ) : (
                         <img
                           src={uc.imgUrl}
                           alt={uc.title}
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          className="pointer-events-none h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
                           style={{ opacity: 0.9 }}
                         />
                       )}
@@ -957,16 +955,21 @@ const Agents = () => {
         </section>
       </div>
 
-      {/* ═══ CÓMO LO CONSTRUIMOS ═══ */}
-      <PolaristInterstitialReveal
-        title="¿Cómo construimos un agente?"
-        description="Conectamos un modelo de lenguaje con las herramientas de tu negocio. Definimos su objetivo, le damos memoria y lo entrenamos con tus datos. El resultado: un empleado digital que trabaja 24/7 sin descanso."
-        singleLine
-      />
-
       {/* ═══ CTA FINAL ═══ */}
       <FinalCTA
-        title="¿Querés construir un agente para tu empresa?"
+        title={
+          <>
+            ¿Querés construir un agente para tu{" "}
+            <span style={{ color: bk.green }}>empresa?</span>
+          </>
+        }
+        description={
+          <>
+            Si preferís no lidiar con configuraciones, nuestro equipo se encarga de todo.{" "}
+            <br className="hidden md:block" />
+            <strong className="text-[#F6F6F6]">Diseñamos el cerebro</strong>, conectamos tus herramientas y lo dejamos trabajando <span style={{ color: bk.green }} className="font-bold">24/7</span>. Así de fácil.
+          </>
+        }
         buttonText="Contactanos"
         to={routes.contact}
       />

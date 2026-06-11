@@ -93,6 +93,9 @@ const Resources = () => {
   const [openedResourceId, setOpenedResourceId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  const LEVELS = ["Básicos", "Intermedios", "Avanzados"];
+  const [selectedLevel, setSelectedLevel] = useState<string>("Básicos");
 
   useEffect(() => {
     if (videoRef.current) {
@@ -110,15 +113,16 @@ const Resources = () => {
 
   const showcaseItems = useMemo<ShowcaseItem[]>(
     () =>
-      resources.map((resource) => ({
-        id: resource.id,
-        title: resource.title,
-        eyebrow: resource.eyebrow,
-        description: resource.description,
-        image: resource.image ?? FALLBACK_RESOURCE_IMAGE,
-        onSelect: () => setOpenedResourceId(resource.id),
-      })),
-    [resources],
+      resources
+        .filter((r) => r.nivel === selectedLevel)
+        .map((resource) => ({
+          id: resource.id,
+          title: resource.title,
+          description: resource.description,
+          image: resource.image ?? FALLBACK_RESOURCE_IMAGE,
+          onSelect: () => setOpenedResourceId(resource.id),
+        })),
+    [resources, selectedLevel],
   );
 
   return (
@@ -203,6 +207,25 @@ const Resources = () => {
           >
             Recursos
           </h1>
+
+          <div className="mt-8 flex justify-center w-full px-4">
+            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar max-w-full">
+              {LEVELS.map((level) => (
+                <button
+                  key={level}
+                  onClick={() => setSelectedLevel(level)}
+                  className={`relative py-2 text-[15px] md:text-[17px] transition-all duration-300 ease-out whitespace-nowrap tracking-wide ${
+                    selectedLevel === level
+                      ? "text-[#CAFE5B] font-bold"
+                      : "text-[#F6F6F6]/40 hover:text-[#F6F6F6]"
+                  }`}
+                  style={{ fontFamily: SANS }}
+                >
+                  {level}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <ResourceShowcase items={showcaseItems} />

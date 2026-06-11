@@ -4,35 +4,35 @@ import { supabase } from "@/lib/supabase";
 
 type ResourceRow = {
   id: string;
-  eyebrow: string;
   title: string;
   description: string;
   kind: string;
   image: string | null;
   content: string | null;
   created_at: string;
+  nivel: string | null;
 };
 
 export type ResourceItem = {
   id: string;
-  eyebrow: string;
   title: string;
   description: string;
   kind: string;
   image: string | null;
   content: string | null;
   createdAt: string;
+  nivel: string | null;
 };
 
 const mapResourceRow = (row: ResourceRow): ResourceItem => ({
   id: row.id,
-  eyebrow: row.eyebrow,
   title: row.title,
   description: row.description,
   kind: row.kind,
   image: row.image,
   content: row.content,
   createdAt: row.created_at,
+  nivel: row.nivel,
 });
 
 export function useResourcesQuery() {
@@ -41,7 +41,7 @@ export function useResourcesQuery() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("resources")
-        .select("id, eyebrow, title, description, kind, image, content, created_at")
+        .select("id, title, description, kind, image, content, created_at, nivel")
         .order("created_at", { ascending: true });
 
       if (error) throw error;

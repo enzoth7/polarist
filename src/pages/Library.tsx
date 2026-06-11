@@ -308,9 +308,6 @@ const SavedResourceCard = ({
     </div>
 
     <div className="relative mt-8 flex-1">
-      <p className="text-[0.72rem] uppercase tracking-[0.22em] text-[#F6F6F6]" style={sequel700}>
-        {resource.eyebrow}
-      </p>
       <h3 className="mt-3 text-[1.3rem] leading-[1.05] text-[#F6F6F6]" style={sequel700}>
         {resource.title}
       </h3>

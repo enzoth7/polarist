@@ -10,7 +10,6 @@ type PublicSavedResourceRow = {
 
 type ResourceRow = {
   id: string;
-  eyebrow: string;
   title: string;
   description: string;
   kind: string;
@@ -26,7 +25,6 @@ type UserSavedResourcesResult = {
 
 const mapResourceRow = (row: ResourceRow): ResourceItem => ({
   id: row.id,
-  eyebrow: row.eyebrow,
   title: row.title,
   description: row.description,
   kind: row.kind,
@@ -58,7 +56,7 @@ const fetchUserSavedResources = async (userId: string): Promise<UserSavedResourc
 
   const { data: resourcesData, error: resourcesError } = await supabase
     .from("resources")
-    .select("id, eyebrow, title, description, kind, image, content, created_at")
+    .select("id, title, description, kind, image, content, created_at")
     .in("id", savedResourceIds);
 
   if (resourcesError) {
