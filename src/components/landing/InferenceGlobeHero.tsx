@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { MaskedSlideReveal } from "@/components/ui/masked-slide-reveal";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { StaticGlobe } from "@/components/ui/StaticGlobe";
+import { Button } from "@/components/ui/button";
 
 import { routes } from "@/lib/routes";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ const InferenceGlobeHero = () => {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   const isMobile = typeof window !== 'undefined' ? window.matchMedia("(max-width: 768px)").matches : false;
+  const isBot = typeof navigator !== 'undefined' && /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
 
   const handleScrollDown = () => {
     const nextSection = document.getElementById("landing-problems");
@@ -37,15 +39,18 @@ const InferenceGlobeHero = () => {
         return;
       }
 
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || isBot;
+
+      // Force instant visibility for bots or reduced motion users as early as possible
+      if (prefersReducedMotion) {
+        gsap.set([titleEl, ctaEl, scrollIndicatorRef.current], { opacity: 1, y: 0, scale: 1 });
+      }
 
       if (isMobile) {
         const introTl = gsap.timeline();
         if (!prefersReducedMotion) {
           introTl.to(titleEl, { duration: 1.2, opacity: 1, y: 0, ease: "power4.out" }, 0.5);
           introTl.to(ctaEl, { duration: 0.8, opacity: 1, scale: 1, y: 0, ease: "back.out(1.7)" }, "-=0.55");
-        } else {
-          gsap.set([titleEl, ctaEl], { opacity: 1, y: 0, scale: 1 });
         }
         return () => introTl.kill();
       }
@@ -69,9 +74,9 @@ const InferenceGlobeHero = () => {
       const colors = new Float32Array(particleCount * 3);
       const velocities = new Float32Array(particleCount * 3);
 
-      
+
       const wovenGeometry = new THREE.BufferGeometry();
-      
+
       for (let i = 0; i < particleCount; i++) {
         const radius = 2.2 + (Math.random() - 0.5) * 0.4;
         const theta = Math.random() * Math.PI * 2;
@@ -80,7 +85,7 @@ const InferenceGlobeHero = () => {
         const x = radius * Math.sin(phi) * Math.cos(theta);
         const y = radius * Math.sin(phi) * Math.sin(theta);
         const z = radius * Math.cos(phi);
-        
+
         positions[i * 3] = x;
         positions[i * 3 + 1] = y;
         positions[i * 3 + 2] = z;
@@ -92,11 +97,11 @@ const InferenceGlobeHero = () => {
         originalPositions[i * 3 + 2] = z;
 
         const color = new THREE.Color(0xFFFFFF);
-        
+
         colors[i * 3] = color.r;
         colors[i * 3 + 1] = color.g;
         colors[i * 3 + 2] = color.b;
-        
+
         velocities[i * 3] = 0;
         velocities[i * 3 + 1] = 0;
         velocities[i * 3 + 2] = 0;
@@ -105,7 +110,7 @@ const InferenceGlobeHero = () => {
       wovenGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
       wovenGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-      
+
       const canvas = document.createElement('canvas');
       canvas.width = 32;
       canvas.height = 32;
@@ -132,7 +137,7 @@ const InferenceGlobeHero = () => {
 
       const wovenPoints = new THREE.Points(wovenGeometry, wovenMaterial);
       scene.add(wovenPoints);
-      
+
       const clock = new THREE.Clock();
 
       const pointerNdc = new THREE.Vector2(2, 2);
@@ -145,7 +150,7 @@ const InferenceGlobeHero = () => {
       let pointerTargetStrength = 0;
       let pointerStrength = 0;
 
-      
+
       const fitRenderer = () => {
         const width = sphereTarget.clientWidth;
         const height = sphereTarget.clientHeight;
@@ -161,9 +166,9 @@ const InferenceGlobeHero = () => {
 
       fitRenderer();
 
-      
-      
-      
+
+
+
       const updatePointerFromEvent = (event: PointerEvent) => {
         const rect = sphereTarget.getBoundingClientRect();
 
@@ -198,7 +203,7 @@ const InferenceGlobeHero = () => {
         const visibleHeight = 2 * Math.tan(fovRad / 2) * camera.position.z;
         const visibleWidth = visibleHeight * camera.aspect;
         const mouseWorld = new THREE.Vector3((pointerNdc.x * visibleWidth) / 2, (pointerNdc.y * visibleHeight) / 2, 0);
-        
+
         // Convert mouse position to the sphere's local space to account for its rotation
         wovenPoints.updateMatrixWorld();
         const localMouse = mouseWorld.clone();
@@ -213,61 +218,61 @@ const InferenceGlobeHero = () => {
         const hiddenDistance = 9999;
 
         for (let i = 0; i < particleCount; i++) {
-            const ix = i * 3;
-            const iy = i * 3 + 1;
-            const iz = i * 3 + 2;
+          const ix = i * 3;
+          const iy = i * 3 + 1;
+          const iz = i * 3 + 2;
 
-            const currentPos = new THREE.Vector3(
-              simulationPositions[ix],
-              simulationPositions[iy],
-              simulationPositions[iz],
-            );
-            const originalPos = new THREE.Vector3(originalPositions[ix], originalPositions[iy], originalPositions[iz]);
-            const velocity = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
+          const currentPos = new THREE.Vector3(
+            simulationPositions[ix],
+            simulationPositions[iy],
+            simulationPositions[iz],
+          );
+          const originalPos = new THREE.Vector3(originalPositions[ix], originalPositions[iy], originalPositions[iz]);
+          const velocity = new THREE.Vector3(velocities[ix], velocities[iy], velocities[iz]);
 
-            // Check if particle's resting position is currently on the front hemisphere relative to the camera
-            const isFrontHemisphere = (originalPos.x * localZDirX + originalPos.z * localZDirZ) > 0;
+          // Check if particle's resting position is currently on the front hemisphere relative to the camera
+          const isFrontHemisphere = (originalPos.x * localZDirX + originalPos.z * localZDirZ) > 0;
 
-            if (pointerInside && isFrontHemisphere) {
-                const dist = currentPos.distanceTo(localMouse);
-                const influence = isMobile ? 1.8 : 2.8; 
-                if (dist < influence) {
-                    const force = (influence - dist) * 0.022; 
-                    const direction = new THREE.Vector3().subVectors(currentPos, localMouse).normalize();
-                    velocity.add(direction.multiplyScalar(force));
-                }
+          if (pointerInside && isFrontHemisphere) {
+            const dist = currentPos.distanceTo(localMouse);
+            const influence = isMobile ? 1.8 : 2.8;
+            if (dist < influence) {
+              const force = (influence - dist) * 0.022;
+              const direction = new THREE.Vector3().subVectors(currentPos, localMouse).normalize();
+              velocity.add(direction.multiplyScalar(force));
             }
+          }
 
-            // Return to original position
-            const returnForce = new THREE.Vector3().subVectors(originalPos, currentPos).multiplyScalar(0.003);
-            velocity.add(returnForce);
-            
-            // Damping
-            velocity.multiplyScalar(0.92);
+          // Return to original position
+          const returnForce = new THREE.Vector3().subVectors(originalPos, currentPos).multiplyScalar(0.003);
+          velocity.add(returnForce);
 
-            simulationPositions[ix] += velocity.x;
-            simulationPositions[iy] += velocity.y;
-            simulationPositions[iz] += velocity.z;
-            
-            velocities[ix] = velocity.x;
-            velocities[iy] = velocity.y;
-            velocities[iz] = velocity.z;
+          // Damping
+          velocity.multiplyScalar(0.92);
 
-            if (isFrontHemisphere) {
-              posArray[ix] = simulationPositions[ix];
-              posArray[iy] = simulationPositions[iy];
-              posArray[iz] = simulationPositions[iz];
-            } else {
-              posArray[ix] = hiddenDistance;
-              posArray[iy] = hiddenDistance;
-              posArray[iz] = hiddenDistance;
-            }
+          simulationPositions[ix] += velocity.x;
+          simulationPositions[iy] += velocity.y;
+          simulationPositions[iz] += velocity.z;
+
+          velocities[ix] = velocity.x;
+          velocities[iy] = velocity.y;
+          velocities[iz] = velocity.z;
+
+          if (isFrontHemisphere) {
+            posArray[ix] = simulationPositions[ix];
+            posArray[iy] = simulationPositions[iy];
+            posArray[iz] = simulationPositions[iz];
+          } else {
+            posArray[ix] = hiddenDistance;
+            posArray[iy] = hiddenDistance;
+            posArray[iz] = hiddenDistance;
+          }
         }
         wovenGeometry.attributes.position.needsUpdate = true;
 
         wovenPoints.rotation.y = elapsedTime * 0.05;
 
-        
+
         renderer.render(scene, camera);
       };
 
@@ -294,8 +299,6 @@ const InferenceGlobeHero = () => {
 
         gsap.fromTo(wovenPoints.position, { y: -2 }, { y: 0, duration: 2, ease: "power2.out" });
         gsap.fromTo(wovenMaterial, { opacity: 0 }, { opacity: 0.92, duration: 2, ease: "power2.out" });
-      } else {
-        gsap.set([titleEl, ctaEl, scrollIndicatorRef.current], { opacity: 1, y: 0, scale: 1 });
       }
 
       const handlePointerMove = (event: PointerEvent) => {
@@ -306,17 +309,17 @@ const InferenceGlobeHero = () => {
         const y = event.clientY - rect.top;
         const inside = x >= 0 && x <= rect.width && y >= 0 && y <= rect.height;
 
-        
+
       };
 
       const clearAllPointerInfluence = () => {
         clearPointerInfluence();
-        
+
       };
 
       const handleResize = () => {
         fitRenderer();
-        
+
       };
 
       rootEl.addEventListener("pointermove", handlePointerMove);
@@ -348,12 +351,12 @@ const InferenceGlobeHero = () => {
   );
 
   return (
-    <div 
-      ref={rootRef} 
+    <div
+      ref={rootRef}
       className={cn(
         "relative h-[100dvh] w-full overflow-hidden",
         isMobile ? "flex flex-col justify-start pt-4 pb-12" : ""
-      )} 
+      )}
       style={{ background: 'var(--polarist-black, #010101)' }}
     >
       {isMobile ? (
@@ -365,71 +368,72 @@ const InferenceGlobeHero = () => {
 
       <div className={cn(
         "relative z-20 flex px-8 md:px-16 lg:px-24",
-        isMobile 
-          ? "w-full flex-col flex-1 justify-start items-center pb-2 pt-4" 
+        isMobile
+          ? "w-full flex-col flex-1 justify-start items-center pb-2 pt-4"
           : "h-full w-full flex-col justify-end pb-[28vh] items-start"
       )}>
-        <div className="pointer-events-none w-full max-w-4xl">
-          <h1
-            ref={titleRef}
-            className="translate-y-6 opacity-0"
-            style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(2.1rem,6.5vw,5.5rem)', fontWeight: 700, letterSpacing: '-2.5px', lineHeight: 0.88, color: 'var(--polarist-white, #F6F6F6)' }}
-          >
-            <div className={cn("block", isMobile ? "text-center" : "text-left")}>
-              <MaskedSlideReveal text="Tu camino más" delay={0.6} />
-              <br />
-              <div style={{ display: 'inline' }}>
-                <MaskedSlideReveal text="fácil" delay={0.6 + 2 * 0.08} />
-              </div>
-              <div style={{ display: 'inline', color: 'var(--polarist-green, #CAFE5B)' }}>
-                <MaskedSlideReveal text="hacia la IA." delay={0.6 + 4 * 0.08} />
-              </div>
-            </div>
-          </h1>
+        <div className="pointer-events-none w-full max-w-4xl text-left">
+          <div ref={titleRef} className="translate-y-6 opacity-0">
+            <h1
+              style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(3.1rem,7.5vw,6rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 0.95, color: 'var(--polarist-white, #F6F6F6)' }}
+              className="mb-6"
+            >
+              Tu camino más <br className="hidden md:block" />fácil <span className="text-[#CAFE5B]">hacia la IA</span>
+            </h1>
+            <p
+              className={cn("mt-10 max-w-[580px] leading-relaxed", isMobile ? "text-center mx-auto" : "text-left")}
+              style={{ fontFamily: 'var(--font-sans)', fontSize: isMobile ? '14px' : '18px', fontWeight: 400, color: 'rgba(246,246,246,0.65)', letterSpacing: '0px' }}
+            >
+              Asesoramos e implementamos Agentes de IA para transformar, acelerar y mejorar tu negocio.
+            </p>
+          </div>
 
-          <p
-            className={cn("mt-5 max-w-xl leading-relaxed", isMobile ? "text-center mx-auto" : "text-left")}
-            style={{ fontFamily: 'var(--font-sans)', fontSize: isMobile ? '14px' : '18px', fontWeight: 400, color: 'rgba(246,246,246,0.65)', letterSpacing: '0px' }}
-          >
-            Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto. 
-          </p>
-
-          <div 
-            ref={ctaRef} 
+          <div
+            ref={ctaRef}
             className={cn(
-              "pointer-events-auto translate-y-4 scale-[0.92] opacity-0 flex",
-              isMobile 
-                ? "flex-col-reverse w-full max-w-[290px] mx-auto gap-3 mt-12 items-stretch" 
+              "pointer-events-auto translate-y-4 opacity-0 flex",
+              isMobile
+                ? "flex-col w-full max-w-[320px] mx-auto gap-3 mt-10 items-stretch"
                 : "flex-row items-center gap-4 justify-start mt-10"
             )}
           >
-            <ShinyButton
-              asChild
+            <Link
+              to={routes.services}
               className={cn(
-                "inline-flex justify-center font-semibold tracking-[0.5px] no-underline",
-                isMobile ? "py-3 text-[15px]" : "px-10 py-4 text-[16px]"
+                "inline-flex items-center justify-center font-bold tracking-[0.5px] transition-all hover:scale-[1.05]",
+                isMobile ? "text-[15px] px-8" : "px-10 text-[16px]"
               )}
-              style={{ fontFamily: "var(--font-sans)" }}
+              style={{
+                fontFamily: "var(--font-sans)",
+                background: "#CAFE5B",
+                color: "#010101",
+                height: isMobile ? "48px" : "56px",
+                borderRadius: "9999px",
+                whiteSpace: "nowrap",
+                border: "none",
+                boxShadow: "0px 8px 32px rgba(202, 254, 91, 0.25)"
+              }}
             >
-              <Link to={routes.services}>Servicios</Link>
-            </ShinyButton>
+              Soluciones para empresas
+            </Link>
 
             <Link
-              to={routes.appCommunity}
+              to={routes.appResources}
               className={cn(
-                "inline-flex items-center justify-center font-semibold tracking-[0.5px] transition-all hover:scale-[1.03] hover:bg-white/90 active:scale-[0.98]",
-                isMobile ? "text-[15px]" : "px-10 text-[16px]"
+                "inline-flex items-center justify-center font-bold tracking-[0.5px] transition-all hover:scale-[1.05]",
+                isMobile ? "text-[15px] px-8" : "px-10 text-[16px]"
               )}
               style={{
                 fontFamily: "var(--font-sans)",
                 background: "#F6F6F6",
                 color: "#010101",
                 height: isMobile ? "48px" : "56px",
-                borderRadius: "var(--r-pill, 999px)",
+                borderRadius: "9999px",
                 whiteSpace: "nowrap",
+                border: "none",
               }}
             >
-              Conocé más de nosotros
+              Empezar a usar IA
             </Link>
           </div>
         </div>
@@ -441,7 +445,7 @@ const InferenceGlobeHero = () => {
           <div
             ref={sphereTargetRef}
             className="absolute inset-0 w-full h-full"
-            style={{ transform: 'translateX(21%) scale(1.1)' }}
+            style={{ transform: 'translateX(26%) scale(0.95)' }}
           />
         </div>
       ) : null}
@@ -466,7 +470,7 @@ const InferenceGlobeHero = () => {
           animation: scroll-chevron 2s ease-in-out infinite;
         }
       `}</style>
-      <div 
+      <div
         ref={scrollIndicatorRef}
         onClick={handleScrollDown}
         className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-0 select-none group opacity-0 translate-y-2 transition-all duration-300"

@@ -46,7 +46,7 @@ export function StickyFooter({ className, ...props }: StickyFooterProps) {
 						<AnimatedContainer className="w-full max-w-sm min-w-[280px] space-y-4">
 							<BrandLogo showLabel={false} imageClassName="h-10 w-10 rounded-md" />
 							<p className="mt-6 text-sm text-black/70 md:mt-0 font-medium">
-								Somos el puente entre vos y las nuevas herramientas de IA. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.
+								Asesoramos e implementamos Agentes de IA para transformar, acelerar y mejorar tu negocio.
 							</p>
 							<div className="flex gap-4 pt-2">
 								{socialLinks.map((link) => (

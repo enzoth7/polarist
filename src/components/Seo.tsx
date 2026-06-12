@@ -42,7 +42,7 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/": {
     title: "Polarist | Tu camino más fácil hacia la IA",
     description:
-      "Somos el puente entre vos y la Inteligencia Artificial. Nuestro objetivo es mostrarte lo que es posible hoy en día, sin que tengas que ser un experto en tecnología.",
+      "Asesoramos e implementamos Agentes de IA para transformar, acelerar y mejorar tu negocio.",
     jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
   },
   "/about": {
@@ -94,6 +94,10 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
     title: "Polarist | Servicios de Inteligencia Artificial para Empresas",
     description:
       "Automatizaciones de procesos, diseño e integración de agentes de IA y consultoría avanzada para optimizar flujos de trabajo corporativos. Descubrí cómo transformamos tu negocio con IA.",
+  },
+  "/asesorias": {
+    title: "Polarist | Asesorias",
+    description: "Aprendé a usar agentes de IA en 2 semanas. Un programa de 5 módulos para entender cómo funcionan y aplicarlos en tus tareas de todos los días.",
   },
 };
 

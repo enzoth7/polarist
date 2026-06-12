@@ -75,21 +75,23 @@ export function InteractiveFeatureCard({
            />
          )}
          {/* Gradient Overlay to ensure text readability */}
-         <div className="absolute inset-0 rounded-[24px] bg-gradient-to-t from-[#010101]/94 via-[#010101]/52 via-32% to-transparent" />
+         <div className="absolute inset-0 rounded-[24px] bg-gradient-to-t from-[#010101] via-[#010101]/70 via-30% to-transparent" />
       </div>
 
       {/* Main Content with 3D Pop Effect */}
       <div
-        className="absolute inset-0 flex flex-col justify-end px-8 pb-14 pt-8 pointer-events-none md:px-9 md:pb-16"
+        className="absolute inset-0 flex flex-col justify-end px-8 pb-10 pt-8 pointer-events-none md:px-9 md:pb-12"
         style={{ transform: "translateZ(50px)" }}
       >
         <div className="flex flex-col gap-2">
           <h3 className="feature-title text-2xl font-bold text-white tracking-tight" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
             {title}
           </h3>
-          <p className="feature-desc text-sm text-white/60 leading-relaxed" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
-            {description}
-          </p>
+          <div className="min-h-[72px] flex items-start">
+            <p className="feature-desc text-sm text-[#F6F6F6]/70 leading-relaxed" style={{ fontFamily: "'Sequel Sans', 'Helvetica Neue', Arial, sans-serif" }}>
+              {description}
+            </p>
+          </div>
         </div>
       </div>
     </div>

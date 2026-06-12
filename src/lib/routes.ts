@@ -12,6 +12,7 @@ export const routes = {
   appSettings: "/settings",
   agents: "/aiagents",
   services: "/services",
+  appAsesorias: "/asesorias",
 } as const;
 
 export const getAppUserProfileRoute = (username: string) =>

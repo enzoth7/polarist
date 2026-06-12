@@ -44,7 +44,7 @@ const Services = () => {
       >
         <motion.div variants={itemVariants} className="text-center mb-16 flex flex-col items-center max-w-4xl px-4 mx-auto">
           <h1
-            className="mb-4"
+            className="mb-8"
             style={{
               fontFamily: "var(--font-sequel, sans-serif)",
               fontSize: "clamp(40px, 8vw, 64px)",
@@ -56,23 +56,14 @@ const Services = () => {
           >
             Servicios a tu medida
           </h1>
-          <p
-            className="mx-auto max-w-2xl mb-16 text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]"
-            style={{
-              fontFamily: "var(--font-sequel, sans-serif)",
-              fontWeight: 400,
-            }}
-          >
-            Implementamos IA y automatizaciones reales para que tu negocio rinda más.
-          </p>
 
-          <h3 
-            className="mb-6 text-3xl md:text-4xl lg:text-5xl font-normal tracking-wide text-[#F6F6F6]"
+          <h3
+            className="mb-8 text-3xl md:text-4xl lg:text-5xl font-normal tracking-wide text-[#8B5BF5]"
             style={{ fontFamily: "var(--font-serif, serif)" }}
           >
             Criterio y responsabilidad
           </h3>
-          <p 
+          <p
             className="text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]/70 font-light max-w-3xl"
             style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
           >
@@ -185,7 +176,7 @@ const Services = () => {
 
         <motion.div variants={itemVariants} className="flex flex-col items-center gap-6 mt-8">
           <div className="text-center px-4">
-            <h3 
+            <h3
               className="mb-8 md:whitespace-nowrap"
               style={{
                 fontFamily: "var(--font-sequel, sans-serif)",
@@ -202,7 +193,7 @@ const Services = () => {
               className="text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]/70 font-light max-w-3xl mx-auto"
               style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
             >
-              Completá este breve formulario contándonos sobre tu empresa y nos pondremos en contacto con vos.
+              Seleccioná la opción que mejor describa tu objetivo actual y da el siguiente paso.
             </p>
           </div>
 
@@ -213,16 +204,16 @@ const Services = () => {
               style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
             >
               <a href="https://docs.google.com/forms/d/e/1FAIpQLSdHrdP8Mu63cawo3uFjFoQCmyWXCvyu9bd5FEjePPvDjoGELQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">
-                Completar formulario gratis
+                Formulario para empresas
               </a>
             </ShinyButton>
-            
-            <Link 
-              to={routes.contact}
-              className="inline-flex w-full sm:w-auto items-center justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline text-white hover:bg-white/10 transition-all border border-white/20"
+
+            <Link
+              to={routes.appAsesorias}
+              className="inline-flex w-full sm:w-auto items-center justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline bg-[#F6F6F6] text-[#010101] hover:bg-white/90 transition-all"
               style={{ fontFamily: "var(--font-sequel, sans-serif)", borderRadius: "999px" }}
             >
-              Contáctanos
+              Unirme a las asesorías
             </Link>
           </div>
         </motion.div>

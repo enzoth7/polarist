@@ -58,7 +58,7 @@ const anatomyParts = [
     imgUrl: "/images/agents/skills.mp4",
   },
   {
-    title: "Herramientas & Conectores",
+    title: "Tools & Conectores",
     description:
       "Son las manos del asistente. Le sirven para conectarse y usar los programas que empleas a diario, como tu correo electrónico, tus chats o tus carpetas, haciendo el trabajo directamente por ti.",
     imgUrl: "/images/agents/tools1.webm",
@@ -822,14 +822,14 @@ const Agents = () => {
                 {selectedPlatform.kind ? selectedPlatform.kind.charAt(0).toUpperCase() + selectedPlatform.kind.slice(1).toLowerCase() : "Plataforma"}
               </span>
             </div>
-            
+
             <p
               style={{ fontFamily: bk.fontSans, fontSize: "15px", lineHeight: 1.6 }}
               className="text-white/60 max-w-sm"
             >
               {selectedPlatform.description}
             </p>
-            
+
             {selectedPlatform.url && (
               <a
                 href={getToolHref(selectedPlatform)}

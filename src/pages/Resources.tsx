@@ -93,7 +93,7 @@ const Resources = () => {
   const [openedResourceId, setOpenedResourceId] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  
+
   const LEVELS = ["Básicos", "Intermedios", "Avanzados"];
   const [selectedLevel, setSelectedLevel] = useState<string>("Básicos");
 
@@ -152,13 +152,21 @@ const Resources = () => {
               fontWeight: 700,
               letterSpacing: "-0.04em",
               lineHeight: 1.1,
-              color: "#CAFE5B",
+              color: "#F6F6F6",
               textAlign: "center",
-              marginBottom: "clamp(96px, 8vw, 128px)",
+              marginBottom: "24px",
             }}
           >
-            ¿Para qué sirven los recursos?
+            ¿Por dónde <span className="text-[#CAFE5B]">empezar</span>?
           </h2>
+          <p
+            className="text-[17px] md:text-[20px] text-white/60 font-light text-center mx-auto max-w-2xl leading-relaxed"
+            style={{
+              fontFamily: "var(--font-sequel, sans-serif)",
+              marginBottom: "clamp(64px, 6vw, 96px)",
+            }}
+          >
+            Mirá este tutorial para saber por donde comenzar</p>
 
           <div className="mx-auto w-full max-w-4xl px-4">
             <div
@@ -175,9 +183,8 @@ const Resources = () => {
                 preload="metadata"
                 playsInline
                 controls={isPlaying}
-                className={`h-full w-full transition-all duration-700 ${
-                  isPlaying ? "object-contain blur-0 opacity-100" : "object-cover blur-[10px] opacity-40"
-                }`}
+                className={`h-full w-full transition-all duration-700 ${isPlaying ? "object-contain blur-0 opacity-100" : "object-cover blur-[10px] opacity-40"
+                  }`}
                 style={{ borderRadius: "23px" }}
               />
 
@@ -214,11 +221,10 @@ const Resources = () => {
                 <button
                   key={level}
                   onClick={() => setSelectedLevel(level)}
-                  className={`relative py-2 text-[15px] md:text-[17px] transition-all duration-300 ease-out whitespace-nowrap tracking-wide ${
-                    selectedLevel === level
+                  className={`relative py-2 text-[15px] md:text-[17px] transition-all duration-300 ease-out whitespace-nowrap tracking-wide ${selectedLevel === level
                       ? "text-[#CAFE5B] font-bold"
                       : "text-[#F6F6F6]/40 hover:text-[#F6F6F6]"
-                  }`}
+                    }`}
                   style={{ fontFamily: SANS }}
                 >
                   {level}
