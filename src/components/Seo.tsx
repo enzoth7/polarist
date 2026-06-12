@@ -96,7 +96,7 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
       "Automatizaciones de procesos, diseño e integración de agentes de IA y consultoría avanzada para optimizar flujos de trabajo corporativos. Descubrí cómo transformamos tu negocio con IA.",
   },
   "/asesorias": {
-    title: "Polarist | Asesorias",
+    title: "Polarist | Asesorías",
     description: "Aprendé a usar agentes de IA en 2 semanas. Un programa de 5 módulos para entender cómo funcionan y aplicarlos en tus tareas de todos los días.",
   },
 };

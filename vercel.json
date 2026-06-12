@@ -146,6 +146,10 @@
     {
       "source": "/services",
       "destination": "/index.html"
+    },
+    {
+      "source": "/asesorias",
+      "destination": "/index.html"
     }
   ]
 }
