@@ -41,9 +41,9 @@ const InferenceGlobeHero = () => {
 
       const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || isBot;
 
-      // Force instant visibility for bots or reduced motion users as early as possible
-      if (prefersReducedMotion) {
-        gsap.set([titleEl, ctaEl, scrollIndicatorRef.current], { opacity: 1, y: 0, scale: 1 });
+      // Set initial state for animations if motion is enabled (prevents layout shift for bots/accessibility)
+      if (!prefersReducedMotion) {
+        gsap.set([titleEl, ctaEl, scrollIndicatorRef.current], { opacity: 0, y: 20 });
       }
 
       if (isMobile) {
@@ -373,7 +373,7 @@ const InferenceGlobeHero = () => {
           : "h-full w-full flex-col justify-end pb-[28vh] items-start"
       )}>
         <div className="pointer-events-none w-full max-w-4xl text-left">
-          <div ref={titleRef} className="translate-y-6 opacity-0">
+          <div ref={titleRef} className="translate-y-0 opacity-100">
             <h1
               style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(3.1rem,7.5vw,6rem)', fontWeight: 700, letterSpacing: '-0.5px', lineHeight: 0.95, color: 'var(--polarist-white, #F6F6F6)' }}
               className="mb-6"
@@ -391,7 +391,7 @@ const InferenceGlobeHero = () => {
           <div
             ref={ctaRef}
             className={cn(
-              "pointer-events-auto translate-y-4 opacity-0 flex",
+              "pointer-events-auto translate-y-0 opacity-100 flex",
               isMobile
                 ? "flex-col w-full max-w-[320px] mx-auto gap-3 mt-10 items-stretch"
                 : "flex-row items-center gap-4 justify-start mt-10"
@@ -473,7 +473,7 @@ const InferenceGlobeHero = () => {
       <div
         ref={scrollIndicatorRef}
         onClick={handleScrollDown}
-        className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-0 select-none group opacity-0 translate-y-2 transition-all duration-300"
+        className="absolute bottom-12 md:bottom-20 left-1/2 -translate-x-1/2 z-30 cursor-pointer flex flex-col items-center gap-0 select-none group opacity-100 translate-y-0 transition-all duration-300"
         title="Deslizar hacia abajo"
       >
         <ChevronDown className="h-6 w-6 text-white/50 group-hover:text-[#CAFE5B] transition-colors duration-300 animate-scroll-chevron" />
