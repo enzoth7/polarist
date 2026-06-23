@@ -9,6 +9,8 @@ type DownloadRow = {
   url: string;
   sort_order: number;
   folder: string;
+  subfolder: string | null;
+  logo: string | null;
   created_at: string;
 };
 
@@ -20,6 +22,8 @@ export type DownloadItem = {
   url: string;
   sortOrder: number;
   folder: string;
+  subfolder: string | null;
+  logo: string | null;
 };
 
 export function useResourceDownloadsQuery() {
@@ -28,7 +32,7 @@ export function useResourceDownloadsQuery() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("resource_downloads")
-        .select("id, title, description, type, url, sort_order, folder, created_at")
+        .select("id, title, description, type, url, sort_order, folder, subfolder, logo, created_at")
         .order("sort_order", { ascending: true });
 
       if (error) throw error;
@@ -40,6 +44,8 @@ export function useResourceDownloadsQuery() {
         url: row.url,
         sortOrder: row.sort_order,
         folder: row.folder,
+        subfolder: row.subfolder,
+        logo: row.logo,
       }));
     },
     staleTime: 60_000,

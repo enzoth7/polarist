@@ -20,7 +20,18 @@ const InferenceGlobeHero = () => {
   const scrollIndicatorRef = useRef<HTMLDivElement>(null);
 
   const isMobile = typeof window !== 'undefined' ? window.matchMedia("(max-width: 768px)").matches : false;
-  const isBot = typeof navigator !== 'undefined' && /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+  const isBot = typeof navigator !== 'undefined' && (
+    /bot|google|crawler|spider|robot|crawling|lighthouse/i.test(navigator.userAgent) ||
+    !!navigator.webdriver ||
+    (() => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return true;
+      }
+    })()
+  );
 
   const handleScrollDown = () => {
     const nextSection = document.getElementById("landing-problems");
@@ -39,7 +50,16 @@ const InferenceGlobeHero = () => {
         return;
       }
 
-      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || isBot;
+      const hasWebGL = (() => {
+        try {
+          const canvas = document.createElement('canvas');
+          return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+        } catch (e) {
+          return false;
+        }
+      })();
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches || isBot || !hasWebGL;
 
       // Set initial state for animations if motion is enabled (prevents layout shift for bots/accessibility)
       if (!prefersReducedMotion) {
@@ -57,6 +77,11 @@ const InferenceGlobeHero = () => {
 
       const sphereTarget = sphereTargetRef.current;
       if (!sphereTarget) return;
+
+      if (!hasWebGL) {
+        console.warn("WebGL not supported, skipping InferenceGlobeHero 3D rendering.");
+        return;
+      }
 
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);

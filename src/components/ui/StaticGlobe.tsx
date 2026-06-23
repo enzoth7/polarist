@@ -14,6 +14,21 @@ export const StaticGlobe = ({ width = 340, height = 340, className }: StaticGlob
     const container = containerRef.current;
     if (!container) return;
 
+    // Check WebGL support first to prevent crash on headless/bot browsers
+    const hasWebGL = (() => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+      } catch (e) {
+        return false;
+      }
+    })();
+
+    if (!hasWebGL) {
+      console.warn("WebGL not supported, skipping StaticGlobe rendering.");
+      return;
+    }
+
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
     camera.position.z = 5.8;

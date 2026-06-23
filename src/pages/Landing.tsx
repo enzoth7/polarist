@@ -81,7 +81,18 @@ const bk = {
 
 let hasShownLandingPreloader = false;
 
-const isBot = typeof navigator !== 'undefined' && /bot|googlebot|crawler|spider|robot|crawling/i.test(navigator.userAgent);
+const isBot = typeof navigator !== 'undefined' && (
+  /bot|google|crawler|spider|robot|crawling|lighthouse/i.test(navigator.userAgent) ||
+  !!navigator.webdriver ||
+  (() => {
+    try {
+      const canvas = document.createElement('canvas');
+      return !(window.WebGLRenderingContext && (canvas.getContext('webgl') || canvas.getContext('experimental-webgl')));
+    } catch (e) {
+      return true;
+    }
+  })()
+);
 
 
 const Landing = () => {

@@ -40,9 +40,9 @@ const WEBSITE_JSON_LD = {
 
 const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/": {
-    title: "Polarist | Tu camino más fácil hacia la IA",
+    title: "Polarist | Servicios y Agencia de Agentes de IA",
     description:
-      "Asesoramos e implementamos Agentes de IA para transformar, acelerar y mejorar tu negocio.",
+      "Agencia de Inteligencia Artificial para empresas. Ofrecemos servicios de consultoría, desarrollo e integración de Agentes de IA para automatizar tu negocio.",
     jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
   },
   "/about": {
