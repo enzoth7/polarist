@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 const SITE_URL = "https://polarist.app";
-const DEFAULT_OG_IMAGE = `${SITE_URL}/Polarist_logo.webp`;
+const DEFAULT_OG_IMAGE = `${SITE_URL}/Polarist_logo.png`;
 
 type SeoConfig = {
   title: string;
