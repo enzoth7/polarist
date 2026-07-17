@@ -105,7 +105,7 @@ const AppRoutes = () => {
         <Route path={routes.about} element={<AboutUs />} />
         <Route path={routes.contact} element={<Contact />} />
         <Route path={routes.agents} element={<Agents />} />
-        <Route path={routes.appAsesorias} element={<Asesorias />} />
+        <Route path={routes.appDiagnosis} element={<Asesorias />} />
       </Route>
 
       <Route path={routes.login} element={<Login />} />

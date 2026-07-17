@@ -40,7 +40,7 @@ const Services = () => {
         variants={containerVariants}
         initial="hidden"
         animate="visible"
-        className="z-10 w-full max-w-5xl flex flex-col items-center"
+        className="z-10 w-full max-w-[1400px] flex flex-col items-center"
       >
         <motion.div variants={itemVariants} className="text-center mb-16 flex flex-col items-center max-w-4xl px-4 mx-auto">
           <h1
@@ -71,102 +71,126 @@ const Services = () => {
           </p>
         </motion.div>
 
-        <div className="grid w-full grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 mb-24 relative">
-          {/* Card: Soluciones */}
+        <div className="grid w-full grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10 mb-24 relative">
+
+          {/* Card: Soluciones — violeta */}
           <motion.div
             variants={itemVariants}
-            className="group flex flex-col rounded-[2rem] p-10 lg:p-16 border border-[#F6F6F6]/10 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#CAFE5B]/50 hover:shadow-[0_0_40px_rgba(202,254,91,0.08)]"
+            whileHover={{ y: -10, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="group flex flex-col rounded-[2rem] p-8 lg:p-10 border border-[#8B5BF5]/20 shadow-2xl hover:border-[#8B5BF5]/60 hover:shadow-[0_0_40px_rgba(139,91,245,0.15)]"
             style={{ backgroundColor: "transparent" }}
           >
             <h2
-              className="text-center mb-12"
+              className="text-center"
               style={{
                 fontFamily: "var(--font-sequel, sans-serif)",
                 fontSize: "clamp(32px, 5vw, 42px)",
                 fontWeight: 700,
                 letterSpacing: "-1px",
                 color: "#F6F6F6",
+                minHeight: "72px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "2.5rem",
               }}
             >
               Soluciones
             </h2>
-            <ul className="flex flex-col gap-10 flex-1 justify-center">
+            <ul className="flex flex-col gap-10 flex-1 justify-start">
               <li className="flex items-start gap-5">
-                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#F6F6F6",
-                  }}
-                >
-                  <strong className="font-bold text-[#CAFE5B]">Automatización</strong> inteligente de los procesos
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#8B5BF5] group-hover:scale-110 transition-transform" />
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#F6F6F6" }}>
+                  <strong className="font-bold text-[#8B5BF5]">Automatización</strong> inteligente de los procesos
                 </p>
               </li>
               <li className="flex items-start gap-5">
-                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#F6F6F6",
-                  }}
-                >
-                  <strong className="font-bold text-[#CAFE5B]">Agentes Conversacionales</strong> que interactúan, ejecutan y califican
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#8B5BF5] group-hover:scale-110 transition-transform" />
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#F6F6F6" }}>
+                  <strong className="font-bold text-[#8B5BF5]">Agentes Conversacionales</strong> que interactúan, ejecutan y califican
                 </p>
               </li>
             </ul>
           </motion.div>
 
-          {/* Card: Asesorías */}
+          {/* Card: Asesorías — fondo blanco */}
           <motion.div
             variants={itemVariants}
-            className="group flex flex-col rounded-[2rem] p-10 lg:p-16 border border-[#F6F6F6]/10 shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:border-[#CAFE5B]/50 hover:shadow-[0_0_40px_rgba(202,254,91,0.08)]"
+            whileHover={{ y: -10, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="group flex flex-col rounded-[2rem] p-8 lg:p-10 border border-transparent shadow-2xl hover:shadow-[0_0_40px_rgba(246,246,246,0.12)]"
+            style={{ backgroundColor: "#F6F6F6" }}
+          >
+            <h2
+              className="text-center"
+              style={{
+                fontFamily: "var(--font-sequel, sans-serif)",
+                fontSize: "clamp(32px, 5vw, 42px)",
+                fontWeight: 700,
+                letterSpacing: "-1px",
+                color: "#010101",
+                minHeight: "72px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "2.5rem",
+              }}
+            >
+              Asesorías
+            </h2>
+            <ul className="flex flex-col gap-10 flex-1 justify-start">
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#010101] group-hover:scale-110 transition-transform" />
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#010101" }}>
+                  <strong className="font-bold text-[#010101]">Potenciar el trabajo humano</strong> para rendir más y ahorrar tiempo
+                </p>
+              </li>
+              <li className="flex items-start gap-5">
+                <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#010101] group-hover:scale-110 transition-transform" />
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#010101" }}>
+                  <strong className="font-bold text-[#010101]">Empezar a usar</strong> estas nuevas tecnologías sin fricción
+                </p>
+              </li>
+            </ul>
+          </motion.div>
+
+          {/* Card: Formaciones — verde */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ y: -10, scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            className="group flex flex-col rounded-[2rem] p-8 lg:p-10 border border-[#CAFE5B]/20 shadow-2xl hover:border-[#CAFE5B]/60 hover:shadow-[0_0_40px_rgba(202,254,91,0.12)]"
             style={{ backgroundColor: "transparent" }}
           >
             <h2
-              className="text-center mb-12"
+              className="text-center"
               style={{
                 fontFamily: "var(--font-sequel, sans-serif)",
                 fontSize: "clamp(32px, 5vw, 42px)",
                 fontWeight: 700,
                 letterSpacing: "-1px",
                 color: "#F6F6F6",
+                minHeight: "72px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "2.5rem",
               }}
             >
-              Asesorías
+              Formaciones
             </h2>
-            <ul className="flex flex-col gap-10 flex-1 justify-center">
+            <ul className="flex flex-col gap-10 flex-1 justify-start">
               <li className="flex items-start gap-5">
                 <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#F6F6F6",
-                  }}
-                >
-                  <strong className="font-bold text-[#CAFE5B]">Potenciar el trabajo humano</strong> para rendir más y ahorrar tiempo
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#F6F6F6" }}>
+                  <strong className="font-bold text-[#CAFE5B]">Equipos de hasta 10 personas</strong> que quieren adoptar IA sin fricción
                 </p>
               </li>
               <li className="flex items-start gap-5">
                 <div className="mt-2 h-3 w-3 shrink-0 rounded-full bg-[#CAFE5B] group-hover:scale-110 transition-transform" />
-                <p
-                  style={{
-                    fontFamily: "var(--font-sequel, sans-serif)",
-                    fontSize: "clamp(18px, 2.5vw, 22px)",
-                    fontWeight: 400,
-                    lineHeight: 1.4,
-                    color: "#F6F6F6",
-                  }}
-                >
-                  <strong className="font-bold text-[#CAFE5B]">Empezar a usar</strong> estas nuevas tecnologías sin fricción
+                <p style={{ fontFamily: "var(--font-sequel, sans-serif)", fontSize: "clamp(18px, 2.5vw, 22px)", fontWeight: 400, lineHeight: 1.4, color: "#F6F6F6" }}>
+                  <strong className="font-bold text-[#CAFE5B]">Diagnóstico 360°</strong> de operaciones y marketing para escalar
                 </p>
               </li>
             </ul>
@@ -193,7 +217,7 @@ const Services = () => {
               className="text-[17px] md:text-[20px] leading-relaxed text-[#F6F6F6]/70 font-light max-w-3xl mx-auto"
               style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
             >
-              Seleccioná la opción que mejor describa tu objetivo actual y da el siguiente paso.
+              Descubrí en minutos cuál es el estado actual de tu empresa y qué oportunidades concretas de IA podemos activar para vos.
             </p>
           </div>
 
@@ -203,18 +227,10 @@ const Services = () => {
               className="inline-flex w-full sm:w-auto justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline"
               style={{ fontFamily: "var(--font-sequel, sans-serif)" }}
             >
-              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdHrdP8Mu63cawo3uFjFoQCmyWXCvyu9bd5FEjePPvDjoGELQ/viewform?usp=publish-editor" target="_blank" rel="noopener noreferrer">
-                Formulario para empresas
-              </a>
+              <Link to={routes.appDiagnosis}>
+                Hacer el diagnóstico de mi empresa
+              </Link>
             </ShinyButton>
-
-            <Link
-              to={routes.appAsesorias}
-              className="inline-flex w-full sm:w-auto items-center justify-center px-10 py-5 text-[17px] font-bold tracking-[0.5px] no-underline bg-[#F6F6F6] text-[#010101] hover:bg-white/90 transition-all"
-              style={{ fontFamily: "var(--font-sequel, sans-serif)", borderRadius: "999px" }}
-            >
-              Unirme a las asesorías
-            </Link>
           </div>
         </motion.div>
       </motion.div>

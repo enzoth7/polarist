@@ -1,6 +1,8 @@
 import { useMemo, useState, useRef, useEffect } from "react";
 import { ExternalLink, Download, File, Play } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
+import { routes } from "@/lib/routes";
 
 import { FALLBACK_RESOURCE_IMAGE, ResourceDetail } from "@/components/resources/ResourceDetail";
 import Modal from "@/components/ui/modal-drop";
@@ -667,6 +669,28 @@ function DownloadFolderExplorer({ downloads }: { downloads: DownloadItem[] }) {
                               </div>
                             );
                           })}
+
+                          {/* Botón CTA — Ver más de agentes */}
+                          <div className="flex justify-center pt-6 pb-2">
+                            <Link
+                              to={routes.agents}
+                              className="inline-flex items-center justify-center font-bold tracking-[0.5px] transition-all hover:scale-[1.04]"
+                              style={{
+                                fontFamily: "var(--font-sans)",
+                                background: "#F6F6F6",
+                                color: "#010101",
+                                height: "48px",
+                                borderRadius: "9999px",
+                                padding: "0 2rem",
+                                fontSize: "15px",
+                                whiteSpace: "nowrap",
+                                border: "none",
+                                boxShadow: "0px 6px 24px rgba(246, 246, 246, 0.15)",
+                              }}
+                            >
+                              Ver más de Agentes de IA
+                            </Link>
+                          </div>
                         </div>
                       )}
                     </div>

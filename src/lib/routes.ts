@@ -12,7 +12,7 @@ export const routes = {
   appSettings: "/settings",
   agents: "/aiagents",
   services: "/services",
-  appAsesorias: "/asesorias",
+  appDiagnosis: "/diagnosis",
 } as const;
 
 export const getAppUserProfileRoute = (username: string) =>
@@ -30,4 +30,5 @@ export const legacyAppRoutes = [
   { from: "/radar", to: "/tools" },
   { from: "/trends", to: "/tools" },
   { from: "/guides", to: "/resources" },
+  { from: "/asesorias", to: "/diagnosis" },
 ] as const;

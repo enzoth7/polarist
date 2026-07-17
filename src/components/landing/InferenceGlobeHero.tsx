@@ -423,7 +423,7 @@ const InferenceGlobeHero = () => {
             )}
           >
             <Link
-              to={routes.services}
+              to={routes.appDiagnosis}
               className={cn(
                 "inline-flex items-center justify-center font-bold tracking-[0.5px] transition-all hover:scale-[1.05]",
                 isMobile ? "text-[15px] px-8" : "px-10 text-[16px]"
@@ -439,7 +439,7 @@ const InferenceGlobeHero = () => {
                 boxShadow: "0px 8px 32px rgba(202, 254, 91, 0.25)"
               }}
             >
-              Soluciones para empresas
+              Mi diagnóstico
             </Link>
 
             <Link
@@ -460,6 +460,7 @@ const InferenceGlobeHero = () => {
             >
               Empezar a usar IA
             </Link>
+
           </div>
         </div>
       </div>

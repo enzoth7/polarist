@@ -140,14 +140,14 @@ const Header = () => {
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Agentes de IA", to: routes.agents, showAlways: true },
+    { label: "Diagnóstico", to: routes.appDiagnosis, showAlways: true },
   ] : [
     { label: "Inicio", to: routes.landing, showAlways: true },
     { label: "Servicios", to: routes.services, showAlways: true },
     { label: "Herramientas", to: routes.appTools, showAlways: true },
     { label: "Recursos", to: resourcesNavRoute, showAlways: true },
     { label: "Comunidad", to: routes.appCommunity, showAlways: true },
-    { label: "Agentes de IA", to: routes.agents, showAlways: true },
+    { label: "Diagnóstico", to: routes.appDiagnosis, showAlways: true },
   ];
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -224,7 +224,7 @@ const Header = () => {
             </div>
           ))}
           <NavLink
-            to={routes.agents}
+            to={routes.appDiagnosis}
             className={({ isActive }) =>
               cn(
                 "hidden md:inline-flex items-center rounded-full px-2.5 py-1 text-[11px] lg:px-4 lg:py-1.5 lg:text-[13px] font-bold tracking-[0.01em] transition-all duration-300 whitespace-nowrap ml-1 lg:ml-2.5",
@@ -235,7 +235,7 @@ const Header = () => {
             }
             style={{ fontFamily: 'var(--font-sequel, sans-serif)' }}
           >
-            Agentes de IA
+            Diagnóstico
           </NavLink>
         </nav>
 

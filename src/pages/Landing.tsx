@@ -366,16 +366,8 @@ const Landing = () => {
               asChild
               className="bg-[#8B5BF5] text-white hover:bg-[#8B5BF5]/90 rounded-full px-8 py-6 text-base font-bold font-sans border-none w-full sm:w-auto transition-transform hover:scale-[1.03]"
             >
-              <a href="https://docs.google.com/forms/d/e/1FAIpQLSdHrdP8Mu63cawo3uFjFoQCmyWXCvyu9bd5FEjePPvDjoGELQ/viewform" target="_blank" rel="noopener noreferrer">
-                Hablemos de mi empresa
-              </a>
-            </Button>
-            <Button
-              asChild
-              className="bg-[#F6F6F6] text-[#010101] hover:bg-white/90 rounded-full px-8 py-6 text-base font-bold font-sans border-none w-full sm:w-auto transition-transform hover:scale-[1.03]"
-            >
-              <Link to={routes.appAsesorias}>
-                Unirme a las asesorías
+              <Link to={routes.services}>
+                Servicios
               </Link>
             </Button>
           </div>
