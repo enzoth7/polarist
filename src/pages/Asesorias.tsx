@@ -88,7 +88,7 @@ const Asesorias = () => {
   const handleSubmit = async (contactData: any) => {
     setLoading(true);
     try {
-      const { error } = await supabase.from('asesorias_waitlist').insert([{
+      const { error } = await supabase.from('diagnosis').insert([{
         full_name: contactData.fullName,
         email: contactData.email,
         whatsapp: contactData.whatsapp || '',
@@ -174,8 +174,8 @@ const Asesorias = () => {
       <div className="max-w-2xl w-full mx-auto">
         {/* Header */}
         <div className="mb-8 text-center">
-          <h1 className="text-3xl font-bold mb-3">Diagnóstico</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4 tracking-tight" style={{ fontFamily: "var(--font-sequel, 'Sequel Sans', sans-serif)", letterSpacing: "-1.5px" }}>Diagnóstico</h1>
+          <p className="text-white/60 text-base md:text-lg max-w-lg mx-auto">
             Descubrí en 5 minutos qué necesita tu negocio para crecer con IA.
           </p>
         </div>
@@ -187,11 +187,7 @@ const Asesorias = () => {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === step
-                    ? 'w-8 bg-white'
-                    : i < step
-                    ? 'w-4 bg-white/40'
-                    : 'w-4 bg-white/10'
+                  i === step ? 'w-8 bg-[#8B5BF5]' : i < step ? 'w-4 bg-[#8B5BF5]/60' : 'w-4 bg-white/10'
                 }`}
               />
             ))}
@@ -199,7 +195,7 @@ const Asesorias = () => {
         )}
 
         {/* Content */}
-        <div className="relative overflow-hidden bg-[#111] border border-white/5 rounded-3xl p-6 md:p-10 min-h-[400px] flex flex-col">
+        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 min-h-[660px] md:h-[740px] flex flex-col">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -216,9 +212,7 @@ const Asesorias = () => {
             >
               {step === 0 && (
                 <div className="flex-1 flex flex-col">
-                  <h2 className="text-xl md:text-2xl font-bold mb-8 text-center">
-                    ¿Para quién es la asesoría?
-                  </h2>
+                  <h2 className="text-4xl md:text-5xl font-normal italic mb-8 text-center text-[#F6F6F6]" style={{ fontFamily: "var(--font-serif, 'Arno Pro', Georgia, serif)" }}>¿Quién sos?</h2>
                   <DiagnosisTypeSelector
                     value={answers.user_type}
                     onChange={handleTypeSelect}
@@ -246,11 +240,7 @@ const Asesorias = () => {
 
               {isQuestionStep && currentQuestion && (
                 <div className="flex-1 flex flex-col">
-                  <DiagnosisQuestion
-                    question={currentQuestion}
-                    value={answers[currentQuestion.id]}
-                    onChange={(val) => handleAnswer(currentQuestion.id, val)}
-                  />
+                  <DiagnosisQuestion question={currentQuestion} value={answers[currentQuestion.id]} onChange={(val) => handleAnswer(currentQuestion.id, val)} direction={direction} userType={answers.user_type} />
                 </div>
               )}
 
@@ -265,10 +255,6 @@ const Asesorias = () => {
 
               {isContactStep && (
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold mb-6">Último paso</h2>
-                  <p className="text-gray-400 mb-8">
-                    Dejanos tus datos para agendar la reunión y enviarte el reporte detallado.
-                  </p>
                   <DiagnosisContactForm
                     onSubmit={handleSubmit}
                     isLoading={loading}
