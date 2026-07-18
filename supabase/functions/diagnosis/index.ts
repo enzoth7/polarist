@@ -65,24 +65,19 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // Send the email to the user with the attached PDF
+    // Send the confirmation email to the user (no PDF attachment)
     await sendViaResend({
       from: "Polarist <contacto@polarist.app>",
       to: [email],
-      subject: "Bienvenido a la lista de espera - Asesorías Polarist",
+      subject: "Recibimos tu solicitud de diagnóstico — Polarist",
       html: getEmailTemplate(
-        "Confirmación de Asesorías",
+        "Confirmación de Diagnóstico",
         `<p style="margin-top: 0;">Hola <strong>${name}</strong>,</p>
-         <p>Confirmamos tu lugar en la lista de espera para nuestras asesorías de IA.</p>
-         <p>Adjunto a este correo vas a encontrar una guía rápida con los detalles de los módulos y el costo del programa. Mirala a tu ritmo y pronto nos estaremos comunicando con vos para darte acceso a las próximas sesiones grupales.</p>
+         <p>Recibimos tu solicitud de diagnóstico para nuestras asesorías de IA y ya nos pusimos a trabajar en ella.</p>
+         <p>Nuestro equipo la estará evaluando detalladamente para preparar una devolución personalizada para tu caso. Muy pronto nos pondremos en contacto con vos para contarte los siguientes pasos.</p>
+         <p>Gracias por tu interés y por confiar en Polarist.</p>
          <p style="margin-top: 24px; margin-bottom: 0;">Saludos,<br>— El equipo de Polarist</p>`
-      ),
-      attachments: [
-        {
-          filename: "PDF_Asesorias.pdf",
-          path: "https://epoolgyzovefaofyvocz.supabase.co/storage/v1/object/public/assets/PDF_Asesorias.pdf"
-        }
-      ]
+      )
     });
 
     return new Response(

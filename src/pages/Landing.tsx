@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Link, useSearchParams } from "react-router-dom";
 import InferenceGlobeHero from "@/components/landing/InferenceGlobeHero";
+import TestimonialsCarousel from "@/components/landing/TestimonialsCarousel";
 import { routes } from "@/lib/routes";
 import { FinalCTA } from "@/components/layout/FinalCTA";
 import { GlowCard } from "@/components/ui/spotlight-card";
@@ -243,6 +244,8 @@ const Landing = () => {
           </div>
         </section>
       </div>
+
+      <TestimonialsCarousel />
 
       {/* ─── PROBLEMAS ─── */}
       <div id="landing-problems" ref={problemsSectionRef} className={cn("relative z-[15] px-6 lg:px-20", isMobile ? "pt-10 pb-24" : "py-24 sm:px-10")} style={{ background: bk.pureWhite }}>

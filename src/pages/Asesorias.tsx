@@ -94,6 +94,7 @@ const Asesorias = () => {
         whatsapp: contactData.whatsapp || '',
         user_type: answers.user_type || '',
         company_name: contactData.companyName || '',
+        company_industry: answers.company_industry || '',
         company_size: answers.company_size || '',
         business_type: answers.business_type || '',
         infrastructure: JSON.stringify(answers.infra || []),
@@ -101,6 +102,14 @@ const Asesorias = () => {
         ai_maturity: answers.ai_maturity || '',
         urgency: answers.urgency || '',
         budget: answers.budget || '',
+        persona_profession: answers.persona_profession || '',
+        persona_industry: answers.persona_industry || '',
+        persona_education: answers.persona_education || '',
+        persona_tools: JSON.stringify(answers.persona_tools || []),
+        persona_ai_level: answers.persona_ai_level || '',
+        persona_ai_tools: JSON.stringify(answers.persona_ai_tools || []),
+        persona_goal: answers.persona_goal || '',
+        persona_obstacle: answers.persona_obstacle || '',
         recommendation: result?.primary || '',
         recommendation_secondary: result?.secondary || '',
       }]);
@@ -108,7 +117,7 @@ const Asesorias = () => {
       if (error) throw error;
 
       try {
-        await supabase.functions.invoke('asesorias-waitlist-email', {
+        await supabase.functions.invoke('diagnosis', {
           body: { name: contactData.fullName, email: contactData.email }
         });
       } catch (funcError) {
