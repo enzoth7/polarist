@@ -108,7 +108,7 @@ export const UserProfileSidebar = React.forwardRef<HTMLDivElement, UserProfileSi
             <React.Fragment key={index}>
               {item.isSeparator && <motion.div variants={itemVariants} className="h-6" />}
               <motion.div variants={itemVariants}>
-                {item.label === "Agentes de IA" || item.label === "Agentes IA" ? (
+                {item.label === "Agentes de IA" || item.label === "Agentes IA" || item.label === "Diagnóstico" || item.label === "Diagnostico" ? (
                   <Link
                     to={item.href}
                     onClick={onItemClick}
