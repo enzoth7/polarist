@@ -100,7 +100,7 @@ export default function DiagnosisQuestion({ question, value, onChange, direction
         x: { type: "spring", stiffness: 300, damping: 30 },
         opacity: { duration: 0.2 }
       }}
-      className="w-full max-w-2xl mx-auto text-[#F6F6F6] font-sans"
+      className="w-full max-w-2xl mx-auto text-[#F6F6F6] font-sans flex flex-col h-full min-h-0"
     >
       <h2 className="text-3xl md:text-4xl font-bold mb-8 text-center tracking-tight text-[#F6F6F6]" style={{ fontFamily: "var(--font-sequel, 'Sequel Sans', 'Helvetica Neue', Arial, sans-serif)" }}>
         {renderQuestionText(question.question || 'Pregunta...')}
@@ -133,7 +133,7 @@ export default function DiagnosisQuestion({ question, value, onChange, direction
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 overflow-y-auto pr-1 flex-1 min-h-0">
           {options.map((opt: any) => {
             const selected = isSelected(opt.value);
             return (

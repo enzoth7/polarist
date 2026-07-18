@@ -204,7 +204,7 @@ const Asesorias = () => {
         )}
 
         {/* Content */}
-        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 min-h-[720px] md:h-[820px] flex flex-col">
+        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 h-[880px] md:h-[820px] flex flex-col">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -247,7 +247,7 @@ const Asesorias = () => {
               )}
 
               {isQuestionStep && currentQuestion && (
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col min-h-0">
                   <DiagnosisQuestion question={currentQuestion} value={answers[currentQuestion.id]} onChange={(val) => handleAnswer(currentQuestion.id, val)} direction={direction} userType={answers.user_type} />
                 </div>
               )}
