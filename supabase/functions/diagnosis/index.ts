@@ -2,6 +2,11 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY") ?? "";
 
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "content-type, authorization, x-client-info, apikey",
+};
+
 async function sendViaResend(payload: object) {
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -47,12 +52,7 @@ function getEmailTemplate(title: string, contentHtml: string) {
 
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, {
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "content-type, authorization, x-client-info, apikey",
-      },
-    });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
@@ -61,15 +61,18 @@ Deno.serve(async (req: Request) => {
     if (!name || !email) {
       return new Response(
         JSON.stringify({ error: "Faltan campos requeridos" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
-    // Send the confirmation email to the user (no PDF attachment)
+    // Schedule email 3 minutes in the future via Resend's scheduled_at
+    const sendAt = new Date(Date.now() + 3 * 60 * 1000).toISOString();
+
     await sendViaResend({
       from: "Polarist <contacto@polarist.app>",
       to: [email],
       subject: "Recibimos tu solicitud de diagnóstico — Polarist",
+      scheduled_at: sendAt,
       html: getEmailTemplate(
         "Confirmación de Diagnóstico",
         `<p style="margin-top: 0;">Hola <strong>${name}</strong>,</p>
@@ -82,13 +85,14 @@ Deno.serve(async (req: Request) => {
 
     return new Response(
       JSON.stringify({ ok: true }),
-      { status: 200, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Error desconocido";
     return new Response(
       JSON.stringify({ error: message }),
-      { status: 500, headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" } }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 });
+

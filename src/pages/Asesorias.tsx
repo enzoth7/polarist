@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, ArrowRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ArrowRight, CheckCircle, Clock } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { supabase } from '@/lib/supabase';
@@ -204,7 +204,7 @@ const Asesorias = () => {
         )}
 
         {/* Content */}
-        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 min-h-[660px] md:h-[740px] flex flex-col">
+        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 min-h-[720px] md:h-[820px] flex flex-col">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
@@ -231,18 +231,17 @@ const Asesorias = () => {
 
               {step === 1 && (
                 <div className="flex-1 flex flex-col justify-center items-center text-center">
-                  <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-6">
-                    <span className="text-2xl">⚡️</span>
-                  </div>
-                  <h2 className="text-2xl font-bold mb-4">Empecemos con el diagnóstico</h2>
-                  <p className="text-gray-400 mb-8 max-w-md mx-auto">
-                    Las siguientes preguntas nos ayudarán a entender tu situación actual y recomendarte el mejor plan de acción con IA.
+                  <Clock className="w-8 h-8 text-[#CAFE5B] mb-2" />
+                  <span className="text-sm font-medium text-gray-400 mb-6">2 minutos</span>
+                  <h2 className="text-2xl font-bold mb-4">Qué te encontrarás</h2>
+                  <p className="text-gray-400 mb-8 max-w-xl mx-auto">
+                    Las siguientes preguntas nos ayudarán a entender tu situación actual y recomendarte la mejor opción.
                   </p>
                   <button
                     onClick={handleNext}
-                    className="py-3 px-8 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
+                    className="py-3 px-8 bg-white text-black font-medium rounded-xl hover:bg-gray-100 transition-colors"
                   >
-                    Empezar <ArrowRight className="w-4 h-4" />
+                    Empezar
                   </button>
                 </div>
               )}
@@ -292,10 +291,9 @@ const Asesorias = () => {
               <button
                 onClick={handleNext}
                 disabled={isNextDisabled()}
-                className="flex items-center gap-2 bg-white text-black py-2 px-6 rounded-lg font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="bg-white text-black py-2 px-6 rounded-lg font-medium hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Siguiente
-                <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           )}

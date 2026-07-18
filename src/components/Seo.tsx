@@ -40,20 +40,20 @@ const WEBSITE_JSON_LD = {
 
 const PUBLIC_ROUTES: Record<string, SeoConfig> = {
   "/": {
-    title: "Polarist | Servicios y Agencia de Agentes de IA",
+    title: "Polarist | Formación y Asesorías en Inteligencia Artificial",
     description:
-      "Agencia de Inteligencia Artificial para empresas. Ofrecemos servicios de consultoría, desarrollo e integración de Agentes de IA para automatizar tu negocio.",
+      "Acompañamos a empresas y profesionales a adoptar Inteligencia Artificial. Programas prácticos para equipos, asesorías grupales y diseño de soluciones a medida.",
     jsonLd: [ORGANIZATION_JSON_LD, WEBSITE_JSON_LD],
   },
   "/about": {
     title: "Polarist | ¿Quiénes somos?",
     description:
-      "Somos un equipo efocado en eliminar la fricción entre la IA y los negocios tradicionales.",
+      "Somos un equipo efocado en que profesionales y empresas adopen las nuevas tecnologías de una forma sencilla y práctica.",
   },
   "/contact": {
     title: "Polarist | Contacto",
     description:
-      "Contáctanos para consultas, soporte o sugerencias sobre herramientas de IA, recursos, tendencias y comunidad.",
+      "Contáctanos para consultas, por soporte o sugerencias sobre cualquier aspecto de Polarist. Estamos para ayudarte a adoptar Inteligencia Artificial.",
   },
   "/privacy": {
     title: "Polarist | Política de Privacidad",
@@ -81,23 +81,23 @@ const PUBLIC_ROUTES: Record<string, SeoConfig> = {
       "Seguí la actividad de la comunidad de Polarist y mantenete cerca de eventos, lanzamientos y espacios para aprender sobre IA aplicada.",
   },
   "/login": {
-    title: "Polarist |Iniciar sesión",
+    title: "Polarist | Iniciar sesión",
     description: "Ingresa a tu cuenta de Polarist.",
     robots: "noindex, nofollow",
   },
   "/aiagents": {
     title: "Polarist | Agentes de IA",
     description:
-      "Descubrí qué es un agente de IA, cómo se diferencia de un chatbot y cómo implementarlo en tu flujo de negocio.",
+      "Qué es un agente de Inteligencia Artificial, en qué se diferencia de un sistema tradicional y cómo aplicarlo a las tareas de tu negocio.",
   },
   "/services": {
-    title: "Polarist | Servicios de Inteligencia Artificial para Empresas",
+    title: "Polarist | Servicios de Inteligencia Artificial",
     description:
-      "Automatizaciones de procesos, diseño e integración de agentes de IA y consultoría avanzada para optimizar flujos de trabajo corporativos. Descubrí cómo transformamos tu negocio con IA.",
+      "Programas de adopción prácticos para empresas y profesionalesen Inteligencia Artificial. Esto lo acompañamos con unaonsultoría y diseño de agentes inteligentes a medida para resolver operaciones y tareas diarias.",
   },
-  "/asesorias": {
-    title: "Polarist | Asesorías",
-    description: "Aprendé a usar agentes de IA en 2 semanas. Un programa de 5 módulos para entender cómo funcionan y aplicarlos en tus tareas de todos los días.",
+  "/diagnosis": {
+    title: "Polarist | Diagnóstico de Inteligencia Artificial",
+    description: "Evaluá tu perfil o empresa y obtené un diagnóstico personalizado. Descubrí si necesitás una formación, una asesoría o un mismo una implementación a tu medida.",
   },
 };
 

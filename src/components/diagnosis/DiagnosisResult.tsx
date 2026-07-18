@@ -10,8 +10,11 @@ interface DiagnosisResultProps {
 
 const analysisSteps = [
   "Analizando tus respuestas...",
-  "Identificando oportunidades...",
-  "Preparando tu diagnóstico personalizado..."
+  "Identificando oportunidades de automatización...",
+  "Evaluando madurez operativa y tecnológica...",
+  "Cruzando datos con modelos de referencia...",
+  "Diseñando tu hoja de ruta personalizada...",
+  "Finalizando el reporte de diagnóstico..."
 ];
 
 const labelMap: Record<string, string> = {
@@ -37,11 +40,11 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
           }
           return prev;
         });
-      }, 1300);
+      }, 2500); // 15 seconds / 6 steps = 2500ms per step
 
       const phaseTimeout = setTimeout(() => {
         setPhase(2);
-      }, 4000);
+      }, 15000); // 15 seconds total duration
 
       return () => {
         clearInterval(stepInterval);
@@ -62,39 +65,101 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
             className="flex flex-col items-center justify-center space-y-8 w-full"
           >
             {/* Animated Icon Container */}
-            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/10 flex items-center justify-center relative overflow-hidden">
+            <div className="w-20 h-20 flex items-center justify-center relative">
               <AnimatePresence mode="wait">
                 {stepIndex === 0 && (
                   <motion.div
-                    key="brain"
+                    key="step0"
                     initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
-                    <Brain className="w-10 h-10 text-[#8B5BF5]" />
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <circle cx="12" cy="12" r="10" strokeDasharray="4 4" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: '10s' }} />
+                      <path d="M12 2v20M2 12h20" />
+                      <circle cx="12" cy="12" r="3" fill="#CAFE5B" className="animate-pulse" />
+                    </svg>
                   </motion.div>
                 )}
                 {stepIndex === 1 && (
                   <motion.div
-                    key="sparkles"
+                    key="step1"
                     initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
-                    <Sparkles className="w-10 h-10 text-[#CAFE5B]" />
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" className="animate-spin" style={{ transformOrigin: 'center', animationDuration: '14s' }} />
+                      <circle cx="12" cy="12" r="3" fill="#CAFE5B" />
+                    </svg>
                   </motion.div>
                 )}
                 {stepIndex === 2 && (
                   <motion.div
-                    key="cpu"
+                    key="step2"
                     initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
                     animate={{ scale: 1, opacity: 1, rotate: 0 }}
                     exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
                     transition={{ type: "spring", stiffness: 200, damping: 15 }}
                   >
-                    <Cpu className="w-10 h-10 text-[#8B5BF5]" />
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <path d="M3 3v18h18" />
+                      <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3" />
+                      <path d="M18 8h.7V8.7" />
+                      <rect x="7" y="15" width="2" height="5" rx="0.5" fill="#CAFE5B" stroke="none" />
+                      <rect x="12" y="11" width="2" height="9" rx="0.5" fill="#CAFE5B" stroke="none" />
+                      <rect x="17" y="7" width="2" height="13" rx="0.5" fill="#CAFE5B" stroke="none" />
+                    </svg>
+                  </motion.div>
+                )}
+                {stepIndex === 3 && (
+                  <motion.div
+                    key="step3"
+                    initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  >
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <path d="M5 12h14M12 5v14M5 5l14 14M5 14L14 5" strokeDasharray="2 2" className="animate-pulse" />
+                      <circle cx="12" cy="12" r="4" fill="#010101" />
+                      <circle cx="5" cy="5" r="2" fill="#CAFE5B" />
+                      <circle cx="19" cy="5" r="2" fill="#CAFE5B" />
+                      <circle cx="5" cy="19" r="2" fill="#CAFE5B" />
+                      <circle cx="19" cy="19" r="2" fill="#CAFE5B" />
+                      <circle cx="12" cy="12" r="2" fill="#CAFE5B" />
+                    </svg>
+                  </motion.div>
+                )}
+                {stepIndex === 4 && (
+                  <motion.div
+                    key="step4"
+                    initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  >
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <circle cx="12" cy="12" r="10" />
+                      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="#CAFE5B" stroke="none" className="animate-pulse" style={{ transformOrigin: 'center' }} />
+                    </svg>
+                  </motion.div>
+                )}
+                {stepIndex === 5 && (
+                  <motion.div
+                    key="step5"
+                    initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                    animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                    exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                  >
+                    <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#CAFE5B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="filter drop-shadow-[0_0_12px_rgba(202,254,91,0.6)]">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                      <polyline points="14 2 14 8 20 8" />
+                      <path d="M9 15l2 2 4-4" stroke="#CAFE5B" strokeWidth="2.5" className="animate-pulse" />
+                    </svg>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -104,8 +169,8 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
               <motion.div
                 initial={{ width: "0%" }}
                 animate={{ width: "100%" }}
-                transition={{ duration: 4, ease: "easeInOut" }}
-                className="absolute top-0 left-0 h-full bg-gradient-to-r from-[#8B5BF5] to-[#CAFE5B]"
+                transition={{ duration: 15, ease: "linear" }}
+                className="absolute top-0 left-0 h-full bg-[#CAFE5B]"
               />
             </div>
             <div className="h-8 relative overflow-hidden flex items-center justify-center">
@@ -184,7 +249,7 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
                     const isLevel = ['inicial', 'intermedio', 'avanzado'].includes(result.primary);
                     if (isLevel) {
                       if (result.primary === 'avanzado') {
-                        return "Nos pondremos en contacto";
+                        return "Esperar nuestro contacto";
                       }
                       return labelMap[result.secondary || 'asesoria'];
                     } else {

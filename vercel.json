@@ -93,6 +93,11 @@
       "source": "/count-town",
       "destination": "/countdown",
       "permanent": true
+    },
+    {
+      "source": "/asesorias",
+      "destination": "/diagnosis",
+      "permanent": true
     }
   ],
   "rewrites": [
@@ -157,7 +162,7 @@
       "destination": "/index.html"
     },
     {
-      "source": "/asesorias",
+      "source": "/diagnosis",
       "destination": "/index.html"
     }
   ]

@@ -21,8 +21,8 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     question: '¿Buscás soluciones para potenciar tu [perfil] profesional o para tu empresa/equipo?',
     type: 'single',
     options: [
-      { value: 'persona', label: 'Para mí (Profesional independiente / Freelance)', score: { asesoria: 3, formacion: 1 } },
-      { value: 'empresa', label: 'Para mi empresa o equipo', score: { implementacion: 1, formacion: 1 } }
+      { value: 'persona', label: '🧑‍💻 Para mí (Profesional independiente / Freelance)', score: { asesoria: 3, formacion: 1 } },
+      { value: 'empresa', label: '🏢 Para mi empresa o equipo', score: { implementacion: 1, formacion: 1 } }
     ]
   },
   // ----------------------------------------------------
@@ -34,24 +34,23 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'freelance', label: 'Soy freelance / profesional independiente', score: { asesoria: 2 } },
-      { value: 'empleado', label: 'Trabajo en relación de dependencia', score: { formacion: 3 } },
-      { value: 'emprendedor', label: 'Tengo mi propio proyecto o emprendimiento', score: { asesoria: 2 } }
+      { value: 'freelance', label: '🎯 Soy freelance / profesional independiente', score: { asesoria: 2 } },
+      { value: 'empleado', label: '💼 Trabajo en relación de dependencia', score: { formacion: 3 } },
+      { value: 'emprendedor', label: '🚀 Tengo mi propio proyecto o emprendimiento', score: { asesoria: 2 } }
     ]
   },
   {
     id: 'persona_industry',
     question: '¿En qué [área] o sector te desempeñás?',
-    type: 'select',
+    type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'salud', label: 'Salud' },
-      { value: 'legal', label: 'Legal' },
-      { value: 'finanzas', label: 'Finanzas' },
-      { value: 'marketing', label: 'Marketing y Ventas' },
-      { value: 'it', label: 'Tecnología / IT' },
-      { value: 'educacion', label: 'Educación' },
-      { value: 'otro', label: 'Otro' }
+      { value: 'salud', label: '🩺 Salud' },
+      { value: 'legal', label: '⚖️ Legal' },
+      { value: 'finanzas', label: '💰 Finanzas' },
+      { value: 'marketing', label: '📣 Marketing y Ventas' },
+      { value: 'it', label: '💻 Tecnología / IT' },
+      { value: 'otro', label: '🌐 Otro' }
     ]
   },
   {
@@ -60,10 +59,10 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'universitario', label: 'Universitario/Terciario' },
-      { value: 'autodidacta', label: 'Autodidacta' },
-      { value: 'cursos', label: 'Cursos cortos/Bootcamps' },
-      { value: 'sin_tecnica', label: 'Sin formación técnica' }
+      { value: 'universitario', label: '🎓 Universitario/Terciario' },
+      { value: 'autodidacta', label: '📖 Autodidacta' },
+      { value: 'cursos', label: '⚡ Cursos cortos/Bootcamps' },
+      { value: 'sin_tecnica', label: '🌱 Sin formación técnica' }
     ]
   },
   {
@@ -72,11 +71,11 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'multi',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'excel', label: 'Excel/Google Sheets' },
-      { value: 'diseno', label: 'Diseño (Figma, Adobe)' },
-      { value: 'crm', label: 'CRM / Gestión (Notion, Trello, HubSpot)' },
-      { value: 'dev', label: 'Herramientas de desarrollo / código' },
-      { value: 'ninguna', label: 'Ninguna en particular' }
+      { value: 'excel', label: '📊 Excel/Google Sheets' },
+      { value: 'diseno', label: '🎨 Diseño (Figma, Adobe)' },
+      { value: 'crm', label: '📋 CRM / Gestión (Notion, Trello, HubSpot)' },
+      { value: 'dev', label: '🛠️ Herramientas de desarrollo / código' },
+      { value: 'ninguna', label: '🤷 Ninguna en particular' }
     ]
   },
   {
@@ -85,10 +84,10 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'inicial', label: 'Nada, hago casi todo manual', score: { formacion: 3, asesoria: 1 } },
-      { value: 'intermedio', label: 'Uso herramientas básicas o IA (ChatGPT) ocasionalmente', score: { formacion: 2, asesoria: 2 } },
-      { value: 'avanzado', label: 'Tengo procesos armados y uso herramientas avanzadas a diario', score: { asesoria: 3, implementacion: 1 } },
-      { value: 'experto', label: 'Automatizaciones complejas (Make/n8n/APIs)', score: { implementacion: 3, asesoria: 1 } }
+      { value: 'inicial', label: '🐣 Nada, hago casi todo manual', score: { formacion: 3, asesoria: 1 } },
+      { value: 'intermedio', label: '🔄 Uso herramientas básicas o IA (ChatGPT) ocasionalmente', score: { formacion: 2, asesoria: 2 } },
+      { value: 'avanzado', label: '⚙️ Tengo procesos armados y uso herramientas avanzadas a diario', score: { asesoria: 3, implementacion: 1 } },
+      { value: 'experto', label: '🤖 Automatizaciones complejas (Make/n8n/APIs)', score: { implementacion: 3, asesoria: 1 } }
     ]
   },
   {
@@ -97,11 +96,11 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'multi',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'chatgpt', label: 'ChatGPT / Claude' },
-      { value: 'midjourney', label: 'Generadores de imágenes o video' },
-      { value: 'copilot', label: 'Asistentes de código (Copilot, Cursor)' },
-      { value: 'zapier', label: 'Zapier / Make / n8n' },
-      { value: 'ninguna', label: 'Ninguna' }
+      { value: 'chatgpt', label: '💬 ChatGPT / Claude' },
+      { value: 'midjourney', label: '🖼️ Generadores de imágenes o video' },
+      { value: 'copilot', label: '🧑‍💻 Asistentes de código (Copilot, Cursor)' },
+      { value: 'zapier', label: '🔗 Zapier / Make / n8n' },
+      { value: 'ninguna', label: '❌ Ninguna' }
     ]
   },
   {
@@ -110,9 +109,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'tiempo', label: 'Optimizar mi tiempo y dejar de apagar incendios', score: { implementacion: 2, asesoria: 1 } },
-      { value: 'calidad', label: 'Mejorar la calidad y estructura de mi trabajo', score: { formacion: 2, asesoria: 1 } },
-      { value: 'negocio', label: 'Crear un nuevo servicio o escalar mis ingresos', score: { asesoria: 3 } }
+      { value: 'tiempo', label: '⏱️ Optimizar mi tiempo y dejar de apagar incendios', score: { implementacion: 2, asesoria: 1 } },
+      { value: 'calidad', label: '✨ Mejorar la calidad y estructura de mi trabajo', score: { formacion: 2, asesoria: 1 } },
+      { value: 'negocio', label: '📈 Crear un nuevo servicio o escalar mis ingresos', score: { asesoria: 3 } }
     ]
   },
   {
@@ -121,10 +120,10 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'persona',
     options: [
-      { value: 'tiempo', label: 'Falta de tiempo para frenar y organizar', score: { implementacion: 3 } },
-      { value: 'herramientas', label: 'Hay demasiadas herramientas, no sé cuál elegir', score: { asesoria: 3, formacion: 1 } },
-      { value: 'teoria', label: 'Me abruma la teoría técnica', score: { asesoria: 2, formacion: 2 } },
-      { value: 'nicho', label: 'No veo cómo aplicarlo exactamente a mi rubro', score: { asesoria: 3 } }
+      { value: 'tiempo', label: '⏳ Falta de tiempo para frenar y organizar', score: { implementacion: 3 } },
+      { value: 'herramientas', label: '🧩 Hay demasiadas herramientas, no sé cuál elegir', score: { asesoria: 3, formacion: 1 } },
+      { value: 'teoria', label: '📕 Me abruma la teoría técnica', score: { asesoria: 2, formacion: 2 } },
+      { value: 'nicho', label: '🔍 No veo cómo aplicarlo exactamente a mi rubro', score: { asesoria: 3 } }
     ]
   },
 
@@ -134,16 +133,15 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
   {
     id: 'company_industry',
     question: '¿En qué [sector] o industria opera tu negocio?',
-    type: 'select',
+    type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'salud', label: 'Salud' },
-      { value: 'legal', label: 'Legal' },
-      { value: 'finanzas', label: 'Finanzas' },
-      { value: 'marketing', label: 'Marketing y Ventas' },
-      { value: 'it', label: 'Tecnología / IT' },
-      { value: 'educacion', label: 'Educación' },
-      { value: 'otro', label: 'Otro' }
+      { value: 'salud', label: '🩺 Salud' },
+      { value: 'legal', label: '⚖️ Legal' },
+      { value: 'finanzas', label: '💰 Finanzas' },
+      { value: 'marketing', label: '📣 Marketing y Ventas' },
+      { value: 'it', label: '💻 Tecnología / IT' },
+      { value: 'otro', label: '🌐 Otro' }
     ]
   },
   {
@@ -152,9 +150,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: '1-10', label: 'Hasta 10 personas', score: { formacion: 3 } },
-      { value: '11-50', label: 'Entre 11 y 50 personas', score: { implementacion: 2, mix: 1 } },
-      { value: '50+', label: 'Más de 50 personas', score: { implementacion: 3 } }
+      { value: '1-10', label: '👥 Hasta 10 personas', score: { formacion: 3 } },
+      { value: '11-50', label: '🏠 Entre 11 y 50 personas', score: { implementacion: 2, mix: 1 } },
+      { value: '50+', label: '🏗️ Más de 50 personas', score: { implementacion: 3 } }
     ]
   },
   {
@@ -163,9 +161,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'productos', label: 'Productos físicos o digitales', score: { implementacion: 1 } },
-      { value: 'servicios', label: 'Servicios o consultoría', score: { formacion: 2 } },
-      { value: 'ambos', label: 'Un mix de ambos', score: { mix: 1 } }
+      { value: 'productos', label: '📦 Productos físicos o digitales', score: { implementacion: 1 } },
+      { value: 'servicios', label: '🤝 Servicios o consultoría', score: { formacion: 2 } },
+      { value: 'ambos', label: '🔀 Un mix de ambos', score: { mix: 1 } }
     ]
   },
   {
@@ -174,11 +172,11 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'multi',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'spreadsheets', label: 'Planillas (Excel, Google Sheets)', score: { formacion: 2, mix: 1 } },
-      { value: 'crm_erp', label: 'CRM o ERP (HubSpot, Salesforce, SAP, etc.)', score: { implementacion: 3 } },
-      { value: 'ecommerce', label: 'Plataforma de E-commerce (Shopify, Tiendanube)', score: { implementacion: 2 } },
-      { value: 'custom', label: 'Software a medida', score: { implementacion: 3 } },
-      { value: 'nada', label: 'Nada formal, todo manual o por WhatsApp', score: { formacion: 3 } }
+      { value: 'spreadsheets', label: '📊 Planillas (Excel, Google Sheets)', score: { formacion: 2, mix: 1 } },
+      { value: 'crm_erp', label: '🗂️ CRM o ERP (HubSpot, Salesforce, SAP, etc.)', score: { implementacion: 3 } },
+      { value: 'ecommerce', label: '🛒 Plataforma de E-commerce (Shopify, Tiendanube)', score: { implementacion: 2 } },
+      { value: 'custom', label: '🧰 Software a medida', score: { implementacion: 3 } },
+      { value: 'nada', label: '📱 Nada formal, todo manual o por WhatsApp', score: { formacion: 3 } }
     ]
   },
   {
@@ -187,10 +185,10 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'operativa', label: 'Demasiadas tareas operativas, manuales y repetitivas', score: { implementacion: 3, mix: 1 } },
-      { value: 'atencion', label: 'Atención al cliente desbordada o lenta', score: { implementacion: 3 } },
-      { value: 'estrategia', label: 'Falta de procesos claros y estrategia para escalar', score: { formacion: 3, mix: 1 } },
-      { value: 'desconocimiento', label: 'Sabemos que necesitamos orden y tecnología pero no sabemos por dónde arrancar', score: { formacion: 3, mix: 2 } }
+      { value: 'operativa', label: '🔁 Demasiadas tareas operativas, manuales y repetitivas', score: { implementacion: 3, mix: 1 } },
+      { value: 'atencion', label: '📞 Atención al cliente desbordada o lenta', score: { implementacion: 3 } },
+      { value: 'estrategia', label: '🧭 Falta de procesos claros y estrategia para escalar', score: { formacion: 3, mix: 1 } },
+      { value: 'desconocimiento', label: '🤔 Sabemos que necesitamos orden y tecnología pero no sabemos por dónde arrancar', score: { formacion: 3, mix: 2 } }
     ]
   },
   {
@@ -199,9 +197,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'nada', label: 'Nada, cada uno hace las cosas a su manera', score: { formacion: 3 } },
-      { value: 'basico', label: 'Tenemos algunas herramientas sueltas o usamos IA para redactar', score: { formacion: 2, mix: 1 } },
-      { value: 'avanzado', label: 'Ya tenemos automatizaciones y procesos bien definidos', score: { implementacion: 3 } }
+      { value: 'nada', label: '🌱 Nada, cada uno hace las cosas a su manera', score: { formacion: 3 } },
+      { value: 'basico', label: '🔧 Tenemos algunas herramientas sueltas o usamos IA para redactar', score: { formacion: 2, mix: 1 } },
+      { value: 'avanzado', label: '🏭 Ya tenemos automatizaciones y procesos bien definidos', score: { implementacion: 3 } }
     ]
   },
   {
@@ -210,9 +208,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'ayer', label: 'Para ayer. El caos ya nos está costando plata.', score: { implementacion: 3, mix: 2 } },
-      { value: 'corto', label: 'En los próximos 1 a 3 meses', score: { formacion: 2, mix: 1 } },
-      { value: 'explorando', label: 'Estamos explorando opciones sin apuro', score: { formacion: 3 } }
+      { value: 'ayer', label: '🔥 Para ayer. El caos ya nos está costando plata.', score: { implementacion: 3, mix: 2 } },
+      { value: 'corto', label: '📅 En los próximos 1 a 3 meses', score: { formacion: 2, mix: 1 } },
+      { value: 'explorando', label: '🔭 Estamos explorando opciones sin apuro', score: { formacion: 3 } }
     ]
   },
   {
@@ -221,9 +219,9 @@ export const diagnosisQuestions: DiagnosisQuestion[] = [
     type: 'single',
     showIf: (a) => a.user_type === 'empresa',
     options: [
-      { value: 'low', label: 'Menos de $1.000 USD', score: { formacion: 3 } },
-      { value: 'mid', label: 'Entre $1.000 y $5.000 USD', score: { formacion: 2, implementacion: 1, mix: 3 } },
-      { value: 'high', label: 'Más de $5.000 USD', score: { implementacion: 4 } }
+      { value: 'low', label: '💵 Menos de $1.000 USD', score: { formacion: 3 } },
+      { value: 'mid', label: '💳 Entre $1.000 y $5.000 USD', score: { formacion: 2, implementacion: 1, mix: 3 } },
+      { value: 'high', label: '💎 Más de $5.000 USD', score: { implementacion: 4 } }
     ]
   }
 ];
