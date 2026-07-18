@@ -173,7 +173,7 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
                 className="absolute top-0 left-0 h-full bg-[#CAFE5B]"
               />
             </div>
-            <div className="h-8 relative overflow-hidden flex items-center justify-center">
+            <div className="h-16 relative overflow-hidden flex items-center justify-center">
               <AnimatePresence mode="wait">
                 <motion.p
                   key={stepIndex}
@@ -214,11 +214,11 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="w-full p-6 md:p-10 flex flex-col items-center justify-center text-center"
+            className="w-full p-4 md:p-10 flex flex-col items-center justify-center text-center"
           >
-            <div className="flex flex-col items-center text-center space-y-6">
+            <div className="flex flex-col items-center text-center space-y-4 md:space-y-6">
               <h2 
-                className="text-4xl md:text-5xl font-bold tracking-tight text-[#F6F6F6]" 
+                className="text-3xl md:text-5xl font-bold tracking-tight text-[#F6F6F6]" 
                 style={{ fontFamily: "var(--font-sequel, 'Sequel Sans', 'Helvetica Neue', Arial, sans-serif)", letterSpacing: "-2px" }}
               >
                 Tu diagnóstico es:
@@ -265,7 +265,7 @@ export default function DiagnosisResult({ result, onContinue }: DiagnosisResultP
                 {result.explanation}
               </p>
 
-              <div className="pt-8 w-full flex flex-col items-center">
+              <div className="pt-4 md:pt-8 w-full flex flex-col items-center">
                 <button
                   onClick={onContinue}
                   className="w-full md:w-auto px-10 py-4 bg-[#F6F6F6] text-[#010101] hover:bg-white text-lg font-bold rounded-xl transition-all duration-300 transform hover:scale-105"

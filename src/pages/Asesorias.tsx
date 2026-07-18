@@ -204,7 +204,7 @@ const Asesorias = () => {
         )}
 
         {/* Content */}
-        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 h-[880px] md:h-[820px] flex flex-col">
+        <div className="relative overflow-hidden border border-white/20 rounded-3xl p-6 md:p-10 h-[960px] md:h-[820px] flex flex-col">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={step}
